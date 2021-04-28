@@ -60,6 +60,11 @@ $app->singleton(
 */
 
 $app->configure('app');
+$app->configure('filesystems');
+
+$app->configure('payment_gateway');
+
+$app->configure('swagger-lume');
 
 /*
 |--------------------------------------------------------------------------
@@ -96,6 +101,7 @@ $app->configure('app');
 // $app->register(App\Providers\EventServiceProvider::class);
 
 $app->register(\Illuminate\Redis\RedisServiceProvider::class);
+$app->register(SwaggerLume\ServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +117,6 @@ $app->register(\Illuminate\Redis\RedisServiceProvider::class);
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
 ], function ($router) {
-    require __DIR__.'/../routes/web.php';
     require __DIR__.'/../routes/api.php';
 });
 

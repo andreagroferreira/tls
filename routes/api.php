@@ -16,3 +16,13 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->group(['prefix' => 'api/v1', 'namespace' => 'API\V1'], function () use ($router) {
+    // transaction api
+    $router->get('transaction/{fg_id}', 'TransactionController@fetch');
+    $router->post('transaction', 'TransactionController@create');
+
+    $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
+    // invoice api
+//    $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
+});

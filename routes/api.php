@@ -22,7 +22,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'API\V1'], function () use 
     $router->get('transaction/{fg_id}', 'TransactionController@fetch');
     $router->post('transaction', 'TransactionController@create');
 
-    $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
     // invoice api
-//    $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
+    $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
 });

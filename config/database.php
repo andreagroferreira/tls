@@ -102,7 +102,7 @@ return [
             'driver' => 'pgsql',
             'host' => env('UNIT_TEST_POSTGRES_DB_HOST', 'localhost'),
             'port' => env('UNIT_TEST_POSTGRES_DB_PORT', '5432'),
-            'database' => env('UNIT_TEST_POSTGRES_DB_DATABASE', 'postgres'),
+            'database' => 'postgres',
             'username' => env('UNIT_TEST_POSTGRES_DB_USERNAME', ''),
             'password' => env('UNIT_TEST_POSTGRES_DB_PASSWORD', ''),
             'charset' => 'utf8',

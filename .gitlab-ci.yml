@@ -1,0 +1,141 @@
+image: ${DOCKER_REGISTRY_ADDRESS}/openshift3/ose-cli:${DOCKER_TAG_OSE_CLI}
+
+default:
+  tags:
+    - tlsdev-aws
+
+variables:
+  APPLICATION_NAME: payment-api
+  ENV: "SANDBOX"
+  DATABASE: $DATABASE
+
+stages:
+  - build
+  - deploy
+  - expose
+
+prepare-instance:
+  stage: build
+  image: ${DOCKER_REGISTRY_ADDRESS}/tlscontact/composer:${DOCKER_TAG_COMPOSER}
+  script:
+    - composer install -o
+  after_script:
+    - rm -rf composer.*
+  artifacts:
+    paths:
+      - ./
+    expire_in: 1 hour
+  environment:
+    name: $ENV
+
+npmbuild:
+  stage: build
+  image: "${DOCKER_REGISTRY_ADDRESS}/tlscontact/node:${DOCKER_TAG_NODE_12}"
+  before_script:
+  - npm --version
+  script:
+  - npm install; npm run prod;
+  artifacts:
+    paths:
+    - "./public"
+    expire_in: 3 days
+  environment:
+   name: "$ENV"
+
+.deploy-instance:
+  variables:
+    MEMORY_REQUEST: 100Mi
+    MEMORY_LIMIT: 256Mi
+  stage: deploy
+  only:
+    variables:
+      - $PROJECT
+  before_script:
+    - oc login --token=$GITLAB_SA_TOKEN --insecure-skip-tls-verify=true $MASTER_PUBLIC_URL
+  script:
+    - oc project "$PROJECT" 2> /dev/null || oc new-project "$PROJECT"
+    - export KEYCLOAK_BASE_URL=`oc get route secure-keycloak -o jsonpath='{.spec.host}'`
+    - oc process -f ./openshift/payment-api-template.yaml APPLICATION_NAME=$APPLICATION_NAME PROJECT=$INSTANCE
+      NAMESPACE=$PROJECT
+      ROUTE_IP_WHITE_LIST="$ROUTE_IP_WHITE_LIST"
+      POSTGRES_DB_HOST="$PROJECT-pgcluster"
+      POSTGRES_SECRET_NAME="$PROJECT-pgcluster-postgres-secret"
+      POSTGRES_ADMIN_SECRET_NAME="$PROJECT-pgcluster-postgres-secret"
+      POSTGRES_PAYMENT_DB_DATABASE="payment-$DATABASE"
+      KEYCLOAK_BASE_URL="https://$KEYCLOAK_BASE_URL/auth"
+      KEYCLOAK_REALM=$KEYCLOAK_REALM
+      ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID=$ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+      ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY=$ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+      ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER=$ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+      ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE=$ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+      ENVPAY_TINGG_COMMON_SANDBOX_IVKEY=$ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+      ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY=$ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+      ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY="$ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"
+      PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY=$PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+      PAYGATE_ZAALL2BE_SANDBOX_ID=$PAYGATE_ZAALL2BE_SANDBOX_ID
+      PAYGATE_ZAALL2BE_SELLER_EMAIL=$PAYGATE_ZAALL2BE_SELLER_EMAIL
+      FAW_COMMON_SANDBOX_MERCHANT_ID=$FAW_COMMON_SANDBOX_MERCHANT_ID
+      FAW_COMMON_SANDBOX_SECRET_KEY=$FAW_COMMON_SANDBOX_SECRET_KEY
+      ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID=$ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+      ENVPAY_GLO_COMMON_SANDBOX_SECRET=$ENVPAY_GLO_COMMON_SANDBOX_SECRET
+      ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT=$ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+      KEYCLOAK_CLIENT_ID=$KEYCLOAK_CLIENT_ID
+      AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+      AWS_BUCKET=$AWS_BUCKET
+      TLSCONTACT_API="$TLSCONTACT_API"
+      MEMORY_REQUEST=$MEMORY_REQUEST
+      MEMORY_LIMIT=$MEMORY_LIMIT| oc apply -f -
+    - oc start-build $APPLICATION_NAME  --from-dir=. --follow
+  environment:
+    name: $ENV
+
+deploy-instance-manual:
+  extends: .deploy-instance
+  variables:
+    INSTANCE: $PROJECT
+  when: manual
+  only:
+    variables:
+      - $PROJECT
+  except:
+    variables:
+      - $AUTODEPLOY
+  environment:
+    name: $ENV
+
+deploy-instance-auto:
+  extends: .deploy-instance
+  variables:
+    INSTANCE: $PROJECT
+  only:
+    variables:
+      - $AUTODEPLOY
+  environment:
+    name: $ENV
+
+deploy-instance-master:
+  extends: .deploy-instance
+  variables:
+    PROJECT: $PROJECT
+    INSTANCE: $PROJECT
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == 'master'
+  except:
+    variables:
+      - $AUTODEPLOY
+
+deploy-instance-staging:
+  extends: .deploy-instance
+  variables:
+    PROJECT: $PROJECT
+    INSTANCE: $PROJECT
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == 'staging'
+  except:
+    variables:
+      - $AUTODEPLOY
+

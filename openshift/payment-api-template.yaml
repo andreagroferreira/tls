@@ -1,0 +1,453 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: payment-template
+  annotations:
+    description: This template defines objects that are required to spin up a TLS Connect application
+parameters:
+  - name: APPLICATION_NAME
+    description: Name of the application
+    required: true
+    displayName: Application Name
+  - name: POSTGRES_SECRET_NAME
+    required: true
+  - name: POSTGRES_ADMIN_SECRET_NAME
+    required: true
+  - name: POSTGRES_DB_HOST
+    required: true
+  - name: TLSCONTACT_API
+    required: true
+  - name: KEYCLOAK_BASE_URL
+    required: true
+  - name: KEYCLOAK_REALM
+    required: true
+  - name: KEYCLOAK_CLIENT_ID
+    required: true
+  - name: POSTGRES_PAYMENT_DB_DATABASE
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+    required: true
+  - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+    required: true
+  - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_COMMON_SANDBOX_SECRET_KEY
+    required: true
+  - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+    required: true
+  - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+    required: true
+  - name: AWS_ACCESS_KEY_ID
+    required: true
+  - name: AWS_SECRET_ACCESS_KEY
+    required: true
+  - name: AWS_DEFAULT_REGION
+    required: true
+  - name: AWS_BUCKET
+    required: true
+  - name: APPLICATION_ENV
+    value: prod
+    required: true
+  - name: PROJECT
+    required: true
+  - name: NAMESPACE
+    required: true
+  - name: ROUTE_IP_WHITE_LIST
+    required: true
+  - name: IMAGE_TAG
+    value: latest
+  - name: DEBUG_MODE
+    value: "false"
+    required: true
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Volume Capacity
+    name: VOLUME_CAPACITY
+    required: true
+    value: 5Gi
+  - name: MEMORY_REQUEST
+    description: Memory initially requested by the app container
+    displayName: App container requested memory
+    required: true
+  - name: MEMORY_LIMIT
+    description: Maximum memory allocated to the app container
+    displayName: App container maximum memory
+    required: true
+  - displayName: Custom https Route Hostname
+    description: 'Custom hostname for https service route. Leave blank for default hostname,
+      e.g.: <application-name>.<project>.<default-domain-suffix>'
+    name: HOSTNAME_HTTPS
+    value: ''
+    required: false
+objects:
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: php-cron-sa
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: cron-pod-command-execution
+      labels:
+        app: ${APPLICATION_NAME}
+    rules:
+    - apiGroups:
+        - ''
+      resources:
+        - pods
+      verbs:
+        - get
+        - list
+    - apiGroups:
+        - ''
+      resources:
+        - pods/exec
+      verbs:
+        - create
+  -
+    apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APPLICATION_NAME}:latest
+      postCommit: {}
+      resources: {}
+      runPolicy: Serial
+      source:
+        binary: {}
+        type: Binary
+      strategy:
+        sourceStrategy:
+          env:
+            - name: DOCUMENTROOT
+              value: /public
+            - name: SHORT_OPEN_TAG
+              value: "On"
+            - name: SESSION_COOKIE_SECURE
+              Value: "True"
+          from:
+            kind: ImageStreamTag
+            name: tlsconnect-php73-s2i:latest
+            namespace: openshift
+        type: Source
+      successfulBuildsHistoryLimit: 5
+  -
+    apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}-${PROJECT}
+    data:
+      00-app.conf: |
+        SetEnv APPLICATION_ENV "${APPLICATION_ENV}"
+        SetEnv PROJECT $PROJECT
+        php_flag log_errors on
+        php_flag track_errors on
+        CustomLog "|/usr/bin/cat" "{ \"time\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\", \"remoteIP\":\"%a\", \"host\":\"%V\", \"requestPath\":\"%U\", \"query\":\"%q\",\"method\":\"%m\", \"status\":\"%>s\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }"
+        LogFormat "{ \"time\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\", \"remoteIP\":\"%a\", \"host\":\"%V\", \"requestPath\":\"%U\", \"query\":\"%q\",\"method\":\"%m\", \"status\":\"%>s\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }"
+        TransferLog "|/usr/bin/cat"
+        ErrorLogFormat "{ \"time\":\"%{%Y-%m-%dT%T}t\", \"%-m\":\"%l\", \"pid\":\"%P\", \"Message\":\"%M\" }"
+
+  -
+    apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+    spec:
+      selector:
+        app: ${APPLICATION_NAME}
+        deploymentconfig: ${APPLICATION_NAME}
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${APPLICATION_NAME}
+              - ${APPLICATION_NAME}-init
+            from:
+              kind: ImageStreamTag
+              name: "${APPLICATION_NAME}:${IMAGE_TAG}"
+          type: ImageChange
+        - type: ConfigChange
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: ${APPLICATION_NAME}
+            deploymentconfig: ${APPLICATION_NAME}
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: tls-node-type
+                        operator: In
+                        values:
+                          - 'default'
+                    weight: 1
+          containers:
+            - env:
+                - name: APPLICATION_ENV
+                  value: ${APPLICATION_ENV}
+                - name: APP_DEBUG
+                  value: ${DEBUG_MODE}
+                - name: POSTGRES_DB_HOST
+                  value: ${POSTGRES_DB_HOST}
+                - name: POSTGRES_DB_PORT
+                  value: "5432"
+                - name: POSTGRES_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_SECRET_NAME}
+                      key: password
+                - name: POSTGRES_DEPLOY_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DEPLOY_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: password
+                - name: POSTGRES_PAYMENT_DB_DATABASE
+                  value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: PGPASSFILE
+                  value: /opt/app-root/pgpass/.pgpass
+                - name: APP_ENV
+                  value: prod
+                - name: TLSCONTACT_API
+                  value: ${TLSCONTACT_API}
+                - name: KEYCLOAK_BASE_URL
+                  value: ${KEYCLOAK_BASE_URL}
+                - name: KEYCLOAK_REALM
+                  value: ${KEYCLOAK_REALM}
+                - name: KEYCLOAK_CLIENT_ID
+                  value: ${KEYCLOAK_CLIENT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
+                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+                  value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
+                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+                  value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
+                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
+                - name: FAW_COMMON_SANDBOX_SECRET_KEY
+                  value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
+                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+                  value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: AWS_ACCESS_KEY_ID
+                  value: ${AWS_ACCESS_KEY_ID}
+                - name: AWS_SECRET_ACCESS_KEY
+                  value: ${AWS_SECRET_ACCESS_KEY}
+                - name: AWS_DEFAULT_REGION
+                  value: ${AWS_DEFAULT_REGION}
+                - name: AWS_BUCKET
+                  value: ${AWS_BUCKET}
+                - name: LOG_CHANNEL
+                  value: "stdout"
+              image: ' '
+              imagePullPolicy: Always
+              name: ${APPLICATION_NAME}
+              ports:
+                - containerPort: 8443
+                  protocol: TCP
+                  name: https
+              resources:
+                requests:
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  memory: ${MEMORY_LIMIT}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+                - mountPath: /opt/app-root/src/httpd-cfg
+                  name: volume-apache-config
+                - mountPath: /opt/app-root/src/httpd-ssl/
+                  name: volume-ssl
+                - mountPath: /opt/app-root/httpd-ssl
+                  name: volume-ssl-move
+                - mountPath: /opt/app-root/pgpass
+                  name: volume-pgpass
+                - mountPath: /opt/app-root/src/log
+                  name: volume-logs
+                - mountPath: /opt/app-root/src/data/
+                  name: volume-application-data
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: volume-application-data
+            - emptyDir: {}
+              name: volume-logs
+            - emptyDir: {}
+              name: volume-apache-config
+            - emptyDir: {}
+              name: volume-ssl-move
+            - emptyDir: {}
+              name: volume-ssl
+            - emptyDir: {}
+              name: volume-pgpass
+            - name: volume-ssl-init
+              secret:
+                defaultMode: 420
+                items:
+                  - key: tls.crt
+                    path: ./certs/cert.pem
+                  - key: tls.key
+                    path: ./private/key.pem
+                secretName: ${APPLICATION_NAME}-x509-https-secret
+            - configMap:
+                defaultMode: 420
+                items:
+                  - key: 00-app.conf
+                    path: 00-app.conf
+                name: ${APPLICATION_NAME}-${PROJECT}
+              name: volume-apache-config-init
+  -
+    apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        service.alpha.openshift.io/serving-cert-secret-name: ${APPLICATION_NAME}-x509-https-secret
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+    spec:
+      selector:
+        app: ${APPLICATION_NAME}
+      ports:
+        - name: https
+          port: 8443
+  -
+    kind: Route
+    apiVersion: v1
+    id: "${APPLICATION_NAME}-https"
+    metadata:
+      name: ${APPLICATION_NAME}
+      labels:
+        app: "${APPLICATION_NAME}"
+      annotations:
+        description: Route for ${APPLICATION_NAME}'s https service.
+        kubernetes.io/tls-acme: 'true'
+        haproxy.router.openshift.io/ip_whitelist: ${ROUTE_IP_WHITE_LIST}
+        haproxy.router.openshift.io/timeout: "60s"
+    spec:
+      host: "${HOSTNAME_HTTPS}"
+      to:
+        name: ${APPLICATION_NAME}
+      tls:
+        termination: reencrypt
+        insecureEdgeTerminationPolicy: Redirect
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-router
+    spec:
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  name: default
+          ports:
+            - port: 8443
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: ${APPLICATION_NAME}
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-pgbouncer
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}
+          ports:
+            - port: 5432
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          crunchy-pgbouncer: 'true'
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-pgcluster
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}
+          ports:
+            - port: 5432
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          pgo-pg-database: 'true'

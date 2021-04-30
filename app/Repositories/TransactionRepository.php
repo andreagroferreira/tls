@@ -38,6 +38,7 @@ class TransactionRepository
         return $this->transactionModel
             ->select([
                 't_id',
+                't_gateway AS gateway',
                 't_transaction_id AS transaction_id',
                 't_gateway_transaction_id AS gateway_transaction_id',
                 't_currency AS currency',

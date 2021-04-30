@@ -40,7 +40,6 @@ prepare-instance:
     - oc login --token=$GITLAB_SA_TOKEN --insecure-skip-tls-verify=true $MASTER_PUBLIC_URL
   script:
     - oc project "$PROJECT" 2> /dev/null || oc new-project "$PROJECT"
-    - export KEYCLOAK_BASE_URL=`oc get route secure-keycloak -o jsonpath='{.spec.host}'`
     - oc process -f ./openshift/payment-api-template.yaml APPLICATION_NAME=$APPLICATION_NAME PROJECT=$INSTANCE
       NAMESPACE=$PROJECT
       ROUTE_IP_WHITE_LIST="$ROUTE_IP_WHITE_LIST"

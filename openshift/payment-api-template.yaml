@@ -181,6 +181,102 @@ objects:
                         values:
                           - 'default'
                     weight: 1
+          initContainers:
+            - env:
+                - name: POSTGRES_DB_HOST
+                  value: ${POSTGRES_DB_HOST}
+                - name: TLSCONTACT_API
+                  value: ${TLSCONTACT_API}
+                - name: POSTGRES_DEPLOY_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DEPLOY_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: password
+                - name: POSTGRES_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_SECRET_NAME}
+                      key: password
+                - name: POSTGRES_PAYMENT_DB_DATABASE
+                  value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: KEYCLOAK_BASE_URL
+                  value: ${KEYCLOAK_BASE_URL}
+                - name: KEYCLOAK_REALM
+                  value: ${KEYCLOAK_REALM}
+                - name: KEYCLOAK_CLIENT_ID
+                  value: ${KEYCLOAK_CLIENT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
+                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+                  value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
+                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+                  value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
+                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
+                - name: FAW_COMMON_SANDBOX_SECRET_KEY
+                  value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
+                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+                  value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: AWS_ACCESS_KEY_ID
+                  value: ${AWS_ACCESS_KEY_ID}
+                - name: AWS_SECRET_ACCESS_KEY
+                  value: ${AWS_SECRET_ACCESS_KEY}
+                - name: AWS_DEFAULT_REGION
+                  value: ${AWS_DEFAULT_REGION}
+                - name: AWS_BUCKET
+                  value: ${AWS_BUCKET}
+              name: ${APPLICATION_NAME}-init
+              image: ' '
+              command: [ '/bin/bash','-c' ]
+              args:
+                - cp -Lr /opt/app-root/ssl-init/* /opt/app-root/src/httpd-ssl/;
+                  cp -Lr /opt/app-root/httpd-cfg-init/* /opt/app-root/src/httpd-cfg/;
+                  echo "$POSTGRES_DB_HOST:5432:$POSTGRES_PAYMENT_DB_DATABASE:$POSTGRES_DB_USERNAME:$POSTGRES_DB_PASSWORD" > /opt/app-root/pgpass/.pgpass;
+                  echo "${POSTGRES_DB_HOST}-pgbouncer:5432:$POSTGRES_PAYMENT_DB_DATABASE:$POSTGRES_DB_USERNAME:$POSTGRES_DB_PASSWORD" >> /opt/app-root/pgpass/.pgpass;
+                  chmod 600 /opt/app-root/pgpass/.pgpass;
+                  mkdir -p /opt/app-root/src/data/application_data;
+
+              volumeMounts:
+                - mountPath: /opt/app-root/httpd-cfg-init/
+                  name: volume-apache-config-init
+                - mountPath: /opt/app-root/src/httpd-cfg/
+                  name: volume-apache-config
+                - mountPath: /opt/app-root/ssl-init/
+                  name: volume-ssl-init
+                - mountPath: /opt/app-root/src/httpd-ssl/
+                  name: volume-ssl
+                - mountPath: /opt/app-root/pgpass
+                  name: volume-pgpass
+                - mountPath: /opt/app-root/src/data/
+                  name: volume-application-data
           containers:
             - env:
                 - name: APPLICATION_ENV

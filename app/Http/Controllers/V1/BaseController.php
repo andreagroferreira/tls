@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Controllers\API\V1;
+namespace App\Http\Controllers\V1;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -28,6 +28,9 @@ class BaseController extends Controller
 
     protected function sendError($error, $message, $code = 400)
     {
+        if (is_array($message)) {
+            $message = json_encode($message);
+        }
         Log::info('status=' . $code . ', error=' . $error . ', message=' . $message);
         return response()->json([
             'status' => 'fail',

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\V1;
+namespace App\Http\Controllers\V1;
 
 use App\Services\TransactionService;
 use Illuminate\Http\Request;

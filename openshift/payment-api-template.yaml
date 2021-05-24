@@ -17,6 +17,36 @@ parameters:
     required: true
   - name: POSTGRES_PAYMENT_DB_DATABASE
     required: true
+  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+    required: true
+  - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+    required: true
+  - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_COMMON_SANDBOX_SECRET_KEY
+    required: true
+  - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+    required: true
+  - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+    required: true
   - name: AWS_ACCESS_KEY_ID
     required: true
   - name: AWS_SECRET_ACCESS_KEY
@@ -312,6 +342,36 @@ objects:
                       key: password
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
+                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+                  value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
+                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+                  value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
+                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
+                - name: FAW_COMMON_SANDBOX_SECRET_KEY
+                  value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
+                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+                  value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
                 - name: PGPASSFILE
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV

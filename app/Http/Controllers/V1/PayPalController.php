@@ -97,16 +97,31 @@ class PayPalController extends BaseController
         $params = $request->get('t_id');
         try {
             $result = $this->paymentGateway->return($params);
-            $status = $result['is_success'] ?? '';
-            if ($status == 'ok') {
-                return $this->sendResponse($result, 200);
-            } else {
-                // The deal was not completed or delay
-                return $this->sendError('P0022', $result, 400);
-            }
+            return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);
         }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/paypal/wait",
+     *     tags={"Payment API"},
+     *     description="get the payment status",
+     *      @OA\Response(
+     *          response="200",
+     *          description="transaction created",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function wait(Request $request) {
+        $params = $request->get('t_id');
+        return $this->paymentGateway->wait($params);
     }
 
 }

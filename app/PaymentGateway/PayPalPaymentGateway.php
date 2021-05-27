@@ -137,11 +137,15 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
         $curr           = $translationsData['t_currency'] ?? '';
         $txn_fee_extra  = $onlinePayment['common']['txn_fee_extra'] ?? '';
         $txn_fee_rate   = $onlinePayment['common']['txn_fee_rate'] ?? '';
-        $returnurl      = url(($onlinePayment['common']['return_url'] ?? '') . '?t_id=' . $t_id);
+        $returnurl      = get_callback_url(($onlinePayment['common']['return_url'] ?? '') . '?t_id=' . $t_id);
 
-        $ipnurl  = url(($onlinePayment['common']['notify_url'] ?? '') . '?fg_id=' . $translationsData['t_xref_fg_id'] . '&transid=' . $orderId);
+        $ipnurl  = get_callback_url(($onlinePayment['common']['notify_url'] ?? '') . '?fg_id=' . $translationsData['t_xref_fg_id'] . '&transid=' . $orderId);
 // Divers data for reporting purpose
         $cai = implode(', ', array_unique($cai_list_with_avs));
+
+        if (isset($translationsData['t_status']) && $translationsData['t_status'] == 'pending') {
+            $this->transactionService->updateById($t_id, ['t_status' => 'waiting']);
+        }
 
         $params = [
             'custom' => $orderId,
@@ -164,18 +168,24 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
     public function return($params) {
         $translationsData = $this->transactionService->getTransaction($params);
         $transaction_status = $translationsData['t_status'] ?? '';
-        $message = '';
+        $link = $translationsData['t_redirect_url'];
         if ($transaction_status != 'done') {
             $message = 'The deal was not completed or delay';
+            $link = get_callback_url('paypal/return') . '?t_id=' . $params;
         }
         $result = [
-            'is_success' => $transaction_status != 'done' ? 'error' : 'ok',
+            'is_success' => $transaction_status != 'done' ? 'waiting' : 'ok',
             'orderid' => $translationsData['t_transaction_id'],
-            'message' => $message,
-            'href' => $translationsData['t_redirect_url']
+            't_id' => $params,
+            'href' => $link
         ];
         return $result;
-//        return view('checkout.return', ['init_data' =>json_encode($result)]);
+    }
+
+    public function wait($t_id) {
+        $translationsData = $this->transactionService->getTransaction($t_id);
+        $status = ($translationsData['t_status'] != 'done') ? 'waiting' : 'ok';
+        return Response()->json(['status' => $status]);
     }
 
     private function responseLog($params, $error, $orderId) {

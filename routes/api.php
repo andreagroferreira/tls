@@ -50,6 +50,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('paypal/redirto', 'PayPalController@redirto');
     $router->post('paypal/return', 'PayPalController@return');
     $router->post('paypal/notify', 'PayPalController@notify');
+    $router->get('paypal/wait', 'PayPalController@wait');
 
     $router->post('globaliris/return', 'GlobalirisController@return');
     $router->get('globaliris/redirect', 'GlobalirisController@redirect');

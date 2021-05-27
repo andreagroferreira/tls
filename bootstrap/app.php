@@ -69,6 +69,7 @@ $app->configure('app');
 $app->configure('filesystems');
 
 $app->configure('payment_gateway');
+$app->configure('translation');
 $app->configure('swagger-lume');
 
 /*

@@ -112,14 +112,14 @@ class CmiPaymentGateway implements PaymentGatewayInterface
             'amount'        => $transaction['t_amount'],
             'currency'      => $transaction['t_currency'],
             'oid'           => $transaction['t_transaction_id'],
-            'okUrl'         => url($cmi_config['okUrl']),
+            'okUrl'         => get_callback_url($cmi_config['okUrl']),
             'failUrl'       => $transaction['t_redirect_url'],
             'lang'          => 'fr',
             'email'         => $u_email,
             'rnd'           => microtime(),
             'hashAlgorithm' => $cmi_config['hashAlgorithm'],
             'shopurl'       => $transaction['t_redirect_url'] . $t_id,
-            'callbackUrl'   => url($cmi_config['callbackUrl']),
+            'callbackUrl'   => get_callback_url($cmi_config['callbackUrl']),
         ];
 
         $params['hash']     = $this->getHash($cmi_config['storeKey'], $params);
@@ -129,17 +129,10 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $params['CallbackURL'] = $params['callbackUrl'];
         unset($params['TranType']);
         unset($params['callbackUrl']);
-
-        $string = "";
-        foreach ($params as $name => $value) {
-            $string .= "<input type='hidden' name='$name' value='$value' readonly>";
-        }
         return [
-            'status'  => 'success',
-            'content' => "
-                <div style='display:none' >
-                    <form id='payment_form' action='{$cmi_config['host']}' method='post'>" . $string . "</form>
-                </div>"
+            'form_method' => 'post',
+            'form_action' => $cmi_config['host'],
+            'form_fields' => $params,
         ];
     }
 

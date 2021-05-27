@@ -110,11 +110,11 @@ return [
                 'common' => [
                     'storetype' => '3d_pay_hosting',
                     'tranType' => 'PreAuth',
-                    'okUrl' => 'cmi/return',
+                    'okUrl' => '/cmi/return',
                     'failUrl' => 'cmi/return',
                     'hashAlgorithm' => 'ver3',
-                    'shopurl' => 'checkout/',
-                    'callbackUrl' => 'cmi/callback',
+                    'shopurl' => '/checkout/',
+                    'callbackUrl' => '/cmi/callback',
                 ],
                 'sandbox' => [
                     'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
@@ -220,10 +220,10 @@ return [
                 'label'   => 'Tingg pay',
                 'active'  => true,
                 'common'  => [
-                    'successRedirectUrl' => 'tingg/return',
-                    'failRedirectUrl'    => 'checkout/',
-                    'pendingRedirectUrl' => 'checkout/',
-                    'paymentWebhookUrl'  => 'tingg/notify'
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
                 ],
                 'sandbox' => [
                     'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
@@ -248,10 +248,10 @@ return [
                 'label'   => 'Tingg pay',
                 'active'  => true,
                 'common'  => [
-                    'successRedirectUrl' => 'tingg/return',
-                    'failRedirectUrl'    => 'checkout/',
-                    'pendingRedirectUrl' => 'checkout/',
-                    'paymentWebhookUrl'  => 'tingg/notify'
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
                 ],
                 'sandbox' => [
                     'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
@@ -276,10 +276,10 @@ return [
                 'label'   => 'Tingg pay',
                 'active'  => true,
                 'common'  => [
-                    'successRedirectUrl' => 'tingg/return',
-                    'failRedirectUrl'    => 'checkout/',
-                    'pendingRedirectUrl' => 'checkout/',
-                    'paymentWebhookUrl'  => 'tingg/notify'
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
                 ],
                 'sandbox' => [
                     'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
@@ -304,10 +304,10 @@ return [
                 'label'   => 'Tingg pay',
                 'active'  => true,
                 'common'  => [
-                    'successRedirectUrl' => 'tingg/return',
-                    'failRedirectUrl'    => 'checkout/',
-                    'pendingRedirectUrl' => 'checkout/',
-                    'paymentWebhookUrl'  => 'tingg/notify'
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
                 ],
                 'sandbox' => [
                     'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
@@ -332,10 +332,10 @@ return [
                 'label'   => 'Tingg pay',
                 'active'  => true,
                 'common'  => [
-                    'successRedirectUrl' => 'tingg/return',
-                    'failRedirectUrl'    => 'checkout/',
-                    'pendingRedirectUrl' => 'checkout/',
-                    'paymentWebhookUrl'  => 'tingg/notify'
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
                 ],
                 'sandbox' => [
                     'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
@@ -360,10 +360,10 @@ return [
                 'label'   => 'Tingg pay',
                 'active'  => true,
                 'common'  => [
-                    'successRedirectUrl' => 'tingg/return',
-                    'failRedirectUrl'    => 'checkout/',
-                    'pendingRedirectUrl' => 'checkout/',
-                    'paymentWebhookUrl'  => 'tingg/notify'
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
                 ],
                 'sandbox' => [
                     'host'          => 'https://developer.tingg.africa/checkout/v2/express/',

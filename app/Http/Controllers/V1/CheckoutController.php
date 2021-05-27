@@ -77,6 +77,12 @@ class CheckoutController extends BaseController
                     'href' => $transaction['t_redirect_url'],
                 ], 400);
             }
+            if ($transaction['t_status'] == 'waiting') {
+                // The deal was not completed or delay
+                return $this->sendError('P0022',[
+                    'transaction_id' => $transaction['t_transaction_id'],
+                ]);
+            }
             $expiration_time = Carbon::parse($transaction['t_expiration'], $this->transactionService->getDbTimeZone())->getTimestamp();
             $now_time = $this->transactionService->getDbNowTime();
             if ($now_time > $expiration_time) {

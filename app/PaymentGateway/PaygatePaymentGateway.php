@@ -144,8 +144,8 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
             $pay_method          = '';
         }
         $country    = $paygate_config['common']['country'];
-        $notify_url = url($paygate_config['common']['notify_url']);
-        $return_url = url($paygate_config['common']['return_url']);
+        $notify_url = get_callback_url($paygate_config['common']['notify_url']);
+        $return_url = get_callback_url($paygate_config['common']['return_url']);
         $params = array(
             'PAYGATE_ID'        => $paygate_id,
             'REFERENCE'         => $orderId,

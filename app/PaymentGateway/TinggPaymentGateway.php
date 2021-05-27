@@ -81,9 +81,9 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             "customerLastName"      => $u_surname,
             "customerFirstName"     => $u_givenname,
             'customerEmail'         => $u_email,
-            'successRedirectUrl'    => url($tingg_config['successRedirectUrl']),
-            'failRedirectUrl'       => url($tingg_config['failRedirectUrl']) . $t_id,
-            'paymentWebhookUrl'     => url($tingg_config['paymentWebhookUrl'])
+            'successRedirectUrl'    => get_callback_url($tingg_config['successRedirectUrl']),
+            'failRedirectUrl'       => get_callback_url($tingg_config['failRedirectUrl']) . $t_id,
+            'paymentWebhookUrl'     => get_callback_url($tingg_config['paymentWebhookUrl'])
         ];
 
         $encryptParams = $this->encrypt($tingg_config['ivKey'], $tingg_config['secretKey'], $params);
@@ -94,8 +94,9 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             'countryCode' => $this->isSandBox() ? 'KE' : strtoupper(substr($issuer, 0, 2))
         ];
         return [
-            'status' => 'success',
-            'url' => $tingg_config['host'] . '?' . http_build_query($queryParams),
+            'form_method' => 'get',
+            'form_action' => $tingg_config['host'],
+            'form_fields' => $queryParams,
         ];
     }
 

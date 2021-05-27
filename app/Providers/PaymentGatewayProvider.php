@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Http\Controllers\V1\CmiController;
 use App\Http\Controllers\V1\PayLaterController;
+use App\Http\Controllers\V1\PayuController;
 use App\Http\Controllers\V1\TinggController;
 use App\PaymentGateway\CmiPaymentGateway;
 use App\PaymentGateway\PayLaterGateway;
+use App\PaymentGateway\PayuPaymentGateway;
 use App\PaymentGateway\TinggPaymentGateway;
 use App\Http\Controllers\V1\PaygateController;
 use App\Http\Controllers\V1\PayPalController;
@@ -68,6 +70,11 @@ class PaymentGatewayProvider extends ServiceProvider
             ->needs(PaymentGatewayInterface::class)
             ->give(function ($app) {
                 return $app->make(PayPalPaymentGateway::class);
+            });
+        $this->app->when(PayuController::class)
+            ->needs(PaymentGatewayInterface::class)
+            ->give(function ($app) {
+                return $app->make(PayuPaymentGateway::class);
             });
     }
 

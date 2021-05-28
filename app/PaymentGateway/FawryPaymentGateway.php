@@ -87,7 +87,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $secret      = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
         }
         $init_url = url($host_url . '/ECommerceWeb/api/payments/init');
-        $return_url = url($payment_config['common']['return_url']);
+        $return_url = get_callback_url($payment_config['common']['return_url']);
         $pay_version = strtolower($payment_config['common']['version']);
         $pay_js = url($host_url . $payment_config['common']['redirect_path_' . $pay_version]);
 
@@ -144,7 +144,11 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'sign_type' => 'SHA256',
                 'signature' => $hash_sign
             ];
-            return ['status' => 'success', 'mode' => 'loadjs', 'js_file' => $pay_js, 'content' => $params];
+            return [
+                'form_method' => 'load_js',
+                'form_action' => $pay_js,
+                'form_fields' => $params
+            ];
         } else {
             $sign_string = $merchant_id . $order_id . $profile_id . $quantity . $expiry . $secret;
             $hash_sign = hash('SHA256', $sign_string);
@@ -173,8 +177,15 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $status_code = $response->getStatusCode();
             $payment_id = $response->getBody()->getContents();
             if ($status_code==200 && $payment_id) {
-                $payment_url = $host_url . '/atfawry/plugin?payment-id=' . $payment_id . '&locale=en&mode=SEPARATED';
-                return ['status' => 'success', 'content' => $payment_url];
+                return [
+                    'form_method' => 'get',
+                    'form_action' => $host_url . '/atfawry/plugin',
+                    'form_fields' => [
+                        'payment-id' => $payment_id,
+                        'locale' => 'en',
+                        'mode' => 'SEPARATED'
+                    ],
+                ];
             } else {
                 return ['status' => 'fail', 'error' => 'INTERNAL ERROR', 'msg' => 'Payment request failed.'];
             }

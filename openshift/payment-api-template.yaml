@@ -53,6 +53,8 @@ parameters:
     required: true
   - name: AWS_DEFAULT_REGION
     required: true
+  - name: PAYMENT_SERVICE_DOMAIN
+    required: true
   - name: AWS_BUCKET
     required: true
   - name: APPLICATION_ENV
@@ -372,6 +374,8 @@ objects:
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
                 - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
                   value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: PAYMENT_SERVICE_DOMAIN
+                  value: ${PAYMENT_SERVICE_DOMAIN}
                 - name: PGPASSFILE
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV

@@ -170,7 +170,6 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
         $transaction_status = $translationsData['t_status'] ?? '';
         $link = $translationsData['t_redirect_url'];
         if ($transaction_status != 'done') {
-            $message = 'The deal was not completed or delay';
             $link = get_callback_url('paypal/return') . '?t_id=' . $params;
         }
         $result = [

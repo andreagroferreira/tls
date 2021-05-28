@@ -35,7 +35,7 @@ class FawryController extends BaseController
             $redirToResult = $this->paymentGateway->redirto($params);
             $status = $redirToResult['status'] ?? '';
             $message = $redirToResult['msg'] ?? '';
-            if ($status == 'success') {
+            if (empty($status) && !empty($redirToResult['form_fields'])) {
                 return $this->sendResponse($redirToResult, 200);
             } else if ($status == 'fail') {
                 if ($message == "Transaction items can`t be parsed.") {

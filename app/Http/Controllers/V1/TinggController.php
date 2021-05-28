@@ -41,15 +41,7 @@ class TinggController extends BaseController
         $t_id = $request->get('t_id');
         try {
             $result = $this->paymentGateway->redirto($t_id);
-            $status = $result['status'] ?? '';
-            $message = $result['message'] ?? '';
-            if ($status == 'success') {
-                return $this->sendResponse($result, 200);
-            } else if ($message == 'transaction_id_not_exists') {
-                return $this->sendError('P0011', 'transaction id does not exists', 400);
-            } else {
-                return $this->sendError('P0006', 'unknown_error', 400);
-            }
+            return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);
         }
@@ -99,18 +91,11 @@ class TinggController extends BaseController
         $params = $request->post();
         try {
             $result = $this->paymentGateway->return($params);
-            $status = $result['status'] ?? '';
             $message = $result['message'] ?? '';
-            if ($status == 'ok') {
-                return $this->sendResponse($result, 200);
-            } else if ($message == 'transaction_id_not_exists') {
+            if ($message == 'transaction_id_not_exists') {
                 return $this->sendError('P0011', 'transaction id does not exists', 400);
-            } else if ($message == 'payment_amount_incorrect') {
-                return $this->sendError('P0014', 'payment amount is incorrect', 400);
-            } else if ($message == 'no_data_received') {
-                return $this->sendError('P0009', 'no_data_received', 400);
             } else {
-                return $this->sendError('P0006', 'unknown_error' . $message, 400);
+                return $this->sendResponse($result, 200);
             }
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

@@ -55,6 +55,14 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $app_env = $this->isSandBox();
         $amount = $translationsData['t_amount'];
+        $minFractionDigits = $onlinePayment['common']['min_fraction_digits'];
+        if ($minFractionDigits) {
+            while ($minFractionDigits > 0) {
+                $amount *= 10;
+                $minFractionDigits--;
+            }
+        }
+        $amount =  round($amount, 0);
         $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/forms_in_group/' . $fg_id);
         $applications = $applicationsResponse['status'] == 200 ? $applicationsResponse['body'] : [];
         $cai_list_with_avs = array_column($applications, 'f_cai');
@@ -92,7 +100,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             'AMOUNT' => $amount,
             'TIMESTAMP' => $timestamp,
             'SHA1HASH' => $sha1hash,
-            'MERCHANT_RESPONSE_URL' => url($returnurl),
+            'MERCHANT_RESPONSE_URL' => get_callback_url($returnurl),
             'AUTO_SETTLE_FLAG' => '1',
             'TLS_CURRENCY' => $curr,
             'VAR_REF' => $cai,
@@ -102,7 +110,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         return [
             'form_method' => 'post',
             'form_action' => $hosturl,
-            'form_field' => $params,
+            'form_fields' => $params,
         ];
     }
 
@@ -172,6 +180,13 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             $msg = 'signature_verification_failed';
         }
         if ($flag) {
+            $minFractionDigits = $onlinePayment['common']['min_fraction_digits'];
+            if ($minFractionDigits) {
+                while ($minFractionDigits > 0) {
+                    $received_amount /= 10;
+                    $minFractionDigits--;
+                }
+            }
             $confirm_params = [
                 'gateway' => $this->getPaymentGatewayName(),
                 'amount' => $received_amount,

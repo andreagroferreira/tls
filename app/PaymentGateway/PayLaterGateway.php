@@ -43,14 +43,14 @@ class PayLaterGateway implements PaymentGatewayInterface
     public function redirto($params)
     {
         $t_id = $params['t_id'];
-        $lang = $params['lang'];
+        $lang = $params['lang'] ?? 'en';
         $transaction = $this->transactionService->getTransaction($t_id);
         $message = $this->getMessage($transaction);
         if ($message['status'] == 'error') {
             return $message;
         }
         $config =  config('payment_gateway')[$this->getPaymentGatewayName()];
-        $return_url = url($config['return_url']) ?? '';
+        $return_url = get_callback_url($config['return_url']) ?? '';
         $params = [
             't_id' => $t_id,
             'lang' => $lang,

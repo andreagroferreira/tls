@@ -19,13 +19,10 @@ class PaymentInitiateService
         $ch = curl_init();
         //set the url, number of POST vars, POST data
         curl_setopt($ch, CURLOPT_URL, $url);
+        if (!empty($header)) { curl_setopt($ch, CURLOPT_HTTPHEADER, $header); }
         if ($method == 'post') {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        }
-        if (!empty($header)) {
-            array_push($header, 'Content-Length: ' . strlen($params));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);

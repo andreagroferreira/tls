@@ -56,4 +56,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('globaliris/redirect', 'GlobalirisController@redirect');
     $router->post('globaliris/redirto', 'GlobalirisController@redirto');
 
+    $router->post('payu/redirto', 'PayuController@redirto');
+    $router->post('payu/return', 'PayuController@return');
+
 });

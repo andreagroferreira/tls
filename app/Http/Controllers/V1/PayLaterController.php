@@ -36,7 +36,7 @@ class PayLaterController extends BaseController
             $result = $this->paymentGateway->redirto($params);
             $status = $result['status'] ?? '';
             $message = $result['msg'] ?? '';
-            if ($status == 'ok') {
+            if (empty($status) && !empty($result['form_fields'])) {
                 return $this->sendResponse($result, 200);
             } else if ($message == 'transaction_id_not_exists') {
                 return $this->sendError('P0011', 'transaction id does not exists', 400);

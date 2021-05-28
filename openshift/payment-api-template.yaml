@@ -47,6 +47,14 @@ parameters:
     required: true
   - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
     required: true
+  - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+    required: true
+  - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+    required: true
+  - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+    required: true
+  - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+    required: true
   - name: AWS_ACCESS_KEY_ID
     required: true
   - name: AWS_SECRET_ACCESS_KEY
@@ -68,6 +76,9 @@ parameters:
     required: true
   - name: IMAGE_TAG
     value: latest
+  - name: VERIFYPEER
+    required: true
+    value: "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
   - name: DEBUG_MODE
     value: "false"
     required: true
@@ -219,6 +230,8 @@ objects:
                   value: ${POSTGRES_DB_HOST}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: VERIFYPEER
+                  value: ${VERIFYPEER}
                 - name: POSTGRES_DEPLOY_DB_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -277,6 +290,14 @@ objects:
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
                 - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
                   value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
                 - name: AWS_ACCESS_KEY_ID
                   value: ${AWS_ACCESS_KEY_ID}
                 - name: AWS_SECRET_ACCESS_KEY
@@ -318,6 +339,8 @@ objects:
                   value: ${APPLICATION_ENV}
                 - name: APP_DEBUG
                   value: ${DEBUG_MODE}
+                - name: VERIFYPEER
+                  value: ${VERIFYPEER}
                 - name: POSTGRES_DB_HOST
                   value: ${POSTGRES_DB_HOST}
                 - name: POSTGRES_DB_PORT
@@ -374,6 +397,14 @@ objects:
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
                 - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
                   value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
                 - name: PAYMENT_SERVICE_DOMAIN
                   value: ${PAYMENT_SERVICE_DOMAIN}
                 - name: PGPASSFILE

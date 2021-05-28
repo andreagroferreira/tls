@@ -27,6 +27,12 @@ $app = new Laravel\Lumen\Application(
 
  $app->withEloquent();
 
+ // import the payment gateway configuration
+$app->configure('payment_gateway');
+
+$app->register(App\Providers\PaymentGatewayProvider::class);
+
+
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -63,6 +69,7 @@ $app->configure('app');
 $app->configure('filesystems');
 
 $app->configure('payment_gateway');
+$app->configure('translation');
 $app->configure('swagger-lume');
 
 /*

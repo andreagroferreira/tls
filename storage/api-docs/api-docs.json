@@ -6,13 +6,269 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/checkout/{t_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get the transaction details according to fg_id",
+                "operationId": "App\\Http\\Controllers\\V1\\CheckoutController::checkout",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "path",
+                        "description": "the transaction id, t_id in transaction table",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the transaction information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    },
+                    "404": {
+                        "description": "transaction not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/cmi/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "redirect request from CMI",
+                "operationId": "App\\Http\\Controllers\\V1\\CmiController::redirto",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/cmi/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from CMI",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/cmi/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "background callback from CMI",
+                "operationId": "App\\Http\\Controllers\\V1\\CmiController::notify",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/fawry/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "background callback from fawry",
+                "operationId": "App\\Http\\Controllers\\V1\\FawryController::redirto",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/fawry/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "background callback from fawry",
+                "operationId": "App\\Http\\Controllers\\V1\\FawryController::notify",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/fawry/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from fawry",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/globaliris/redirto": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from globaliris",
+                "operationId": "App\\Http\\Controllers\\V1\\GlobalirisController::redirto",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/globaliris/return": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from globaliris",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/globaliris/redirect": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from globaliris",
+                "operationId": "App\\Http\\Controllers\\V1\\GlobalirisController::redirect",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/invoice/{transaction_id}": {
             "get": {
                 "tags": [
                     "Payment API"
                 ],
                 "description": "download the invoice file according to transaction_id",
-                "operationId": "App\\Http\\Controllers\\API\\V1\\InvoiceController::fetch",
+                "operationId": "App\\Http\\Controllers\\V1\\InvoiceController::fetch",
                 "parameters": [
                     {
                         "name": "transaction_id",
@@ -41,13 +297,263 @@
                 }
             }
         },
+        "/api/v1/pay_later/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "App\\Http\\Controllers\\V1\\PayLaterController::redirto",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/pay_later/return": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paypal/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "App\\Http\\Controllers\\V1\\PayPalController::redirto",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paypal/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "App\\Http\\Controllers\\V1\\PayPalController::notify",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paypal/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paygate/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from globaliris",
+                "operationId": "App\\Http\\Controllers\\V1\\PaygateController::redirto",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paygate/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "App\\Http\\Controllers\\V1\\PaygateController::notify",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paygate/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/tingg/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "App\\Http\\Controllers\\V1\\TinggController::redirto",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/tingg/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/tingg/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "App\\Http\\Controllers\\V1\\TinggController::notify",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/transaction/{fg_id}": {
             "get": {
                 "tags": [
                     "Payment API"
                 ],
                 "description": "get the transaction details according to fg_id",
-                "operationId": "App\\Http\\Controllers\\API\\V1\\TransactionController::fetch",
+                "operationId": "App\\Http\\Controllers\\V1\\TransactionController::fetch",
                 "parameters": [
                     {
                         "name": "fg_id",
@@ -94,7 +600,7 @@
                     "Payment API"
                 ],
                 "description": "create a new transaction",
-                "operationId": "App\\Http\\Controllers\\API\\V1\\TransactionController::create",
+                "operationId": "App\\Http\\Controllers\\V1\\TransactionController::create",
                 "parameters": [
                     {
                         "name": "fg_id",

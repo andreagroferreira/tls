@@ -41,6 +41,7 @@ prepare-instance:
     - oc login --token=$GITLAB_SA_TOKEN --insecure-skip-tls-verify=true $MASTER_PUBLIC_URL
   script:
     - oc project "$PROJECT" 2> /dev/null || oc new-project "$PROJECT"
+    - export PAYMENT_SERVICE_URL=`oc get route payment -o jsonpath='{.spec.host}'`
     - oc process -f ./openshift/payment-api-template.yaml APPLICATION_NAME=$APPLICATION_NAME PROJECT=$INSTANCE
       NAMESPACE=$PROJECT
       ROUTE_IP_WHITE_LIST="$ROUTE_IP_WHITE_LIST"
@@ -52,7 +53,7 @@ prepare-instance:
       AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
       AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
       AWS_BUCKET=$AWS_BUCKET
-      PAYMENT_SERVICE_DOMAIN="https://tlsconnect-payment.$PROJECT.svc:8443"
+      PAYMENT_SERVICE_DOMAIN="https://$PAYMENT_SERVICE_URL"
       ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID=$ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
       ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY=$ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
       ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER=$ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER

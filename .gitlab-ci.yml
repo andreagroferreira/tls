@@ -37,6 +37,7 @@ prepare-instance:
     variables:
       - $PROJECT
   before_script:
+    - echo $MASTER_PUBLIC_URL
     - oc login --token=$GITLAB_SA_TOKEN --insecure-skip-tls-verify=true $MASTER_PUBLIC_URL
   script:
     - oc project "$PROJECT" 2> /dev/null || oc new-project "$PROJECT"

@@ -296,8 +296,8 @@ objects:
                   chmod 600 /opt/app-root/pgpass/.pgpass;
                   mkdir -p /opt/app-root/src/data/application_data;
                   cd /opt/app-root/src/;
-                  php artisan  --force migrate --path=database/creation --database=pgsql
-                  php artisan  --force migrate --path=database/migrations --database=deploy_payment_pgsql
+                  php artisan  --force migrate --path=database/creation --database=pgsql;
+                  php artisan  --force migrate --path=database/migrations --database=deploy_payment_pgsql;
 
               volumeMounts:
                 - mountPath: /opt/app-root/httpd-cfg-init/

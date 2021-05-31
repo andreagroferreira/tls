@@ -17,6 +17,8 @@ parameters:
     required: true
   - name: POSTGRES_PAYMENT_DB_DATABASE
     required: true
+  - name: TLSCONTACT_API
+    required: true
   - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
     required: true
   - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
@@ -407,6 +409,8 @@ objects:
                   value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
                 - name: PAYMENT_SERVICE_DOMAIN
                   value: ${PAYMENT_SERVICE_DOMAIN}
+                - name: TLSCONTACT_API
+                  value: ${TLSCONTACT_API}
                 - name: PGPASSFILE
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV

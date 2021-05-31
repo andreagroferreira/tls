@@ -38,31 +38,62 @@ The AWS configuration for tlspay to download invoice
 AWS_ACCESS_KEY_ID
 AWS_BUCKET
 AWS_DEFAULT_REGION
-AWS_SECRET_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY // download invoice
+PAYMENT_SERVICE_DOMAIN="https://$PAYMENT_SERVICE_URL" // API need this variable because it need to tell gateway to send the callback to this url
+TLSCONTACT_API="$TLSCONTACT_API" // sync actions data
+# ALL THE SECRETS here
+ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID=$ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY=$ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER=$ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE=$ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+ENVPAY_TINGG_COMMON_SANDBOX_IVKEY=$ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY=$ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY="$ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"
+PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY=$PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+PAYGATE_ZAALL2BE_SANDBOX_ID=$PAYGATE_ZAALL2BE_SANDBOX_ID
+PAYGATE_ZAALL2BE_SELLER_EMAIL=$PAYGATE_ZAALL2BE_SELLER_EMAIL
+FAW_COMMON_SANDBOX_MERCHANT_ID=$FAW_COMMON_SANDBOX_MERCHANT_ID
+FAW_COMMON_SANDBOX_SECRET_KEY=$FAW_COMMON_SANDBOX_SECRET_KEY
+ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID=$ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+ENVPAY_GLO_COMMON_SANDBOX_SECRET=$ENVPAY_GLO_COMMON_SANDBOX_SECRET
+ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT=$ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+PAYU_NGALL2BE_SANDBOX_APP_ID=$PAYU_NGALL2BE_SANDBOX_APP_ID
+PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY=$PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+PAYU_KEALL2BE_SANDBOX_APP_ID=$PAYU_KEALL2BE_SANDBOX_APP_ID
+PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY=$PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+
 ```
 
+## Code structure
+
+The payment gateway configuration is in `config/payment_gateway.php`, configuration is separated by issuer and environment. 
+
+Each payment gateway has own Controller, this controller call the service in `PaymentGateway` dir. each payment gateway service implement 
+`PaymentGatewayInterface`.
 
 ## ERROR CODE
-P0001: transaction does not exists
-P0002: this transaction has been cancelled
-P0003: this transaction has been done already
-P0004: this transaction expired
-P0005: payment gateway not found for postal
-P0006: unknown_error
-P0007: Transaction items can`t be parsed.
-P0008: Transaction items not found.
-P0009: API did not receive any parameters
-P0010: merchantRefNumber is empty
-P0011: transaction id does not exists
-P0012: transaction has been cancelled
-P0013: signature verification failed
-P0014: payment amount is incorrect
-P0015: empty charge response from fawry
-P0017: transaction has been paid already
-P0018: Your transaction has been finish by another gateway, please check
-P0019: paygate error
-P0020: Pay onsite has been choose, You can come to our office, and pay your fee.
-P0021: paypal error
-P0022: The deal was not completed or delay
-P0023: payu error
+| CODE | DESC |
+|------|-------|
+| P0001 | transaction does not exists |
+| P0002 | this transaction has been cancelled |
+| P0003 | this transaction has been done already| 
+| P0004 | this transaction expired |
+| P0005 | payment gateway not found for postal |
+| P0006 | unknown_error |
+| P0007 | Transaction items can`t be parsed. |
+| P0008 |  Transaction items not found. |
+| P0009 | API did not receive any parameters |
+| P0010 | merchantRefNumber is empty |
+| P0011 | transaction id does not exists |
+| P0012 | transaction has been cancelled |
+| P0013 | signature verification failed |
+| P0014 | payment amount is incorrect |
+| P0015 | empty charge response from fawry |
+| P0017 | transaction has been paid already |
+| P0018 | Your transaction has been finish by another gateway, please check |
+| P0019 | paygate error |
+| P0020 | Pay onsite has been choose, You can come to our office, and pay your fee. |
+| P0021 | paypal error |
+| P0022 | The deal was not completed or delay |
+| P0023 | payu error |
 

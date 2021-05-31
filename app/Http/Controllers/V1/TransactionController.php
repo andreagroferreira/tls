@@ -168,7 +168,8 @@ class TransactionController extends BaseController
      */
     public function create(Request $request)
     {
-        $validator = validator($request->all(), [
+        $items = is_array($request->input('items')) ? json_encode($request->input('items')) : $request->input('items');
+        $validator = validator(array_merge(['items' => $items], $request->except('items')), [
             'fg_id' => 'required|integer',
             'client' => 'required|string',
             'issuer' => 'required|string',

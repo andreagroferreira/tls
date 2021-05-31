@@ -47,11 +47,21 @@ parameters:
     required: true
   - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
     required: true
+  - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+    required: true
+  - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+    required: true
+  - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+    required: true
+  - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+    required: true
   - name: AWS_ACCESS_KEY_ID
     required: true
   - name: AWS_SECRET_ACCESS_KEY
     required: true
   - name: AWS_DEFAULT_REGION
+    required: true
+  - name: PAYMENT_SERVICE_DOMAIN
     required: true
   - name: AWS_BUCKET
     required: true
@@ -66,6 +76,9 @@ parameters:
     required: true
   - name: IMAGE_TAG
     value: latest
+  - name: VERIFYPEER
+    required: true
+    value: "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
   - name: DEBUG_MODE
     value: "false"
     required: true
@@ -217,6 +230,8 @@ objects:
                   value: ${POSTGRES_DB_HOST}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: VERIFYPEER
+                  value: ${VERIFYPEER}
                 - name: POSTGRES_DEPLOY_DB_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -275,6 +290,14 @@ objects:
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
                 - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
                   value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
                 - name: AWS_ACCESS_KEY_ID
                   value: ${AWS_ACCESS_KEY_ID}
                 - name: AWS_SECRET_ACCESS_KEY
@@ -294,8 +317,8 @@ objects:
                   chmod 600 /opt/app-root/pgpass/.pgpass;
                   mkdir -p /opt/app-root/src/data/application_data;
                   cd /opt/app-root/src/;
-                  php artisan  --force migrate --path=database/creation --database=pgsql
-                  php artisan  --force migrate --path=database/migrations --database=deploy_payment_pgsql
+                  php artisan  --force migrate --path=database/creation --database=pgsql;
+                  php artisan  --force migrate --path=database/migrations --database=deploy_payment_pgsql;
 
               volumeMounts:
                 - mountPath: /opt/app-root/httpd-cfg-init/
@@ -316,6 +339,8 @@ objects:
                   value: ${APPLICATION_ENV}
                 - name: APP_DEBUG
                   value: ${DEBUG_MODE}
+                - name: VERIFYPEER
+                  value: ${VERIFYPEER}
                 - name: POSTGRES_DB_HOST
                   value: ${POSTGRES_DB_HOST}
                 - name: POSTGRES_DB_PORT
@@ -372,6 +397,16 @@ objects:
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
                 - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
                   value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYMENT_SERVICE_DOMAIN
+                  value: ${PAYMENT_SERVICE_DOMAIN}
                 - name: PGPASSFILE
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV
@@ -534,3 +569,22 @@ objects:
       podSelector:
         matchLabels:
           pgo-pg-database: 'true'
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-service-api
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}
+          ports:
+            - port: 8443
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: 'tlsconnect-service-api'
+

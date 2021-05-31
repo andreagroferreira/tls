@@ -40,7 +40,11 @@ class PayuController extends BaseController
         $t_id = $request->post('t_id');
         try {
             $result = $this->paymentGateway->redirto($t_id);
-            return $this->sendResponse($result, 200);
+            if (!empty($result['status']) && $result['status'] == 'fail') {
+                return $this->sendError('P0023', 'payu error:' . $result['content'], 400);
+            } else {
+                return $this->sendResponse($result, 200);
+            }
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);
         }

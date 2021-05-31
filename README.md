@@ -64,4 +64,5 @@ P0019: paygate error
 P0020: Pay onsite has been choose, You can come to our office, and pay your fee.
 P0021: paypal error
 P0022: The deal was not completed or delay
+P0023: payu error
 

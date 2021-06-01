@@ -32,6 +32,7 @@ class InvoiceService
 
         $callback_url = $transaction['t_callback_url'];
         $data         = [
+            't_id'                   => $transaction['t_id'],
             'transaction_id'         => $transaction['t_transaction_id'],
             'gateway_transaction_id' => $transaction['t_gateway_transaction_id'],
             'gateway'                => $transaction['t_gateway'],

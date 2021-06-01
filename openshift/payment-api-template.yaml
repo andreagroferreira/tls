@@ -19,6 +19,8 @@ parameters:
     required: true
   - name: TLSCONTACT_API
     required: true
+  - name: AWS_ACCOUNT_S3
+    required: true
   - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
     required: true
   - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
@@ -57,15 +59,7 @@ parameters:
     required: true
   - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
     required: true
-  - name: AWS_ACCESS_KEY_ID
-    required: true
-  - name: AWS_SECRET_ACCESS_KEY
-    required: true
-  - name: AWS_DEFAULT_REGION
-    required: true
   - name: PAYMENT_SERVICE_DOMAIN
-    required: true
-  - name: AWS_BUCKET
     required: true
   - name: APPLICATION_ENV
     value: prod
@@ -301,13 +295,25 @@ objects:
                 - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
                 - name: AWS_ACCESS_KEY_ID
-                  value: ${AWS_ACCESS_KEY_ID}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_ACCESS_KEY_ID
                 - name: AWS_SECRET_ACCESS_KEY
-                  value: ${AWS_SECRET_ACCESS_KEY}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_SECRET_ACCESS_KEY
                 - name: AWS_DEFAULT_REGION
-                  value: ${AWS_DEFAULT_REGION}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_REGION
                 - name: AWS_BUCKET
-                  value: ${AWS_BUCKET}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_BUCKET_NAME
               name: ${APPLICATION_NAME}-init
               image: ' '
               command: [ '/bin/bash','-c' ]
@@ -416,13 +422,25 @@ objects:
                 - name: APP_ENV
                   value: prod
                 - name: AWS_ACCESS_KEY_ID
-                  value: ${AWS_ACCESS_KEY_ID}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_ACCESS_KEY_ID
                 - name: AWS_SECRET_ACCESS_KEY
-                  value: ${AWS_SECRET_ACCESS_KEY}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_SECRET_ACCESS_KEY
                 - name: AWS_DEFAULT_REGION
-                  value: ${AWS_DEFAULT_REGION}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_REGION
                 - name: AWS_BUCKET
-                  value: ${AWS_BUCKET}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_BUCKET_NAME
                 - name: LOG_CHANNEL
                   value: "stdout"
               image: ' '

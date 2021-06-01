@@ -49,6 +49,7 @@ prepare-instance:
       POSTGRES_SECRET_NAME="$PROJECT-pgcluster-postgres-secret"
       POSTGRES_ADMIN_SECRET_NAME="$PROJECT-pgcluster-postgres-secret"
       POSTGRES_PAYMENT_DB_DATABASE="payment-$DATABASE"
+      AWS_ACCOUNT_S3="tlspay-s3-account"
       AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
       AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
       AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION

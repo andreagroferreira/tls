@@ -20,7 +20,7 @@ class CreatePaymentDatabase extends Migration
         $db_connection = DB::connection('pgsql');
         if ($db_connection->table('pg_database')->whereRaw("datname='$database'")->count() === 0) {
             $db_connection->commit();
-            $db_connection->statement("CREATE DATABASE $database");
+            $db_connection->statement('CREATE DATABASE ' . '"' . $database . '"');
             sleep(30);
         }
 

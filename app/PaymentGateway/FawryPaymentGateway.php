@@ -203,8 +203,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     }
 
     private function getPaymentConfig($params) {
-        if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
-            $order_id = $params['merchantRefNumber'];
+        if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
+            $order_id = $params['merchantRefNum'];
         } else {
             $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];
@@ -225,16 +225,13 @@ class FawryPaymentGateway implements PaymentGatewayInterface
 
     private function returnV1($params)
     {
-        $charge_response = $params['chargeResponse'] ?? '';
-        if (empty($charge_response)) {
-            return [
-                'is_success' => 'fail',
-                'orderid'    => '[null]',
-                'message'    => 'empty_charge_response_fawry'
-            ];
+        $order_id = '';
+        if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
+            $order_id = $params['merchantRefNum'];
+        } else {
+            $charge_response = json_decode($params['chargeResponse'], true);
+            $order_id = $charge_response['merchantRefNumber'];
         }
-        $charge_response = json_decode($charge_response, true);
-        $order_id = $charge_response['merchantRefNumber'] ?? '';
         if (empty($order_id)) {
             return [
                 'is_success' => 'fail',

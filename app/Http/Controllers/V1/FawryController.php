@@ -126,7 +126,7 @@ class FawryController extends BaseController
         $status = $init_data['is_success'] ?? '';
         $message = $init_data['message'] ?? '';
         if ($status == 'ok') {
-            $this->sendResponse($init_data, 200);
+            return $this->sendResponse($init_data, 200);
         } else if ($message == 'empty_charge_response_fawry') {
             return $this->sendError('P0015', 'empty charge response from fawry', 400);
         } else if ($message == 'empty_merchant_ref_number') {

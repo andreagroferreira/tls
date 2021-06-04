@@ -59,6 +59,7 @@ class PaymentService
             't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
             't_status'                 => 'done'
         ];
+        $updated_transaction = $this->transactionService->updateById($transaction['t_id'], $update_fields);
         $this->invoiceService->generate($transaction);
 
         $result =  [

@@ -63,7 +63,7 @@ prepare-instance:
     - export PAYMENT_SERVICE_URL=`oc get route payment -o jsonpath='{.spec.host}'`
     - echo $SUBDOMAIN
     - ROOT="com"; if [ $ENV == "IES1" ]; then ROOT="me"; fi;
-    - HOSTNAME_HTTPS=$(echo "https://${SUBDOMAIN:-${CI_PROJECT_NAME}-${PROJECT}}.atlas-${ENV}.tlscontact.$ROOT" | tr '[:upper:]' '[:lower:]' ); echo Hostname will be $HOSTNAME_HTTPS;
+    - HOSTNAME_HTTPS=$(echo "${SUBDOMAIN:-${CI_PROJECT_NAME}-${PROJECT}}.atlas-${ENV}.tlscontact.$ROOT" | tr '[:upper:]' '[:lower:]' ); echo Hostname will be $HOSTNAME_HTTPS;
     - oc process -f ./openshift/payment-api-template.yaml APPLICATION_NAME=$APPLICATION_NAME PROJECT=$INSTANCE
       NAMESPACE=$PROJECT
       ROUTE_IP_WHITE_LIST="$ROUTE_IP_WHITE_LIST"

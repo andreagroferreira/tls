@@ -93,7 +93,6 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         if($return_checksum != $hash){
             Log::warning("ONLINE PAYMENT, PAYGATE: digital signature check failed : ". json_encode($_POST, JSON_UNESCAPED_UNICODE));
             return "APPROVED";
-            exit;
         }
 
         // 交易成功 修改数据库

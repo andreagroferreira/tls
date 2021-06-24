@@ -54,7 +54,6 @@ class CmiPaymentGateway implements PaymentGatewayInterface
                 'code' => 400,
                 'msg'  => 'Illegal parameter',
             ]);
-            exit;
         }
         $confirm_params = [
             'gateway'                => $this->getPaymentGatewayName(),
@@ -66,7 +65,6 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $transaction    = $this->transactionService->fetchTransaction(['t_transaction_id' => $transaction_id]);
         if (empty($transaction)) {
             return 'APPROVED';
-            exit;
         }
 
         $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
@@ -75,7 +73,6 @@ class CmiPaymentGateway implements PaymentGatewayInterface
 
         if (!$isValid) {
             return 'APPROVED';
-            exit;
         }
 
         $response = $this->paymentService->confirm($transaction, $confirm_params);

@@ -99,7 +99,7 @@ class PayLaterGateway implements PaymentGatewayInterface
         $transaction = $this->transactionService->getTransaction($t_id);
         $paymentWay = $this->getPaymentGatewayName();
         if ($transaction['t_gateway'] != $paymentWay || $transaction['t_status'] == 'pending') {
-            $gateway_transaction_id = 'PAY-LATER-' . date('His') . '-' . ($transaction['t_transaction_id'] ?? mt_rand(1000, 9999));
+            $gateway_transaction_id = 'PAY-LATER-' . date('His') . '-' . ($transaction['t_transaction_id'] ?? random_int(1000, 9999));
             $update_fields = [
                 't_gateway' => $paymentWay,
                 't_gateway_transaction_id' => $gateway_transaction_id

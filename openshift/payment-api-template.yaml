@@ -302,6 +302,14 @@ objects:
                   value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
                 - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_NGALL2BE_APP_ID
+                  value: ${PAYU_NGALL2BE_APP_ID}
+                - name: PAYU_NGALL2BE_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_APP_ID
+                  value: ${PAYU_KEALL2BE_APP_ID}
+                - name: PAYU_KEALL2BE_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_PRIVATE_KEY}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -421,6 +429,14 @@ objects:
                   value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
                 - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_NGALL2BE_APP_ID
+                  value: ${PAYU_NGALL2BE_APP_ID}
+                - name: PAYU_NGALL2BE_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_APP_ID
+                  value: ${PAYU_KEALL2BE_APP_ID}
+                - name: PAYU_KEALL2BE_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_PRIVATE_KEY}
                 - name: PAYMENT_SERVICE_DOMAIN
                   value: ${PAYMENT_SERVICE_DOMAIN}
                 - name: TLSCONTACT_API

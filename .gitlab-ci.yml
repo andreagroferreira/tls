@@ -7,6 +7,7 @@ default:
 variables:
   APPLICATION_NAME: payment-api
   ENV: "SANDBOX"
+  APP_ENV: "test"
   DATABASE: $DATABASE
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
@@ -63,6 +64,7 @@ prepare-instance:
     - export PAYMENT_SERVICE_URL=`oc get route payment -o jsonpath='{.spec.host}'`
     - oc process -f ./openshift/payment-api-template.yaml APPLICATION_NAME=$APPLICATION_NAME PROJECT=$INSTANCE
       NAMESPACE=$PROJECT
+      APP_ENV=$APP_ENV
       ROUTE_IP_WHITE_LIST="$ROUTE_IP_WHITE_LIST"
       POSTGRES_DB_HOST="$PROJECT-pgcluster"
       POSTGRES_SECRET_NAME="$PROJECT-pgcluster-postgres-secret"

@@ -72,6 +72,8 @@ parameters:
   - name: APPLICATION_ENV
     value: prod
     required: true
+  - name: APP_ENV
+    required: true
   - name: PROJECT
     required: true
   - name: NAMESPACE
@@ -444,7 +446,9 @@ objects:
                 - name: PGPASSFILE
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV
-                  value: prod
+                  value: ${APP_ENV}
+                - name: PROJECT
+                  value: ${NAMESPACE}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:

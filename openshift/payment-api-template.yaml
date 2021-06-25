@@ -447,6 +447,8 @@ objects:
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV
                   value: ${APP_ENV}
+                - name: PROJECT
+                  value: ${NAMESPACE}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:

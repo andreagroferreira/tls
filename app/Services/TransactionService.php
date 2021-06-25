@@ -121,8 +121,8 @@ class TransactionService
     protected function generateTransactionId($transaction_id_seq, $issuer)
     {
         $environment = env('APPLICATION_ENV') == 'prod' ? '' : strtoupper(env('APPLICATION_ENV')) . date('Ymd') . '-';
-
-        return $environment . $issuer . '-' . str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
+        $project = env('PROJECT') ? env('PROJECT') . '-' : '';
+        return $project . $environment . $issuer . '-' . str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
     }
 
     protected function convertItemsFieldToArray($transaction_id, $items_field, $add_field = [])

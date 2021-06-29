@@ -39,6 +39,10 @@ parameters:
     required: true
   - name: PAYGATE_ZAALL2BE_SANDBOX_ID
     required: true
+  - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_ID
+    required: true
   - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
     required: true
   - name: FAW_COMMON_SANDBOX_MERCHANT_ID
@@ -284,6 +288,10 @@ objects:
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID
                   value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_KEY}
+                - name: PAYGATE_ZAALL2BE_ID
+                  value: ${PAYGATE_ZAALL2BE_ID}
                 - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
                   value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
                 - name: FAW_COMMON_SANDBOX_MERCHANT_ID
@@ -411,6 +419,10 @@ objects:
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID
                   value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_KEY}
+                - name: PAYGATE_ZAALL2BE_ID
+                  value: ${PAYGATE_ZAALL2BE_ID}
                 - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
                   value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
                 - name: FAW_COMMON_SANDBOX_MERCHANT_ID

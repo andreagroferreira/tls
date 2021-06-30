@@ -40,7 +40,7 @@ class PaymentService
     public function confirm($transaction, $confirm_params)
     {
         $payment_gateway  = $confirm_params['gateway'];
-        $amount_matched   = ($transaction['t_amount'] == $confirm_params['amount']);
+        $amount_matched   = (strval($transaction['t_amount']) == strval($confirm_params['amount']));
         $currency_matched = ($transaction['t_currency'] == $confirm_params['currency']);
         $error_msg        = [];
         if (!$amount_matched || !$currency_matched) {

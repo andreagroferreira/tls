@@ -21,7 +21,7 @@ class CreateTransactionLogsTable extends Migration
             $table->timestamp('tl_tech_creation')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
 
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE transaction_logs OWNER TO postgres;");
+        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE transaction_logs OWNER TO common;");
     }
 
     /**

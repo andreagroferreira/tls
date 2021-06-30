@@ -24,7 +24,7 @@ class CreatePaymentDatabase extends Migration
             sleep(30);
         }
 
-        DB::connection('deploy_payment_pgsql')->statement('ALTER database "' . $database . '" OWNER TO common;');
+        DB::connection('deploy_payment_pgsql')->statement('ALTER database "' . $database . '" OWNER TO postgres;');
     }
 
     /**

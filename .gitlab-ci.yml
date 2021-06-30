@@ -67,7 +67,7 @@ prepare-instance:
       APP_ENV=$APP_ENV
       ROUTE_IP_WHITE_LIST="$ROUTE_IP_WHITE_LIST"
       POSTGRES_DB_HOST="pgbouncer"
-      POSTGRES_SECRET_NAME="$PROJECT-pgcluster-postgres-secret"
+      POSTGRES_SECRET_NAME="${PROJECT}-pgcluster-common-secret"
       POSTGRES_ADMIN_SECRET_NAME="${PROJECT}-pgsql-master"
       POSTGRES_PAYMENT_DB_DATABASE="payment-$DATABASE"
       AWS_ACCOUNT_S3="tlspay-s3-account"

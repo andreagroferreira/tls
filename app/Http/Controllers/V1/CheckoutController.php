@@ -108,6 +108,7 @@ class CheckoutController extends BaseController
             $is_pay_onsite = $transaction['t_gateway'] == 'pay_later';
             if ($is_pay_onsite) {
                 $result = [
+                    'transaction'  => $transaction,
                     'translations' => $translations,
                     'lang'         => $lang,
                     'redirect_url' => $transaction['t_redirect_url']

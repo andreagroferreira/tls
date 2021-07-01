@@ -213,7 +213,7 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         }
         $internet_online_payment_result = array(
             'is_success' => $transaction_status !=1 ? 'error' : 'ok',
-            'orderid'    => $pay_request_id,
+            'orderid'    => $transaction['t_transaction_id'],
             'issuer'     => $transaction['t_issuer'],
             'amount'     => $transaction['t_amount'],
             'message'    => $status,

@@ -1,4 +1,4 @@
-image: ${DOCKER_REGISTRY_ADDRESS}/openshift3/ose-cli:${DOCKER_TAG_OSE_CLI}
+image: ${DOCKER_REGISTRY_ADDRESS}/tlscontact/ose-cli:${DOCKER_TAG_OSE_CLI}
 
 default:
   tags:
@@ -47,6 +47,19 @@ prepare-instance:
     expire_in: 1 hour
   environment:
     name: $ENV
+
+include:
+  - .gitlab/aws-sm-ci.yml
+
+prepare-secret:
+  stage: build
+  only:
+    variables:
+      - $PROJECT && $ENV && $ENV_TYPE != "production"
+
+  environment:
+    name: $ENV
+
 
 .deploy-instance:
   variables:

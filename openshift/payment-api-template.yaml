@@ -483,6 +483,114 @@ objects:
                       key: AWS_BUCKET_NAME
                 - name: LOG_CHANNEL
                   value: "stdout"
+                - name: ENVPAY_GLO_COMMON_MERCHANT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-glo-common
+                      key: merchant_id
+                - name: ENVPAY_GLO_COMMON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-glo-common
+                      key: secret
+                - name: ENVPAY_GLO_COMMON_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-glo-common
+                      key: account
+
+                - name: ENVPAY_CMI_MERCHANT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-cmi
+                      key: merchant_id
+                - name: ENVPAY_CMI_STOREKEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-cmi
+                      key: storekey
+
+                - name: ENVPAY_PAYGATE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-paygate
+                      key: key
+                - name: ENVPAY_PAYGATE_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-paygate
+                      key: id
+                - name: ENVPAY_PAYGATE_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-paygate
+                      key: email
+
+                - name: ENVPAY_TINGG_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg
+                      key: access_key
+                - name: ENVPAY_TINGG_ACCOUNT_NUMBER
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg
+                      key: account_number
+                - name: ENVPAY_TINGG_IVKEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg
+                      key: ivkey
+                - name: ENVPAY_TINGG_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg
+                      key: secret_key
+                - name: ENVPAY_TINGG_SERVICE_CODE
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg
+                      key: service_code
+
+                - name: ENVPAY_FAW_MERCHANT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-faw
+                      key: merchant_id
+                - name: ENVPAY_FAW_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-faw
+                      key: secret_key
+
+                - name: ENVPAY_PAYPAL_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-paypal
+                      key: account
+
+                - name: POSTGRES_SECRET_NAME_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret-name
+                      key: username
+                - name: POSTGRES_SECRET_NAME_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret-name
+                      key: password
+
+                - name: POSTGRES_ADMIN_SECRET_NAME_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-admin-secret-name
+                      key: username
+                - name: POSTGRES_ADMIN_SECRET_NAME_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-admin-secret-name
+                      key: password
+
               image: ' '
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}

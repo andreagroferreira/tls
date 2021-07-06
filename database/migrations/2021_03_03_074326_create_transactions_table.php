@@ -36,7 +36,7 @@ class CreateTransactionsTable extends Migration
             $table->boolean('t_tech_deleted')->default(0);
         });
 
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE transactions OWNER TO postgres;");
+        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE transactions OWNER TO common;");
     }
 
     /**

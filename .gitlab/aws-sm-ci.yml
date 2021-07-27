@@ -45,14 +45,3 @@ prepare-secret:
     - oc delete secret envpay-paypal || true
     - oc create secret generic envpay-paypal --from-literal=account=${ENVPAY_PAYPAL_ACCOUNT}
 
-    - POSTGRES_SECRET_NAME=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/POSTGRES_SECRET_NAME --output text --query SecretString ` || POSTGRES_SECRET_NAME=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/POSTGRES_SECRET_NAME --output text --query SecretString `
-    - POSTGRES_SECRET_NAME_USERNAME=`echo $POSTGRES_SECRET_NAME | jq '.USERNAME' -r`
-    - POSTGRES_SECRET_NAME_PASSWORD=`echo $POSTGRES_SECRET_NAME | jq '.PASSWORD' -r`
-    - oc delete secret postgres-secret-name || true
-    - oc create secret generic postgres-secret-name --from-literal=username=${POSTGRES_SECRET_NAME_USERNAME} --from-literal=password=${POSTGRES_SECRET_NAME_PASSWORD}
-
-    - POSTGRES_ADMIN_SECRET_NAME=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/POSTGRES_ADMIN_SECRET_NAME --output text --query SecretString ` || POSTGRES_ADMIN_SECRET_NAME=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/POSTGRES_ADMIN_SECRET_NAME --output text --query SecretString `
-    - POSTGRES_ADMIN_SECRET_NAME_USERNAME=`echo $POSTGRES_ADMIN_SECRET_NAME | jq '.USERNAME' -r`
-    - POSTGRES_ADMIN_SECRET_NAME_PASSWORD=`echo $POSTGRES_ADMIN_SECRET_NAME | jq '.PASSWORD' -r`
-    - oc delete secret postgres-admin-secret-name || true
-    - oc create secret generic postgres-admin-secret-name --from-literal=username=${POSTGRES_ADMIN_SECRET_NAME_USERNAME} --from-literal=password=${POSTGRES_ADMIN_SECRET_NAME_PASSWORD}

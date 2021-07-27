@@ -498,7 +498,6 @@ objects:
                     secretKeyRef:
                       name: envpay-glo-common
                       key: account
-
                 - name: ENVPAY_CMI_MERCHANT_ID
                   valueFrom:
                     secretKeyRef:
@@ -509,7 +508,6 @@ objects:
                     secretKeyRef:
                       name: envpay-cmi
                       key: storekey
-
                 - name: ENVPAY_PAYGATE_KEY
                   valueFrom:
                     secretKeyRef:
@@ -525,7 +523,6 @@ objects:
                     secretKeyRef:
                       name: envpay-paygate
                       key: email
-
                 - name: ENVPAY_TINGG_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
@@ -551,7 +548,6 @@ objects:
                     secretKeyRef:
                       name: envpay-tingg
                       key: service_code
-
                 - name: ENVPAY_FAW_MERCHANT_ID
                   valueFrom:
                     secretKeyRef:
@@ -562,13 +558,11 @@ objects:
                     secretKeyRef:
                       name: envpay-faw
                       key: secret_key
-
                 - name: ENVPAY_PAYPAL_ACCOUNT
                   valueFrom:
                     secretKeyRef:
                       name: envpay-paypal
                       key: account
-
                 - name: POSTGRES_SECRET_NAME_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -579,7 +573,6 @@ objects:
                     secretKeyRef:
                       name: postgres-secret-name
                       key: password
-
                 - name: POSTGRES_ADMIN_SECRET_NAME_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -590,7 +583,6 @@ objects:
                     secretKeyRef:
                       name: postgres-admin-secret-name
                       key: password
-
               image: ' '
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}

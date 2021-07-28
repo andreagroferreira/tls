@@ -411,6 +411,12 @@ return [
                     'merchant_id' => 'ENVPAY_FAW_egAll2be_MERCHANT_ID',
                     'secret_key' => 'ENVPAY_FAW_egAll2be_SECURITY_KEY',
                 ]
+            ],
+            'pay_bank' => [
+                'label' => 'Bank payment',
+                'common' => [
+                    'return_url' => '/pay_bank/return'
+                ]
             ]
         ],
         'ruMOW2be' => [

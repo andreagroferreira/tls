@@ -95,8 +95,7 @@ class CheckoutController extends BaseController
             $client = $transaction['t_client'];
             $issuer = $transaction['t_issuer'];
             $lang = $request->get('lang');
-            $translations = $this->translationService->getTranslation();
-            $payment_gateways = $this->gatewayService->getGateways($client, $issuer);
+            $payment_gateways = $this->gatewayService->getGateways($client, $issuer, $lang);
             $is_postal = $transaction['t_workflow'] == 'postal';
             if ($is_postal && empty($payment_gateways)) {
                 // Payment gateway not found for postal
@@ -109,7 +108,6 @@ class CheckoutController extends BaseController
             if ($is_pay_onsite) {
                 $result = [
                     'transaction'  => $transaction,
-                    'translations' => $translations,
                     'lang'         => $lang,
                     'redirect_url' => $transaction['t_redirect_url']
                 ];
@@ -128,7 +126,6 @@ class CheckoutController extends BaseController
             $left_time = $expiration_time - $now_time;
             $data = [
                 'transaction' => $transaction,
-                'translations' => $translations,
                 'payment_gateways' => $payment_gateways,
                 'left_time' => $left_time,
                 'is_postal' => $is_postal,

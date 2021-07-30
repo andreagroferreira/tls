@@ -65,7 +65,7 @@ class PayLaterGateway implements PaymentGatewayInterface
 
     public function return($params)
     {
-        $translations = $this->translationService->getTranslation();
+        $translations = $this->translationService->getTranslation('payment', $params['lang']);
         $this->updatePayLaterTransactionStatus($params['t_id']);
         return [
             'translations' => $translations,

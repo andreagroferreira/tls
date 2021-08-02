@@ -57,9 +57,10 @@ class CheckoutController extends BaseController
      */
     public function checkout(Request $request)
     {
+        $lang = $request->get('lang');
         $t_id = $request->route('t_id');
         try {
-            $transaction = $this->transactionService->getTransaction($t_id);
+            $transaction = $this->transactionService->getTransaction($t_id, $lang);
 
             if (empty($transaction)) {
                 // transaction not found
@@ -94,7 +95,6 @@ class CheckoutController extends BaseController
 
             $client = $transaction['t_client'];
             $issuer = $transaction['t_issuer'];
-            $lang = $request->get('lang');
             $translations = $this->translationService->getTranslation();
             $payment_gateways = $this->gatewayService->getGateways($client, $issuer);
             $is_postal = $transaction['t_workflow'] == 'postal';

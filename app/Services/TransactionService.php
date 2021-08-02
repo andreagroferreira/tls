@@ -11,14 +11,17 @@ class TransactionService
     protected $transactionRepository;
     protected $dbConnectionService;
     protected $transactionItemsService;
+    protected $directusService;
 
     public function __construct(
         TransactionRepository $transactionRepository,
         DbConnectionService $dbConnectionService,
-        TransactionItemsService $transactionItemsService
+        TransactionItemsService $transactionItemsService,
+        DirectusService $directusService
     )
     {
         $this->transactionRepository = $transactionRepository;
+        $this->directusService = $directusService;
         $this->dbConnectionService = $dbConnectionService;
         $this->transactionItemsService = $transactionItemsService;
         $this->transactionRepository->setConnection($this->dbConnectionService->getConnection());
@@ -152,7 +155,7 @@ class TransactionService
         return $this->transactionRepository->update($transaction_id, $attributes);
     }
 
-    public function getTransaction($t_id): array
+    public function getTransaction($t_id, $lang = 'en-us'): array
     {
         $transaction = $this->transactionRepository->fetch(['t_id' => $t_id])->first();
         if(empty($transaction)) {
@@ -161,12 +164,24 @@ class TransactionService
         $transaction = $transaction->toArray();
         $transaction_id = $transaction['t_transaction_id'];
         $transaction_items = $this->transactionItemsService->fetchItemsByTransactionId($transaction_id)->toArray();
+        $all_avs = $this->directusService->getAvsWithServiceName($transaction['t_issuer'], $lang);
         $amount = 0;
-        foreach ($transaction_items as $transaction_item) {
-            foreach ($transaction_item['skus'] as $sku) {
+        foreach ($transaction_items as &$transaction_item) {
+            foreach ($transaction_item['skus'] as &$sku) {
                 $amount += $sku['price'];
+                if(in_array($sku['sku'], ['service_fees', 'visa_fees'])) {
+                    $sku['service_name'] = str_replace('_', ' ', ucfirst($sku['sku']));
+                    continue;
+                }
+                if(in_array($sku['sku'], array_keys($all_avs))) {
+                    $sku['service_name'] = $all_avs[$sku['sku']]['service_name'];
+                } else {
+                    $sku['service_name'] = $sku['sku'];
+                }
             }
+            unset($sku);
         }
+        unset($transaction_item);
         $transaction['t_amount'] = $amount;
         $transaction['t_items'] = $transaction_items;
         return $transaction;

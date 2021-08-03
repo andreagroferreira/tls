@@ -38,14 +38,21 @@ class PayBankController extends BaseController
             $message = $result['msg'] ?? '';
             if (empty($status) && !empty($result['form_fields'])) {
                 return $this->sendResponse($result, 200);
-            } else if ($message == 'transaction_id_not_exists') {
-                return $this->sendError('P0011', 'transaction id does not exists', 400);
-            } else if ($message == 'pay_bank_has_been_chosen') {
-                return $this->sendError('P0024', 'Bank Payment has been chosen, You can come to the bank, and pay your fee.', 400);
-            } else if ($message == 'transaction_done_by_other_gateway') {
-                return $this->sendError('P0018', 'Your transaction has been finish by another gateway, please check', 400);
             } else {
-                return $this->sendError('P0006', 'unknown_error', 400);
+                if ($message == 'transaction_id_not_exists') {
+                    $error_code = 'P0011';
+                    $error_msg = 'transaction id does not exists';
+                } else if ($message == 'pay_bank_has_been_chosen') {
+                    $error_code = 'P0024';
+                    $error_msg = 'Bank Payment has been chosen, You can come to the bank, and pay your fee.';
+                } else if ($message == 'transaction_done_by_other_gateway') {
+                    $error_code = 'P0018';
+                    $error_msg = 'Your transaction has been finish by another gateway, please check';
+                } else {
+                    $error_code = 'P0006';
+                    $error_msg = 'unknown_error';
+                }
+                return $this->sendError($error_code, $error_msg, 400);
             }
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

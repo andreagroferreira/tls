@@ -43,7 +43,7 @@ class PayBankGateway implements PaymentGatewayInterface
     public function redirto($params)
     {
         $t_id = $params['t_id'];
-        $lang = $params['lang'] ?? 'en';
+        $lang = $params['lang'] ?? 'en-us';
         $transaction = $this->transactionService->getTransaction($t_id);
         $message = $this->getMessage($transaction);
         if ($message['status'] == 'error') {

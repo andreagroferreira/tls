@@ -21,47 +21,13 @@ parameters:
     required: true
   - name: AWS_ACCOUNT_S3
     required: true
-  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
-    required: true
-  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
-    required: true
-  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
-    required: true
-  - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
-    required: true
-  - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
-    required: true
-  - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
-    required: true
-  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
-    required: true
-  - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
-    required: true
-  - name: PAYGATE_ZAALL2BE_SANDBOX_ID
-    required: true
   - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
     required: true
   - name: PAYGATE_ZAALL2BE_ID
     required: true
-  - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
-    required: true
-  - name: FAW_COMMON_SANDBOX_MERCHANT_ID
-    required: true
-  - name: FAW_COMMON_SANDBOX_SECRET_KEY
-    required: true
   - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
     required: true
   - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
-    required: true
-  - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
-    required: true
-  - name: PAYU_NGALL2BE_SANDBOX_APP_ID
-    required: true
-  - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
-    required: true
-  - name: PAYU_KEALL2BE_SANDBOX_APP_ID
-    required: true
-  - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
     required: true
   - name: PAYU_NGALL2BE_APP_ID
     required: true
@@ -270,48 +236,14 @@ objects:
                   value: ${KEYCLOAK_REALM}
                 - name: KEYCLOAK_CLIENT_ID
                   value: ${KEYCLOAK_CLIENT_ID}
-                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
-                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
-                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
-                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
-                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
-                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
-                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
-                  value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_KEY}
                 - name: PAYGATE_ZAALL2BE_ID
                   value: ${PAYGATE_ZAALL2BE_ID}
-                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
-                  value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
-                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
-                  value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
-                - name: FAW_COMMON_SANDBOX_SECRET_KEY
-                  value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
-                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
-                  value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
-                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
-                  value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
-                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
-                  value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
-                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
-                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
-                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
-                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
                 - name: PAYU_NGALL2BE_APP_ID
                   value: ${PAYU_NGALL2BE_APP_ID}
                 - name: PAYU_NGALL2BE_PRIVATE_KEY
@@ -340,6 +272,131 @@ objects:
                     secretKeyRef:
                       name: ${AWS_ACCOUNT_S3}
                       key: AWS_BUCKET_NAME
+                - name: ENVPAY_GLO_COMMON_MERCHANT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-glo-common
+                      key: merchant_id
+                - name: ENVPAY_GLO_COMMON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-glo-common
+                      key: secret
+                - name: ENVPAY_GLO_COMMON_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-glo-common
+                      key: account
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-cmi-bemaall2be-sandbox
+                      key: merchant_id
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-cmi-bemaall2be-sandbox
+                      key: storekey
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: paygate-zaall2be
+                      key: encryption_sandbox_key
+                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: paygate-zaall2be
+                      key: sandbox_id
+                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: paygate-zaall2be
+                      key: seller_email
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg-common-sandbox
+                      key: access_key
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg-common-sandbox
+                      key: account_number
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg-common-sandbox
+                      key: ivkey
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg-common-sandbox
+                      key: secret_key
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-tingg-common-sandbox
+                      key: service_code
+                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: faw-common-sandbox
+                      key: merchant_id
+                - name: FAW_COMMON_SANDBOX_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: faw-common-sandbox
+                      key: secret_key
+                - name: ENVPAY_PAY_COMMON_SANDBOX_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-pay-common-sandbox
+                      key: host
+                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-pay-common-sandbox
+                      key: account
+                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: payu-ngall2be-sandbox
+                      key: app_id
+                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: payu-ngall2be-sandbox
+                      key: private_key
+                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: payu-keall2be-sandbox
+                      key: app_id
+                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: payu-keall2be-sandbox
+                      key: private_key
+                - name: POSTGRES_SECRET_NAME_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret-name
+                      key: username
+                - name: POSTGRES_SECRET_NAME_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret-name
+                      key: password
+                - name: POSTGRES_ADMIN_SECRET_NAME_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-admin-secret-name
+                      key: username
+                - name: POSTGRES_ADMIN_SECRET_NAME_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-admin-secret-name
+                      key: password
               name: ${APPLICATION_NAME}-init
               image: ' '
               command: [ '/bin/bash','-c' ]
@@ -401,48 +458,14 @@ objects:
                       key: password
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
-                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
-                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
-                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
-                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
-                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
-                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
-                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
-                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
-                  value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_KEY}
                 - name: PAYGATE_ZAALL2BE_ID
                   value: ${PAYGATE_ZAALL2BE_ID}
-                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
-                  value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
-                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
-                  value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
-                - name: FAW_COMMON_SANDBOX_SECRET_KEY
-                  value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
-                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
-                  value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
-                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
-                  value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
-                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
-                  value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
-                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
-                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
-                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
-                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
                 - name: PAYU_NGALL2BE_APP_ID
                   value: ${PAYU_NGALL2BE_APP_ID}
                 - name: PAYU_NGALL2BE_PRIVATE_KEY
@@ -498,71 +521,96 @@ objects:
                     secretKeyRef:
                       name: envpay-glo-common
                       key: account
-                - name: ENVPAY_CMI_MERCHANT_ID
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-cmi
+                      name: envpay-cmi-bemaall2be-sandbox
                       key: merchant_id
-                - name: ENVPAY_CMI_STOREKEY
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-cmi
+                      name: envpay-cmi-bemaall2be-sandbox
                       key: storekey
-                - name: ENVPAY_PAYGATE_KEY
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-paygate
-                      key: key
-                - name: ENVPAY_PAYGATE_ID
+                      name: paygate-zaall2be
+                      key: encryption_sandbox_key
+                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-paygate
-                      key: id
-                - name: ENVPAY_PAYGATE_EMAIL
+                      name: paygate-zaall2be
+                      key: sandbox_id
+                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-paygate
-                      key: email
-                - name: ENVPAY_TINGG_ACCESS_KEY
+                      name: paygate-zaall2be
+                      key: seller_email
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-tingg
+                      name: envpay-tingg-common-sandbox
                       key: access_key
-                - name: ENVPAY_TINGG_ACCOUNT_NUMBER
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-tingg
+                      name: envpay-tingg-common-sandbox
                       key: account_number
-                - name: ENVPAY_TINGG_IVKEY
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-tingg
+                      name: envpay-tingg-common-sandbox
                       key: ivkey
-                - name: ENVPAY_TINGG_SECRET_KEY
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-tingg
+                      name: envpay-tingg-common-sandbox
                       key: secret_key
-                - name: ENVPAY_TINGG_SERVICE_CODE
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-tingg
+                      name: envpay-tingg-common-sandbox
                       key: service_code
-                - name: ENVPAY_FAW_MERCHANT_ID
+                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-faw
+                      name: faw-common-sandbox
                       key: merchant_id
-                - name: ENVPAY_FAW_SECRET_KEY
+                - name: FAW_COMMON_SANDBOX_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-faw
+                      name: faw-common-sandbox
                       key: secret_key
-                - name: ENVPAY_PAYPAL_ACCOUNT
+                - name: ENVPAY_PAY_COMMON_SANDBOX_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: envpay-paypal
+                      name: envpay-pay-common-sandbox
+                      key: host
+                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: envpay-pay-common-sandbox
                       key: account
+                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: payu-ngall2be-sandbox
+                      key: app_id
+                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: payu-ngall2be-sandbox
+                      key: private_key
+                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: payu-keall2be-sandbox
+                      key: app_id
+                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: payu-keall2be-sandbox
+                      key: private_key
                 - name: POSTGRES_SECRET_NAME_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -783,3 +831,4 @@ objects:
       podSelector:
         matchLabels:
           app: pgbouncer
+

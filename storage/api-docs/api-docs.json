@@ -405,6 +405,28 @@
                 }
             }
         },
+        "/api/v1/paypal/wait": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get the payment status",
+                "operationId": "App\\Http\\Controllers\\V1\\PayPalController::wait",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/paygate/redirto": {
             "post": {
                 "tags": [
@@ -467,6 +489,61 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/payu/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from payu",
+                "operationId": "App\\Http\\Controllers\\V1\\PayuController::redirto",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/payu/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from payu",
                 "responses": {
                     "200": {
                         "description": "transaction created",

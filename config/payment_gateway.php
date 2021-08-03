@@ -127,6 +127,12 @@ return [
                     'storeKey' => env("ENVPAY_CMI_BEmaAll2be_STOREKEY")
                 ]
             ],
+            'pay_bank' => [
+                'label' => 'Bank payment',
+                'common' => [
+                    'return_url' => '/pay_bank/return'
+                ]
+            ]
         ],
         'zaCPT2be' => [
             'paygate' => [
@@ -516,6 +522,14 @@ return [
                 ]
             ]
 
+        ],
+        'dzALG2be' => [
+            'pay_bank' => [
+                'label' => 'Bank payment',
+                'common' => [
+                    'return_url' => '/pay_bank/return'
+                ]
+            ]
         ]
     ]
 

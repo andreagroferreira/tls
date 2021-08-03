@@ -4,20 +4,13 @@ namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\TransactionService;
-use App\Services\TranslationService;
 
 class PayLaterGateway implements PaymentGatewayInterface
 {
     private $transactionService;
-    private $translationService;
 
-    public function __construct(
-        TransactionService $transactionService,
-        TranslationService $translationService
-    )
-    {
+    public function __construct(TransactionService $transactionService){
         $this->transactionService = $transactionService;
-        $this->translationService = $translationService;
     }
 
     public function getPaymentGatewayName()
@@ -65,10 +58,8 @@ class PayLaterGateway implements PaymentGatewayInterface
 
     public function return($params)
     {
-        $translations = $this->translationService->getTranslation();
         $this->updatePayLaterTransactionStatus($params['t_id']);
         return [
-            'translations' => $translations,
             'lang' => $params['lang'],
             'redirect_url' => $params['redirect_url']
         ];

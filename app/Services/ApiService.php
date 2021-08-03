@@ -19,30 +19,9 @@ class ApiService
         return env('TLSCONTACT_API');
     }
 
-    private function getDirectusApiDomain()
-    {
-        return env('PAYMENT_CMSAPI_DOMAIN');
-    }
-
     public function getApiVersion()
     {
         return 'v2';
-    }
-
-    public function callDirectusApi($method, $url, $data = array()) {
-        $url = $this->getDirectusApiDomain() . '/' . $url;
-        switch (strtolower($method)) {
-            case 'get':
-                $response = $this->getApi($url);
-                break;
-            case 'post':
-                $response = $this->postApi($url, $data);
-                break;
-            default:
-                $response = null;
-                break;
-        }
-        return $response;
     }
 
     public function callTlsApi($method, $url, $data = array())

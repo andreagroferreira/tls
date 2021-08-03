@@ -794,53 +794,6 @@
                     }
                 }
             }
-        },
-        "/api/v1/translation/{name}": {
-            "get": {
-                "tags": [
-                    "Payment API"
-                ],
-                "description": "get the translation content",
-                "operationId": "App\\Http\\Controllers\\V1\\TranslationController::fetch",
-                "parameters": [
-                    {
-                        "name": "name",
-                        "in": "path",
-                        "description": "the translation name",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "payment"
-                        }
-                    },
-                    {
-                        "name": "lang",
-                        "in": "query",
-                        "description": "translation lang",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "en"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "get the translation information",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error: bad request"
-                    },
-                    "404": {
-                        "description": "transaction not found"
-                    }
-                }
-            }
         }
     }
 }

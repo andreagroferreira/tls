@@ -6,23 +6,9 @@ namespace App\Services;
 
 class GatewayService
 {
-    private $translationService;
-
-    public function __construct(TranslationService $translationService)
-    {
-        $this->translationService = $translationService;
-    }
-    public function getGateways($client, $issuer, $l) {
-        $lang = $l ? $l : 'en';
+    public function getGateways($client, $issuer) {
         $all_gateway = config('payment_gateway');
-        $translation = $this->translationService->getTranslation('payment', $lang);
-        $data = $all_gateway[$client][$issuer] ?? [];
-        foreach ($data as $payment_method => $val) {
-            if ($translation[$lang][$payment_method]) {
-                $data[$payment_method]['label'] = $translation[$lang][$payment_method];
-            }
-        }
-        return $data;
+        return $all_gateway[$client][$issuer] ?? [];
     }
 
     public function getGateway($client, $issuer, $gateway) {

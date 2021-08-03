@@ -59,4 +59,8 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('payu/redirto', 'PayuController@redirto');
     $router->post('payu/return', 'PayuController@return');
 
+    $router->post('pay_bank/redirto', 'PayBankController@redirto');
+    $router->post('pay_bank/return', 'PayBankController@return');
+    $router->post('pay_bank/notify', 'PayBankController@notify');
+
 });

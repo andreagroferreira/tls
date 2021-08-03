@@ -55,7 +55,7 @@ class CheckoutController extends BaseController
         $lang = $request->get('lang');
         $t_id = $request->route('t_id');
         try {
-            $transaction = $this->transactionService->getTransaction($t_id, $lang);
+            $transaction = $this->transactionService->getTransaction($t_id);
 
             if (empty($transaction)) {
                 // transaction not found

@@ -155,7 +155,7 @@ class TransactionService
         return $this->transactionRepository->update($transaction_id, $attributes);
     }
 
-    public function getTransaction($t_id, $lang = 'en-us'): array
+    public function getTransaction($t_id): array
     {
         $transaction = $this->transactionRepository->fetch(['t_id' => $t_id])->first();
         if(empty($transaction)) {

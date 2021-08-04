@@ -124,7 +124,6 @@ class PayBankController extends BaseController
      */
     public function notify(Request $request) {
         $params = $request->post();
-        info($params);
         try {
             $result = $this->paymentGateway->notify($params);
             $status = $result['status'] ?? '';

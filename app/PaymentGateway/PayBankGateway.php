@@ -69,7 +69,7 @@ class PayBankGateway implements PaymentGatewayInterface
     public function return($params)
     {
         $this->updatePayBankTransactionStatus($params['t_id']);
-        $transaction = $this->transactionService->getTransaction($params['t_id'], $params['lang']);
+        $transaction = $this->transactionService->getTransaction($params['t_id']);
         return [
             'lang' => $params['lang'],
             'redirect_url' => $params['redirect_url'],

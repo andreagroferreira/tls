@@ -4,20 +4,25 @@ namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\GatewayService;
+use App\Services\PaymentService;
 use App\Services\TransactionService;
+use Illuminate\Support\Facades\Log;
 
 class PayBankGateway implements PaymentGatewayInterface
 {
     private $transactionService;
     private $gatewayService;
+    private $paymentService;
 
     public function __construct(
         TransactionService $transactionService,
-        GatewayService $gatewayService
+        GatewayService $gatewayService,
+        PaymentService $paymentService
     )
     {
         $this->transactionService = $transactionService;
         $this->gatewayService = $gatewayService;
+        $this->paymentService = $paymentService;
     }
 
     public function getPaymentGatewayName()
@@ -31,11 +36,6 @@ class PayBankGateway implements PaymentGatewayInterface
     }
 
     public function checkout()
-    {
-        return true;
-    }
-
-    public function notify($params)
     {
         return true;
     }
@@ -75,6 +75,51 @@ class PayBankGateway implements PaymentGatewayInterface
             'redirect_url' => $params['redirect_url'],
             'transaction'  => $transaction
         ];
+    }
+
+    public function notify($params) {
+        $transaction_id = $params['transaction'] ?? '';
+        $payment_amount = $params['amount'] ?? '';
+        $currency = $params['currency'] ?? '';
+        $this->paymentService->saveTransactionLog($transaction_id, $params, $this->getPaymentGatewayName());
+        // find transaction in database
+        $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $transaction_id, 't_tech_deleted' => false]);
+        if (empty($transaction)) {
+            Log::warning("ONLINE PAYMENT, BANK PAYMENT: notify check failed : the transaction number $transaction_id does not exist");
+            return [
+                'status' => 'fail',
+                'message' => "transaction_id_not_exists",
+            ];
+        }
+
+        //verify token
+        $secret = env('BANK_PAYMENT_SECRET');
+        $tmp = "$transaction_id.$payment_amount.$currency";
+        $hashTmp = hash('sha256', $tmp) . $secret;
+        $sha512hash = hash('sha256', $hashTmp);
+        $realHash = $params['token'] ?? '';
+        if ($sha512hash != $realHash) {
+            Log::warning("ONLINE PAYMENT, BANK PAYMENT: notify check failed : the token $transaction_id is not matched");
+            return [
+                'status' => 'fail',
+                'message' => "token_not_match",
+            ];
+        }
+
+        $confirm_params = [
+            'gateway'        => $this->getPaymentGatewayName(),
+            'amount'         => $payment_amount,
+            'currency'       => $currency,
+            'transaction_id' => $transaction_id,
+            'gateway_transaction_id' => '',
+        ];
+        $response = $this->paymentService->confirm($transaction, $confirm_params);
+
+        $return['status'] = $response['is_success'] == 'ok' ? 'success' : 'fail';
+        if($return['status'] == 'fail') {
+            $return['message'] = 'unknown_error';
+        }
+        return $return;
     }
 
     private function getMessage($transaction)

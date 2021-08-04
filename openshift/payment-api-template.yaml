@@ -71,6 +71,8 @@ parameters:
     required: true
   - name: PAYU_KEALL2BE_PRIVATE_KEY
     required: true
+  - name: BANK_PAYMENT_SECRET
+    required: true
   - name: PAYMENT_SERVICE_DOMAIN
     required: true
   - name: APPLICATION_ENV
@@ -320,6 +322,8 @@ objects:
                   value: ${PAYU_KEALL2BE_APP_ID}
                 - name: PAYU_KEALL2BE_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: BANK_PAYMENT_SECRET
+                  value: ${BANK_PAYMENT_SECRET}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -451,6 +455,8 @@ objects:
                   value: ${PAYU_KEALL2BE_APP_ID}
                 - name: PAYU_KEALL2BE_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: BANK_PAYMENT_SECRET
+                  value: ${BANK_PAYMENT_SECRET}
                 - name: PAYMENT_SERVICE_DOMAIN
                   value: ${PAYMENT_SERVICE_DOMAIN}
                 - name: TLSCONTACT_API

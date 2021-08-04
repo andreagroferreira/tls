@@ -21,7 +21,6 @@ class CheckoutController extends BaseController
     ) {
         $this->transactionService = $transactionService;
         $this->gatewayService = $gatewayService;
-        $this->transactionService = $transactionService;
     }
 
     /**
@@ -53,6 +52,7 @@ class CheckoutController extends BaseController
      */
     public function checkout(Request $request)
     {
+        $lang = $request->get('lang');
         $t_id = $request->route('t_id');
         try {
             $transaction = $this->transactionService->getTransaction($t_id);
@@ -90,7 +90,6 @@ class CheckoutController extends BaseController
 
             $client = $transaction['t_client'];
             $issuer = $transaction['t_issuer'];
-            $lang = $request->get('lang');
             $payment_gateways = $this->gatewayService->getGateways($client, $issuer);
             $is_postal = $transaction['t_workflow'] == 'postal';
             if ($is_postal && empty($payment_gateways)) {

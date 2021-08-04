@@ -6,25 +6,21 @@ use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
-use App\Services\TranslationService;
 use Illuminate\Support\Facades\Log;
 
 class PayBankGateway implements PaymentGatewayInterface
 {
     private $transactionService;
-    private $translationService;
     private $gatewayService;
     private $paymentService;
 
     public function __construct(
         TransactionService $transactionService,
-        TranslationService $translationService,
         GatewayService $gatewayService,
         PaymentService $paymentService
     )
     {
         $this->transactionService = $transactionService;
-        $this->translationService = $translationService;
         $this->gatewayService = $gatewayService;
         $this->paymentService = $paymentService;
     }
@@ -47,7 +43,7 @@ class PayBankGateway implements PaymentGatewayInterface
     public function redirto($params)
     {
         $t_id = $params['t_id'];
-        $lang = $params['lang'] ?? 'en';
+        $lang = $params['lang'] ?? 'en-us';
         $transaction = $this->transactionService->getTransaction($t_id);
         $message = $this->getMessage($transaction);
         if ($message['status'] == 'error') {
@@ -72,11 +68,9 @@ class PayBankGateway implements PaymentGatewayInterface
 
     public function return($params)
     {
-        $translations = $this->translationService->getTranslation();
         $this->updatePayBankTransactionStatus($params['t_id']);
         $transaction = $this->transactionService->getTransaction($params['t_id']);
         return [
-            'translations' => $translations,
             'lang' => $params['lang'],
             'redirect_url' => $params['redirect_url'],
             'transaction'  => $transaction

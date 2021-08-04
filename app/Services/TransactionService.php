@@ -11,17 +11,14 @@ class TransactionService
     protected $transactionRepository;
     protected $dbConnectionService;
     protected $transactionItemsService;
-    protected $directusService;
 
     public function __construct(
         TransactionRepository $transactionRepository,
         DbConnectionService $dbConnectionService,
-        TransactionItemsService $transactionItemsService,
-        DirectusService $directusService
+        TransactionItemsService $transactionItemsService
     )
     {
         $this->transactionRepository = $transactionRepository;
-        $this->directusService = $directusService;
         $this->dbConnectionService = $dbConnectionService;
         $this->transactionItemsService = $transactionItemsService;
         $this->transactionRepository->setConnection($this->dbConnectionService->getConnection());

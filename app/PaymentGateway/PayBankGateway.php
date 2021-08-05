@@ -117,7 +117,7 @@ class PayBankGateway implements PaymentGatewayInterface
 
         $return['status'] = $response['is_success'] == 'ok' ? 'success' : 'fail';
         if($return['status'] == 'fail') {
-            $return['message'] = 'unknown_error';
+            $return['message'] = $response['message'];
         }
         return $return;
     }

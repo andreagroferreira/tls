@@ -51,7 +51,9 @@ class PaymentService
 
         if ($transaction && !empty($transaction['t_items'])) {
             $actionResult = $this->syncAction($transaction, $payment_gateway);
-            $error_msg    = array_merge($error_msg, $actionResult['error_msg']);
+            if(!empty($actionResult['error_msg'])) {
+                $error_msg[] = $actionResult['error_msg'];
+            }
         }
 
         $update_fields       = [
@@ -79,6 +81,12 @@ class PaymentService
     {
         $client = $transaction['t_client'];
         $formGroupInfo = $this->formGroupInfo($transaction['t_xref_fg_id'], $client);
+        if(empty($formGroupInfo)) {
+            return [
+                'status'    => 'error',
+                'error_msg' => 'form_group_not_found'
+            ];
+        }
         $data = [
             'gateway' => $gateway,
             'u_id' => !empty($formGroupInfo['fg_xref_u_id']) ? $formGroupInfo['fg_xref_u_id'] : 0,

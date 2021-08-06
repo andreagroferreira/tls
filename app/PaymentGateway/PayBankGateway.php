@@ -3,6 +3,7 @@
 namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\DbConnectionService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
@@ -148,19 +149,21 @@ class PayBankGateway implements PaymentGatewayInterface
     {
         $transaction = $this->transactionService->getTransaction($t_id);
         $paymentWay = $this->getPaymentGatewayName();
-        $now_time = $this->transactionService->getDbNowTime();
-        $client  = $transaction['t_client'];
-        $issuer  = $transaction['t_issuer'];
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
-        $expiration_minutes = $config['common']['expiration_minutes'] ?? 48 * 60;
-        $gateway_expiration = Carbon::parse($now_time)->addMinutes($expiration_minutes);
         if ($transaction['t_gateway'] != $paymentWay || $transaction['t_status'] == 'pending') {
             $gateway_transaction_id = 'PAY-BANK-' . date('His') . '-' . ($transaction['t_transaction_id'] ?? random_int(1000, 9999));
             $update_fields = [
                 't_gateway' => $paymentWay,
-                't_gateway_transaction_id' => $gateway_transaction_id,
-                't_gateway_expiration' => $gateway_expiration
+                't_gateway_transaction_id' => $gateway_transaction_id
             ];
+            $client  = $transaction['t_client'];
+            $issuer  = $transaction['t_issuer'];
+            $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+            if(!empty($config['common']['expiration_minutes'])) {
+                $now_time = (new DbConnectionService())->getDbNowTime();
+                $gateway_expiration = Carbon::parse($now_time)->addMinutes($config['common']['expiration_minutes']);
+                $update_fields['t_gateway_expiration'] = $gateway_expiration;
+                $update_fields['t_expiration'] = $gateway_expiration;
+            }
             $this->transactionService->updateById($transaction['t_id'], $update_fields);
         }
     }

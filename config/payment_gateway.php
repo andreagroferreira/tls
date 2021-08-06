@@ -130,7 +130,8 @@ return [
             'pay_bank' => [
                 'label' => 'Bank payment',
                 'common' => [
-                    'return_url' => '/pay_bank/return'
+                    'return_url' => '/pay_bank/return',
+                    'expiration_minutes' => 48 * 60
                 ]
             ]
         ],
@@ -421,7 +422,8 @@ return [
             'pay_bank' => [
                 'label' => 'Bank payment',
                 'common' => [
-                    'return_url' => '/pay_bank/return'
+                    'return_url' => '/pay_bank/return',
+                    'expiration_minutes' => 48 * 60
                 ]
             ]
         ],
@@ -527,7 +529,8 @@ return [
             'pay_bank' => [
                 'label' => 'Bank payment',
                 'common' => [
-                    'return_url' => '/pay_bank/return'
+                    'return_url' => '/pay_bank/return',
+                    'expiration_minutes' => 48 * 60
                 ]
             ]
         ]

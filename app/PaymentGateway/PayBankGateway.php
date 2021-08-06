@@ -6,6 +6,7 @@ use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class PayBankGateway implements PaymentGatewayInterface
@@ -147,11 +148,18 @@ class PayBankGateway implements PaymentGatewayInterface
     {
         $transaction = $this->transactionService->getTransaction($t_id);
         $paymentWay = $this->getPaymentGatewayName();
+        $now_time = $this->transactionService->getDbNowTime();
+        $client  = $transaction['t_client'];
+        $issuer  = $transaction['t_issuer'];
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $expiration_minutes = $config['common']['expiration_minutes'] ?? 48 * 60;
+        $gateway_expiration = Carbon::parse($now_time)->addMinutes($expiration_minutes);
         if ($transaction['t_gateway'] != $paymentWay || $transaction['t_status'] == 'pending') {
             $gateway_transaction_id = 'PAY-BANK-' . date('His') . '-' . ($transaction['t_transaction_id'] ?? random_int(1000, 9999));
             $update_fields = [
                 't_gateway' => $paymentWay,
-                't_gateway_transaction_id' => $gateway_transaction_id
+                't_gateway_transaction_id' => $gateway_transaction_id,
+                't_gateway_expiration' => $gateway_expiration
             ];
             $this->transactionService->updateById($transaction['t_id'], $update_fields);
         }

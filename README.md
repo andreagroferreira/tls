@@ -106,4 +106,6 @@ Each payment gateway has own Controller, this controller call the service in `Pa
 | P0021 | paypal error |
 | P0022 | The deal was not completed or delay |
 | P0023 | payu error |
+| P0024 | Bank Payment has been chosen, You can come to the bank, and pay your fee. |
+| P0025 | Bank payment error |
 

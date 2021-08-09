@@ -64,12 +64,16 @@ class PaymentService
         $updated_transaction = $this->transactionService->updateById($transaction['t_id'], $update_fields);
         $this->invoiceService->generate($transaction);
 
+        if(!empty($error_msg)) {
+            Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . implode('\n', $error_msg));
+            $show_error_msg = 'Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed';
+        }
         $result =  [
             'is_success' => empty($error_msg) ? 'ok' : 'error',
             'orderid' => $transaction['t_transaction_id'],
             'issuer' => $transaction['t_issuer'],
             'amount' => $transaction['t_amount'],
-            'message' => empty($error_msg) ? 'Transaction OK: transaction has been confirmed' : implode('\n', $error_msg),
+            'message' => empty($error_msg) ? 'Transaction OK: transaction has been confirmed' : $show_error_msg,
             'href' => $transaction['t_redirect_url']
         ];
 

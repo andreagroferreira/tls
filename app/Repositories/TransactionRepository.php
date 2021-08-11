@@ -51,8 +51,10 @@ class TransactionRepository
                 ['t_tech_deleted', '=', false]
             ])
             ->where(function ($query) {
+                //get all transactions where t_status is done
                 $query->where('t_status', 'done')
                     ->OrWhere(function ($query) {
+                        //get all transactions where t_status not equal to close and transaction not expired
                         $query->where('t_status', '<>', 'close')
                             ->where(function($sub_query) {
                                 $sub_query->whereNull('t_expiration')

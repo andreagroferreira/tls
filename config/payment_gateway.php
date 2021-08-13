@@ -74,7 +74,6 @@ return [
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
-
             ]
         ],
         'gbMNC2be' => [
@@ -191,6 +190,9 @@ return [
                     'paygate_id' => env('PAYGATE_ZAALL2BE_ID'),
                     'seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL')
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'zaDUR2be' => [
@@ -220,6 +222,9 @@ return [
                     'paygate_id' => env('PAYGATE_ZAALL2BE_ID'),
                     'seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL')
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'cmYAO2be' => [
@@ -472,6 +477,9 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'ngLGV2be' => [
@@ -497,6 +505,9 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'keNBO2be' => [
@@ -532,6 +543,34 @@ return [
                     'return_url' => '/pay_bank/return',
                     'expiration_minutes' => 48 * 60
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'thBKK2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'joAMM2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'iqBGW2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'iqEBL2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'lbBEY2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ]
     ]

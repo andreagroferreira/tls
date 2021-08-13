@@ -548,11 +548,6 @@ return [
                 'label' => "Pay later",
             ]
         ],
-        'thBKK2be' => [
-            'pay_later' => [
-                'label' => "Pay later",
-            ]
-        ],
         'joAMM2be' => [
             'pay_later' => [
                 'label' => "Pay later",

@@ -48,16 +48,23 @@ class TransactionRepository
             ])
             ->where([
                 ['t_xref_fg_id', '=', $attributes['fg_id']],
-                ['t_tech_deleted', '=', false],
-                ['t_status', '<>', 'close']
+                ['t_tech_deleted', '=', false]
             ])
             ->where(function ($query) {
-                $query->whereNull('t_expiration')
-                    ->orWhere('t_expiration', '>', 'now()');
-            })
-            ->where(function ($query) {
-                $query->whereNull('t_gateway_expiration')
-                    ->Orwhere('t_gateway_expiration', '>', 'now()');
+                //get all transactions where t_status is done
+                $query->where('t_status', 'done')
+                    ->OrWhere(function ($query) {
+                        //get all transactions where t_status not equal to close and transaction not expired
+                        $query->where('t_status', '<>', 'close')
+                            ->where(function($sub_query) {
+                                $sub_query->whereNull('t_expiration')
+                                    ->orWhere('t_expiration', '>', 'now()');
+                            })
+                            ->where(function($sub_query) {
+                                $sub_query->whereNull('t_gateway_expiration')
+                                    ->Orwhere('t_gateway_expiration', '>', 'now()');
+                            });
+                    });
             })
             ->orderBY('t_id', $attributes['order'])
             ->get();

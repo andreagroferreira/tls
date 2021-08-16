@@ -564,26 +564,6 @@ objects:
                     secretKeyRef:
                       name: envpay-payu
                         key: keall2be_private_key
-                - name: POSTGRES_SECRET_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: postgres-secret-name
-                      key: username
-                - name: POSTGRES_SECRET_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: postgres-secret-name
-                      key: password
-                - name: POSTGRES_ADMIN_SECRET_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: postgres-admin-secret-name
-                      key: username
-                - name: POSTGRES_ADMIN_SECRET_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: postgres-admin-secret-name
-                      key: password
               name: ${APPLICATION_NAME}-init
               image: ' '
               command: [ '/bin/bash','-c' ]
@@ -999,26 +979,6 @@ objects:
                     secretKeyRef:
                       name: envpay-payu
                         key: keall2be_private_key
-                - name: POSTGRES_SECRET_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: postgres-secret-name
-                      key: username
-                - name: POSTGRES_SECRET_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: postgres-secret-name
-                      key: password
-                - name: POSTGRES_ADMIN_SECRET_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: postgres-admin-secret-name
-                      key: username
-                - name: POSTGRES_ADMIN_SECRET_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: postgres-admin-secret-name
-                      key: password
               image: ' '
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}

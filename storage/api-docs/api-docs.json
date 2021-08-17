@@ -384,6 +384,63 @@
                 }
             }
         },
+        "/api/v1/k-bank/config": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return config for k-bank",
+                "operationId": "App\\Http\\Controllers\\V1\\KBankController::fetchConfig",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "query",
+                        "description": "define which client you want to create the acccount in",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "be"
+                        }
+                    },
+                    {
+                        "name": "issuer",
+                        "in": "query",
+                        "description": "the issuer in database",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "thBKK2be"
+                        }
+                    },
+                    {
+                        "name": "payment",
+                        "in": "query",
+                        "description": "the payment name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "k-bank"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/pay_bank/redirto": {
             "post": {
                 "tags": [

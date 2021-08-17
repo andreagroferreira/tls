@@ -66,4 +66,5 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('k-bank/redirto', 'KBankController@redirto');
     $router->post('k-bank/return', 'KBankController@return');
     $router->post('k-bank/notify', 'KBankController@notify');
+    $router->post('k-bank/config', 'KBankController@fetchConfig');
 });

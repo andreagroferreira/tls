@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\V1;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\GatewayService;
 use Illuminate\Http\Request;
 
 class KBankController extends BaseController
 {
     private $paymentGateway;
+    private $gatewayService;
 
-    public function __construct(PaymentGatewayInterface $paymentGateway) {
+    public function __construct(PaymentGatewayInterface $paymentGateway, GatewayService $gatewayService) {
         $this->paymentGateway = $paymentGateway;
+        $this->gatewayService = $gatewayService;
     }
 
     /**
@@ -122,6 +125,60 @@ class KBankController extends BaseController
             } else {
                 // paggate error
                 return $this->sendError('P0019', 'paygate error:' . $message, 400);
+            }
+        } catch (\Exception $e) {
+            return $this->sendError('P0006', $e->getMessage(), 400);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/k-bank/config",
+     *     tags={"Payment API"},
+     *     description="return config for k-bank",
+     *      @OA\Parameter(
+     *          name="client",
+     *          in="query",
+     *          description="define which client you want to create the acccount in",
+     *          required=true,
+     *          @OA\Schema(type="string", format="email", example="be"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="issuer",
+     *          in="query",
+     *          description="the issuer in database",
+     *          required=true,
+     *          @OA\Schema(type="string", format="email", example="thBKK2be"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="payment",
+     *          in="query",
+     *          description="the payment name",
+     *          required=true,
+     *          @OA\Schema(type="string", format="email", example="k-bank"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="transaction created",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function fetchConfig(Request $request) {
+        $params = $request->post();
+        if (empty($params['client']) || empty($params['issuer']) || empty($params['payment'])) {
+            $this->sendError('P0009', "client or issuer, payment no_data_received", 400);
+        }
+        try {
+            $kbank_config = $this->gatewayService->getGateway($params['client'], $params['issuer'], $params['payment']);
+            if (!empty($kbank_config)) {
+                return $this->sendResponse($kbank_config, 200);
+            } else {
+                return $this->sendError('P0019', 'Payment config does not exist', 400);
             }
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

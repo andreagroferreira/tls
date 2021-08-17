@@ -76,7 +76,8 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $charge_host = $host . '/card/v2/charge/' . $charge_id;
         $charges_payments = $this->paymentInitiateService->paymentInitiate('get', $charge_host, '', false, $header);
         if (strpos($charges_payments,'error') !== false) { return ['status' => 'fail', 'content' => $charges_payments]; }
-        $hash_string = $charge_id . $transaction['t_amount'] . $transaction['t_currency'] . $charges_payments['status'] . $charges_payments['transaction_state'] . $secret;
+        $charges_payments_data = json_decode($charges_payments, true);
+        $hash_string = $charge_id . $transaction['t_amount'] . $transaction['t_currency'] . $charges_payments_data['status'] . $charges_payments_data['transaction_state'] . $secret;
         $hash = hash('SHA256', $hash_string);
 
         // 验证数字签名
@@ -139,18 +140,19 @@ class KBankPaymentGateway implements PaymentGatewayInterface
             ],
         );
         $init_host_url = $host . '/card/v2/charge';
-        $chargeResponse = $this->curlInit($init_host_url, $params, $header);
+        $chargeResponse = $this->paymentInitiateService->paymentInitiate('post', $init_host_url, json_encode($params), false, $header);
         if (strpos($chargeResponse,'error') !== false) { return ['status' => 'fail', 'content' => $chargeResponse]; }
-        if (!empty($chargeResponse['id'])) {
-            $this->transactionService->update(['t_transaction_id' => $orderId], ['t_gateway_transaction_id' => $chargeResponse['id'], 't_gateway' => $this->getPaymentGatewayName()]);
+        $chargeResponseData = json_decode($chargeResponse, true);
+        if (!empty($chargeResponseData['id'])) {
+            $this->transactionService->update(['t_transaction_id' => $orderId], ['t_gateway_transaction_id' => $chargeResponseData['id'], 't_gateway' => $this->getPaymentGatewayName()]);
         }
 
         return [
-            'is_success' => $chargeResponse['status'] != 'success' ? 'error' : 'ok',
+            'is_success' => $chargeResponseData['status'] != 'success' ? 'error' : 'ok',
             'orderid'    => $orderId,
             'issuer'     => $translationsData['t_issuer'],
             'amount'     => $translationsData['t_amount'],
-            'message'    => $chargeResponse['transaction_state'],
+            'message'    => $chargeResponseData['transaction_state'],
             'href'       => $translationsData['t_redirect_url']
         ];
     }
@@ -158,23 +160,5 @@ class KBankPaymentGateway implements PaymentGatewayInterface
     public function return($return_params)
     {
 
-    }
-
-    public function curlInit($init_host_url, $params, $header)
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $init_host_url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-        $response = curl_exec($ch);
-
-        return $response;
     }
 }

@@ -124,7 +124,7 @@ class KBankController extends BaseController
                 return $this->sendResponse($init_data, 200);
             } else {
                 // paggate error
-                return $this->sendError('P0019', 'paygate error:' . $message, 400);
+                return $this->sendError('P0019', 'k-bank error:' . $message, 400);
             }
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

@@ -77,7 +77,7 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $charges_payments = $this->paymentInitiateService->paymentInitiate('get', $charge_host, '', false, $header);
         if (strpos($charges_payments,'error') !== false) { return ['status' => 'fail', 'content' => $charges_payments]; }
         $charges_payments_data = json_decode($charges_payments, true);
-        $hash_string = $charge_id . $transaction['t_amount'] . $transaction['t_currency'] . $charges_payments_data['status'] . $charges_payments_data['transaction_state'] . $secret;
+        $hash_string = $charge_id . number_format($transaction['t_amount'], 4) . $transaction['t_currency'] . $charges_payments_data['status'] . $charges_payments_data['transaction_state'] . $secret;
         $hash = hash('SHA256', $hash_string);
 
         // 验证数字签名
@@ -89,13 +89,13 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         // 交易成功 修改数据库
         $confirm_params = [
             'gateway'        => $this->getPaymentGatewayName(),
-            'amount'         => $return_params['AMOUNT'],
-            'currency'       => $return_params['CURRENCY'],
+            'amount'         => $return_params['amount'],
+            'currency'       => $return_params['currency'],
             'transaction_id' => $transaction['t_transaction_id'],
             'gateway_transaction_id' => $charge_id,
         ];
         $response = $this->paymentService->confirm($transaction, $confirm_params);
-        if($response['status'] != 'ok') {
+        if($response['is_success'] != 'ok') {
             exit;
         }
         //核对支付授权状态
@@ -146,19 +146,51 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         if (!empty($chargeResponseData['id'])) {
             $this->transactionService->update(['t_transaction_id' => $orderId], ['t_gateway_transaction_id' => $chargeResponseData['id'], 't_gateway' => $this->getPaymentGatewayName()]);
         }
-
         return [
             'is_success' => $chargeResponseData['status'] != 'success' ? 'error' : 'ok',
             'orderid'    => $orderId,
             'issuer'     => $translationsData['t_issuer'],
             'amount'     => $translationsData['t_amount'],
             'message'    => $chargeResponseData['transaction_state'],
-            'href'       => $translationsData['t_redirect_url']
+            'href'       => ($chargeResponseData['transaction_state'] == 'Pre-Authorized' && $chargeResponseData['status'] == 'success') ? $chargeResponseData['redirect_url'] : $translationsData['t_redirect_url']
         ];
     }
 
     public function return($return_params)
     {
+        $app_env    = $this->isSandBox();
+        $charge_id  = $return_params['objectId'];
+        $transaction = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $charge_id, 't_tech_deleted' => false]);
+        if (empty($transaction)) {
+            return [
+                'is_success' => 'fail',
+                'orderid'    => $charge_id,
+                'message'    => 'transaction_id_not_exists'
+            ];
+        }
+        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
+        if ($is_live && !$app_env) {
+            $host       = $kbank_config['prod']['host'];
+            $secret     = $kbank_config['prod']['secret'];
+        } else {
+            $host       = $kbank_config['sandbox']['sandbox_host'];
+            $secret     = $kbank_config['sandbox']['sandbox_secret'];
+        }
+        $header = ['x-api-key: ' . $secret, 'Content-Type: application/json'];
+        $charge_host = $host . '/card/v2/charge/' . $charge_id;
+        $charges_payments = $this->paymentInitiateService->paymentInitiate('get', $charge_host, '', false, $header);
+        if (strpos($charges_payments,'error') !== false) { return ['status' => 'fail', 'content' => $charges_payments]; }
+        $charges_payments_data = json_decode($charges_payments, true);
 
+        $internet_online_payment_result = array(
+            'is_success' => $charges_payments_data['status'] == 'success' ? 'ok' : 'error',
+            'orderid'    => $transaction['t_transaction_id'],
+            'issuer'     => $transaction['t_issuer'],
+            'amount'     => $transaction['t_amount'],
+            'message'    => $charges_payments_data['transaction_state'],
+            'href'       => $transaction['t_redirect_url']
+        );
+        return $internet_online_payment_result;
     }
 }

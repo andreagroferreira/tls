@@ -551,6 +551,30 @@ return [
         'joAMM2be' => [
             'pay_later' => [
                 'label' => "Pay later",
+            ],
+            'payfort' => [
+                'label' => 'payfort pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'LBP',
+                    'return_url' => '/payfort/return',
+                    'notify_url' => '/payfort/notify',
+                ],
+                'sandbox' => [
+                    'host'            => 'https://sbcheckout.payfort.com/FortAPI/paymentPage',
+                    'merchant_id'     => env('SANDBOX_PAYFORT_MERCHANT_ID'),
+                    'access_code'     => env('SANDBOX_PAYFORT_ACCESS_CODE'),
+                    'request_phrase'  => env('SANDBOX_PAYFORT_REQUEST_PHRASE'),
+                    'response_phrase' => env('SANDBOX_PAYFORT_RESPONSE_PHRASE')
+                ],
+                'prod' => [
+                    'host'            => 'https://checkout.payfort.com/FortAPI/paymentPage',
+                    'merchant_id'     => env('PAYFORT_MERCHANT_ID'),
+                    'access_code'     => env('PAYFORT_ACCESS_CODE'),
+                    'request_phrase'  => env('PAYFORT_REQUEST_PHRASE'),
+                    'response_phrase' => env('PAYFORT_RESPONSE_PHRASE')
+                ]
             ]
         ],
         'iqBGW2be' => [

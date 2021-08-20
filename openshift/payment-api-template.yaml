@@ -85,6 +85,22 @@ parameters:
     required: true
   - name: PAYMENT_SERVICE_DOMAIN
     required: true
+  - name: SANDBOX_PAYFORT_MERCHANT_ID
+    required: true
+  - name: SANDBOX_PAYFORT_ACCESS_CODE
+    required: true
+  - name: SANDBOX_PAYFORT_REQUEST_PHRASE
+    required: true
+  - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
+    required: true
+  - name: PAYFORT_MERCHANT_ID
+    required: true
+  - name: PAYFORT_ACCESS_CODE
+    required: true
+  - name: PAYFORT_REQUEST_PHRASE
+    required: true
+  - name: PAYFORT_RESPONSE_PHRASE
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -344,6 +360,22 @@ objects:
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
+                - name: SANDBOX_PAYFORT_MERCHANT_ID
+                  value: ${SANDBOX_PAYFORT_MERCHANT_ID}
+                - name: SANDBOX_PAYFORT_ACCESS_CODE
+                  value: ${SANDBOX_PAYFORT_ACCESS_CODE}
+                - name: SANDBOX_PAYFORT_REQUEST_PHRASE
+                  value: ${SANDBOX_PAYFORT_REQUEST_PHRASE}
+                - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
+                  value: ${SANDBOX_PAYFORT_RESPONSE_PHRASE}
+                - name: PAYFORT_MERCHANT_ID
+                  value: ${PAYFORT_MERCHANT_ID}
+                - name: PAYFORT_ACCESS_CODE
+                  value: ${PAYFORT_ACCESS_CODE}
+                - name: PAYFORT_REQUEST_PHRASE
+                  value: ${PAYFORT_REQUEST_PHRASE}
+                - name: PAYFORT_RESPONSE_PHRASE
+                  value: ${PAYFORT_RESPONSE_PHRASE}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -489,6 +521,22 @@ objects:
                   value: ${BANK_PAYMENT_SECRET}
                 - name: PAYMENT_SERVICE_DOMAIN
                   value: ${PAYMENT_SERVICE_DOMAIN}
+                - name: SANDBOX_PAYFORT_MERCHANT_ID
+                  value: ${SANDBOX_PAYFORT_MERCHANT_ID}
+                - name: SANDBOX_PAYFORT_ACCESS_CODE
+                  value: ${SANDBOX_PAYFORT_ACCESS_CODE}
+                - name: SANDBOX_PAYFORT_REQUEST_PHRASE
+                  value: ${SANDBOX_PAYFORT_REQUEST_PHRASE}
+                - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
+                  value: ${SANDBOX_PAYFORT_RESPONSE_PHRASE}
+                - name: PAYFORT_MERCHANT_ID
+                  value: ${PAYFORT_MERCHANT_ID}
+                - name: PAYFORT_ACCESS_CODE
+                  value: ${PAYFORT_ACCESS_CODE}
+                - name: PAYFORT_REQUEST_PHRASE
+                  value: ${PAYFORT_REQUEST_PHRASE}
+                - name: PAYFORT_RESPONSE_PHRASE
+                  value: ${PAYFORT_RESPONSE_PHRASE}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: PGPASSFILE

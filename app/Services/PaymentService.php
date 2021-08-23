@@ -51,7 +51,9 @@ class PaymentService
 
         if ($transaction && !empty($transaction['t_items'])) {
             $actionResult = $this->syncAction($transaction, $payment_gateway);
-            $error_msg    = array_merge($error_msg, $actionResult['error_msg']);
+            if(!empty($actionResult['error_msg'])) {
+                $error_msg[] = $actionResult['error_msg'];
+            }
         }
 
         $update_fields       = [
@@ -62,12 +64,16 @@ class PaymentService
         $updated_transaction = $this->transactionService->updateById($transaction['t_id'], $update_fields);
         $this->invoiceService->generate($transaction);
 
+        if(!empty($error_msg)) {
+            Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . implode('\n', $error_msg));
+            $show_error_msg = 'Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed';
+        }
         $result =  [
             'is_success' => empty($error_msg) ? 'ok' : 'error',
             'orderid' => $transaction['t_transaction_id'],
             'issuer' => $transaction['t_issuer'],
             'amount' => $transaction['t_amount'],
-            'message' => empty($error_msg) ? 'Transaction OK: transaction has been confirmed' : implode('\n', $error_msg),
+            'message' => empty($error_msg) ? 'Transaction OK: transaction has been confirmed' : $show_error_msg,
             'href' => $transaction['t_redirect_url']
         ];
 
@@ -79,6 +85,12 @@ class PaymentService
     {
         $client = $transaction['t_client'];
         $formGroupInfo = $this->formGroupInfo($transaction['t_xref_fg_id'], $client);
+        if(empty($formGroupInfo)) {
+            return [
+                'status'    => 'error',
+                'error_msg' => 'form_group_not_found'
+            ];
+        }
         $data = [
             'gateway' => $gateway,
             'u_id' => !empty($formGroupInfo['fg_xref_u_id']) ? $formGroupInfo['fg_xref_u_id'] : 0,

@@ -3,9 +3,11 @@
 namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\DbConnectionService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class PayBankGateway implements PaymentGatewayInterface
@@ -117,7 +119,7 @@ class PayBankGateway implements PaymentGatewayInterface
 
         $return['status'] = $response['is_success'] == 'ok' ? 'success' : 'fail';
         if($return['status'] == 'fail') {
-            $return['message'] = 'unknown_error';
+            $return['message'] = $response['message'];
         }
         return $return;
     }
@@ -153,6 +155,15 @@ class PayBankGateway implements PaymentGatewayInterface
                 't_gateway' => $paymentWay,
                 't_gateway_transaction_id' => $gateway_transaction_id
             ];
+            $client  = $transaction['t_client'];
+            $issuer  = $transaction['t_issuer'];
+            $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+            if(!empty($config['common']['expiration_minutes'])) {
+                $now_time = (new DbConnectionService())->getDbNowTime();
+                $gateway_expiration = Carbon::parse($now_time)->addMinutes($config['common']['expiration_minutes']);
+                $update_fields['t_gateway_expiration'] = $gateway_expiration;
+                $update_fields['t_expiration'] = $gateway_expiration;
+            }
             $this->transactionService->updateById($transaction['t_id'], $update_fields);
         }
     }

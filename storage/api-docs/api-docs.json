@@ -297,6 +297,150 @@
                 }
             }
         },
+        "/api/v1/k-bank/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from k-bank",
+                "operationId": "App\\Http\\Controllers\\V1\\KBankController::redirto",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "token id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "tokn_test_2088099ffb71c1a4a3441419cd20fec81d7e7"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/k-bank/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from k-bank",
+                "operationId": "App\\Http\\Controllers\\V1\\KBankController::notify",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/k-bank/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from k-bank",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/k-bank/config": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return config for k-bank",
+                "operationId": "App\\Http\\Controllers\\V1\\KBankController::fetchConfig",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "query",
+                        "description": "define which client you want to create the acccount in",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "be"
+                        }
+                    },
+                    {
+                        "name": "issuer",
+                        "in": "query",
+                        "description": "the issuer in database",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "thBKK2be"
+                        }
+                    },
+                    {
+                        "name": "payment",
+                        "in": "query",
+                        "description": "the payment name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "k-bank"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/pay_bank/redirto": {
             "post": {
                 "tags": [
@@ -320,7 +464,7 @@
             }
         },
         "/api/v1/pay_bank/return": {
-            "get": {
+            "post": {
                 "tags": [
                     "Payment API"
                 ],
@@ -328,6 +472,70 @@
                 "responses": {
                     "200": {
                         "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/pay_bank/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "App\\Http\\Controllers\\V1\\PayBankController::notify",
+                "parameters": [
+                    {
+                        "name": "transaction",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "description": "3-digit currency code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "RMB"
+                        }
+                    },
+                    {
+                        "name": "amount",
+                        "in": "query",
+                        "description": "the amount of bank payment paid",
+                        "required": true,
+                        "schema": {
+                            "type": "float",
+                            "example": "10.00"
+                        }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "the amount of bank payment paid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "afdba9a05eb64b07103a340a6e20d7e5d22b2e1dc9b27dc0783f99e8114d154b"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction confirmed",
                         "content": {
                             "application/json": {
                                 "schema": {}

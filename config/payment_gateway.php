@@ -74,7 +74,6 @@ return [
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
-
             ]
         ],
         'gbMNC2be' => [
@@ -130,7 +129,8 @@ return [
             'pay_bank' => [
                 'label' => 'Bank payment',
                 'common' => [
-                    'return_url' => '/pay_bank/return'
+                    'return_url' => '/pay_bank/return',
+                    'expiration_minutes' => 48 * 60
                 ]
             ]
         ],
@@ -190,6 +190,9 @@ return [
                     'paygate_id' => env('PAYGATE_ZAALL2BE_ID'),
                     'seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL')
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'zaDUR2be' => [
@@ -219,6 +222,9 @@ return [
                     'paygate_id' => env('PAYGATE_ZAALL2BE_ID'),
                     'seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL')
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'cmYAO2be' => [
@@ -421,7 +427,8 @@ return [
             'pay_bank' => [
                 'label' => 'Bank payment',
                 'common' => [
-                    'return_url' => '/pay_bank/return'
+                    'return_url' => '/pay_bank/return',
+                    'expiration_minutes' => 48 * 60
                 ]
             ]
         ],
@@ -470,6 +477,9 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'ngLGV2be' => [
@@ -495,6 +505,9 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'keNBO2be' => [
@@ -527,8 +540,61 @@ return [
             'pay_bank' => [
                 'label' => 'Bank payment',
                 'common' => [
-                    'return_url' => '/pay_bank/return'
+                    'return_url' => '/pay_bank/return',
+                    'expiration_minutes' => 48 * 60
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'joAMM2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'iqBGW2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'iqEBL2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'lbBEY2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'thBKK2be' => [
+            'k-bank' => [
+                'label'   => 'k-bank pay',
+                'active'  => true,
+                'common'  => [
+                    'env'         => 'live',
+                    'activated'   => true,
+                    'return_url'  => '/k-bank/return',
+                    'notify_url'  => '/k-bank/notify'
+                ],
+                'sandbox' => [
+                    'sandbox_host'          => 'https://dev-kpaymentgateway-services.kasikornbank.com',
+                    'sandbox_redirect_host' => 'https://dev-kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
+                    'sandbox_apikey'        => env('KBANK_THBKK2BE_SANDBOX_API_KEY'),
+                    'sandbox_secret'        => env('KBANK_THBKK2BE_SANDBOX_SECRET'),
+                    'sandbox_mid'           => env('KBANK_THBKK2BE_SANDBOX_MID')
+                ],
+                'prod'    => [
+                    'host'          => 'https://kpaymentgateway-services.kasikornbank.com',
+                    'redirect_host' => 'https://kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
+                    'apikey'        => env('KBANK_THBKK2BE_API_KEY'),
+                    'secret'        => env('KBANK_THBKK2BE_SECRET'),
+                    'mid'           => env('KBANK_THBKK2BE_MID')
+                ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ]
     ]

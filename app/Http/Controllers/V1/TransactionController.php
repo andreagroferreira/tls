@@ -73,7 +73,7 @@ class TransactionController extends BaseController
             if ($res) {
                 return $this->sendResponse($res);
             } else {
-                return $this->sendEmptyResponse(404);
+                return $this->sendEmptyResponse(204);
             }
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());

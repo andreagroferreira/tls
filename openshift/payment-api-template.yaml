@@ -21,9 +21,19 @@ parameters:
     required: true
   - name: AWS_ACCOUNT_S3
     required: true
+  - name: KBANK_THBKK2BE_SANDBOX_API_KEY
+    required: true
+  - name: KBANK_THBKK2BE_SANDBOX_SECRET
+    required: true
+  - name: KBANK_THBKK2BE_SANDBOX_MID
+    required: true
   - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
     required: true
   - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
     required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
     required: true
@@ -272,10 +282,20 @@ objects:
                   value: ${KEYCLOAK_REALM}
                 - name: KEYCLOAK_CLIENT_ID
                   value: ${KEYCLOAK_CLIENT_ID}
+                - name: KBANK_THBKK2BE_SANDBOX_API_KEY
+                  value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
+                - name: KBANK_THBKK2BE_SANDBOX_SECRET
+                  value: ${KBANK_THBKK2BE_SANDBOX_SECRET}
+                - name: KBANK_THBKK2BE_SANDBOX_MID
+                  value: ${KBANK_THBKK2BE_SANDBOX_MID}
                 - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
                   value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -405,10 +425,20 @@ objects:
                       key: password
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: KBANK_THBKK2BE_SANDBOX_API_KEY
+                  value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
+                - name: KBANK_THBKK2BE_SANDBOX_SECRET
+                  value: ${KBANK_THBKK2BE_SANDBOX_SECRET}
+                - name: KBANK_THBKK2BE_SANDBOX_MID
+                  value: ${KBANK_THBKK2BE_SANDBOX_MID}
                 - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
                   value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE

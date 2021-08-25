@@ -1045,6 +1045,70 @@
                     }
                 }
             }
+        },
+        "/api/v1/transactions": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get all transactions",
+                "operationId": "App\\Http\\Controllers\\V1\\TransactionController::fetchAll",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page, default 1",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "number of result per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "20"
+                        }
+                    },
+                    {
+                        "name": "issuer",
+                        "in": "query",
+                        "description": "define which issuer you want to fetch",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "egCAI2be"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "transaction stats, eg pending, waiting, close, done",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "pending"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the transaction",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
         }
     }
 }

@@ -42,6 +42,25 @@ class TransactionService
         });
     }
 
+    public function fetchAll($attributes)
+    {
+        $where = ['t_tech_deleted' => false];
+        if (array_key_exists('issuer', $attributes)) {
+            $where['t_issuer'] = $attributes['issuer'];
+        }
+        if (array_key_exists('status', $attributes)) {
+            $where['t_status'] = $attributes['status'];
+        }
+
+        $res = $this->transactionRepository->fetchWithPage($where, $attributes['limit'])
+            ->toArray();
+
+        return [
+            'total' => array_get($res, 'total', 0),
+            'data' => array_get($res, 'data', [])
+        ];
+    }
+
     public function fetchByWhere($where, $field = '*')
     {
         return $this->transactionRepository->fetch($where, $field);

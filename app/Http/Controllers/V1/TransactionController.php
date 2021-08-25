@@ -228,4 +228,80 @@ class TransactionController extends BaseController
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/transactions",
+     *     tags={"Payment API"},
+     *     description="get all transactions",
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          description="page, default 1",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="1"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          description="number of result per page",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="20"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="issuer",
+     *          in="query",
+     *          description="define which issuer you want to fetch",
+     *          required=false,
+     *          @OA\Schema(type="string", example="egCAI2be"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="status",
+     *          in="query",
+     *          description="transaction stats, eg pending, waiting, close, done",
+     *          required=false,
+     *          @OA\Schema(type="string", example="pending"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the transaction",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function fetchAll(Request $request)
+    {
+        $params = [
+            'page' => $request->input('page', 1),
+            'limit' => $request->input('limit', 20),
+        ];
+
+        $validator = validator(array_merge($params, $request->only(['issuer', 'status'])), [
+            'page' => 'required|integer',
+            'limit' => 'required|integer',
+            'issuer' => 'sometimes|required|regex:/^[a-zA-Z]{5}2[a-zA-Z]{2}$/',
+            'status' => [
+                'sometimes',
+                'required',
+                Rule::in(['pending', 'waiting', 'close', 'done'])
+            ]
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $res = $this->transactionService->fetchAll($validator->validated());
+
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+
+        }
+    }
 }

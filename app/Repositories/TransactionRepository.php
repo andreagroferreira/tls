@@ -33,6 +33,14 @@ class TransactionRepository
             ->get();
     }
 
+    public function fetchWithPage($where, $limit)
+    {
+        return $this->transactionModel
+            ->where($where)
+            ->orderBy('t_id', 'desc')
+            ->paginate($limit);
+    }
+
     public function fetchByFgId($attributes)
     {
         return $this->transactionModel

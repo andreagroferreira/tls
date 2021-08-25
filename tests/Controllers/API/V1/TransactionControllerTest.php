@@ -21,7 +21,7 @@ class TransactionControllerTest extends TestCase
             ]);
 
         $this->get($base_url . '/1');
-        $this->response->assertStatus(404);
+        $this->response->assertStatus(204);
 
         $transaction = $this->generateTransaction();
         $this->generateTransactionItems($transaction->t_transaction_id);
@@ -226,7 +226,7 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(3, array_get($response_array, 't_id'));
         $this->assertEquals(Carbon::parse($this->getDbNowTime())->subMinutes(config('payment_gateway.expiration_minutes'))->toDateString(), Carbon::parse(array_get($response_array, 'expire'))->toDateString());
         $this->get($base_url . '/' . $post_data['fg_id']);
-        $this->response->assertStatus(404);
+        $this->response->assertStatus(204);
 
         $this->post($base_url, $post_data);
         $this->response->assertStatus(200);
@@ -234,6 +234,6 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(4, array_get($response_array, 't_id'));
         $this->assertEquals(Carbon::parse($this->getDbNowTime())->subMinutes(config('payment_gateway.expiration_minutes'))->toDateString(), Carbon::parse(array_get($response_array, 'expire'))->toDateString());
         $this->get($base_url . '/' . $post_data['fg_id']);
-        $this->response->assertStatus(404);
+        $this->response->assertStatus(204);
     }
 }

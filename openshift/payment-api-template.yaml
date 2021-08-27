@@ -108,6 +108,8 @@ parameters:
     required: true
   - name: PROJECT
     required: true
+  - name: OPENSHIFT_ENV
+    required: true
   - name: NAMESPACE
     required: true
   - name: ROUTE_IP_WHITE_LIST
@@ -567,6 +569,20 @@ objects:
                       key: AWS_BUCKET_NAME
                 - name: LOG_CHANNEL
                   value: "stdout"
+                - name: ELASTIC_APM_SERVICE_NAME
+                  value: "${OPENSHIFT_ENV}-${PROJECT}-${APPLICATION_NAME}"
+                - name: ELASTIC_APM_SECRET_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      key: ELASTIC_APM_SECRET_TOKEN
+                      name: elastic-apm
+                - name: ELASTIC_APM_SERVER_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: ELASTIC_APM_SERVER_URLS
+                      name: elastic-apm
+                - name: ELASTIC_APM_VERIFY_SERVER_CERT
+                  value: 'false'
               image: ' '
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}

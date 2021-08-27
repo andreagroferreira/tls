@@ -23,6 +23,8 @@ use App\PaymentGateway\GlobalirisPaymentGateway;
 use App\Http\Controllers\V1\FawryController;
 use App\PaymentGateway\FawryPaymentGateway;
 use App\PaymentGateway\PayPalPaymentGateway;
+use App\Http\Controllers\V1\PayfortController;
+use App\PaymentGateway\PayfortPaymentGateway;
 use Illuminate\Support\ServiceProvider;
 
 class PaymentGatewayProvider extends ServiceProvider
@@ -89,6 +91,11 @@ class PaymentGatewayProvider extends ServiceProvider
             ->needs(PaymentGatewayInterface::class)
             ->give(function ($app) {
                 return $app->make(KBankPaymentGateway::class);
+            });
+        $this->app->when(PayfortController::class)
+            ->needs(PaymentGatewayInterface::class)
+            ->give(function ($app) {
+                return $app->make(PayfortPaymentGateway::class);
             });
     }
 

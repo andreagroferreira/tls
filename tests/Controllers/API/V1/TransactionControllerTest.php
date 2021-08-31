@@ -258,6 +258,8 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(1, array_get($response_array, 'total'));
         $this->assertEquals($transaction->t_id, array_get($response_array, 'data.0.t_id'));
 
+        sleep(1);
+
         $other_transaction = $this->generateTransaction([
             't_xref_fg_id' => 10001,
             't_transaction_id' => str_random(10),
@@ -281,57 +283,57 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals($other_transaction->t_id, array_get($response_array, 'data.0.t_id'));
         $this->assertEquals($transaction->t_id, array_get($response_array, 'data.1.t_id'));
 
-        $this->get($base_url.'?page=test');
+        $this->get($base_url . '?page=test');
         $this->response->assertStatus(400);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals('params error', array_get($response_array, 'error'));
         $this->assertEquals('The page must be an integer.', array_get($response_array, 'message'));
 
-        $this->get($base_url.'?page=1');
+        $this->get($base_url . '?page=1');
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(2, array_get($response_array, 'total'));
         $this->assertEquals(2, count(array_get($response_array, 'data')));
 
-        $this->get($base_url.'?limit=test');
+        $this->get($base_url . '?limit=test');
         $this->response->assertStatus(400);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals('params error', array_get($response_array, 'error'));
         $this->assertEquals('The limit must be an integer.', array_get($response_array, 'message'));
 
-        $this->get($base_url.'?limit=1');
+        $this->get($base_url . '?limit=1');
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(2, array_get($response_array, 'total'));
         $this->assertEquals(1, count(array_get($response_array, 'data')));
         $this->assertEquals($other_transaction->t_id, array_get($response_array, 'data.0.t_id'));
 
-        $this->get($base_url.'?page=2&limit=1');
+        $this->get($base_url . '?page=2&limit=1');
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(2, array_get($response_array, 'total'));
         $this->assertEquals(1, count(array_get($response_array, 'data')));
         $this->assertEquals($transaction->t_id, array_get($response_array, 'data.0.t_id'));
 
-        $this->get($base_url.'?issuer=test');
+        $this->get($base_url . '?issuer=test');
         $this->response->assertStatus(400);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals('params error', array_get($response_array, 'error'));
         $this->assertEquals('The issuer format is invalid.', array_get($response_array, 'message'));
 
-        $this->get($base_url.'?issuer=dzALG2be');
+        $this->get($base_url . '?issuer=dzALG2be');
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(1, array_get($response_array, 'total'));
         $this->assertEquals($transaction->t_id, array_get($response_array, 'data.0.t_id'));
 
-        $this->get($base_url.'?status=test');
+        $this->get($base_url . '?status=test');
         $this->response->assertStatus(400);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals('params error', array_get($response_array, 'error'));
         $this->assertEquals('The selected status is invalid.', array_get($response_array, 'message'));
 
-        $this->get($base_url.'?status=pending');
+        $this->get($base_url . '?status=pending');
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(2, array_get($response_array, 'total'));
@@ -339,16 +341,48 @@ class TransactionControllerTest extends TestCase
 
         $this->updateTable('transactions', ['t_id' => $transaction->t_id], ['t_status' => 'done']);
 
-        $this->get($base_url.'?page=1&limit=10&issuer=dzALG2be&status=done');
+        $this->get($base_url . '?page=1&limit=10&issuer=dzALG2be&status=done');
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(1, array_get($response_array, 'total'));
         $this->assertEquals($transaction->t_id, array_get($response_array, 'data.0.t_id'));
 
-        $this->get($base_url.'?page=2&limit=10&issuer=dzALG2be&status=done');
+        $this->get($base_url . '?page=2&limit=10&issuer=dzALG2be&status=done');
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(1, array_get($response_array, 'total'));
+        $this->assertEquals([], array_get($response_array, 'data'));
+
+        $this->get($base_url . '?page=1&limit=10&issuer=dzALG2be&status=done&start_date=2021-01-32');
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('params error', array_get($response_array, 'error'));
+        $this->assertEquals('The start date is not a valid date.', array_get($response_array, 'message'));
+
+        $this->get($base_url . '?page=1&limit=10&issuer=dzALG2be&status=done&start_date=2021-01-01&end_date=2021-12-32');
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('params error', array_get($response_array, 'error'));
+        $this->assertEquals('The end date is not a valid date.', array_get($response_array, 'message'));
+
+        $today = Carbon::today();
+
+        $this->get($base_url . '?page=1&limit=10&issuer=dzALG2be&status=done&start_date=' . $today->toDateString() . '&end_date=' . $today->addDay(1)->toDateString());
+        $this->response->assertStatus(200);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals(1, array_get($response_array, 'total'));
+        $this->assertEquals($transaction->t_id, array_get($response_array, 'data.0.t_id'));
+
+        $this->get($base_url . '?page=1&limit=10&issuer=dzALG2be&status=done&start_date=' . $today->addDay(1));
+        $this->response->assertStatus(200);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals(0, array_get($response_array, 'total'));
+        $this->assertEquals([], array_get($response_array, 'data'));
+
+        $this->get($base_url . '?page=1&limit=10&issuer=dzALG2be&status=done&start_date=' . $today->toDateString() . '&end_date=' . $today->subDay(2));
+        $this->response->assertStatus(200);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals(0, array_get($response_array, 'total'));
         $this->assertEquals([], array_get($response_array, 'data'));
     }
 }

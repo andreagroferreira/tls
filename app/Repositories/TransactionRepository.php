@@ -37,7 +37,7 @@ class TransactionRepository
     {
         return $this->transactionModel
             ->where($where)
-            ->orderBy('t_id', 'desc')
+            ->orderBy('t_tech_creation', 'desc')
             ->paginate($limit);
     }
 

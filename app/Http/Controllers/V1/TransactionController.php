@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Services\TransactionService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -278,11 +279,15 @@ class TransactionController extends BaseController
         $params = [
             'page' => $request->input('page', 1),
             'limit' => $request->input('limit', 20),
+            'start_date' => $request->input('start_date', Carbon::today()->toDateString()),
+            'end_date' => $request->input('end_date', Carbon::tomorrow()->toDateString())
         ];
 
         $validator = validator(array_merge($params, $request->only(['issuer', 'status'])), [
             'page' => 'required|integer',
             'limit' => 'required|integer',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'issuer' => 'sometimes|required|regex:/^[a-zA-Z]{5}2[a-zA-Z]{2}$/',
             'status' => [
                 'sometimes',

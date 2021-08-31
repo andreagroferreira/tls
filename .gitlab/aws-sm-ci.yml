@@ -6,93 +6,69 @@ prepare-secret:
     - unset AWS_SECRET_ACCESS_KEY
     - unset AWS_ACCESS_KEY_ID
     - ENVPAY_GLO=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_GLO --output text --query SecretString ` || ENVPAY_GLO=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_GLO --output text --query SecretString `
-    - ENVPAY_GLO_SANDBOX_MERCHANT_ID=`echo $ENVPAY_GLO | jq '.sandbox_merchant_id' -r`
-    - ENVPAY_GLO_SANDBOX_SECRET=`echo $ENVPAY_GLO | jq '.sandbox_secret' -r`
-    - ENVPAY_GLO_SANDBOX_ACCOUNT=`echo $ENVPAY_GLO | jq '.sandbox_account' -r`
-    - ENVPAY_GLO_COMMON_MERCHANT_ID=`echo $ENVPAY_GLO | jq '.common_merchant_id' -r`
-    - ENVPAY_GLO_COMMON_SECRET=`echo $ENVPAY_GLO | jq '.common_secret' -r`
-    - ENVPAY_GLO_GBALL2BE_ACCOUNT=`echo $ENVPAY_GLO | jq '.gball2be_account' -r`
+    - ENVPAY_GLO_MERCHANT_ID=`echo $ENVPAY_GLO | jq '.merchant_id' -r`
+    - ENVPAY_GLO_SECRET=`echo $ENVPAY_GLO | jq '.secret' -r`
+    - ENVPAY_GLO_ACCOUNT=`echo $ENVPAY_GLO | jq '.account' -r`
     - oc delete secret envpay-glo || true
-    - oc create secret generic envpay-glo --from-literal=sandbox_merchant_id=${ENVPAY_GLO_SANDBOX_MERCHANT_ID} --from-literal=sandbox_secret=${ENVPAY_GLO_SANDBOX_SECRET} --from-literal=sandbox_account=${ENVPAY_GLO_SANDBOX_ACCOUNT} --from-literal=common_merchant_id=${ENVPAY_GLO_COMMON_MERCHANT_ID} --from-literal=common_secret=${ENVPAY_GLO_COMMON_SECRET} --from-literal=gball2be_account=${ENVPAY_GLO_GBALL2BE_ACCOUNT}
+    - oc create secret generic envpay-glo --from-literal=merchant_id=${ENVPAY_GLO_MERCHANT_ID} --from-literal=secret=${ENVPAY_GLO_SECRET} --from-literal=account=${ENVPAY_GLO_ACCOUNT}
 
     - ENVPAY_CMI=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_CMI --output text --query SecretString ` || ENVPAY_CMI=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_CMI --output text --query SecretString `
-    - ENVPAY_CMI_SANDBOX_MERCHANT_ID=`echo $ENVPAY_CMI | jq '.sandbox_merchant_id' -r`
-    - ENVPAY_CMI_SANDBOX_STOREKEY=`echo $ENVPAY_CMI | jq '.sandbox_storekey' -r`
-    - ENVPAY_CMI_MAALL2BE_MERCHANT_ID=`echo $ENVPAY_CMI | jq '.maall2be_merchant_id' -r`
-    - ENVPAY_CMI_MAALL2BE_STOREKEY=`echo $ENVPAY_CMI | jq '.maall2be_storekey' -r`
+    - ENVPAY_CMI_MERCHANT_ID=`echo $ENVPAY_CMI | jq '.merchant_id' -r`
+    - ENVPAY_CMI_STOREKEY=`echo $ENVPAY_CMI | jq '.storekey' -r`
     - oc delete secret envpay-cmi || true
-    - oc create secret generic envpay-cmi --from-literal=sandbox_merchant_id=${ENVPAY_CMI_SANDBOX_MERCHANT_ID} --from-literal=sandbox_storekey=${ENVPAY_CMI_SANDBOX_STOREKEY} --from-literal=maall2be_merchant_id=${ENVPAY_CMI_MAALL2BE_MERCHANT_ID} --from-literal=maall2be_storekey=${ENVPAY_CMI_MAALL2BE_STOREKEY}
+    - oc create secret generic envpay-cmi --from-literal=merchant_id=${ENVPAY_CMI_MERCHANT_ID} --from-literal=storekey=${ENVPAY_CMI_STOREKEY}
 
     - ENVPAY_PAYGATE=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_PAYGATE --output text --query SecretString ` || ENVPAY_PAYGATE=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_PAYGATE --output text --query SecretString `
-    - ENVPAY_PAYGATE_SELLER_EMAIL=`echo $ENVPAY_PAYGATE | jq '.seller_email' -r`
-    - ENVPAY_PAYGATE_SANDBOX_ID=`echo $ENVPAY_PAYGATE | jq '.sandbox_id' -r`
-    - ENVPAY_PAYGATE_SANDBOX_KEY=`echo $ENVPAY_PAYGATE | jq '.sandbox_key' -r`
-    - ENVPAY_PAYGATE_ZAALL2BE_ID=`echo $ENVPAY_PAYGATE | jq '.zaall2be_id' -r`
-    - ENVPAY_PAYGATE_ZAALL2BE_KEY=`echo $ENVPAY_PAYGATE | jq '.zaall2be_key' -r`
+    - ENVPAY_PAYGATE_KEY=`echo $ENVPAY_PAYGATE | jq '.key' -r`
+    - ENVPAY_PAYGATE_ID=`echo $ENVPAY_PAYGATE | jq '.id' -r`
+    - ENVPAY_PAYGATE_EMAIL=`echo $ENVPAY_PAYGATE | jq '.email' -r`
     - oc delete secret envpay-paygate || true
-    - oc create secret generic envpay-paygate --from-literal=seller_email=${ENVPAY_PAYGATE_SELLER_EMAIL} --from-literal=sandbox_id=${ENVPAY_PAYGATE_SANDBOX_ID} --from-literal=sandbox_key=${ENVPAY_PAYGATE_SANDBOX_KEY} --from-literal=zaall2be_id=${ENVPAY_PAYGATE_ZAALL2BE_ID} --from-literal=zaall2be_key=${ENVPAY_PAYGATE_ZAALL2BE_KEY}
+    - oc create secret generic envpay-paygate --from-literal=key=${ENVPAY_PAYGATE_KEY} --from-literal=id=${ENVPAY_PAYGATE_ID} --from-literal=email=${ENVPAY_PAYGATE_EMAIL}
 
     - ENVPAY_TINGG=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_TINGG --output text --query SecretString ` || ENVPAY_TINGG=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_TINGG --output text --query SecretString `
-    - ENVPAY_TINGG_SANDBOX_ACCESS_KEY=`echo $ENVPAY_TINGG | jq '.sandbox_access_key' -r`
-    - ENVPAY_TINGG_SANDBOX_ACCOUNT_NUMBER=`echo $ENVPAY_TINGG | jq '.sandbox_account_number' -r`
-    - ENVPAY_TINGG_SANDBOX_IVKEY=`echo $ENVPAY_TINGG | jq '.sandbox_ivkey' -r`
-    - ENVPAY_TINGG_SANDBOX_SECRET_KEY=`echo $ENVPAY_TINGG | jq '.sandbox_secret_key' -r`
-    - ENVPAY_TINGG_SANDBOX_SERVICE_CODE=`echo $ENVPAY_TINGG | jq '.sandbox_service_code' -r`
-    - ENVPAY_TINGG_CMYAO2BE_ACCESS_KEY=`echo $ENVPAY_TINGG | jq '.cmYAO2be_access_key' -r`
-    - ENVPAY_TINGG_CMYAO2BE_ACCOUNT_NUMBER=`echo $ENVPAY_TINGG | jq '.cmYAO2be_account_number' -r`
-    - ENVPAY_TINGG_CMYAO2BE_IVKEY=`echo $ENVPAY_TINGG | jq '.cmYAO2be_ivkey' -r`
-    - ENVPAY_TINGG_CMYAO2BE_SECRET_KEY=`echo $ENVPAY_TINGG | jq '.cmYAO2be_secret_key' -r`
-    - ENVPAY_TINGG_CMYAO2BE_SERVICE_CODE=`echo $ENVPAY_TINGG | jq '.cmYAO2be_service_code' -r`
-    - ENVPAY_TINGG_CMDLA2BE_ACCESS_KEY=`echo $ENVPAY_TINGG | jq '.cmDLA2be_access_key' -r`
-    - ENVPAY_TINGG_CMDLA2BE_ACCOUNT_NUMBER=`echo $ENVPAY_TINGG | jq '.cmDLA2be_account_number' -r`
-    - ENVPAY_TINGG_CMDLA2BE_IVKEY=`echo $ENVPAY_TINGG | jq '.cmDLA2be_ivkey' -r`
-    - ENVPAY_TINGG_CMDLA2BE_SECRET_KEY=`echo $ENVPAY_TINGG | jq '.cmDLA2be_secret_key' -r`
-    - ENVPAY_TINGG_CMDLA2BE_SERVICE_CODE=`echo $ENVPAY_TINGG | jq '.cmDLA2be_service_code' -r`
-    - ENVPAY_TINGG_SNDKR2BE_ACCESS_KEY=`echo $ENVPAY_TINGG | jq '.snDKR2be_access_key' -r`
-    - ENVPAY_TINGG_SNDKR2BE_ACCOUNT_NUMBER=`echo $ENVPAY_TINGG | jq '.snDKR2be_account_number' -r`
-    - ENVPAY_TINGG_SNDKR2BE_IVKEY=`echo $ENVPAY_TINGG | jq '.snDKR2be_ivkey' -r`
-    - ENVPAY_TINGG_SNDKR2BE_SECRET_KEY=`echo $ENVPAY_TINGG | jq '.snDKR2be_secret_key' -r`
-    - ENVPAY_TINGG_SNDKR2BE_SERVICE_CODE=`echo $ENVPAY_TINGG | jq '.snDKR2be_service_code' -r`
-    - ENVPAY_TINGG_ETADD2BE_ACCESS_KEY=`echo $ENVPAY_TINGG | jq '.etADD2be_access_key' -r`
-    - ENVPAY_TINGG_ETADD2BE_ACCOUNT_NUMBER=`echo $ENVPAY_TINGG | jq '.etADD2be_account_number' -r`
-    - ENVPAY_TINGG_ETADD2BE_IVKEY=`echo $ENVPAY_TINGG | jq '.etADD2be_ivkey' -r`
-    - ENVPAY_TINGG_ETADD2BE_SECRET_KEY=`echo $ENVPAY_TINGG | jq '.etADD2be_secret_key' -r`
-    - ENVPAY_TINGG_ETADD2BE_SERVICE_CODE=`echo $ENVPAY_TINGG | jq '.etADD2be_service_code' -r`
-    - ENVPAY_TINGG_RWKGL2BE_ACCESS_KEY=`echo $ENVPAY_TINGG | jq '.rwKGL2be_access_key' -r`
-    - ENVPAY_TINGG_RWKGL2BE_ACCOUNT_NUMBER=`echo $ENVPAY_TINGG | jq '.rwKGL2be_account_number' -r`
-    - ENVPAY_TINGG_RWKGL2BE_IVKEY=`echo $ENVPAY_TINGG | jq '.rwKGL2be_ivkey' -r`
-    - ENVPAY_TINGG_RWKGL2BE_SECRET_KEY=`echo $ENVPAY_TINGG | jq '.rwKGL2be_secret_key' -r`
-    - ENVPAY_TINGG_RWKGL2BE_SERVICE_CODE=`echo $ENVPAY_TINGG | jq '.rwKGL2be_service_code' -r`
-    - ENVPAY_TINGG_UGKLA2BE_ACCESS_KEY=`echo $ENVPAY_TINGG | jq '.ugKLA2be_access_key' -r`
-    - ENVPAY_TINGG_UGKLA2BE_ACCOUNT_NUMBER=`echo $ENVPAY_TINGG | jq '.ugKLA2be_account_number' -r`
-    - ENVPAY_TINGG_UGKLA2BE_IVKEY=`echo $ENVPAY_TINGG | jq '.ugKLA2be_ivkey' -r`
-    - ENVPAY_TINGG_UGKLA2BE_SECRET_KEY=`echo $ENVPAY_TINGG | jq '.ugKLA2be_secret_key' -r`
-    - ENVPAY_TINGG_UGKLA2BE_SERVICE_CODE=`echo $ENVPAY_TINGG | jq '.ugKLA2be_service_code' -r`
+    - ENVPAY_TINGG_ACCOUNT=`echo $ENVPAY_TINGG | jq '.account' -r`
+    - ENVPAY_TINGG_SERVICE_CODE=`echo $ENVPAY_TINGG | jq '.service_code' -r`
+    - ENVPAY_TINGG_IVKEY=`echo $ENVPAY_TINGG | jq '.ivkey' -r`
+    - ENVPAY_TINGG_SECRET_KEY=`echo $ENVPAY_TINGG | jq '.secret_key' -r`
+    - ENVPAY_TINGG_ACCESS_KEY=`echo $ENVPAY_TINGG | jq '.access_key' -r`
     - oc delete secret envpay-tingg || true
-    - oc create secret generic envpay-tingg --from-literal=sandbox_access_key=${ENVPAY_TINGG_SANDBOX_ACCESS_KEY} --from-literal=sandbox_account_number=${ENVPAY_TINGG_SANDBOX_ACCOUNT_NUMBER} --from-literal=sandbox_ivkey=${ENVPAY_TINGG_SANDBOX_IVKEY} --from-literal=sandbox_secret_key=${ENVPAY_TINGG_SANDBOX_SECRET_KEY} --from-literal=sandbox_service_code=${ENVPAY_TINGG_SANDBOX_SERVICE_CODE} --from-literal=cmyao2be_access_key=${ENVPAY_TINGG_CMYAO2BE_ACCESS_KEY} --from-literal=cmyao2be_account_number=${ENVPAY_TINGG_CMYAO2BE_ACCOUNT_NUMBER} --from-literal=cmyao2be_ivkey=${ENVPAY_TINGG_CMYAO2BE_IVKEY} --from-literal=cmyao2be_secret_key=${ENVPAY_TINGG_CMYAO2BE_SECRET_KEY} --from-literal=cmyao2be_service_code=${ENVPAY_TINGG_CMYAO2BE_SERVICE_CODE} --from-literal=cmdla2be_access_key=${ENVPAY_TINGG_CMDLA2BE_ACCESS_KEY} --from-literal=cmdla2be_account_number=${ENVPAY_TINGG_CMDLA2BE_ACCOUNT_NUMBER} --from-literal=cmdla2be_ivkey=${ENVPAY_TINGG_CMDLA2BE_IVKEY} --from-literal=cmdla2be_secret_key=${ENVPAY_TINGG_CMDLA2BE_SECRET_KEY} --from-literal=cmdla2be_service_code=${ENVPAY_TINGG_CMDLA2BE_SERVICE_CODE} --from-literal=sndkr2be_access_key=${ENVPAY_TINGG_SNDKR2BE_ACCESS_KEY} --from-literal=sndkr2be_account_number=${ENVPAY_TINGG_SNDKR2BE_ACCOUNT_NUMBER} --from-literal=sndkr2be_ivkey=${ENVPAY_TINGG_SNDKR2BE_IVKEY} --from-literal=sndkr2be_secret_key=${ENVPAY_TINGG_SNDKR2BE_SECRET_KEY} --from-literal=sndkr2be_service_code=${ENVPAY_TINGG_SNDKR2BE_SERVICE_CODE} --from-literal=etadd2be_access_key=${ENVPAY_TINGG_ETADD2BE_ACCESS_KEY} --from-literal=etadd2be_account_number=${ENVPAY_TINGG_ETADD2BE_ACCOUNT_NUMBER} --from-literal=etadd2be_ivkey=${ENVPAY_TINGG_ETADD2BE_IVKEY} --from-literal=etadd2be_secret_key=${ENVPAY_TINGG_ETADD2BE_SECRET_KEY} --from-literal=etadd2be_service_code=${ENVPAY_TINGG_ETADD2BE_SERVICE_CODE} --from-literal=rwkgl2be_access_key=${ENVPAY_TINGG_RWKGL2BE_ACCESS_KEY} --from-literal=rwkgl2be_account_number=${ENVPAY_TINGG_RWKGL2BE_ACCOUNT_NUMBER} --from-literal=rwkgl2be_ivkey=${ENVPAY_TINGG_RWKGL2BE_IVKEY} --from-literal=rwkgl2be_secret_key=${ENVPAY_TINGG_RWKGL2BE_SECRET_KEY} --from-literal=rwkgl2be_service_code=${ENVPAY_TINGG_RWKGL2BE_SERVICE_CODE} --from-literal=ugkla2be_access_key=${ENVPAY_TINGG_UGKLA2BE_ACCESS_KEY} --from-literal=ugkla2be_account_number=${ENVPAY_TINGG_UGKLA2BE_ACCOUNT_NUMBER} --from-literal=ugkla2be_ivkey=${ENVPAY_TINGG_UGKLA2BE_IVKEY} --from-literal=ugkla2be_secret_key=${ENVPAY_TINGG_UGKLA2BE_SECRET_KEY} --from-literal=ugkla2be_service_code=${ENVPAY_TINGG_UGKLA2BE_SERVICE_CODE}
+    - oc create secret generic envpay-tingg --from-literal=account=${ENVPAY_TINGG_ACCOUNT} --from-literal=service_code=${ENVPAY_TINGG_SERVICE_CODE} --from-literal=ivkey=${ENVPAY_TINGG_IVKEY} --from-literal=secret_key=${ENVPAY_TINGG_SECRET_KEY} --from-literal=access_key=${ENVPAY_TINGG_ACCESS_KEY}
 
     - ENVPAY_FAW=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_FAW --output text --query SecretString ` || ENVPAY_FAW=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_FAW --output text --query SecretString `
-    - ENVPAY_FAW_SANDBOX_MERCHANT_ID=`echo $ENVPAY_FAW | jq '.sandbox_merchant_id' -r`
-    - ENVPAY_FAW_SANDBOX_SECRET_KEY=`echo $ENVPAY_FAW | jq '.sandbox_secret_key' -r`
-    - ENVPAY_FAW_EGALL2BE_MERCHANT_ID=`echo $ENVPAY_FAW | jq '.egall2be_merchant_id' -r`
-    - ENVPAY_FAW_EGALL2BE_SECRET_KEY=`echo $ENVPAY_FAW | jq '.egall2be_secret_key' -r`
+    - ENVPAY_FAW_MERCHANT_ID=`echo $ENVPAY_FAW | jq '.merchant_id' -r`
+    - ENVPAY_FAW_SECRET_KEY=`echo $ENVPAY_FAW | jq '.secret_key' -r`
     - oc delete secret envpay-faw || true
-    - oc create secret generic envpay-faw --from-literal=sandbox_merchant_id=${ENVPAY_FAW_SANDBOX_MERCHANT_ID} --from-literal=sandbox_secret_key=${ENVPAY_FAW_SANDBOX_SECRET_KEY} --from-literal=egall2be_merchant_id=${ENVPAY_FAW_EGALL2BE_MERCHANT_ID} --from-literal=egall2be_secret_key=${ENVPAY_FAW_EGALL2BE_SECRET_KEY}
+    - oc create secret generic envpay-faw --from-literal=merchant_id=${ENVPAY_FAW_MERCHANT_ID} --from-literal=secret_key=${ENVPAY_FAW_SECRET_KEY}
 
     - ENVPAY_PAYPAL=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_PAYPAL --output text --query SecretString ` || ENVPAY_PAYPAL=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_PAYPAL --output text --query SecretString `
-    - ENVPAY_PAYPAL_SANDBOX_ACCOUNT=`echo $ENVPAY_PAYPAL | jq '.sandbox_account' -r`
-    - ENVPAY_PAYPAL_BERUMOW2BE_ACCOUNT=`echo $ENVPAY_PAYPAL | jq '.berumow2be_account' -r`
+    - ENVPAY_PAYPAL_ACCOUNT=`echo $ENVPAY_PAYPAL | jq '.account' -r`
     - oc delete secret envpay-paypal || true
-    - oc create secret generic envpay-paypal --from-literal=sandbox_account=${ENVPAY_PAYPAL_SANDBOX_ACCOUNT} --from-literal=berumow2be_account=${ENVPAY_PAYPAL_BERUMOW2BE_ACCOUNT}
+    - oc create secret generic envpay-paypal --from-literal=account=${ENVPAY_PAYPAL_ACCOUNT}
 
     - ENVPAY_PAYU=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_PAYU --output text --query SecretString ` || ENVPAY_PAYU=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_PAYU --output text --query SecretString `
-    - ENVPAY_PAYU_SANDBOX_NGALL2BE_APP_ID=`echo $ENVPAY_PAYU | jq '.sandbox_ngall2be_app_id' -r`
-    - ENVPAY_PAYU_SANDBOX_NGALL2BE_PRIVATE_KEY=`echo $ENVPAY_PAYU | jq '.sandbox_ngall2be_private_key' -r`
     - ENVPAY_PAYU_NGALL2BE_APP_ID=`echo $ENVPAY_PAYU | jq '.ngall2be_app_id' -r`
     - ENVPAY_PAYU_NGALL2BE_PRIVATE_KEY=`echo $ENVPAY_PAYU | jq '.ngall2be_private_key' -r`
-    - ENVPAY_PAYU_SANDBOX_KEALL2BE_APP_ID=`echo $ENVPAY_PAYU | jq '.sandbox_keall2be_app_id' -r`
-    - ENVPAY_PAYU_SANDBOX_KEALL2BE_PRIVATE_KEY=`echo $ENVPAY_PAYU | jq '.sandbox_keall2be_private_key' -r`
     - ENVPAY_PAYU_KEALL2BE_APP_ID=`echo $ENVPAY_PAYU | jq '.keall2be_app_id' -r`
     - ENVPAY_PAYU_KEALL2BE_PRIVATE_KEY=`echo $ENVPAY_PAYU | jq '.keall2be_private_key' -r`
     - oc delete secret envpay-payu || true
-    - oc create secret generic envpay-payu --from-literal=sandbox_ngall2be_app_id=${ENVPAY_PAYU_SANDBOX_NGALL2BE_APP_ID} --from-literal=sandbox_ngall2be_private_key=${ENVPAY_PAYU_SANDBOX_NGALL2BE_PRIVATE_KEY} --from-literal=ngall2be_app_id=${ENVPAY_PAYU_NGALL2BE_APP_ID} --from-literal=ngall2be_private_key=${ENVPAY_PAYU_NGALL2BE_PRIVATE_KEY} --from-literal=sandbox_keall2be_app_id=${ENVPAY_PAYU_SANDBOX_KEALL2BE_APP_ID} --from-literal=sandbox_keall2be_private_key=${ENVPAY_PAYU_SANDBOX_KEALL2BE_PRIVATE_KEY} --from-literal=keall2be_app_id=${ENVPAY_PAYU_KEALL2BE_APP_ID} --from-literal=keall2be_private_key=${ENVPAY_PAYU_KEALL2BE_PRIVATE_KEY}
+    - oc create secret generic envpay-payu --from-literal=ngall2be_app_id=${ENVPAY_PAYU_NGALL2BE_APP_ID} --from-literal=ngall2be_private_key=${ENVPAY_PAYU_NGALL2BE_PRIVATE_KEY} --from-literal=keall2be_app_id=${ENVPAY_PAYU_KEALL2BE_APP_ID} --from-literal=keall2be_private_key=${ENVPAY_PAYU_KEALL2BE_PRIVATE_KEY}
+
+    - ENVPAY_BANK=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_BANK --output text --query SecretString ` || ENVPAY_BANK=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_BANK --output text --query SecretString `
+    - ENVPAY_BANK_PASSWORD=`echo $ENVPAY_BANK | jq '.password' -r`
+    - oc delete secret envpay-bank || true
+    - oc create secret generic envpay-bank --from-literal=password=${ENVPAY_BANK_PASSWORD}
+
+    - ENVPAY_KBANK=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_KBANK --output text --query SecretString ` || ENVPAY_KBANK=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_KBANK --output text --query SecretString `
+    - ENVPAY_KBANK_API_KEY=`echo $ENVPAY_KBANK | jq '.api_key' -r`
+    - ENVPAY_KBANK_SECRET=`echo $ENVPAY_KBANK | jq '.secret' -r`
+    - ENVPAY_KBANK_MID=`echo $ENVPAY_KBANK | jq '.mid' -r`
+    - oc delete secret envpay-kbank || true
+    - oc create secret generic envpay-kbank --from-literal=api_key=${ENVPAY_KBANK_API_KEY} --from-literal=secret=${ENVPAY_KBANK_SECRET} --from-literal=mid=${ENVPAY_KBANK_MID}
+
+    - ENVPAY_PAYFORT=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/$ENV/$PROJECT/ENVPAY_PAYFORT --output text --query SecretString ` || ENVPAY_PAYFORT=`aws secretsmanager get-secret-value --version-stage AWSCURRENT --secret-id NON-PROD/DEV/ENVPAY_PAYFORT --output text --query SecretString `
+    - ENVPAY_PAYFORT_MERCHANT_ID=`echo $ENVPAY_PAYFORT | jq '.merchant_id' -r`
+    - ENVPAY_PAYFORT_ACCESS_CODE=`echo $ENVPAY_PAYFORT | jq '.access_code' -r`
+    - ENVPAY_PAYFORT_REQUEST_PHRASE=`echo $ENVPAY_PAYFORT | jq '.request_phrase' -r`
+    - ENVPAY_PAYFORT_RESPONSE_PHRASE=`echo $ENVPAY_PAYFORT | jq '.response_phrase' -r`
+    - oc delete secret envpay-payfort || true
+    - oc create secret generic envpay-payfort --from-literal=merchant_id=${ENVPAY_PAYFORT_MERCHANT_ID} --from-literal=access_code=${ENVPAY_PAYFORT_ACCESS_CODE} --from-literal=request_phrase=${ENVPAY_PAYFORT_REQUEST_PHRASE} --from-literal=response_phrase=${ENVPAY_PAYFORT_RESPONSE_PHRASE}

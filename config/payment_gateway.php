@@ -74,7 +74,6 @@ return [
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
-
             ]
         ],
         'gbMNC2be' => [
@@ -191,6 +190,9 @@ return [
                     'paygate_id' => env('PAYGATE_ZAALL2BE_ID'),
                     'seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL')
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'zaDUR2be' => [
@@ -220,175 +222,196 @@ return [
                     'paygate_id' => env('PAYGATE_ZAALL2BE_ID'),
                     'seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL')
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'cmYAO2be' => [
-            'tingg' => [
-                'label'   => 'Tingg pay',
-                'active'  => true,
-                'common'  => [
-                    'successRedirectUrl' => '/tingg/return',
-                    'failRedirectUrl'    => '/checkout/',
-                    'pendingRedirectUrl' => '/checkout/',
-                    'paymentWebhookUrl'  => '/tingg/notify'
-                ],
-                'sandbox' => [
-                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
-                ],
-                'prod'    => [
-                    'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_BEcmYAO2be_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_BEcmYAO2be_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_BEcmYAO2be_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_BEcmYAO2be_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_BEcmYAO2be_ACCESS_KEY")
-                ]
+//            'tingg' => [
+//                'label'   => 'Tingg pay',
+//                'active'  => true,
+//                'common'  => [
+//                    'successRedirectUrl' => '/tingg/return',
+//                    'failRedirectUrl'    => '/checkout/',
+//                    'pendingRedirectUrl' => '/checkout/',
+//                    'paymentWebhookUrl'  => '/tingg/notify'
+//                ],
+//                'sandbox' => [
+//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
+//                ],
+//                'prod'    => [
+//                    'host'          => 'https://online.tingg.africa/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_BEcmYAO2be_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_BEcmYAO2be_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_BEcmYAO2be_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_BEcmYAO2be_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_BEcmYAO2be_ACCESS_KEY")
+//                ]
+//            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'cmDLA2be' => [
-            'tingg' => [
-                'label'   => 'Tingg pay',
-                'active'  => true,
-                'common'  => [
-                    'successRedirectUrl' => '/tingg/return',
-                    'failRedirectUrl'    => '/checkout/',
-                    'pendingRedirectUrl' => '/checkout/',
-                    'paymentWebhookUrl'  => '/tingg/notify'
-                ],
-                'sandbox' => [
-                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
-                ],
-                'prod'    => [
-                    'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_BEcmDLA2be_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_BEcmDLA2be_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_BEcmDLA2be_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_BEcmDLA2be_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_BEcmDLA2be_ACCESS_KEY")
-                ]
-            ],
+//            'tingg' => [
+//                'label'   => 'Tingg pay',
+//                'active'  => true,
+//                'common'  => [
+//                    'successRedirectUrl' => '/tingg/return',
+//                    'failRedirectUrl'    => '/checkout/',
+//                    'pendingRedirectUrl' => '/checkout/',
+//                    'paymentWebhookUrl'  => '/tingg/notify'
+//                ],
+//                'sandbox' => [
+//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
+//                ],
+//                'prod'    => [
+//                    'host'          => 'https://online.tingg.africa/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_BEcmDLA2be_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_BEcmDLA2be_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_BEcmDLA2be_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_BEcmDLA2be_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_BEcmDLA2be_ACCESS_KEY")
+//                ]
+//            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
         ],
         'snDKR2be' => [
-            'tingg' => [
-                'label'   => 'Tingg pay',
-                'active'  => true,
-                'common'  => [
-                    'successRedirectUrl' => '/tingg/return',
-                    'failRedirectUrl'    => '/checkout/',
-                    'pendingRedirectUrl' => '/checkout/',
-                    'paymentWebhookUrl'  => '/tingg/notify'
-                ],
-                'sandbox' => [
-                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
-                ],
-                'prod'    => [
-                    'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_BEsnDKR2be_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_BEsnDKR2be_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_BEsnDKR2be_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_BEsnDKR2be_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_BEsnDKR2be_ACCESS_KEY")
-                ]
-            ],
+//            'tingg' => [
+//                'label'   => 'Tingg pay',
+//                'active'  => true,
+//                'common'  => [
+//                    'successRedirectUrl' => '/tingg/return',
+//                    'failRedirectUrl'    => '/checkout/',
+//                    'pendingRedirectUrl' => '/checkout/',
+//                    'paymentWebhookUrl'  => '/tingg/notify'
+//                ],
+//                'sandbox' => [
+//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
+//                ],
+//                'prod'    => [
+//                    'host'          => 'https://online.tingg.africa/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_BEsnDKR2be_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_BEsnDKR2be_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_BEsnDKR2be_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_BEsnDKR2be_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_BEsnDKR2be_ACCESS_KEY")
+//                ]
+//            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
         ],
         'etADD2be' => [
-            'tingg' => [
-                'label'   => 'Tingg pay',
-                'active'  => true,
-                'common'  => [
-                    'successRedirectUrl' => '/tingg/return',
-                    'failRedirectUrl'    => '/checkout/',
-                    'pendingRedirectUrl' => '/checkout/',
-                    'paymentWebhookUrl'  => '/tingg/notify'
-                ],
-                'sandbox' => [
-                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
-                ],
-                'prod'    => [
-                    'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_BEetADD2be_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_BEetADD2be_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_BEetADD2be_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_BEetADD2be_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_BEetADD2be_ACCESS_KEY")
-                ]
-            ],
+//            'tingg' => [
+//                'label'   => 'Tingg pay',
+//                'active'  => true,
+//                'common'  => [
+//                    'successRedirectUrl' => '/tingg/return',
+//                    'failRedirectUrl'    => '/checkout/',
+//                    'pendingRedirectUrl' => '/checkout/',
+//                    'paymentWebhookUrl'  => '/tingg/notify'
+//                ],
+//                'sandbox' => [
+//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
+//                ],
+//                'prod'    => [
+//                    'host'          => 'https://online.tingg.africa/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_BEetADD2be_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_BEetADD2be_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_BEetADD2be_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_BEetADD2be_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_BEetADD2be_ACCESS_KEY")
+//                ]
+//            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
         ],
         'rwKGL2be' => [
-            'tingg' => [
-                'label'   => 'Tingg pay',
-                'active'  => true,
-                'common'  => [
-                    'successRedirectUrl' => '/tingg/return',
-                    'failRedirectUrl'    => '/checkout/',
-                    'pendingRedirectUrl' => '/checkout/',
-                    'paymentWebhookUrl'  => '/tingg/notify'
-                ],
-                'sandbox' => [
-                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
-                ],
-                'prod'    => [
-                    'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_BErwKGL2be_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_BErwKGL2be_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_BErwKGL2be_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_BErwKGL2be_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_BErwKGL2be_ACCESS_KEY")
-                ]
-            ],
+//            'tingg' => [
+//                'label'   => 'Tingg pay',
+//                'active'  => true,
+//                'common'  => [
+//                    'successRedirectUrl' => '/tingg/return',
+//                    'failRedirectUrl'    => '/checkout/',
+//                    'pendingRedirectUrl' => '/checkout/',
+//                    'paymentWebhookUrl'  => '/tingg/notify'
+//                ],
+//                'sandbox' => [
+//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
+//                ],
+//                'prod'    => [
+//                    'host'          => 'https://online.tingg.africa/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_BErwKGL2be_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_BErwKGL2be_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_BErwKGL2be_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_BErwKGL2be_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_BErwKGL2be_ACCESS_KEY")
+//                ]
+//            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
         ],
         'ugKLA2be' => [
-            'tingg' => [
-                'label'   => 'Tingg pay',
-                'active'  => true,
-                'common'  => [
-                    'successRedirectUrl' => '/tingg/return',
-                    'failRedirectUrl'    => '/checkout/',
-                    'pendingRedirectUrl' => '/checkout/',
-                    'paymentWebhookUrl'  => '/tingg/notify'
-                ],
-                'sandbox' => [
-                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
-                ],
-                'prod'    => [
-                    'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_BEugKLA2be_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_BEugKLA2be_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_BEugKLA2be_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_BEugKLA2be_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_BEugKLA2be_ACCESS_KEY")
-                ]
-            ],
+//            'tingg' => [
+//                'label'   => 'Tingg pay',
+//                'active'  => true,
+//                'common'  => [
+//                    'successRedirectUrl' => '/tingg/return',
+//                    'failRedirectUrl'    => '/checkout/',
+//                    'pendingRedirectUrl' => '/checkout/',
+//                    'paymentWebhookUrl'  => '/tingg/notify'
+//                ],
+//                'sandbox' => [
+//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
+//                ],
+//                'prod'    => [
+//                    'host'          => 'https://online.tingg.africa/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_BEugKLA2be_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_BEugKLA2be_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_BEugKLA2be_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_BEugKLA2be_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_BEugKLA2be_ACCESS_KEY")
+//                ]
+//            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
         ],
         'egCAI2be' => [
             'fawry' => [
@@ -472,6 +495,9 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'ngLGV2be' => [
@@ -497,6 +523,9 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'keNBO2be' => [
@@ -532,6 +561,82 @@ return [
                     'return_url' => '/pay_bank/return',
                     'expiration_minutes' => 48 * 60
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'joAMM2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ],
+            'payfort' => [
+                'label' => 'payfort pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'LBP',
+                    'return_url' => '/payfort/return',
+                    'notify_url' => '/payfort/notify',
+                ],
+                'sandbox' => [
+                    'host'            => 'https://sbcheckout.payfort.com/FortAPI/paymentPage',
+                    'merchant_id'     => env('SANDBOX_PAYFORT_MERCHANT_ID'),
+                    'access_code'     => env('SANDBOX_PAYFORT_ACCESS_CODE'),
+                    'request_phrase'  => env('SANDBOX_PAYFORT_REQUEST_PHRASE'),
+                    'response_phrase' => env('SANDBOX_PAYFORT_RESPONSE_PHRASE')
+                ],
+                'prod' => [
+                    'host'            => 'https://checkout.payfort.com/FortAPI/paymentPage',
+                    'merchant_id'     => env('PAYFORT_MERCHANT_ID'),
+                    'access_code'     => env('PAYFORT_ACCESS_CODE'),
+                    'request_phrase'  => env('PAYFORT_REQUEST_PHRASE'),
+                    'response_phrase' => env('PAYFORT_RESPONSE_PHRASE')
+                ]
+            ]
+        ],
+        'iqBGW2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'iqEBL2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'lbBEY2be' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'thBKK2be' => [
+//            'k-bank' => [
+//                'label'   => 'k-bank pay',
+//                'active'  => true,
+//                'common'  => [
+//                    'env'         => 'live',
+//                    'activated'   => true,
+//                    'return_url'  => '/k-bank/return',
+//                    'notify_url'  => '/k-bank/notify'
+//                ],
+//                'sandbox' => [
+//                    'sandbox_host'          => 'https://dev-kpaymentgateway-services.kasikornbank.com',
+//                    'sandbox_redirect_host' => 'https://dev-kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
+//                    'sandbox_apikey'        => env('KBANK_THBKK2BE_SANDBOX_API_KEY'),
+//                    'sandbox_secret'        => env('KBANK_THBKK2BE_SANDBOX_SECRET'),
+//                    'sandbox_mid'           => env('KBANK_THBKK2BE_SANDBOX_MID')
+//                ],
+//                'prod'    => [
+//                    'host'          => 'https://kpaymentgateway-services.kasikornbank.com',
+//                    'redirect_host' => 'https://kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
+//                    'apikey'        => env('KBANK_THBKK2BE_API_KEY'),
+//                    'secret'        => env('KBANK_THBKK2BE_SECRET'),
+//                    'mid'           => env('KBANK_THBKK2BE_MID')
+//                ]
+//            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ]
     ]

@@ -50,7 +50,7 @@ class InvoiceService
             return false;
         }
 
-        if ($response['status'] != 200 || $response['body']['status'] != 'ok') {
+        if ($response['status'] != 200) {
             Log::warning('Transaction Error: generate receipt failed');
             return false;
         }

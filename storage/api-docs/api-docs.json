@@ -1085,6 +1085,26 @@
                         }
                     },
                     {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start date",
+                        "required": false,
+                        "schema": {
+                            "type": "date",
+                            "example": "2021-01-01"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end date",
+                        "required": false,
+                        "schema": {
+                            "type": "date",
+                            "example": "2021-12-31"
+                        }
+                    },
+                    {
                         "name": "status",
                         "in": "query",
                         "description": "transaction stats, eg pending, waiting, close, done",

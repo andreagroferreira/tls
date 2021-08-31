@@ -256,6 +256,20 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Schema(type="string", example="egCAI2be"),
      *      ),
+     *     @OA\Parameter(
+     *          name="start_date",
+     *          in="query",
+     *          description="start date",
+     *          required=false,
+     *          @OA\Schema(type="date", example="2021-01-01"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="end_date",
+     *          in="query",
+     *          description="end date",
+     *          required=false,
+     *          @OA\Schema(type="date", example="2021-12-31"),
+     *      ),
      *      @OA\Parameter(
      *          name="status",
      *          in="query",

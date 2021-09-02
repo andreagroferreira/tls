@@ -264,7 +264,7 @@ class TransactionControllerTest extends TestCase
             't_xref_fg_id' => 10001,
             't_transaction_id' => str_random(10),
             't_client' => 'be',
-            't_issuer' => 'egCAI2be',
+            't_issuer' => 'ruMOW2be',
             't_gateway_transaction_id' => str_random(10),
             't_gateway' => 'cmi',
             't_currency' => 'MAD',
@@ -327,6 +327,18 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(1, array_get($response_array, 'total'));
         $this->assertEquals($transaction->t_id, array_get($response_array, 'data.0.t_id'));
 
+        $this->get($base_url . '?issuer=dzALG2be,');
+        $this->response->assertStatus(200);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals(1, array_get($response_array, 'total'));
+        $this->assertEquals($transaction->t_id, array_get($response_array, 'data.0.t_id'));
+
+        $this->get($base_url . '?issuer=dzALG2be,test');
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('params error', array_get($response_array, 'error'));
+        $this->assertEquals('The issuer format is invalid.', array_get($response_array, 'message'));
+
         $this->get($base_url . '?status=test');
         $this->response->assertStatus(400);
         $response_array = $this->response->decodeResponseJson();
@@ -337,6 +349,12 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(2, array_get($response_array, 'total'));
+        $this->assertEquals($other_transaction->t_id, array_get($response_array, 'data.0.t_id'));
+
+        $this->get($base_url . '?status=pending&issuer=ruMOW2be');
+        $this->response->assertStatus(200);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals(1, array_get($response_array, 'total'));
         $this->assertEquals($other_transaction->t_id, array_get($response_array, 'data.0.t_id'));
 
         $this->updateTable('transactions', ['t_id' => $transaction->t_id], ['t_status' => 'done']);
@@ -379,7 +397,7 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(0, array_get($response_array, 'total'));
         $this->assertEquals([], array_get($response_array, 'data'));
 
-        $this->get($base_url . '?page=1&limit=10&issuer=dzALG2be&status=done&start_date=' . $today->toDateString() . '&end_date=' . $today->subDay(2));
+        $this->get($base_url . '?page=1&limit=10&issuer=dzALG2be&status=done&start_date=' . $today->toDateString() . '&end_date=' . $today->subDays(2));
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(0, array_get($response_array, 'total'));

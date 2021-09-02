@@ -49,15 +49,12 @@ class TransactionService
             ['t_tech_creation', '>=', $attributes['start_date']],
             ['t_tech_creation', '<', $attributes['end_date']]
         ])
-            ->when(array_key_exists('issuer', $attributes), function ($collect) use ($attributes) {
-                return $collect->push(['t_issuer', '=', $attributes['issuer']]);
-            })
             ->when(array_key_exists('status', $attributes), function ($collect) use ($attributes) {
                 return $collect->push(['t_status', '=', $attributes['status']]);
             })
             ->toArray();
 
-        $res = $this->transactionRepository->fetchWithPage($where, $attributes['limit'])
+        $res = $this->transactionRepository->fetchWithPage($where, $attributes['limit'], array_get($attributes, 'issuer'))
             ->toArray();
 
         return [

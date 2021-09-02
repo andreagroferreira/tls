@@ -297,17 +297,23 @@ class TransactionController extends BaseController
             'end_date' => $request->input('end_date', Carbon::tomorrow()->toDateString())
         ];
 
-        $validator = validator(array_merge($params, $request->only(['issuer', 'status'])), [
+        if ($request->has('issuer')) {
+            $params['issuer'] = explode(',', trim($request->input('issuer'), ','));
+        }
+
+        $validator = validator(array_merge($params, $request->only(['status'])), [
             'page' => 'required|integer',
             'limit' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            'issuer' => 'sometimes|required|regex:/^[a-zA-Z]{5}2[a-zA-Z]{2}$/',
+            'issuer.*' => 'sometimes|required|regex:/^[a-zA-Z]{5}2[a-zA-Z]{2}$/',
             'status' => [
                 'sometimes',
                 'required',
                 Rule::in(['pending', 'waiting', 'close', 'done'])
             ]
+        ], [
+            'issuer.*.regex' => 'The issuer format is invalid.'
         ]);
 
         if ($validator->fails()) {

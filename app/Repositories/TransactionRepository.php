@@ -33,10 +33,13 @@ class TransactionRepository
             ->get();
     }
 
-    public function fetchWithPage($where, $limit)
+    public function fetchWithPage($where, $limit, $issuer = null)
     {
         return $this->transactionModel
             ->where($where)
+            ->when($issuer, function ($query) use ($issuer) {
+                return $query->whereIn('t_issuer', $issuer);
+            })
             ->orderBy('t_tech_creation', 'desc')
             ->paginate($limit);
     }

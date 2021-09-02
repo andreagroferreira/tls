@@ -254,7 +254,7 @@ class TransactionController extends BaseController
      *          in="query",
      *          description="define which issuer you want to fetch",
      *          required=false,
-     *          @OA\Schema(type="string", example="egCAI2be"),
+     *          @OA\Schema(type="string", example="egCAI2be,egCAI2be"),
      *      ),
      *     @OA\Parameter(
      *          name="start_date",

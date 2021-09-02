@@ -1081,7 +1081,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "example": "egCAI2be"
+                            "example": "egCAI2be,egCAI2be"
                         }
                     },
                     {

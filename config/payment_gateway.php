@@ -113,7 +113,7 @@ return [
                     'failUrl' => 'cmi/return',
                     'hashAlgorithm' => 'ver3',
                     'shopurl' => '/checkout/',
-                    'callbackUrl' => '/cmi/callback',
+                    'callbackUrl' => '/cmi/notify',
                 ],
                 'sandbox' => [
                     'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',

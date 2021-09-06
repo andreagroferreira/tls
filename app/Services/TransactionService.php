@@ -160,7 +160,8 @@ class TransactionService
         }
         $transaction = $transaction->toArray();
         $transaction_id = $transaction['t_transaction_id'];
-        $transaction_items = $this->transactionItemsService->fetchItemsByTransactionId($transaction_id)->toArray();
+        $transaction_items = $this->transactionItemsService->fetchItemsByTransactionId($transaction_id);
+        $transaction_items = filled($transaction_items) ? $transaction_items->toArray() : [];
         $amount = 0;
         foreach ($transaction_items as $transaction_item) {
             foreach ($transaction_item['skus'] as $sku) {

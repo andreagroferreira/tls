@@ -27,6 +27,12 @@ parameters:
     required: true
   - name: KBANK_THBKK2BE_SANDBOX_MID
     required: true
+  - name: KBANK_THBKK2BE_API_KEY
+    required: true
+  - name: KBANK_THBKK2BE_SECRET
+    required: true
+  - name: KBANK_THBKK2BE_MID
+    required: true
   - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
     required: true
   - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
@@ -312,6 +318,12 @@ objects:
                   value: ${KBANK_THBKK2BE_SANDBOX_SECRET}
                 - name: KBANK_THBKK2BE_SANDBOX_MID
                   value: ${KBANK_THBKK2BE_SANDBOX_MID}
+                - name: KBANK_THBKK2BE_API_KEY
+                  value: ${KBANK_THBKK2BE_API_KEY}
+                - name: KBANK_THBKK2BE_SECRET
+                  value: ${KBANK_THBKK2BE_SECRET}
+                - name: KBANK_THBKK2BE_MID
+                  value: ${KBANK_THBKK2BE_MID}
                 - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
@@ -477,6 +489,12 @@ objects:
                   value: ${KBANK_THBKK2BE_SANDBOX_SECRET}
                 - name: KBANK_THBKK2BE_SANDBOX_MID
                   value: ${KBANK_THBKK2BE_SANDBOX_MID}
+                - name: KBANK_THBKK2BE_API_KEY
+                  value: ${KBANK_THBKK2BE_API_KEY}
+                - name: KBANK_THBKK2BE_SECRET
+                  value: ${KBANK_THBKK2BE_SECRET}
+                - name: KBANK_THBKK2BE_MID
+                  value: ${KBANK_THBKK2BE_MID}
                 - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY

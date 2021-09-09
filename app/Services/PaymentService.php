@@ -41,7 +41,7 @@ class PaymentService
     {
         $payment_gateway  = $confirm_params['gateway'];
         $amount_matched   = (strval($transaction['t_amount']) == strval($confirm_params['amount']));
-        $currency_matched = ($transaction['t_currency'] == $confirm_params['currency']);
+        $currency_matched = (trim($transaction['t_currency']) == trim($confirm_params['currency']));
         $error_msg        = [];
         if (!$amount_matched || !$currency_matched) {
             Log::warning("ONLINE PAYMENT, $payment_gateway data check failed-1 : ($amount_matched) ($currency_matched)");

@@ -42,6 +42,27 @@ class TransactionService
         });
     }
 
+    public function fetchAll($attributes)
+    {
+        $where = collect([
+            ['t_tech_deleted', '=', false],
+            ['t_tech_creation', '>=', $attributes['start_date']],
+            ['t_tech_creation', '<', $attributes['end_date']]
+        ])
+            ->when(array_key_exists('status', $attributes), function ($collect) use ($attributes) {
+                return $collect->push(['t_status', '=', $attributes['status']]);
+            })
+            ->toArray();
+
+        $res = $this->transactionRepository->fetchWithPage($where, $attributes['limit'], array_get($attributes, 'issuer'))
+            ->toArray();
+
+        return [
+            'total' => array_get($res, 'total', 0),
+            'data' => array_get($res, 'data', [])
+        ];
+    }
+
     public function fetchByWhere($where, $field = '*')
     {
         return $this->transactionRepository->fetch($where, $field);

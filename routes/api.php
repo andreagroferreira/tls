@@ -26,6 +26,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     // invoice api
     $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
 
+    //recommendation result api
+    $router->post('rcd_result', 'RecommendationResultController@create');
+    $router->get('rcd_result/{f_id}', 'RecommendationResultController@fetchAll');
+    $router->delete('rcd_result/{rcd_id}', 'RecommendationResultController@delete');
 
     $router->get('checkout/{t_id}', 'CheckoutController@checkout');
 

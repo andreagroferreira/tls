@@ -180,7 +180,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             'client_id' =>  $tingg_config['clientID'],
             "client_secret" => $tingg_config['clientSecret'],
         ];
-        $response = $this->guzzleClient->request('POST', 'https://developer.tingg.africa/checkout/v2/custom/oauth/token', [
+        $response = $this->guzzleClient->request('POST', env('ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST'), [
             'verify' => env('VERIFYPEER'),
             'http_errors' => false,
             'idn_conversion' => false,
@@ -199,7 +199,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             'merchantTransactionID' => $params['merchantTransactionID'],
             'serviceCode' => $params['serviceCode']
         ];
-        $response = $this->guzzleClient->request('POST', 'https://developer.tingg.africa/checkout/v2/custom/requests/query-status', [
+        $response = $this->guzzleClient->request('POST', env('ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST'), [
             'verify' => env('VERIFYPEER'),
             'http_errors' => false,
             'idn_conversion' => false,

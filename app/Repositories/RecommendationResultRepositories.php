@@ -32,9 +32,8 @@ class RecommendationResultRepositories
         return $this->recommendationResultModel
             ->select($select)
             ->where('rr_xref_f_id', $f_id)
-            ->where('rr_tech_deleted', false)
-            ->when($with_delete, function ($query) {
-                return $query->orWhere('rr_tech_deleted', true);
+            ->when(!$with_delete, function ($query) {
+                return $query->where('rr_tech_deleted', false);
             })
             ->get();
     }

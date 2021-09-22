@@ -8,6 +8,7 @@ use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class TinggPaymentGateway implements PaymentGatewayInterface
@@ -62,8 +63,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
         $client       = $transaction['t_client'];
         $issuer       = $transaction['t_issuer'];
         $fg_id        = $transaction['t_xref_fg_id'];
-        $config       = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
-        $tingg_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
+        $tingg_config = $this->getTinggConfig($transaction);
         $application  = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
         $u_surname    = $application['body']['u_surname'] ?? '';
         $u_givenname  = $application['body']['u_givenname'] ?? '';
@@ -76,7 +76,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             'serviceCode'           => $tingg_config['serviceCode'],
             'dueDate'               => Carbon::now()->addMinutes(30)->format('Y-m-d H:i:s'),
             'requestDescription'    => 'Tlscontact fees for group ' . $fg_id,
-            'countryCode'           => $this->isSandBox() ? 'KE' : strtoupper(substr($issuer, 0, 2)),
+            'countryCode'           => strtoupper(substr($issuer, 0, 2)),
             'languageCode'          => 'en',
             "customerLastName"      => $u_surname,
             "customerFirstName"     => $u_givenname,
@@ -91,7 +91,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
         $queryParams = [
             'accessKey'   => $tingg_config['accessKey'],
             'params'      => $encryptParams,
-            'countryCode' => $this->isSandBox() ? 'KE' : strtoupper(substr($issuer, 0, 2))
+            'countryCode' => strtoupper(substr($issuer, 0, 2))
         ];
         return [
             'form_method' => 'get',
@@ -102,14 +102,13 @@ class TinggPaymentGateway implements PaymentGatewayInterface
 
     public function return($params)
     {
-        if(empty($params['payments'])) {
+        if(empty($params['merchantTransactionID']) || empty($params['serviceCode'])) {
             return [
                 'status' => 'error',
                 'message' => 'no_data_received'
             ];
         }
 
-        $payments = current(json_decode($params['payments']));
         $transaction_id = str_replace('_', '-', $params['merchantTransactionID']);
         $this->paymentService->saveTransactionLog($transaction_id, $params, $this->getPaymentGatewayName());
 
@@ -122,15 +121,32 @@ class TinggPaymentGateway implements PaymentGatewayInterface
                 'message' => 'transaction_id_not_exists'
             ];
         }
+        $tingg_config = $this->getTinggConfig($transaction);
+        $bearer_token = $this->apiService->getAuthorization($tingg_config);
+        $response = $this->apiService->queryStatus($params, $bearer_token);
+        if(!empty($response['status']) && $response['status'] == 200) {
+            $payment = $response['body']['results'];
+            $confirm_params = [
+                'gateway' => $this->getPaymentGatewayName(),
+                'amount' => $payment['amountPaid'] ?? '',
+                'currency' => $payment['paymentCurrencyCode'] ?? 0,
+                'transaction_id' => $transaction_id,
+                'gateway_transaction_id' => current($payment['payments'])['payerTransactionID'] ?? '',
+            ];
+            return $this->paymentService->confirm($transaction, $confirm_params);
+        } else {
+            return [
+                'status' => 'error',
+                'message' => 'transaction_id_not_exists'
+            ];
+        }
+    }
 
-        $confirm_params = [
-            'gateway' => $this->getPaymentGatewayName(),
-            'amount' => $payments->amountPaid,
-            'currency' => $payments->currencyCode,
-            'transaction_id' => $transaction_id,
-            'gateway_transaction_id' => $payments->payerTransactionID,
-        ];
-        return $this->paymentService->confirm($transaction, $confirm_params);
+    private function getTinggConfig($transaction) {
+        $client       = $transaction['t_client'];
+        $issuer       = $transaction['t_issuer'];
+        $config       = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        return array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
     }
 
     private function encrypt($ivKey, $secretKey, $payload = [])

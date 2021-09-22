@@ -51,6 +51,14 @@ parameters:
     required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
     required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
+    required: true
   - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
     required: true
   - name: PAYGATE_ZAALL2BE_SANDBOX_ID
@@ -342,6 +350,14 @@ objects:
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID
@@ -513,6 +529,14 @@ objects:
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID

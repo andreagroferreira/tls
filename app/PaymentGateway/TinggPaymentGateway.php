@@ -7,7 +7,6 @@ use App\Services\ApiService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
-use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -18,13 +17,11 @@ class TinggPaymentGateway implements PaymentGatewayInterface
     private $gatewayService;
     private $paymentService;
     private $apiService;
-    private $guzzleClient;
 
     public function __construct(
         TransactionService $transactionService,
         GatewayService $gatewayService,
         PaymentService $paymentService,
-        Client $guzzleClient,
         ApiService $apiService
     )
     {
@@ -32,7 +29,6 @@ class TinggPaymentGateway implements PaymentGatewayInterface
         $this->gatewayService     = $gatewayService;
         $this->paymentService     = $paymentService;
         $this->apiService         = $apiService;
-        $this->guzzleClient       = $guzzleClient;
     }
 
     public function getPaymentGatewayName()
@@ -126,8 +122,8 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $tingg_config = $this->getTinggConfig($transaction);
-        $bearer_token = $this->getAuthorization($tingg_config);
-        $response = $this->queryStatus($params, $bearer_token);
+        $bearer_token = $this->apiService->getAuthorization($tingg_config);
+        $response = $this->apiService->queryStatus($params, $bearer_token);
         if(!empty($response['status']) && $response['status'] == 200) {
             $payment = $response['body']['results'];
             $confirm_params = [
@@ -172,49 +168,6 @@ class TinggPaymentGateway implements PaymentGatewayInterface
         $encryptedPayload = base64_encode($encrypted);
 
         return $encryptedPayload;
-    }
-
-    private function getAuthorization($tingg_config) {
-        $data = [
-            'grant_type' => 'client_credentials',
-            'client_id' =>  $tingg_config['clientID'],
-            "client_secret" => $tingg_config['clientSecret'],
-        ];
-        $response = $this->guzzleClient->request('POST', env('ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST'), [
-            'verify' => env('VERIFYPEER'),
-            'http_errors' => false,
-            'idn_conversion' => false,
-            'Accept' => 'application/json',
-            'json' => $data,
-        ]);
-        $response = [
-            'status' => $response->getStatusCode(),
-            'body' => json_decode($response->getBody(), true)
-        ];
-        return $response['body']['access_token'] ?? '';
-    }
-
-    private function queryStatus($params, $bearer_token) {
-        $data = [
-            'merchantTransactionID' => $params['merchantTransactionID'],
-            'serviceCode' => $params['serviceCode']
-        ];
-        $response = $this->guzzleClient->request('POST', env('ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST'), [
-            'verify' => env('VERIFYPEER'),
-            'http_errors' => false,
-            'idn_conversion' => false,
-            'Accept' => 'application/json',
-            'headers' => [
-                'Authorization' => 'Bearer ' . $bearer_token,
-                'Content-Type' => 'application/json'
-            ],
-            'json' => $data,
-        ]);
-        $response = [
-            'status' => $response->getStatusCode(),
-            'body' => json_decode($response->getBody(), true)
-        ];
-        return $response;
     }
 
 }

@@ -116,8 +116,8 @@ class ApiService
             'client_id' =>  $tingg_config['clientID'],
             "client_secret" => $tingg_config['clientSecret'],
         ];
-        $response = $this->guzzleClient->request('POST', env('ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST'), [
-            'verify' => env('VERIFYPEER'),
+        $response = $this->guzzleClient->request('post', env('ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST'), [
+            'verify' => false,
             'http_errors' => false,
             'idn_conversion' => false,
             'Accept' => 'application/json',
@@ -135,8 +135,8 @@ class ApiService
             'merchantTransactionID' => $params['merchantTransactionID'],
             'serviceCode' => $params['serviceCode']
         ];
-        $response = $this->guzzleClient->request('POST', env('ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST'), [
-            'verify' => env('VERIFYPEER'),
+        $response = $this->guzzleClient->request('post', env('ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST'), [
+            'verify' => false,
             'http_errors' => false,
             'idn_conversion' => false,
             'Accept' => 'application/json',

@@ -36,10 +36,14 @@ class RuleEngineService
     {
         $match = false;
         try {
-            if (str_starts_with($exp, '<=') || str_starts_with($exp, '<') ||
-                str_starts_with($exp, '>=') || str_starts_with($exp, '>')) {
-                //use eval calculate the age
-                eval("\$match = $age$exp;");
+            if (str_starts_with($exp, '<=')) {
+                $match = $age <= str_replace('<=', '', $exp);
+            } else if (str_starts_with($exp, '<')) {
+                $match = $age < str_replace('<', '', $exp);
+            } else if (str_starts_with($exp, '>=')){
+                $match = $age >= str_replace('>=', '', $exp);
+            } else if (str_starts_with($exp, '>')) {
+                $match = $age > str_replace('>', '', $exp);
             } else if (strpos($exp, '-') !== false) {
                 $condition = explode('-', $exp);
                 if (count($condition) != 2 || $condition[1] <= $condition [0]) {

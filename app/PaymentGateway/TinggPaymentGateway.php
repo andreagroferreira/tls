@@ -122,8 +122,8 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $tingg_config = $this->getTinggConfig($transaction);
-        $bearer_token = $this->apiService->getAuthorization($tingg_config);
-        $response = $this->apiService->queryStatus($params, $bearer_token);
+        $bearer_token = $this->apiService->getTinggAuthorization($tingg_config);
+        $response = $this->apiService->getTinggQueryStatus($params, $bearer_token);
         if(!empty($response['status']) && $response['status'] == 200) {
             $payment = $response['body']['results'];
             $confirm_params = [

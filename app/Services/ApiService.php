@@ -110,7 +110,7 @@ class ApiService
         return $response;
     }
 
-    public function getAuthorization($tingg_config) {
+    public function getTinggAuthorization($tingg_config) {
         $data = [
             'grant_type' => 'client_credentials',
             'client_id' =>  $tingg_config['clientID'],
@@ -130,7 +130,7 @@ class ApiService
         return $response['body']['access_token'] ?? '';
     }
 
-    public function queryStatus($params, $bearer_token) {
+    public function getTinggQueryStatus($params, $bearer_token) {
         $data = [
             'merchantTransactionID' => $params['merchantTransactionID'],
             'serviceCode' => $params['serviceCode']

@@ -91,6 +91,22 @@ abstract class TestCase extends \TestCase
             ->where($where)
             ->update($update);
     }
+
+    public function generateRcd($params = [])
+    {
+        if (blank($params)) {
+            $params = [
+                'rr_xref_f_id' => 10000,
+                'rr_agent' => 'test.test',
+                'rr_sku' => 'COURIER',
+                'rr_result' => 'accept'
+            ];
+        }
+
+        $db_connection = DB::connection('unit_test_payment_pgsql')->table('recommendation_result');
+        $rr_id = $db_connection->insertGetId($params, 'rr_id');
+        return $db_connection->where('rr_id', $rr_id)->first();
+    }
 }
 
 

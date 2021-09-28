@@ -89,7 +89,7 @@ class RecommendationResultControllerTest extends TestCase
         $this->assertEquals(1, count($response_array));
         $rcd_id = array_get($response_array, '0.rr_id');
         $this->delete($base_url . '/' . $rcd_id, [
-            'rr_deleted_by' => 1
+            'rr_deleted_by' => 'test',
         ]);
         $this->response->assertStatus(200);
         $this->get($base_url . '/' . $this->rcd_example['rr_xref_f_id']);
@@ -100,7 +100,7 @@ class RecommendationResultControllerTest extends TestCase
         $this->assertEquals(false, blank($query));
 
         $this->delete($base_url . '/' . $rcd_id, [
-            'rr_deleted_by' => 1,
+            'rr_deleted_by' => 'test',
             'is_soft_delete' => 'no'
         ]);
         $this->response->assertStatus(200);

@@ -887,6 +887,158 @@
                 }
             }
         },
+        "/api/v1/rcd_result": {
+            "post": {
+                "tags": [
+                    "Recommendation Result API"
+                ],
+                "description": "add a recommendation result",
+                "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::create",
+                "parameters": [
+                    {
+                        "name": "f_id",
+                        "in": "query",
+                        "description": "the tlsconnect f_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    },
+                    {
+                        "name": "agent",
+                        "in": "query",
+                        "description": "the agent who operate this record",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "test.test"
+                        }
+                    },
+                    {
+                        "name": "sku",
+                        "in": "query",
+                        "description": "the sku accepted or denied",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "COURIER"
+                        }
+                    },
+                    {
+                        "name": "result",
+                        "in": "query",
+                        "description": "the recommendation result, accept or deny",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "accept"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "create a recommendation result record success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/rcd_result/{f_id}": {
+            "get": {
+                "tags": [
+                    "Recommendation Result API"
+                ],
+                "description": "get the recommendation result according to f_id",
+                "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::fetchAll",
+                "parameters": [
+                    {
+                        "name": "f_id",
+                        "in": "path",
+                        "description": "the tlsconnect f_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the recommendation result list",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/rcd_result/{rcd_id}": {
+            "delete": {
+                "tags": [
+                    "Recommendation Result Delete API"
+                ],
+                "description": "delete the recommendation results according to rcd_id",
+                "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::delete",
+                "parameters": [
+                    {
+                        "name": "rcd_id",
+                        "in": "path",
+                        "description": "the recommendation result id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    },
+                    {
+                        "name": "deleted_by",
+                        "in": "query",
+                        "description": "the agent id who delete this record",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    },
+                    {
+                        "name": "is_soft_delete",
+                        "in": "query",
+                        "description": "soft delete this record or not, yes(for soft delte) or no",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "yes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "deleted the record",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/tingg/redirto": {
             "post": {
                 "tags": [
@@ -1111,6 +1263,90 @@
                 "responses": {
                     "200": {
                         "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/transactions": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get all transactions",
+                "operationId": "App\\Http\\Controllers\\V1\\TransactionController::fetchAll",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page, default 1",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "number of result per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "20"
+                        }
+                    },
+                    {
+                        "name": "issuer",
+                        "in": "query",
+                        "description": "define which issuer you want to fetch",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "egCAI2be,egCAI2be"
+                        }
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start date",
+                        "required": false,
+                        "schema": {
+                            "type": "date",
+                            "example": "2021-01-01"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end date",
+                        "required": false,
+                        "schema": {
+                            "type": "date",
+                            "example": "2021-12-31"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "transaction stats, eg pending, waiting, close, done",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "pending"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the transaction",
                         "content": {
                             "application/json": {
                                 "schema": {}

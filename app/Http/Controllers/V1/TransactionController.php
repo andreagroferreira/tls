@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Services\TransactionService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -226,6 +227,106 @@ class TransactionController extends BaseController
             }
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/transactions",
+     *     tags={"Payment API"},
+     *     description="get all transactions",
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          description="page, default 1",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="1"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          description="number of result per page",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="20"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="issuer",
+     *          in="query",
+     *          description="define which issuer you want to fetch",
+     *          required=false,
+     *          @OA\Schema(type="string", example="egCAI2be,egCAI2be"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="start_date",
+     *          in="query",
+     *          description="start date",
+     *          required=false,
+     *          @OA\Schema(type="date", example="2021-01-01"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="end_date",
+     *          in="query",
+     *          description="end date",
+     *          required=false,
+     *          @OA\Schema(type="date", example="2021-12-31"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="status",
+     *          in="query",
+     *          description="transaction stats, eg pending, waiting, close, done",
+     *          required=false,
+     *          @OA\Schema(type="string", example="pending"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the transaction",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function fetchAll(Request $request)
+    {
+        $params = [
+            'page' => $request->input('page', 1),
+            'limit' => $request->input('limit', 20),
+            'start_date' => $request->input('start_date', Carbon::today()->toDateString()),
+            'end_date' => $request->input('end_date', Carbon::tomorrow()->toDateString())
+        ];
+
+        if ($request->has('issuer')) {
+            $params['issuer'] = explode(',', trim($request->input('issuer'), ','));
+        }
+
+        $validator = validator(array_merge($params, $request->only(['status'])), [
+            'page' => 'required|integer',
+            'limit' => 'required|integer',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'issuer.*' => 'sometimes|required|regex:/^[a-zA-Z]{5}2[a-zA-Z]{2}$/',
+            'status' => [
+                'sometimes',
+                'required',
+                Rule::in(['pending', 'waiting', 'close', 'done'])
+            ]
+        ], [
+            'issuer.*.regex' => 'The issuer format is invalid.'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $res = $this->transactionService->fetchAll($validator->validated());
+
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+
         }
     }
 }

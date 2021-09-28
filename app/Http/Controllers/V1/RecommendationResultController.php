@@ -151,11 +151,11 @@ class RecommendationResultController extends BaseController
      *          @OA\Schema(type="integer", example="1"),
      *      ),
      *     @OA\Parameter(
-     *          name="deleted_by",
+     *          name="rr_deleted_by",
      *          in="query",
-     *          description="the agent id who delete this record",
-     *          required=false,
-     *          @OA\Schema(type="integer", example="1"),
+     *          description="the agent who delete this record",
+     *          required=true,
+     *          @OA\Schema(type="string", example="test.test"),
      *      ),
      *     @OA\Parameter(
      *          name="is_soft_delete",
@@ -184,7 +184,7 @@ class RecommendationResultController extends BaseController
         ];
         $validator = validator($params, [
             'rr_id' => 'required|integer',
-            'rr_deleted_by' => 'required|integer',
+            'rr_deleted_by' => 'required|string',
             'is_soft_delete' => [
                 'required',
                 'string',

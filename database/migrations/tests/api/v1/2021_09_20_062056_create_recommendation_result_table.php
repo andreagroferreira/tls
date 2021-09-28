@@ -23,7 +23,7 @@ class CreateRecommendationResultTable extends Migration
             $table->timestamp('rr_tech_creation')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('rr_tech_modification')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->boolean('rr_tech_deleted')->default(0);
-            $table->bigInteger('rr_deleted_by')->nullable(true)->comment('agent id who deleted this line');
+            $table->string('rr_deleted_by')->nullable(true)->comment('agent who deleted this line');
         });
 
         DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE recommendation_result OWNER TO common;");

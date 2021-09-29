@@ -1004,13 +1004,13 @@
                         }
                     },
                     {
-                        "name": "deleted_by",
+                        "name": "rr_deleted_by",
                         "in": "query",
-                        "description": "the agent id who delete this record",
-                        "required": false,
+                        "description": "the agent who delete this record",
+                        "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "1"
+                            "type": "string",
+                            "example": "test.test"
                         }
                     },
                     {

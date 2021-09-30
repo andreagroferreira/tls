@@ -19,6 +19,43 @@ class AvsRecommendationController extends BaseController
         $this->avsRecommendationService = $avsRecommendationService;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/avs_recommendation/{client}/{f_id}",
+     *     tags={"Payment API"},
+     *     description="add a recommendation result",
+     *      @OA\Parameter(
+     *          name="client",
+     *          in="query",
+     *          description="the tlsconnect client",
+     *          required=true,
+     *          @OA\Schema(type="string", example="be"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="f_id",
+     *          in="query",
+     *          description="the tlsconnect f_id",
+     *          required=true,
+     *          @OA\Schema(type="integer", example="10001"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          description="get the recommend limited avs, default for 6",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="6"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="create a recommendation result record success",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      )
+     * )
+     */
     public function fetch(Request $request)
     {
         $params = [

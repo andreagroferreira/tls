@@ -22,7 +22,7 @@ class RecommendationResultController extends BaseController
     /**
      * @OA\Post(
      *     path="/api/v1/rcd_result",
-     *     tags={"Recommendation Result API"},
+     *     tags={"Payment API"},
      *     description="add a recommendation result",
      *      @OA\Parameter(
      *          name="f_id",
@@ -97,7 +97,7 @@ class RecommendationResultController extends BaseController
     /**
      * @OA\Get(
      *     path="/api/v1/rcd_result/{f_id}",
-     *     tags={"Recommendation Result API"},
+     *     tags={"Payment API"},
      *     description="get the recommendation result according to f_id",
      *      @OA\Parameter(
      *          name="f_id",
@@ -141,7 +141,7 @@ class RecommendationResultController extends BaseController
     /**
      * @OA\Delete(
      *     path="/api/v1/rcd_result/{rcd_id}",
-     *     tags={"Recommendation Result Delete API"},
+     *     tags={"Payment API"},
      *     description="delete the recommendation results according to rcd_id",
      *      @OA\Parameter(
      *          name="rcd_id",

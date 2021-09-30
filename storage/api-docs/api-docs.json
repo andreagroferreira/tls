@@ -6,6 +6,60 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/avs_recommendation/{client}/{f_id}": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "add a recommendation result",
+                "operationId": "App\\Http\\Controllers\\V1\\AvsRecommendationController::fetch",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "query",
+                        "description": "the tlsconnect client",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "be"
+                        }
+                    },
+                    {
+                        "name": "f_id",
+                        "in": "query",
+                        "description": "the tlsconnect f_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10001"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "get the recommend limited avs, default for 6",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "6"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "create a recommendation result record success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/checkout/{t_id}": {
             "get": {
                 "tags": [
@@ -890,7 +944,7 @@
         "/api/v1/rcd_result": {
             "post": {
                 "tags": [
-                    "Recommendation Result API"
+                    "Payment API"
                 ],
                 "description": "add a recommendation result",
                 "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::create",
@@ -954,7 +1008,7 @@
         "/api/v1/rcd_result/{f_id}": {
             "get": {
                 "tags": [
-                    "Recommendation Result API"
+                    "Payment API"
                 ],
                 "description": "get the recommendation result according to f_id",
                 "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::fetchAll",
@@ -988,7 +1042,7 @@
         "/api/v1/rcd_result/{rcd_id}": {
             "delete": {
                 "tags": [
-                    "Recommendation Result Delete API"
+                    "Payment API"
                 ],
                 "description": "delete the recommendation results according to rcd_id",
                 "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::delete",

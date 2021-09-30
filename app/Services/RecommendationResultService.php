@@ -23,7 +23,7 @@ class RecommendationResultService
     }
 
     public function fetchByFId($id) {
-        $select = ['rr_xref_f_id', 'rr_sku', 'rr_id'];
+        $select = ['rr_sku', 'rr_result', 'rr_id'];
         return $this->recommendationResultRepositories->fetchByFId($id, $select);
     }
 

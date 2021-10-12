@@ -39,6 +39,9 @@ sonarcloud-check:
     - merge_requests
     - master
     - develop
+  except:
+    variables:
+      - $ROLLBACK
 
 prepare-instance:
   stage: build
@@ -53,6 +56,10 @@ prepare-instance:
     expire_in: 1 hour
   environment:
     name: $ENV
+  rules:
+    - if: '$ROLLBACK == "true"'
+      when: never
+    - when: on_success
 
 .deploy-instance:
   variables:
@@ -62,6 +69,9 @@ prepare-instance:
   only:
     variables:
       - $PROJECT
+  except:
+    variables:
+      - $ROLLBACK
   before_script:
     - echo $MASTER_PUBLIC_URL
     - oc login --token=$GITLAB_SA_TOKEN --insecure-skip-tls-verify=true $MASTER_PUBLIC_URL

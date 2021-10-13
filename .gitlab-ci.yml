@@ -200,7 +200,7 @@ deploy-instance-staging:
 rollback:
   extends: .rollback
   script:
-    - echo "oc rollout undo dc/$APPLICATION_NAME" # ONLY FOR TESTS, REMOVE BEFORE MERGE
+    - oc rollout undo dc/$APPLICATION_NAME
   rules:
     - if: '$ROLLBACK == "true"'
       when: on_success

@@ -63,8 +63,18 @@ class TinggController extends BaseController
      * )
      */
     public function return(Request $request) {
-        return $this->notifyReturn($request);
-
+        $params = $request->post();
+        try {
+            $result = $this->paymentGateway->return($params);
+            $message = $result['message'] ?? '';
+            if ($message == 'transaction_id_not_exists') {
+                return $this->sendError('P0011', 'transaction id does not exists', 400);
+            } else {
+                return $this->sendResponse($result, 200);
+            }
+        } catch (\Exception $e) {
+            return $this->sendError('P0006', $e->getMessage(), 400);
+        }
     }
 
     /**
@@ -84,13 +94,9 @@ class TinggController extends BaseController
      * )
      */
     public function notify(Request $request) {
-        return $this->notifyReturn($request);
-    }
-
-    private function notifyReturn($request) {
         $params = $request->post();
         try {
-            $result = $this->paymentGateway->return($params);
+            $result = $this->paymentGateway->notify($params);
             $message = $result['message'] ?? '';
             if ($message == 'transaction_id_not_exists') {
                 return $this->sendError('P0011', 'transaction id does not exists', 400);

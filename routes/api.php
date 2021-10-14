@@ -19,7 +19,7 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($router) {
     // recommendation rule engine api
-    $router->get('rcd_engine/{client}/{f_id}', 'RuleEngineController@fetch');
+    $router->post('rcd_rule', 'RecommendationRuleEngineController@fetch');
 
     // transaction api
     $router->get('transaction/{fg_id}', 'TransactionController@fetch');

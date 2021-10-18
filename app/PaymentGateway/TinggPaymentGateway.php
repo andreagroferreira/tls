@@ -86,7 +86,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             return [
                 "checkoutRequestID"     => $params['checkoutRequestID'],
                 "merchantTransactionID" => $params['merchantTransactionID'],
-                "statusCode"            => $params['requestStatusCode'],
+                "statusCode"            => ($params['requestStatusCode'] == 178) ? 183 : $params['requestStatusCode'],
                 "statusDescription"     => $params['requestStatusDescription'],
                 "receiptNumber"         => ""
             ];

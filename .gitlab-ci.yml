@@ -1,3 +1,8 @@
+include:
+  - project: 'dev_tls/giza/templates'
+    ref: production
+    file: 'rollback.gitlab-ci.yml'
+
 image: ${DOCKER_REGISTRY_ADDRESS}/openshift3/ose-cli:${DOCKER_TAG_OSE_CLI}
 
 default:
@@ -17,6 +22,7 @@ stages:
   - build
   - deploy
   - expose
+  - rollback
 
 sonarcloud-check:
   stage: analyze
@@ -33,6 +39,9 @@ sonarcloud-check:
     - merge_requests
     - master
     - develop
+  except:
+    variables:
+      - $ROLLBACK
 
 prepare-instance:
   stage: build
@@ -47,6 +56,10 @@ prepare-instance:
     expire_in: 1 hour
   environment:
     name: $ENV
+  rules:
+    - if: '$ROLLBACK == "true"'
+      when: never
+    - when: on_success
 
 .deploy-instance:
   variables:
@@ -141,6 +154,7 @@ deploy-instance-manual:
   except:
     variables:
       - $AUTODEPLOY
+      - $ROLLBACK
   environment:
     name: $ENV
 
@@ -151,6 +165,9 @@ deploy-instance-auto:
   only:
     variables:
       - $AUTODEPLOY
+  except:
+    variables:
+      - $ROLLBACK
   environment:
     name: $ENV
 
@@ -165,6 +182,7 @@ deploy-instance-master:
   except:
     variables:
       - $AUTODEPLOY
+      - $ROLLBACK
 
 deploy-instance-staging:
   extends: .deploy-instance
@@ -177,4 +195,12 @@ deploy-instance-staging:
   except:
     variables:
       - $AUTODEPLOY
+      - $ROLLBACK
 
+rollback:
+  extends: .rollback
+  script:
+    - oc rollout undo dc/$APPLICATION_NAME
+  rules:
+    - if: '$ROLLBACK == "true"'
+      when: on_success

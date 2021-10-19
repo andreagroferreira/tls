@@ -80,16 +80,19 @@ class TinggPaymentGateway implements PaymentGatewayInterface
                 'gateway_transaction_id' => current($payment['payments'])['payerTransactionID'] ?? '',
             ];
             $notify_response = $this->paymentService->confirm($transaction, $confirm_params);
-            if ($notify_response['is_success'] == 'error') {
-                Log::warning("ONLINE PAYMENT, TINGG : Data verification failed" . "\n" . json_encode($notify_response, JSON_UNESCAPED_UNICODE));
-            }
-            return [
+            $result = [
                 "checkoutRequestID"     => $params['checkoutRequestID'],
                 "merchantTransactionID" => $params['merchantTransactionID'],
-                "statusCode"            => ($params['requestStatusCode'] == 178) ? 183 : $params['requestStatusCode'],
                 "statusDescription"     => $params['requestStatusDescription'],
                 "receiptNumber"         => ""
             ];
+            if ($notify_response['is_success'] == 'error') {
+                Log::warning("ONLINE PAYMENT, TINGG : Data verification failed" . "\n" . json_encode($notify_response, JSON_UNESCAPED_UNICODE));
+                $result['statusCode'] = 180;
+                return $result;
+            }
+            $result['statusCode'] = ($params['requestStatusCode'] == 178) ? 183 : $params['requestStatusCode'];
+            return $result;
         } else {
             return [
                 'status' => 'error',

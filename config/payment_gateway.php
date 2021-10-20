@@ -433,7 +433,7 @@ return [
                 'common' => [
                     'env' => 'live',
                     'activated' => true,
-                    'version' => 'v1',
+                    'version' => 'v2',
                     'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
                     'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
                     'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',

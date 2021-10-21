@@ -1,4 +1,0 @@
-city	visa_type	age	gender	sku
-JNB	short_stay	20-30	M	COURIER
-JNB	long_stay	<25	M	PREMIUM
-JNB	short_stay	>=18	M	YOUNG

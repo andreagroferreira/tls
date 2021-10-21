@@ -26,7 +26,7 @@ abstract class TestCase extends \TestCase
             $db_connection->statement("CREATE DATABASE $database");
         }
 
-        $this->artisan('migrate:refresh', ['--path' => 'database/migrations/tests/api/v1', '--database' => 'unit_test_payment_pgsql']);
+        $this->artisan('migrate:refresh', ['--path' => 'database/migrations/tests/api/v1', '--database' => 'unit_test_payment_pgsql', '--force' => true]);
     }
 
     public function getDbNowTime()

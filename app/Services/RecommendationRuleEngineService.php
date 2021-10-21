@@ -17,7 +17,7 @@ class RecommendationRuleEngineService
 
     public function fetchRules($params)
     {
-        $client       = 'be';
+        $client       = env('PROJECT');
         $issuer       = $params['issuer'];
         $top          = $params['top'];
         $issuer_rules = $this->getIssuerRules($client, $issuer);

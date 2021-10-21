@@ -35,19 +35,9 @@ class AvsRecommendationControllerTest extends TestCase
 
     public function testFetch()
     {
-        $base_url = 'api/v1/avs_recommendation/be/10001';
-        $this->post($base_url);
-        $this->response->assertStatus(405);
+        putenv('PROJECT=be');
 
-        $base_url = 'api/v1/avs_recommendation/fr/10001';
-        $this->get($base_url);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                'error'   => 'params error',
-                'message' => 'The selected client is invalid.'
-            ]);
-
-        $base_url = 'api/v1/avs_recommendation/be/test';
+        $base_url = 'api/v1/avs_recommendation/test';
         $this->get($base_url);
         $this->response->assertStatus(400)
             ->assertJson([
@@ -55,7 +45,7 @@ class AvsRecommendationControllerTest extends TestCase
                 'message' => 'The f id must be an integer.'
             ]);
 
-        $base_url = 'api/v1/avs_recommendation/be/10001';
+        $base_url = 'api/v1/avs_recommendation/10001';
         $this->get($base_url);
         $this->response->assertStatus(200);
 

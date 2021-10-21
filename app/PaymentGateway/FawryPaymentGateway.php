@@ -150,7 +150,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'form_fields' => $params
             ];
         } else {
-            $sign_string = $merchant_id . $order_id . $profile_id . $quantity . $expiry . $secret;
+            $sign_string = $merchant_id . $order_id . $profile_id . $return_url . $quantity . $secret;
             $hash_sign = hash('SHA256', $sign_string);
             // Prepare parameters to post payment gateway -- V2
             // official document: https://developer.fawrystaging.com/docs/express-checkout/self-hosted-checkout
@@ -179,7 +179,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             if ($status_code==200 && $payment_id) {
                 return [
                     'form_method' => 'get',
-                    'form_action' => $host_url . '/atfawry/plugin',
+                    'form_action' => $host_url . '/atfawry/plugin/',
                     'form_fields' => [
                         'payment-id' => $payment_id,
                         'locale' => 'en',
@@ -196,19 +196,11 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     {
         $payment_config = $this->getPaymentConfig($params);
         $pay_version = strtolower($payment_config['common']['version']);
-        if ($pay_version == 'v1') {
-            return $this->returnV1($params);
-        }
-        return $this->returnV2($params);
+        return $pay_version == 'v1' ? $this->returnV1($params) : $this->returnV2($params);
     }
 
     private function getPaymentConfig($params) {
-        if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
-            $order_id = $params['merchantRefNum'];
-        } else {
-            $charge_response = json_decode($params['chargeResponse'], true);
-            $order_id = $charge_response['merchantRefNumber'];
-        }
+        $order_id  = isset($params['merchantRefNum']) ? $params['merchantRefNum'] : $params['merchantRefNumber'];
         $reg = '/[a-z]{2}[A-Z]{3}2[a-z]{2}/';
         preg_match($reg, $order_id, $matches);
         if (empty($matches)) {

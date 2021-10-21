@@ -86,7 +86,7 @@ class ApiService
     private function getApi($url)
     {
         $response = $this->guzzleClient->request('get', $url, [
-            'verify' => env('VERIFYPEER'),
+            'verify' => false,
             'http_errors' => false,
             'idn_conversion' => false,
             'headers' => [
@@ -127,7 +127,7 @@ class ApiService
     private function postApi($url, $data)
     {
         $response = $this->guzzleClient->request('post', $url, [
-            'verify' => env('VERIFYPEER'),
+            'verify' => false,
             'http_errors' => false,
             'idn_conversion' => false,
             'Accept' => $this->accept,

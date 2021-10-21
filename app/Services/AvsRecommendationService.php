@@ -6,6 +6,7 @@ use App\Repositories\RecommendationResultRepositories;
 
 class AvsRecommendationService
 {
+    protected $client;
     protected $directusService;
     protected $recommendationResultRepositories;
     protected $apiService;
@@ -17,6 +18,7 @@ class AvsRecommendationService
         DbConnectionService $dbConnectionService
     )
     {
+        $this->client                           = env('PROJECT');
         $this->directusService                  = $directusService;
         $this->apiService                       = $apiService;
         $this->recommendationResultRepositories = $recommendationResultRepositories;
@@ -26,13 +28,12 @@ class AvsRecommendationService
     public function calcRecommendAvs($params)
     {
         $f_id   = $params['f_id'];
-        $client = $params['client'];
         $limit  = $params['limit'];
 
         //get the recommendation avs from directus
-        $recommendSkus = $this->getRecommendSkus($client, $f_id, $limit);
+        $recommendSkus = $this->getRecommendSkus($f_id, $limit);
         //get the basket requested and paid avs from tlsconnect
-        $basketSkus = $this->getBasketSkus($client, $f_id);
+        $basketSkus = $this->getBasketSkus($f_id);
         //get the recommendation result from recommendation result table
         $recommendResultSkus = $this->getRecommendResultSkus($f_id);
 
@@ -57,9 +58,9 @@ class AvsRecommendationService
         })->toArray();
     }
 
-    private function getBasketSkus($client, $f_id)
+    private function getBasketSkus($f_id)
     {
-        $basket_response = $this->apiService->callTlsApi('GET', 'tls/v1/' . $client . '/basket/' . $f_id . '?online_avs=no');
+        $basket_response = $this->apiService->callTlsApi('GET', 'tls/v1/' . $this->client . '/basket/' . $f_id . '?online_avs=no');
         if ($basket_response['status'] != 200 || empty($basket_response['body'])) {
             return [];
         }
@@ -74,9 +75,9 @@ class AvsRecommendationService
         })->toArray();
     }
 
-    private function getRecommendSkus($client, $f_id, $limit)
+    private function getRecommendSkus($f_id, $limit)
     {
-        $form_response = $this->apiService->callTlsApi('GET', 'tls/v2/' . $client . '/form/' . $f_id);
+        $form_response = $this->apiService->callTlsApi('GET', 'tls/v2/' . $this->client . '/form/' . $f_id);
         if ($form_response['status'] != 200 || empty($form_response['body'])) {
             return [];
         }

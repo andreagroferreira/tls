@@ -21,16 +21,9 @@ class AvsRecommendationController extends BaseController
 
     /**
      * @OA\Post(
-     *     path="/api/v1/avs_recommendation/{client}/{f_id}",
+     *     path="/api/v1/avs_recommendation/{f_id}",
      *     tags={"Payment API"},
-     *     description="add a recommendation result",
-     *      @OA\Parameter(
-     *          name="client",
-     *          in="query",
-     *          description="the tlsconnect client",
-     *          required=true,
-     *          @OA\Schema(type="string", example="be"),
-     *      ),
+     *     description="get the services by directus recommendation priority",
      *      @OA\Parameter(
      *          name="f_id",
      *          in="query",
@@ -41,13 +34,13 @@ class AvsRecommendationController extends BaseController
      *      @OA\Parameter(
      *          name="limit",
      *          in="query",
-     *          description="get the recommend limited avs, default for 6",
+     *          description="number of recommended services, default for 6",
      *          required=false,
      *          @OA\Schema(type="integer", example="6"),
      *      ),
      *      @OA\Response(
      *          response="200",
-     *          description="create a recommendation result record success",
+     *          description="get the recommended service success",
      *          @OA\JsonContent(),
      *      ),
      *      @OA\Response(
@@ -60,16 +53,10 @@ class AvsRecommendationController extends BaseController
     {
         $params = [
             'f_id' => $request->route('f_id'),
-            'client' => $request->route('client'),
             'limit' => $request->get('limit', 6)
         ];
         $validator = validator($params, [
             'f_id' => 'required|integer',
-            'client' => [
-                'required',
-                'string',
-                Rule::in(Storage::disk('rules')->allDirectories()),
-            ],
             'limit' => 'required|integer'
         ]);
         if($validator->fails()) {

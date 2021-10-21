@@ -48,7 +48,57 @@ class TinggPaymentGateway implements PaymentGatewayInterface
 
     public function notify($params)
     {
-        return $this->return($params);
+        if(empty($params['merchantTransactionID']) || empty($params['serviceCode'])) {
+            return [
+                'status' => 'error',
+                'message' => 'no_data_received'
+            ];
+        }
+
+        $transaction_id = str_replace('_', '-', $params['merchantTransactionID']);
+        $this->paymentService->saveTransactionLog($transaction_id, $params, $this->getPaymentGatewayName());
+
+        $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $transaction_id]);
+        if (empty($transaction)) {
+            Log::warning("ONLINE PAYMENT, TINGG : No transaction found in the database for " . $transaction_id . "\n" .
+                json_encode($_POST, JSON_UNESCAPED_UNICODE));
+            return [
+                'status' => 'error',
+                'message' => 'transaction_id_not_exists'
+            ];
+        }
+        $tingg_config = $this->getTinggConfig($transaction);
+        $bearer_token = $this->apiService->getTinggAuthorization($tingg_config);
+        $response = $this->apiService->getTinggQueryStatus($params, $bearer_token);
+        if(!empty($response['status']) && $response['status'] == 200) {
+            $payment = $response['body']['results'];
+            $confirm_params = [
+                'gateway' => $this->getPaymentGatewayName(),
+                'amount' => $payment['amountPaid'] ?? '',
+                'currency' => $payment['paymentCurrencyCode'] ?? 0,
+                'transaction_id' => $transaction_id,
+                'gateway_transaction_id' => current($payment['payments'])['payerTransactionID'] ?? '',
+            ];
+            $notify_response = $this->paymentService->confirm($transaction, $confirm_params);
+            $result = [
+                "checkoutRequestID"     => $params['checkoutRequestID'],
+                "merchantTransactionID" => $params['merchantTransactionID'],
+                "statusDescription"     => $params['requestStatusDescription'],
+                "receiptNumber"         => ""
+            ];
+            if ($notify_response['is_success'] == 'error') {
+                Log::warning("ONLINE PAYMENT, TINGG : Data verification failed" . "\n" . json_encode($notify_response, JSON_UNESCAPED_UNICODE));
+                $result['statusCode'] = 180;
+                return $result;
+            }
+            $result['statusCode'] = ($params['requestStatusCode'] == 178) ? 183 : $params['requestStatusCode'];
+            return $result;
+        } else {
+            return [
+                'status' => 'error',
+                'message' => 'transaction_id_not_exists'
+            ];
+        }
     }
 
     public function redirto($t_id)
@@ -114,7 +164,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
 
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $transaction_id]);
         if (empty($transaction)) {
-            Log::warning("ONLINE PAYMENT, CMI : No transaction found in the database for " . $transaction_id . "\n" .
+            Log::warning("ONLINE PAYMENT, TINGG : No transaction found in the database for " . $transaction_id . "\n" .
                 json_encode($_POST, JSON_UNESCAPED_UNICODE));
             return [
                 'status' => 'error',

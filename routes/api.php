@@ -27,10 +27,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
 
     // recommendation rule engine api
-    $router->get('rcd_engine/{client}/{f_id}', 'RuleEngineController@fetch');
+    $router->post('rcd_rule', 'RecommendationRuleEngineController@fetch');
 
     // recommendation avs api
-    $router->get('avs_recommendation/{client}/{f_id}', 'AvsRecommendationController@fetch');
+    $router->get('avs_recommendation/{f_id}', 'AvsRecommendationController@fetch');
 
     //recommendation result api
     $router->post('rcd_result', 'RecommendationResultController@create');

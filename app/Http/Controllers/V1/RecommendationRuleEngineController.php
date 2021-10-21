@@ -103,9 +103,9 @@ class RecommendationRuleEngineController extends BaseController
             'Visa Type' => $request->input('visa_type'),
             'Travel Purpose' => $request->input('travel_purpose'),
             'Visa SubType (UK)' => $request->input('visa_sub_type'),
-            'In a group' => $request->input('in_a_group', ''),
+            'In a group' => $request->input('in_a_group'),
             'Age' => $request->input('age'),
-            'City of residence' => $request->input('city_of_residence', ''),
+            'City of residence' => $request->input('city_of_residence'),
             'Nationality' => $request->input('nationality'),
             'Account Type' => $request->input('account_type'),
             'Step' => $request->input('step'),
@@ -115,13 +115,14 @@ class RecommendationRuleEngineController extends BaseController
             'issuer' => 'string|regex:/^[a-z]{2}[A-Z]{3}2[a-z]{2}$/',
             'Visa Type' => 'string|required',
             'Travel Purpose' => 'string|required',
-            'Visa SubType (UK)' => 'string|required',
+            'Visa SubType (UK)' => 'string|nullable',
             'In a group' => [
-                Rule::in(['yes', 'no', '']),
+                'nullable',
+                Rule::in(['yes', 'no', ''])
             ],
-            'Age' => 'integer|between:0,150',
-            'City of residence' => 'string',
-            'Nationality' => 'string|regex:/^[a-z]{2}$/',
+            'Age' => 'integer|between:0,150|nullable',
+            'City of residence' => 'string|nullable',
+            'Nationality' => 'string|regex:/^[a-z]{2}$/|nullable',
             'Account Type' => [
                 'required',
                 Rule::in(['INDI', 'COMP', 'ADS', 'AGEN'])

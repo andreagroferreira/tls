@@ -29,6 +29,9 @@ class RecommendationRuleEngineService
             ->filter(function ($rule) use ($params) {
                 $matched = true;
                 foreach ($params as $key => $value) {
+                    if (is_null($value)) {
+                        continue;
+                    }
                     if ($key == 'Age' && !empty($rule['Age Range'])) {
                         $matched = $this->isAgeMatched($value, $rule['Age Range']);
                     } else if ($key == 'Step' && !empty($rule['Step'])) {

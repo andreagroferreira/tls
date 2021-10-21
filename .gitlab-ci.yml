@@ -75,6 +75,7 @@ prepare-instance:
   script:
     - oc project "$PROJECT" 2> /dev/null || oc new-project "$PROJECT"
     - export PAYMENT_SERVICE_URL=`oc get route payment -o jsonpath='{.spec.host}'`
+    - export DIRECTUS_HOST=`oc get route directus -o jsonpath='{.spec.host}'`
     - oc process -f ./openshift/payment-api-template.yaml APPLICATION_NAME=$APPLICATION_NAME PROJECT=$INSTANCE
       NAMESPACE=$PROJECT
       APP_ENV=$APP_ENV
@@ -86,8 +87,8 @@ prepare-instance:
       POSTGRES_PAYMENT_DB_DATABASE="payment-$DATABASE"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://$PAYMENT_SERVICE_URL"
+      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
       TLSCONTACT_API="$TLSCONTACT_API"
-      DIRECTUS_DOMAIN="$DIRECTUS_DOMAIN"
       KBANK_THBKK2BE_SANDBOX_API_KEY=$KBANK_THBKK2BE_SANDBOX_API_KEY
       KBANK_THBKK2BE_SANDBOX_SECRET=$KBANK_THBKK2BE_SANDBOX_SECRET
       KBANK_THBKK2BE_SANDBOX_MID=$KBANK_THBKK2BE_SANDBOX_MID

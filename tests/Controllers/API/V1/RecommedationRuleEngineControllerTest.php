@@ -5,7 +5,6 @@ namespace Tests\Controllers\API\V1;
 class RecommedationRuleEngineControllerTest extends TestCase
 {
     private $condition = [
-        'client' => 'uk',
         'issuer' => 'esMAD2uk',
         'visa_type' => 'short_stay',
         'travel_purpose' => 'business',
@@ -18,6 +17,7 @@ class RecommedationRuleEngineControllerTest extends TestCase
     ];
 
     public function testFetch() {
+        putenv('PROJECT=uk');
         $base_url = 'api/v1/rcd_rule';
 
         $this->get($base_url);
@@ -28,7 +28,7 @@ class RecommedationRuleEngineControllerTest extends TestCase
             ->assertJson([
                 'status' => 'fail',
                 'error' => 'params error',
-                'message' => 'The client field is required.',
+                'message' => 'The issuer must be a string.',
             ]);
 
         $this->post($base_url, $this->condition);
@@ -38,9 +38,6 @@ class RecommedationRuleEngineControllerTest extends TestCase
         $this->post($base_url, $this->modifyCondition('top', 4));
         $this->response->assertStatus(200)
             ->assertJsonCount(4);
-
-        $this->post($base_url, $this->modifyCondition('client', 'be'));
-        $this->response->assertStatus(400);
 
         $this->post($base_url, $this->modifyCondition('issuer', 'frPAR2uk'));
         $this->response->assertStatus(200)

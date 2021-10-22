@@ -41,6 +41,7 @@ AWS_DEFAULT_REGION
 AWS_SECRET_ACCESS_KEY // download invoice
 PAYMENT_SERVICE_DOMAIN="https://$PAYMENT_SERVICE_URL" // API need this variable because it need to tell gateway to send the callback to this url
 TLSCONTACT_API="$TLSCONTACT_API" // sync actions data
+DIRECTUS_DOMAIN="$DIRECTUS_DOMAIN" // fetch recommend avs
 # ALL THE SECRETS here
 ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID=$ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
 ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY=$ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY

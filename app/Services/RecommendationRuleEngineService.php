@@ -17,25 +17,27 @@ class RecommendationRuleEngineService
 
     public function fetchRules($params)
     {
-        $client       = $params['client'];
+        $client       = env('PROJECT');
         $issuer       = $params['issuer'];
         $top          = $params['top'];
         $issuer_rules = $this->getIssuerRules($client, $issuer);
-        unset($params['client']);
         unset($params['top']);
         unset($params['issuer']);
 
         //get all the matched condition rules (ADD or REMOVE)
         $matched_rules = collect($issuer_rules)
-            ->filter(function ($client_rule) use ($params) {
+            ->filter(function ($rule) use ($params) {
                 $matched = true;
                 foreach ($params as $key => $value) {
-                    if ($key == 'Age' && !empty($client_rule['Age Range'])) {
-                        $matched = $this->isAgeMatched($value, $client_rule['Age Range']);
-                    } else if ($key == 'Step' && !empty($client_rule['Step'])) {
-                        $matched = $this->isStepMatched($value, $client_rule[$key]);
-                    } else if (!empty($client_rule[$key])) {
-                        $matched = $this->isStringMatched($value, $client_rule[$key]);
+                    if (is_null($value)) {
+                        continue;
+                    }
+                    if ($key == 'Age' && !empty($rule['Age Range'])) {
+                        $matched = $this->isAgeMatched($value, $rule['Age Range']);
+                    } else if ($key == 'Step' && !empty($rule['Step'])) {
+                        $matched = $this->isStepMatched($value, $rule[$key]);
+                    } else if (!empty($rule[$key])) {
+                        $matched = $this->isStringMatched($value, $rule[$key]);
                     }
                     if (!$matched) {
                         break; //condition checked failed, move to the next rule

@@ -18,9 +18,6 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($router) {
-    // recommendation rule engine api
-    $router->post('rcd_rule', 'RecommendationRuleEngineController@fetch');
-
     // transaction api
     $router->get('transaction/{fg_id}', 'TransactionController@fetch');
     $router->post('transaction', 'TransactionController@create');
@@ -28,6 +25,12 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     // invoice api
     $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
+
+    // recommendation rule engine api
+    $router->post('rcd_rule', 'RecommendationRuleEngineController@fetch');
+
+    // recommendation avs api
+    $router->get('avs_recommendation/{f_id}', 'AvsRecommendationController@fetch');
 
     //recommendation result api
     $router->post('rcd_result', 'RecommendationResultController@create');

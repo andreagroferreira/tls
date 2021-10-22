@@ -107,6 +107,10 @@ parameters:
     required: true
   - name: PAYU_KEALL2BE_PRIVATE_KEY
     required: true
+  - name: CLICTOPAY_SANDBOX_USER_NAME
+    required: true
+  - name: CLICTOPAY_SANDBOX_PASSWORD
+    required: true
   - name: BANK_PAYMENT_SECRET
     required: true
   - name: PAYMENT_SERVICE_DOMAIN
@@ -412,6 +416,10 @@ objects:
                   value: ${PAYU_KEALL2BE_APP_ID}
                 - name: PAYU_KEALL2BE_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: CLICTOPAY_SANDBOX_USER_NAME
+                  value: ${CLICTOPAY_SANDBOX_USER_NAME}
+                - name: CLICTOPAY_SANDBOX_PASSWORD
+                  value: ${CLICTOPAY_SANDBOX_PASSWORD}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: SANDBOX_PAYFORT_MERCHANT_ID
@@ -595,6 +603,10 @@ objects:
                   value: ${PAYU_KEALL2BE_APP_ID}
                 - name: PAYU_KEALL2BE_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: CLICTOPAY_SANDBOX_USER_NAME
+                  value: ${CLICTOPAY_SANDBOX_USER_NAME}
+                - name: CLICTOPAY_SANDBOX_PASSWORD
+                  value: ${CLICTOPAY_SANDBOX_PASSWORD}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: PAYMENT_SERVICE_DOMAIN

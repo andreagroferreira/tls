@@ -7,20 +7,23 @@ use App\Repositories\RecommendationResultRepositories;
 class AvsRecommendationService
 {
     protected $client;
-    protected $directusService;
-    protected $recommendationResultRepositories;
     protected $apiService;
+    protected $directusService;
+    protected $recommendationRuleEngineService;
+    protected $recommendationResultRepositories;
 
     public function __construct(
-        DirectusService                  $directusService,
         ApiService                       $apiService,
-        RecommendationResultRepositories $recommendationResultRepositories,
-        DbConnectionService $dbConnectionService
+        DirectusService                  $directusService,
+        DbConnectionService              $dbConnectionService,
+        RecommendationRuleEngineService  $recommendationRuleEngineService,
+        RecommendationResultRepositories $recommendationResultRepositories
     )
     {
         $this->client                           = env('PROJECT');
-        $this->directusService                  = $directusService;
         $this->apiService                       = $apiService;
+        $this->directusService                  = $directusService;
+        $this->recommendationRuleEngineService  = $recommendationRuleEngineService;
         $this->recommendationResultRepositories = $recommendationResultRepositories;
         $this->recommendationResultRepositories->setConnection($dbConnectionService->getConnection());
     }
@@ -28,10 +31,12 @@ class AvsRecommendationService
     public function calcRecommendAvs($params)
     {
         $f_id   = $params['f_id'];
+        $step   = $params['step'];
         $limit  = $params['limit'];
+        $source = $params['source'];
 
-        //get the recommendation avs from directus
-        $recommendSkus = $this->getRecommendSkus($f_id, $limit);
+        //get the recommendation avs
+        $recommendSkus = $this->getRecommendSkus($source, $f_id, $step, $limit);
         //get the basket requested and paid avs from tlsconnect
         $basketSkus = $this->getBasketSkus($f_id);
         //get the recommendation result from recommendation result table
@@ -75,7 +80,23 @@ class AvsRecommendationService
         })->toArray();
     }
 
-    private function getRecommendSkus($f_id, $limit)
+    private function getRecommendSkus($source, $f_id, $step, $limit)
+    {
+        switch ($source) {
+            case 'directus':
+                $result = $this->getRecommendByDirectus($f_id, $limit);
+                break;
+            case 'rule_engine':
+                $result = $this->getRecommendByRuleEngine($f_id, $step, $limit);
+                break;
+            default:
+                $result =[];
+                break;
+        }
+        return $result;
+    }
+
+    private function getRecommendByDirectus($f_id, $limit)
     {
         $form_response = $this->apiService->callTlsApi('GET', 'tls/v2/' . $this->client . '/form/' . $f_id);
         if ($form_response['status'] != 200 || empty($form_response['body'])) {
@@ -92,5 +113,28 @@ class AvsRecommendationService
         ];
         $recommend_avs = $this->directusService->getContent('vac_avs', 'avs.sku', $filters, $options);
         return collect($recommend_avs)->pluck('avs.sku')->values()->toArray();
+    }
+
+    private function getRecommendByRuleEngine($f_id, $step, $limit)
+    {
+        $application_response = $this->apiService->callTlsApi('GET', 'tls/v2/' . $this->client . '/application/' . $f_id);
+        if ($application_response['status'] != 200 || empty($application_response['body'])) {
+            return [];
+        }
+        $application = $application_response['body'];
+        $condition = [
+            'issuer' => $application['f_xcopy_ug_xref_i_tag'],
+            'Visa Type' => $application['f_visa_type'],
+            'Travel Purpose' => $application['f_trav_purpose'],
+            'Age' => $application['f_pers_age'],
+            'Nationality' => $application['f_pers_nationality'],
+            'Account Type' => $application['ug_type'],
+            'In a group' => null,
+            'Step' => $step,
+            'Visa SubType (UK)' => $application['f_ext_visa_purpose'],
+            'City of residence' => null,
+            'top' => $limit
+        ];
+        return $this->recommendationRuleEngineService->fetchRules($condition);
     }
 }

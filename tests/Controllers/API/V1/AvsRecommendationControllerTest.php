@@ -45,7 +45,7 @@ class AvsRecommendationControllerTest extends TestCase
                 'message' => 'The f id must be an integer.'
             ]);
 
-        $base_url = 'api/v1/avs_recommendation/10001';
+        $base_url = 'api/v1/avs_recommendation/10001?step=Welcome';
         $this->get($base_url);
         $this->response->assertStatus(200);
 

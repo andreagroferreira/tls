@@ -82,4 +82,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('payfort/redirto', 'PayfortController@redirto');
     $router->post('payfort/return', 'PayfortController@return');
     $router->post('payfort/notify', 'PayfortController@notify');
+
+    $router->post('clictopay/redirto', 'ClictopayController@redirto');
+    $router->post('clictopay/return', 'ClictopayController@return');
 });

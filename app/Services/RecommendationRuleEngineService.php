@@ -29,7 +29,8 @@ class RecommendationRuleEngineService
             ->filter(function ($rule) use ($params) {
                 $matched = true;
                 foreach ($params as $key => $value) {
-                    if (is_null($value)) {
+                    $rule_key = $this->getRuleKey($key);
+                    if (is_null($value) && ($rule[$rule_key] === '')) {
                         continue;
                     }
                     if ($key == 'Age' && !empty($rule['Age Range'])) {
@@ -59,6 +60,14 @@ class RecommendationRuleEngineService
             ->sortBy('Priority')
             ->take($top)
             ->values()->toArray();
+    }
+
+    private function getRuleKey($key) {
+        if($key == 'Age') {
+            return 'Age Range';
+        } else {
+            return $key;
+        }
     }
 
     private function isAgeMatched($age, $rule)

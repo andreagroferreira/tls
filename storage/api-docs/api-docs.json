@@ -25,6 +25,26 @@
                         }
                     },
                     {
+                        "name": "step",
+                        "in": "query",
+                        "description": "the counter location of agent, only accept Welcome, Doc or Bio",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Welcome"
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "the data source of recommend avs, only accept directus or rule_engine, default for directus",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "rule_engine"
+                        }
+                    },
+                    {
                         "name": "limit",
                         "in": "query",
                         "description": "number of recommended services, default for 6",

@@ -32,6 +32,20 @@ class AvsRecommendationController extends BaseController
      *          @OA\Schema(type="integer", example="10001"),
      *      ),
      *      @OA\Parameter(
+     *          name="step",
+     *          in="query",
+     *          description="the counter location of agent, only accept Welcome, Doc or Bio",
+     *          required=true,
+     *          @OA\Schema(type="string", example="Welcome"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="source",
+     *          in="query",
+     *          description="the data source of recommend avs, only accept directus or rule_engine, default for directus",
+     *          required=false,
+     *          @OA\Schema(type="string", example="rule_engine"),
+     *      ),
+     *      @OA\Parameter(
      *          name="limit",
      *          in="query",
      *          description="number of recommended services, default for 6",
@@ -53,11 +67,21 @@ class AvsRecommendationController extends BaseController
     {
         $params = [
             'f_id' => $request->route('f_id'),
-            'limit' => $request->get('limit', 6)
+            'limit' => $request->get('limit', 6),
+            'source' => $request->get('source', 'directus'),
+            'step' => $request->get('step')
         ];
         $validator = validator($params, [
             'f_id' => 'required|integer',
-            'limit' => 'required|integer'
+            'limit' => 'required|integer',
+            'source' => [
+                'required',
+                Rule::in(['rule_engine', 'directus'])
+            ],
+            'step' => [
+                'required',
+                Rule::in(['Welcome', 'Doc', 'Bio'])
+            ]
         ]);
         if($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());

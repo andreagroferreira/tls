@@ -6,6 +6,70 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/avs_recommendation/{f_id}": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get the services by directus recommendation priority",
+                "operationId": "App\\Http\\Controllers\\V1\\AvsRecommendationController::fetch",
+                "parameters": [
+                    {
+                        "name": "f_id",
+                        "in": "query",
+                        "description": "the tlsconnect f_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10001"
+                        }
+                    },
+                    {
+                        "name": "step",
+                        "in": "query",
+                        "description": "the counter location of agent, only accept Welcome, Doc or Bio",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Welcome"
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "the data source of recommend avs, only accept directus or rule_engine, default for directus",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "rule_engine"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "number of recommended services, default for 6",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "6"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the recommended service success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/checkout/{t_id}": {
             "get": {
                 "tags": [
@@ -890,7 +954,7 @@
         "/api/v1/rcd_result": {
             "post": {
                 "tags": [
-                    "Recommendation Result API"
+                    "Payment API"
                 ],
                 "description": "add a recommendation result",
                 "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::create",
@@ -954,7 +1018,7 @@
         "/api/v1/rcd_result/{f_id}": {
             "get": {
                 "tags": [
-                    "Recommendation Result API"
+                    "Payment API"
                 ],
                 "description": "get the recommendation result according to f_id",
                 "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::fetchAll",
@@ -988,7 +1052,7 @@
         "/api/v1/rcd_result/{rcd_id}": {
             "delete": {
                 "tags": [
-                    "Recommendation Result Delete API"
+                    "Payment API"
                 ],
                 "description": "delete the recommendation results according to rcd_id",
                 "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::delete",
@@ -1027,6 +1091,120 @@
                 "responses": {
                     "200": {
                         "description": "deleted the record",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/rcd_rule": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get the recommendation services by rule engine",
+                "operationId": "App\\Http\\Controllers\\V1\\RecommendationRuleEngineController::fetch",
+                "parameters": [
+                    {
+                        "name": "issuer",
+                        "in": "query",
+                        "description": "issuer code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "esMAD2uk"
+                        }
+                    },
+                    {
+                        "name": "visa_type",
+                        "in": "query",
+                        "description": "applicant's visa type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "short_stay"
+                        }
+                    },
+                    {
+                        "name": "travel_purpose",
+                        "in": "query",
+                        "description": "applicant's travel purpose",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "business"
+                        }
+                    },
+                    {
+                        "name": "age",
+                        "in": "query",
+                        "description": "applicant's age",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "6"
+                        }
+                    },
+                    {
+                        "name": "nationality",
+                        "in": "query",
+                        "description": "applicant's nationality code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "cn"
+                        }
+                    },
+                    {
+                        "name": "account_type",
+                        "in": "query",
+                        "description": "applicant's account type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "INDI"
+                        }
+                    },
+                    {
+                        "name": "step",
+                        "in": "query",
+                        "description": "the tlsconnect f_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10001"
+                        }
+                    },
+                    {
+                        "name": "visa_sub_type",
+                        "in": "query",
+                        "description": "applicant's sub visa type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "ext"
+                        }
+                    },
+                    {
+                        "name": "top",
+                        "in": "query",
+                        "description": "number of recommended services",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "6"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "return the recommended services",
                         "content": {
                             "application/json": {
                                 "schema": {}

@@ -433,7 +433,7 @@ return [
                 'common' => [
                     'env' => 'live',
                     'activated' => true,
-                    'version' => 'v1',
+                    'version' => 'v2',
                     'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
                     'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
                     'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
@@ -652,7 +652,33 @@ return [
             'pay_later' => [
                 'label' => "Pay later",
             ]
-        ]
+        ],
+        'tnTUN2be' => [
+            'clictopay' => [
+                'label'   => 'clictopay pay',
+                'active'  => true,
+                'common'  => [
+                    'env'         => 'live',
+                    'activated'   => true,
+                    'currency'    => 'TND',
+                    'language'    => 'en',
+                    'return_url'  => '/clictopay/return'
+                ],
+                'sandbox' => [
+                    'sandbox_host'      => 'https://test.clictopay.com/payment/rest',
+                    'sandbox_user_name' => env('CLICTOPAY_SANDBOX_USER_NAME'),
+                    'sandbox_password'  => env('CLICTOPAY_SANDBOX_PASSWORD')
+                ],
+                'prod'    => [
+                    'host'      => '',
+                    'user_name' => env('CLICTOPAY_USER_NAME'),
+                    'password'  => env('CLICTOPAY_PASSWORD')
+                ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
     ]
 
 ];

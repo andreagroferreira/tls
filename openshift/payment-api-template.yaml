@@ -19,6 +19,8 @@ parameters:
     required: true
   - name: TLSCONTACT_API
     required: true
+  - name: DIRECTUS_DOMAIN
+    required: true
   - name: AWS_ACCOUNT_S3
     required: true
   - name: KBANK_THBKK2BE_SANDBOX_API_KEY
@@ -73,6 +75,10 @@ parameters:
     required: true
   - name: FAW_COMMON_SANDBOX_SECRET_KEY
     required: true
+  - name: FAW_egAll2be_MERCHANT_ID
+    required: true
+  - name: FAW_egAll2be_SECURITY_KEY
+    required: true
   - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
     required: true
   - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
@@ -100,6 +106,10 @@ parameters:
   - name: PAYU_KEALL2BE_APP_ID
     required: true
   - name: PAYU_KEALL2BE_PRIVATE_KEY
+    required: true
+  - name: CLICTOPAY_SANDBOX_USER_NAME
+    required: true
+  - name: CLICTOPAY_SANDBOX_PASSWORD
     required: true
   - name: BANK_PAYMENT_SECRET
     required: true
@@ -290,6 +300,8 @@ objects:
                   value: ${POSTGRES_DB_HOST}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: DIRECTUS_DOMAIN
+                  value: ${DIRECTUS_DOMAIN}
                 - name: VERIFYPEER
                   value: ${VERIFYPEER}
                 - name: POSTGRES_DEPLOY_DB_USERNAME
@@ -372,6 +384,10 @@ objects:
                   value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
                 - name: FAW_COMMON_SANDBOX_SECRET_KEY
                   value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
+                - name: FAW_egAll2be_MERCHANT_ID
+                  value: ${FAW_egAll2be_MERCHANT_ID}
+                - name: FAW_egAll2be_SECURITY_KEY
+                  value: ${FAW_egAll2be_SECURITY_KEY}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
@@ -400,6 +416,10 @@ objects:
                   value: ${PAYU_KEALL2BE_APP_ID}
                 - name: PAYU_KEALL2BE_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: CLICTOPAY_SANDBOX_USER_NAME
+                  value: ${CLICTOPAY_SANDBOX_USER_NAME}
+                - name: CLICTOPAY_SANDBOX_PASSWORD
+                  value: ${CLICTOPAY_SANDBOX_PASSWORD}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: SANDBOX_PAYFORT_MERCHANT_ID
@@ -551,6 +571,10 @@ objects:
                   value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
                 - name: FAW_COMMON_SANDBOX_SECRET_KEY
                   value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
+                - name: FAW_egAll2be_MERCHANT_ID
+                  value: ${FAW_egAll2be_MERCHANT_ID}
+                - name: FAW_egAll2be_SECURITY_KEY
+                  value: ${FAW_egAll2be_SECURITY_KEY}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
@@ -579,6 +603,10 @@ objects:
                   value: ${PAYU_KEALL2BE_APP_ID}
                 - name: PAYU_KEALL2BE_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: CLICTOPAY_SANDBOX_USER_NAME
+                  value: ${CLICTOPAY_SANDBOX_USER_NAME}
+                - name: CLICTOPAY_SANDBOX_PASSWORD
+                  value: ${CLICTOPAY_SANDBOX_PASSWORD}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: PAYMENT_SERVICE_DOMAIN
@@ -601,6 +629,8 @@ objects:
                   value: ${PAYFORT_RESPONSE_PHRASE}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: DIRECTUS_DOMAIN
+                  value: ${DIRECTUS_DOMAIN}
                 - name: PGPASSFILE
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV

@@ -24,6 +24,40 @@ class ApiService
         return 'v2';
     }
 
+    private function getDirectusApiDomain()
+    {
+        return env('DIRECTUS_DOMAIN');
+    }
+
+    public function callDirectusApi($method, $url) {
+        $url = $this->getDirectusApiDomain() . '/' . $url;
+        $method = strtolower($method);
+        if ($method == 'get') {
+            return $this->getDirectusApi($url);
+        } else {
+            return '';
+        }
+    }
+
+    private function getDirectusApi($url) {
+        $response = $this->guzzleClient->request('get', $url, [
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'headers' => [
+                'log-uuid' => request()->get('log-uuid'),
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+            ],
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        if ($response['status'] != 200) {
+            Log::error(sprintf("Request api fail: %s [GET] | Api Return: %s", $url, json_encode($response, 256)));
+        }
+        return $response;
+    }
+
     public function callTlsApi($method, $url, $data = array())
     {
         $url = $this->getTlsApiDomain() . '/' . $url;
@@ -40,6 +74,26 @@ class ApiService
             default:
                 $response = null;
                 break;
+        }
+        return $response;
+    }
+
+    public function callGeneralApi($method, $url, $data = [], $headers = [], $auth = []) {
+        $params = [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false
+        ];
+        if (!empty($data))    { $params['form_params'] = $data; }
+        if (!empty($headers)) { $params['headers']     = $headers; }
+        if (!empty($auth))    { $params['auth']        = $auth; }
+        $response = $this->guzzleClient->request($method, $url, $params);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        if ($response['status'] != 200) {
+            Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), $response));
         }
         return $response;
     }

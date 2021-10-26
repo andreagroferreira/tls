@@ -18,9 +18,6 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($router) {
-    // recommendation rule engine api
-    $router->get('rcd_engine/{client}/{f_id}', 'RuleEngineController@fetch');
-
     // transaction api
     $router->get('transaction/{fg_id}', 'TransactionController@fetch');
     $router->post('transaction', 'TransactionController@create');
@@ -28,6 +25,12 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     // invoice api
     $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
+
+    // recommendation rule engine api
+    $router->post('rcd_rule', 'RecommendationRuleEngineController@fetch');
+
+    // recommendation avs api
+    $router->get('avs_recommendation/{f_id}', 'AvsRecommendationController@fetch');
 
     //recommendation result api
     $router->post('rcd_result', 'RecommendationResultController@create');
@@ -79,4 +82,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('payfort/redirto', 'PayfortController@redirto');
     $router->post('payfort/return', 'PayfortController@return');
     $router->post('payfort/notify', 'PayfortController@notify');
+
+    $router->post('clictopay/redirto', 'ClictopayController@redirto');
+    $router->post('clictopay/return', 'ClictopayController@return');
 });

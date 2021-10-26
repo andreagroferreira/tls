@@ -1,0 +1,14 @@
+Issuer	Service ID	Priority	Visa Type	Travel Purpose	Visa SubType (UK)	In a group	Age Range	City of residence	Nationality	Account Type	Step	Rule
+esMAD2uk	Premium	1	short_stay				25-35		cn	INDI	Welcome	ADD
+esMAD2uk	Premium	1	short_stay									ADD
+esMAD2uk	Premium	1	short_stay	business								ADD
+esMAD2uk	Courier	2	short_stay	business		No						ADD
+esMAD2uk	Premium	1										ADD
+esMAD2uk	Courier	2										ADD
+esMAD2uk	SMS	3										ADD
+esMAD2uk	Keep My Pax	4										ADD
+esMAD2uk	Assisted	5										ADD
+esMAD2uk	Flexi	6										ADD
+esMAD2uk	Premium										Doc, Bio	REMOVE
+esMAD2uk	Keep My Pax		long_stay									REMOVE
+esMAD2uk	Premium						1-25					REMOVE

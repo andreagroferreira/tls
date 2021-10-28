@@ -81,8 +81,8 @@ sonarcloud-check:
     paths:
       - .sonar/cache
   script:
-    - sed -i -e 's/".*account-management/"\/builds\/dev_tls\/TLSagent\/account-management/g' coverage-report.clover
-    - sed -i -e 's/".*account-management/"\/builds\/dev_tls\/TLSagent\/account-management/g' unittest-report.xml
+    - sed -i -e 's/".*payment-api/"\/builds\/dev_tls\/tlspay\/payment-api/g' coverage-report.clover
+    - sed -i -e 's/".*payment-api/"\/builds\/dev_tls\/tlspay\/payment-api/g' unittest-report.xml
     - sonar-scanner
   allow_failure: true
   only:

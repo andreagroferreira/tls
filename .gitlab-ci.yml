@@ -59,7 +59,7 @@ test-unit:
     - chmod -R 777 /var/lib/postgresql/data;
     - chown -R postgres:postgres /var/lib/postgresql/data;
     - su postgres -c "initdb /var/lib/postgresql/data; echo 'host all  all    0.0.0.0/0  md5' >> /var/lib/postgresql/data/pg_hba.conf; pg_ctl start -D /var/lib/postgresql/data -l /var/lib/postgresql/log.log;";
-    - psql -U postgres -c "CREATE ROLE root WITH SUPERUSER; ALTER ROLE root WITH LOGIN; ALTER ROLE root WITH CREATEDB;"
+    - psql -U postgres -c "CREATE ROLE root WITH SUPERUSER; CREATE ROLE common WITH SUPERUSER; ALTER ROLE root WITH LOGIN; ALTER ROLE root WITH CREATEDB;"
   script: XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover=coverage-report.clover --log-junit unittest-report.xml
   allow_failure: true
   artifacts:

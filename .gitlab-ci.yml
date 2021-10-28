@@ -11,37 +11,20 @@ default:
 
 variables:
   APPLICATION_NAME: payment-api
-  ENV: "SANDBOX"
+  ENV: "IET2"
   APP_ENV: "test"
+  PROJECT: "visa-be-dev"
   DATABASE: $DATABASE
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
 
 stages:
-  - analyze
   - build
+  - test
+  - analyze
   - deploy
   - expose
   - rollback
-
-sonarcloud-check:
-  stage: analyze
-  image:
-    name: sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-      - .sonar/cache
-  script:
-    - sonar-scanner
-  only:
-    - merge_requests
-    - master
-    - develop
-  except:
-    variables:
-      - $ROLLBACK
 
 prepare-instance:
   stage: build
@@ -60,6 +43,56 @@ prepare-instance:
     - if: '$ROLLBACK == "true"'
       when: never
     - when: on_success
+
+test-unit:
+  stage: test
+  image: "${DOCKER_REGISTRY_ADDRESS}/tlscontact/composer:${DOCKER_TAG_COMPOSER}"
+  before_script:
+    - apk add g++ make zlib-dev autoconf file gcc libc-dev make g++ pkgconf re2c;
+    - pecl install xdebug && docker-php-ext-enable xdebug;
+    - apk add postgresql postgresql-dev;
+    - docker-php-ext-install pdo pgsql pdo_pgsql;
+    - addgroup -S postgres && adduser -S postgres -G postgres;
+    - mkdir -p /var/lib/postgresql/data;
+    - mkdir -p /run/postgresql/;
+    - chown -R postgres:postgres /run/postgresql/;
+    - chmod -R 777 /var/lib/postgresql/data;
+    - chown -R postgres:postgres /var/lib/postgresql/data;
+    - su postgres -c "initdb /var/lib/postgresql/data; echo 'host all  all    0.0.0.0/0  md5' >> /var/lib/postgresql/data/pg_hba.conf; pg_ctl start -D /var/lib/postgresql/data -l /var/lib/postgresql/log.log;";
+    - psql -U postgres -c "CREATE ROLE root WITH SUPERUSER; ALTER ROLE root WITH LOGIN; ALTER ROLE root WITH CREATEDB;"
+  script: XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover=coverage-report.clover --log-junit unittest-report.xml
+  allow_failure: true
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - unittest-report.xml
+    paths:
+      - "./"
+    expire_in: 3 days
+
+sonarcloud-check:
+  stage: analyze
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - sed -i -e 's/".*account-management/"\/builds\/dev_tls\/TLSagent\/account-management/g' coverage-report.clover
+    - sed -i -e 's/".*account-management/"\/builds\/dev_tls\/TLSagent\/account-management/g' unittest-report.xml
+    - sonar-scanner
+  allow_failure: true
+  only:
+    - merge_requests
+    - master
+    - develop
+  except:
+    variables:
+      - $ROLLBACK
+
 
 .deploy-instance:
   variables:
@@ -180,7 +213,6 @@ deploy-instance-auto:
 deploy-instance-master:
   extends: .deploy-instance
   variables:
-    PROJECT: $PROJECT
     INSTANCE: $PROJECT
   only:
     variables:
@@ -193,7 +225,6 @@ deploy-instance-master:
 deploy-instance-staging:
   extends: .deploy-instance
   variables:
-    PROJECT: $PROJECT
     INSTANCE: $PROJECT
   only:
     variables:

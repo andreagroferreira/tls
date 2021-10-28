@@ -10,8 +10,8 @@ class ApiService
     private $guzzleClient;
     private $accept = 'application/json';
 
-    public function __construct() {
-        $this->guzzleClient = new GuzzleClient();
+    public function __construct(GuzzleClient $guzzleClient) {
+        $this->guzzleClient = $guzzleClient;
     }
 
     private function getTlsApiDomain()

@@ -12,6 +12,7 @@ class InvoiceControllerTest extends TestCase
         $transaction = $this->generateTransaction();
 
         $this->get('api/v1/invoice/' . $transaction->t_transaction_id);
+        dd($this->response);
         $this->response->assertStatus(404);
 
         $this->updateTable('transactions', ['t_id' => $transaction->t_id], ['t_status' => 'done', 't_tech_modification' => $this->getDbNowTime()]);

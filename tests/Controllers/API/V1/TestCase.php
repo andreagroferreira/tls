@@ -16,6 +16,7 @@ abstract class TestCase extends \TestCase
     public function setUpConnections()
     {
         config(['database.connections.payment_pgsql' => config('database.connections.unit_test_payment_pgsql')]);
+        config(['database.connections.deploy_payment_pgsql' => config('database.connections.unit_test_payment_pgsql')]);
     }
 
     public function runDatabaseMigrations()
@@ -26,7 +27,7 @@ abstract class TestCase extends \TestCase
             $db_connection->statement("CREATE DATABASE $database");
         }
 
-        $this->artisan('migrate:refresh', ['--path' => 'database/migrations/tests/api/v1', '--database' => 'unit_test_payment_pgsql', '--force' => true]);
+        $this->artisan('migrate:refresh', ['--path' => 'database/migrations', '--database' => 'unit_test_payment_pgsql', '--force' => true]);
     }
 
     public function getDbNowTime()

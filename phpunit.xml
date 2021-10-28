@@ -14,5 +14,7 @@
         <env name="UNIT_TEST" value="testing"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="UNIT_TEST_POSTGRES_DB_USERNAME" value="postgres"/>
+        <env name="DB_CONNECTION" value="pgsql"/>
     </php>
 </phpunit>

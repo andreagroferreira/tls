@@ -11,8 +11,9 @@ default:
 
 variables:
   APPLICATION_NAME: payment-api
-  ENV: "SANDBOX"
+  ENV: "IET2"
   APP_ENV: "test"
+  PROJECT: "visa-be-dev"
   DATABASE: $DATABASE
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
@@ -180,7 +181,6 @@ deploy-instance-auto:
 deploy-instance-master:
   extends: .deploy-instance
   variables:
-    PROJECT: $PROJECT
     INSTANCE: $PROJECT
   only:
     variables:
@@ -193,7 +193,6 @@ deploy-instance-master:
 deploy-instance-staging:
   extends: .deploy-instance
   variables:
-    PROJECT: $PROJECT
     INSTANCE: $PROJECT
   only:
     variables:

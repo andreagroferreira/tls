@@ -1,5 +1,8 @@
 /vendor
+/log
 /.idea
 Homestead.json
 Homestead.yaml
 .phpunit.result.cache
+coverage-report.clover
+unittest-report.xml

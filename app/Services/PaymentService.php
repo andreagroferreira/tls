@@ -61,8 +61,11 @@ class PaymentService
             't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
             't_status'                 => 'done'
         ];
-        $updated_transaction = $this->transactionService->updateById($transaction['t_id'], $update_fields);
-        $this->invoiceService->generate($updated_transaction);
+        $this->transactionService->updateById($transaction['t_id'], $update_fields);
+        foreach ($update_fields as $field_key => $field_val) {
+            $transaction[$field_key] = $field_val;
+        }
+        $this->invoiceService->generate($transaction);
 
         if(!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . implode('\n', $error_msg));

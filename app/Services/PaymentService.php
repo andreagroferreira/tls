@@ -62,7 +62,7 @@ class PaymentService
             't_status'                 => 'done'
         ];
         $updated_transaction = $this->transactionService->updateById($transaction['t_id'], $update_fields);
-        $this->invoiceService->generate($transaction);
+        $this->invoiceService->generate($updated_transaction);
 
         if(!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . implode('\n', $error_msg));

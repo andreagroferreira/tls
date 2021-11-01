@@ -160,8 +160,34 @@ class AvsRecommendationControllerTest extends TestCase
                 'code' => 200,
                 'body' => [
                     'data' => [
-
-                    ],
+                        [
+                            'avs'                     => [
+                                'sku' => 'PREMIUM-LOUNGE'
+                            ],
+                            'price'                   => 500,
+                            'currency'                => [
+                                'code' => 'XAF'
+                            ],
+                            'vat'                     => 0,
+                            'recommendation_priority' => 6,
+                            'specific_infos'          => [
+                                [
+                                    'id' => 358,
+                                    'status' => 'draft',
+                                    'created_by' => 54,
+                                    'created_on' => '2021-07-02 07:41:12',
+                                    'modified_by' => 11,
+                                    'modified_on' => '2021-07-14 14:58:48',
+                                    'language' => 'en-us',
+                                    'vac_avs' => 638,
+                                    'name' => 'Premium Lounge',
+                                    'short_description' => 'Upgrade to experience the ultimate in convenience, comfort, and support for your application in a dedicated space with fewer queues. ',
+                                    'long_description' => 'Upgrade to experience the ultimate in convenience, comfort, and support for your application in a dedicated space with fewer queues.Upgrading to our Premium Lounge gives you the space and comfort to submit your visa application in an exclusive and spacious environment without queues. You’ll enjoy privacy and a selection of complimentary refreshments while receiving one-to-one assistance and support from one of our experienced agents. With the added convenience of a flexible booking, and the opportunity to submit any missing documents later in the day, upgrade to Premium Lounge today to experience the ultimate in comfort and peace of mind.To purchase this service, please Contact Us.',
+                                    'video_url' => null
+                                ]
+                            ]
+                        ]
+                    ]
                 ],
             ],
             [
@@ -177,7 +203,7 @@ class AvsRecommendationControllerTest extends TestCase
                         "a_what"=> "application_support_requested",
                         "e_currency"=> "TND",
                         "s_price"=> "99.00",
-                        "s_sku"=> "PRIME-TIME-APPOINTMENT",
+                        "s_sku"=> "PREMIUM-LOUNGE",
                         "avs_id"=> "r_other_S_prime_time_17249",
                         "avs_title"=> "Prime Time Appointment",
                         "paid"=> false
@@ -191,11 +217,36 @@ class AvsRecommendationControllerTest extends TestCase
         $base_url = 'api/v1/avs_recommendation/10003?step=Welcome';
         $this->get($base_url);
         $this->response->assertStatus(200);
-
-        $avs_recommendation_service = app('\App\Services\AvsRecommendationService');
-        $avs_recommendation_skus = $avs_recommendation_service->calc($this->test_recommend_skus, $this->test_basket_skus, $this->test_recommend_result_skus);
-        $this->assertEquals(4, count($avs_recommendation_skus));
-        $this->assertNotContains("POSTAL-APPLICATION-SERVICE", $avs_recommendation_skus);
-        $this->assertNotContains("EXPRESS-COURIER-RETURN-OUT-OF-COUNTRY", $avs_recommendation_skus);
+        $this->response->assertJsonStructure(['all_avs', 'requested_avs', 'paid_avs', 'denied_avs']);
+        $this->response->assertJsonFragment([
+            'all_avs' => [
+                [
+                    "service_name" => "Premium Lounge",
+                    "sku" => "PREMIUM-LOUNGE",
+                    "vat" => "0.00",
+                    "price" => "500.00",
+                    "currency" => "XAF",
+                    "description" => "Upgrade to experience the ultimate in convenience, comfort, and support for your application in a dedicated space with fewer queues. ",
+                    "recommendation_priority" => 6,
+                    'is_display' => false,
+                    'is_recommended' => true
+                ]
+            ]
+        ]);
+        $this->response->assertJsonFragment([
+            'requested_avs' => [
+                [
+                    "service_name" => "Premium Lounge",
+                    "sku" => "PREMIUM-LOUNGE",
+                    "vat" => "0.00",
+                    "price" => "500.00",
+                    "currency" => "XAF",
+                    "description" => "Upgrade to experience the ultimate in convenience, comfort, and support for your application in a dedicated space with fewer queues. ",
+                    "recommendation_priority" => 6,
+                    'is_display' => true,
+                    'quantity' => "1"
+                ]
+            ]
+        ]);
     }
 }

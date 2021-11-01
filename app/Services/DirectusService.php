@@ -52,6 +52,6 @@ class DirectusService
                 'eq' => 'published'
             ],
         ];
-        return $this->getContent('vac_avs', 'vac.code,avs.sku,specific_infos.*', $filters, $options);
+        return $this->getContent('vac_avs', '*.*', $filters, $options);
     }
 }

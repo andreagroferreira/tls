@@ -20,7 +20,7 @@ class AvsRecommendationService
         RecommendationResultRepositories $recommendationResultRepositories
     )
     {
-        $this->client                           = 'uk';
+        $this->client                           = env('PROJECT');
         $this->apiService                       = $apiService;
         $this->directusService                  = $directusService;
         $this->recommendationRuleEngineService  = $recommendationRuleEngineService;

@@ -107,6 +107,61 @@
                 }
             }
         },
+        "/api/v1/clictopay/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from clictopay",
+                "operationId": "App\\Http\\Controllers\\V1\\ClictopayController::redirto",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/clictopay/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from clictopay",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/cmi/redirto": {
             "post": {
                 "tags": [
@@ -997,6 +1052,16 @@
                         "schema": {
                             "type": "string",
                             "example": "accept"
+                        }
+                    },
+                    {
+                        "name": "comment",
+                        "in": "query",
+                        "description": "the recommendation result comment",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "I do not need"
                         }
                     }
                 ],

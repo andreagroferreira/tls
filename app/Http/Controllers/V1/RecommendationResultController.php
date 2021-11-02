@@ -52,6 +52,13 @@ class RecommendationResultController extends BaseController
      *          required=true,
      *          @OA\Schema(type="string", example="accept"),
      *      ),
+     *      @OA\Parameter(
+     *          name="comment",
+     *          in="query",
+     *          description="the recommendation result comment",
+     *          required=false,
+     *          @OA\Schema(type="string", example="I do not need"),
+     *      ),
      *      @OA\Response(
      *          response="200",
      *          description="create a recommendation result record success",
@@ -69,7 +76,8 @@ class RecommendationResultController extends BaseController
             'rr_xref_f_id' => $request->input('f_id'),
             'rr_agent'     => $request->input('agent'),
             'rr_sku'       => $request->input('sku'),
-            'rr_result'    => $request->input('result')
+            'rr_result'    => $request->input('result'),
+            'rr_comment'   => $request->input('comment')
         ];
         $validator = validator($params, [
             'rr_xref_f_id'   => 'required|integer',
@@ -79,7 +87,8 @@ class RecommendationResultController extends BaseController
                 'required',
                 'string',
                 Rule::in(['accept', 'deny']),
-            ]
+            ],
+            'rr_comment' => 'string|nullable'
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());

@@ -56,21 +56,24 @@ class AvsRecommendationService
 
         foreach($issuer_avses as $item) {
             $avs_sku = $item['sku'];
-            $item['is_display'] = true;
+            $display = true;
             if(in_array($avs_sku, array_keys($basket_avs['requested']) ?? [])) {
                 $item['quantity'] = $basket_avs['requested'][$avs_sku]['av_value'];
+                $item['a_id'] = $basket_avs['requested'][$avs_sku]['a_id'];
                 array_push($requested_avs, $item);
-                $item['is_display'] = false;
+                $display = false;
             }
             if(in_array($avs_sku, array_keys($basket_avs['paid'] ?? []))) {
                 $item['quantity'] = $basket_avs['paid'][$avs_sku]['av_value'];
                 array_push($paid_avs, $item);
-                $item['is_display'] = false;
+                $display = false;
             }
-            if(in_array($avs_sku, $rcd_result_skus['deny'] ?? [])) {
+            if(in_array($avs_sku, array_keys($rcd_result_skus['deny'] ?? []))) {
+                $item['rcd_id'] = $rcd_result_skus['deny'][$avs_sku]['rr_id'];
                 array_push($denied_avs, $item);
-                $item['is_display'] = false;
+                $display = false;
             }
+            $item['is_display'] = $display;
             $item['is_recommended'] = in_array($item['sku'], $recommend_skus);
             unset($item['quantity']);
             array_push($all_avs, $item);
@@ -119,7 +122,7 @@ class AvsRecommendationService
     {
         $rcd_results = $this->recommendationResultRepositories->fetchByFId($f_id)->toArray();
         return collect($rcd_results)->groupBy('rr_result')->map(function ($item) {
-            return collect($item)->pluck('rr_sku')->values()->toArray();
+            return $item->keyBy('rr_sku');
         })->toArray();
     }
 

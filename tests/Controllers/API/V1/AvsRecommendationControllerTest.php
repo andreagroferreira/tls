@@ -199,6 +199,7 @@ class AvsRecommendationControllerTest extends TestCase
                         "f_id"=> 10003,
                         "fg_id"=> 10007,
                         "f_cai"=> "10003",
+                        "a_id"=> 1,
                         "a_occurence"=> 1,
                         "a_what"=> "application_support_requested",
                         "e_currency"=> "TND",
@@ -236,15 +237,15 @@ class AvsRecommendationControllerTest extends TestCase
         $this->response->assertJsonFragment([
             'requested_avs' => [
                 [
+                    "a_id" => 1,
                     "service_name" => "Premium Lounge",
                     "sku" => "PREMIUM-LOUNGE",
                     "vat" => "0.00",
                     "price" => "500.00",
+                    "quantity" => "1",
                     "currency" => "XAF",
                     "description" => "Upgrade to experience the ultimate in convenience, comfort, and support for your application in a dedicated space with fewer queues. ",
-                    "recommendation_priority" => 6,
-                    'is_display' => true,
-                    'quantity' => "1"
+                    "recommendation_priority" => 6
                 ]
             ]
         ]);

@@ -112,8 +112,8 @@ class AvsRecommendationService
                 'vat' => number_format(array_get($avs, 'vat'), 2),
                 'price' => number_format(array_get($avs, 'price'), 2),
                 'currency' => array_get($avs, 'currency.code'),
-                'avs_description' => array_get($avs, 'specific_infos.0.short_description'),
-                'sku_description' => array_get($avs, 'avs.translation.0.short_description'),
+                'avs_description' => array_get($avs, 'specific_infos.0.long_description'),
+                'sku_description' => array_get($avs, 'avs.translation.0.long_description'),
                 'avs_sale_script' => array_get($avs, 'specific_infos.0.sale_script'),
                 'sku_sale_script' => array_get($avs, 'avs.translation.0.sale_script'),
                 'recommendation_priority' => array_get($avs, 'recommendation_priority')

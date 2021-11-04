@@ -19,6 +19,8 @@ parameters:
     required: true
   - name: TLSCONTACT_API
     required: true
+  - name: CLIENT
+    required: true
   - name: DIRECTUS_DOMAIN
     required: true
   - name: AWS_ACCOUNT_S3
@@ -318,6 +320,8 @@ objects:
                   value: ${POSTGRES_DB_HOST}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: CLIENT
+                  value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
                 - name: VERIFYPEER
@@ -683,6 +687,8 @@ objects:
                   value: ${PAYFORT_RESPONSE_PHRASE}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: CLIENT
+                  value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
                 - name: PGPASSFILE

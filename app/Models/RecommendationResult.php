@@ -21,5 +21,6 @@ class RecommendationResult extends Model
         'rr_agent',
         'rr_sku',
         'rr_result',
+        'rr_comment',
     ];
 }

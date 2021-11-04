@@ -24,6 +24,25 @@ class ApiService
         return 'v2';
     }
 
+    public function getProjectId($project = '')
+    {
+        $project = $project ?: getenv('CLIENT');
+        switch ($project) {
+            case 'gss-us':
+                return 'us';
+            case 'srf-fr':
+                return 'srf_fr';
+            case 'hmpo-uk':
+                return 'hmpo_uk';
+            case 'leg-be':
+                return 'leg_be';
+            case 'biolab-ma':
+                return 'biolab_ma';
+            default:
+                return substr($project, -2);
+        }
+    }
+
     private function getDirectusApiDomain()
     {
         return env('DIRECTUS_DOMAIN');
@@ -170,7 +189,7 @@ class ApiService
             'client_id' =>  $tingg_config['clientID'],
             "client_secret" => $tingg_config['clientSecret'],
         ];
-        $response = $this->guzzleClient->request('post', env('ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST'), [
+        $response = $this->guzzleClient->request('post', $tingg_config['oauthHost'], [
             'verify' => false,
             'http_errors' => false,
             'idn_conversion' => false,
@@ -184,12 +203,12 @@ class ApiService
         return $response['body']['access_token'] ?? '';
     }
 
-    public function getTinggQueryStatus($params, $bearer_token) {
+    public function getTinggQueryStatus($params, $bearer_token, $tingg_config) {
         $data = [
             'merchantTransactionID' => $params['merchantTransactionID'],
             'serviceCode' => $params['serviceCode']
         ];
-        $response = $this->guzzleClient->request('post', env('ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST'), [
+        $response = $this->guzzleClient->request('post', $tingg_config['queryStatusHost'], [
             'verify' => false,
             'http_errors' => false,
             'idn_conversion' => false,

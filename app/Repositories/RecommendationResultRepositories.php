@@ -40,14 +40,16 @@ class RecommendationResultRepositories
 
     public function delete($rr_id)
     {
-        return $this->recommendationResultModel->where('rr_id', $rr_id)->delete();
+        $this->recommendationResultModel->where('rr_id', $rr_id)->delete();
+        return $this->recommendationResultModel->find($rr_id);
     }
 
     public function softDelete($rr_id, $deleted_by)
     {
-        return $this->recommendationResultModel->where('rr_id', $rr_id)->update([
+        $this->recommendationResultModel->where('rr_id', $rr_id)->update([
             'rr_tech_deleted' => true,
             'rr_deleted_by'   => $deleted_by
         ]);
+        return $this->recommendationResultModel->find($rr_id);
     }
 }

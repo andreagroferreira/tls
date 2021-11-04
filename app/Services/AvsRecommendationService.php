@@ -76,6 +76,7 @@ class AvsRecommendationService
             $item['is_display'] = $display;
             $item['is_recommended'] = in_array($item['sku'], $recommend_skus);
             unset($item['quantity']);
+            unset($item['a_id']);
             array_push($all_avs, $item);
         }
 

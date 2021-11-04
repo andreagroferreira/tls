@@ -382,7 +382,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         return [
             'is_success' => 'fail',
             'orderid'    => $order_id,
-            'message'    => 'transaction_has_been_paid_already',
+            'message'    => 'transaction_has_not_been_paid',
             'href'       => $transaction['t_redirect_url']
         ];
     }

@@ -24,6 +24,25 @@ class ApiService
         return 'v2';
     }
 
+    public function getProjectId($project = '')
+    {
+        $project = $project ?: getenv('CLIENT');
+        switch ($project) {
+            case 'gss-us':
+                return 'us';
+            case 'srf-fr':
+                return 'srf_fr';
+            case 'hmpo-uk':
+                return 'hmpo_uk';
+            case 'leg-be':
+                return 'leg_be';
+            case 'biolab-ma':
+                return 'biolab_ma';
+            default:
+                return substr($project, -2);
+        }
+    }
+
     private function getDirectusApiDomain()
     {
         return env('DIRECTUS_DOMAIN');

@@ -20,7 +20,7 @@ class AvsRecommendationService
         RecommendationResultRepositories $recommendationResultRepositories
     )
     {
-        $this->client                           = env('PROJECT');
+        $this->client                           = $apiService->getProjectId();
         $this->apiService                       = $apiService;
         $this->directusService                  = $directusService;
         $this->recommendationRuleEngineService  = $recommendationRuleEngineService;
@@ -77,6 +77,7 @@ class AvsRecommendationService
             $item['is_recommended'] = in_array($item['sku'], $recommend_skus);
             unset($item['quantity']);
             unset($item['a_id']);
+            unset($item['rcd_id']);
             array_push($all_avs, $item);
         }
 
@@ -102,7 +103,7 @@ class AvsRecommendationService
                 'eq' => 'published'
             ],
         ];
-        $select = 'avs.sku,vat,price,currency.code,specific_infos.*,recommendation_priority';
+        $select = 'avs.sku,avs.translation.*,vat,price,currency.code,specific_infos.*,recommendation_priority';
         $all_avs_infos = $this->directusService->getContent('vac_avs', $select, $filters);
         $all_avs = [];
         foreach($all_avs_infos as $avs) {
@@ -112,7 +113,10 @@ class AvsRecommendationService
                 'vat' => number_format(array_get($avs, 'vat'), 2),
                 'price' => number_format(array_get($avs, 'price'), 2),
                 'currency' => array_get($avs, 'currency.code'),
-                'description' => array_get($avs, 'specific_infos.0.short_description'),
+                'avs_description' => array_get($avs, 'specific_infos.0.long_description'),
+                'sku_description' => array_get($avs, 'avs.translation.0.long_description'),
+                'avs_sale_script' => array_get($avs, 'specific_infos.0.sale_script'),
+                'sku_sale_script' => array_get($avs, 'avs.translation.0.sale_script'),
                 'recommendation_priority' => array_get($avs, 'recommendation_priority')
             ];
         }

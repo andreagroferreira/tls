@@ -304,16 +304,6 @@ objects:
             app: ${APPLICATION_NAME}
             deploymentconfig: ${APPLICATION_NAME}
         spec:
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: tls-node-type
-                        operator: In
-                        values:
-                          - 'default'
-                    weight: 1
           initContainers:
             - env:
                 - name: POSTGRES_DB_HOST

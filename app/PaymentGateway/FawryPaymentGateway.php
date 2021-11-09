@@ -109,7 +109,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 $tmp['itemId'] = $item['f_id'];
                 $price = 0;
                 foreach($item['skus'] as $sku) {
-                    $price += floatval($sku['price']) * intval($sku['vat']);
+                    $price += floatval($sku['price']);
                     $sku_list .= $sku['sku'];
                 }
                 $tmp['price'] = $price;
@@ -121,7 +121,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             return ['status' => 'fail', 'error' => 'INTERNAL ERROR', 'msg' => 'Transaction items not found.'];
         }
 
-        $expiry = strtotime($translations_data['t_expiration']) . '000';
+        $expiry = strtotime("+7 day", strtotime($translations_data['t_expiration'])) * 1000;
         $amount = number_format($translations_data['t_amount'], 2, '.', '');
         if ($pay_version == 'v1') {
             $sign_string = $merchant_id . $order_id . $sku_list . $quantity . $amount . $expiry . $secret;

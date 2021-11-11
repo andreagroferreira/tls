@@ -109,7 +109,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 $tmp['itemId'] = $item['f_id'];
                 $price = 0;
                 foreach($item['skus'] as $sku) {
-                    $price += floatval($sku['price']) * intval($sku['vat']);
+                    $price += floatval($sku['price']);
                     $sku_list .= $sku['sku'];
                 }
                 $tmp['price'] = $price;
@@ -121,7 +121,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             return ['status' => 'fail', 'error' => 'INTERNAL ERROR', 'msg' => 'Transaction items not found.'];
         }
 
-        $expiry = strtotime($translations_data['t_expiration']) . '000';
+        $expiry = strtotime("+7 day", strtotime($translations_data['t_expiration'])) * 1000;
         $amount = number_format($translations_data['t_amount'], 2, '.', '');
         if ($pay_version == 'v1') {
             $sign_string = $merchant_id . $order_id . $sku_list . $quantity . $amount . $expiry . $secret;
@@ -382,7 +382,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         return [
             'is_success' => 'fail',
             'orderid'    => $order_id,
-            'message'    => 'transaction_has_been_paid_already',
+            'message'    => 'transaction_has_not_been_paid',
             'href'       => $transaction['t_redirect_url']
         ];
     }
@@ -426,10 +426,10 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $is_live = $payment_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live config
-            $secret = $payment_config['prod']['secret_key'];
+            $secret = $this->getEnvpayValue($payment_config['prod']['secret_key']);
         } else {
             // Test config
-            $secret = $payment_config['sandbox']['secret_key'];
+            $secret = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
         }
         if (strtolower($payment_config['common']['version']) == 'v1') {
             $fawry_ref_no      = $params['FawryRefNo'] ?? '';
@@ -440,8 +440,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $sign_string = $secret . $payment_amount . $fawry_ref_no . $order_id . $order_status;
         } else {
             $fawry_ref_number  = $params['fawryRefNumber'] ?? '';
-            $payment_amount    = $params['paymentAmount'] ?? '';
-            $order_amount      = $params['orderAmount'] ?? '';
+            $payment_amount    = sprintf("%.2f", $params['paymentAmount']) ?? '';
+            $order_amount      = sprintf("%.2f", $params['orderAmount']) ?? '';
             $order_status      = $params['orderStatus'] ?? '';
             $payment_method    = $params['paymentMethod'] ?? '';
             $message_signature = $params['messageSignature'] ?? '';
@@ -485,11 +485,13 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                     'status' => 'success',
                 ];
             }
+        } else {
+            Log::warning('ONLINE PAYMENT, Fawrypay(order status is wrong): The current order status is ' . $order_status);
+            return [
+                'status' => 'fail',
+                'message' => 'unknown_error',
+            ];
         }
-        return [
-            'status' => 'fail',
-            'message' => 'unknown_error',
-        ];
     }
 
     private function returnFail() {

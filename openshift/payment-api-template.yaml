@@ -19,6 +19,8 @@ parameters:
     required: true
   - name: TLSCONTACT_API
     required: true
+  - name: CLIENT
+    required: true
   - name: DIRECTUS_DOMAIN
     required: true
   - name: AWS_ACCOUNT_S3
@@ -60,6 +62,24 @@ parameters:
   - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
     required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_COMMON_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_ACCESS_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_CLIENT_ID
+    required: true
+  - name: ENVPAY_TINGG_COMMON_CLIENT_SECRET
+    required: true
+  - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
     required: true
   - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
     required: true
@@ -284,22 +304,14 @@ objects:
             app: ${APPLICATION_NAME}
             deploymentconfig: ${APPLICATION_NAME}
         spec:
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: tls-node-type
-                        operator: In
-                        values:
-                          - 'default'
-                    weight: 1
           initContainers:
             - env:
                 - name: POSTGRES_DB_HOST
                   value: ${POSTGRES_DB_HOST}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: CLIENT
+                  value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
                 - name: VERIFYPEER
@@ -370,6 +382,24 @@ objects:
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST}
+                - name: ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_ACCESS_KEY}
+                - name: ENVPAY_TINGG_COMMON_CLIENT_ID
+                  value: ${ENVPAY_TINGG_COMMON_CLIENT_ID}
+                - name: ENVPAY_TINGG_COMMON_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_COMMON_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
+                - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID
@@ -557,6 +587,24 @@ objects:
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST}
+                - name: ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_ACCESS_KEY}
+                - name: ENVPAY_TINGG_COMMON_CLIENT_ID
+                  value: ${ENVPAY_TINGG_COMMON_CLIENT_ID}
+                - name: ENVPAY_TINGG_COMMON_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_COMMON_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
+                - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID
@@ -629,6 +677,8 @@ objects:
                   value: ${PAYFORT_RESPONSE_PHRASE}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: CLIENT
+                  value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
                 - name: PGPASSFILE

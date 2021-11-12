@@ -406,7 +406,7 @@ objects:
                       name: ${AWS_ACCOUNT_S3}
                       key: AWS_BUCKET_NAME
               image: ' '
-              name: ${APPLICATION_NAME}-callback-queue
+              name: ${APPLICATION_NAME}
               imagePullPolicy: Always
               resources:
                 requests:

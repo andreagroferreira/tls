@@ -19,9 +19,137 @@ parameters:
     required: true
   - name: TLSCONTACT_API
     required: true
+  - name: CLIENT
+    required: true
+  - name: DIRECTUS_DOMAIN
+    required: true
   - name: AWS_ACCOUNT_S3
     required: true
+  - name: KBANK_THBKK2BE_SANDBOX_API_KEY
+    required: true
+  - name: KBANK_THBKK2BE_SANDBOX_SECRET
+    required: true
+  - name: KBANK_THBKK2BE_SANDBOX_MID
+    required: true
+  - name: KBANK_THBKK2BE_API_KEY
+    required: true
+  - name: KBANK_THBKK2BE_SECRET
+    required: true
+  - name: KBANK_THBKK2BE_MID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_COMMON_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_ACCESS_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_CLIENT_ID
+    required: true
+  - name: ENVPAY_TINGG_COMMON_CLIENT_SECRET
+    required: true
+  - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
+    required: true
+  - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+    required: true
+  - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_ID
+    required: true
+  - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+    required: true
+  - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_COMMON_SANDBOX_SECRET_KEY
+    required: true
+  - name: FAW_egAll2be_MERCHANT_ID
+    required: true
+  - name: FAW_egAll2be_SECURITY_KEY
+    required: true
+  - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+    required: true
+  - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
+    required: true
+  - name: ENVPAY_GLO_COMMON_MERCHANT_ID
+    required: true
+  - name: ENVPAY_GLO_COMMON_SECRET
+    required: true
+  - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+    required: true
+  - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+    required: true
+  - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+    required: true
+  - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+    required: true
+  - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+    required: true
+  - name: PAYU_NGALL2BE_APP_ID
+    required: true
+  - name: PAYU_NGALL2BE_PRIVATE_KEY
+    required: true
+  - name: PAYU_KEALL2BE_APP_ID
+    required: true
+  - name: PAYU_KEALL2BE_PRIVATE_KEY
+    required: true
+  - name: CLICTOPAY_SANDBOX_USER_NAME
+    required: true
+  - name: CLICTOPAY_SANDBOX_PASSWORD
+    required: true
+  - name: BANK_PAYMENT_SECRET
+    required: true
   - name: PAYMENT_SERVICE_DOMAIN
+    required: true
+  - name: SANDBOX_PAYFORT_MERCHANT_ID
+    required: true
+  - name: SANDBOX_PAYFORT_ACCESS_CODE
+    required: true
+  - name: SANDBOX_PAYFORT_REQUEST_PHRASE
+    required: true
+  - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
+    required: true
+  - name: PAYFORT_MERCHANT_ID
+    required: true
+  - name: PAYFORT_ACCESS_CODE
+    required: true
+  - name: PAYFORT_REQUEST_PHRASE
+    required: true
+  - name: PAYFORT_RESPONSE_PHRASE
     required: true
   - name: APPLICATION_ENV
     value: prod

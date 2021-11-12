@@ -68,7 +68,7 @@ class PaymentService
         $this->invoiceService->generate($transaction);
 
         if(!empty($error_msg)) {
-            Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . implode('\n', $error_msg));
+            Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . json_encode($error_msg, 256));
             $show_error_msg = 'Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed';
         }
         $result =  [
@@ -108,7 +108,7 @@ class PaymentService
         } else {
             return [
                 'status'    => 'error',
-                'error_msg' => $response['body']['message']
+                'error_msg' => json_encode($response['body']['message'], JSON_UNESCAPED_UNICODE)
             ];
         }
     }

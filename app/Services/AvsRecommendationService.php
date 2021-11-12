@@ -115,8 +115,8 @@ class AvsRecommendationService
                 'currency' => array_get($avs, 'currency.code'),
                 'avs_description' => array_get($avs, 'specific_infos.0.long_description'),
                 'sku_description' => array_get($avs, 'avs.translation.0.long_description'),
-                'avs_sale_script' => array_get($avs, 'specific_infos.0.sale_script'),
-                'sku_sale_script' => array_get($avs, 'avs.translation.0.sale_script'),
+                'avs_sale_script' => array_get($avs, 'specific_infos.0.sales_script'),
+                'sku_sale_script' => array_get($avs, 'avs.translation.0.sales_script'),
                 'recommendation_priority' => array_get($avs, 'recommendation_priority')
             ];
         }

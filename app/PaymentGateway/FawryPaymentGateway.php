@@ -11,7 +11,9 @@ use App\Services\TransactionItemsService;
 use App\Services\ApiService;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-
+use App\Jobs\FawryPaymentJob;
+use Illuminate\Support\Facades\Queue;
+use Carbon\Carbon;
 
 class FawryPaymentGateway implements PaymentGatewayInterface
 {
@@ -426,10 +428,14 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $is_live = $payment_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live config
-            $secret = $this->getEnvpayValue($payment_config['prod']['secret_key']);
+            $host_url    = $payment_config['prod']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['prod']['secret_key']);
         } else {
             // Test config
-            $secret = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
+            $host_url    = $payment_config['sandbox']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['sandbox']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
         }
         if (strtolower($payment_config['common']['version']) == 'v1') {
             $fawry_ref_no      = $params['FawryRefNo'] ?? '';
@@ -468,28 +474,58 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             ];
         }
 
-
-
-        // if orderStatus is PAID, update transaction
-        if ($order_status == 'PAID') {
-            $confirm_params = [
-                'gateway'        => $this->getPaymentGatewayName(),
-                'amount'         => floatval($transaction['t_amount']),
-                'currency'       => $transaction['t_currency'],
-                'transaction_id' => $transaction['t_transaction_id'],
-                'gateway_transaction_id' => '',
+        if ($order_status != 'PAID') {
+            $status_sign   = $merchant_id . $order_id . $secret;
+            $status_url    = $host_url . '/ECommerceWeb/Fawry/payments/status/v2';
+            $status_params = [
+                'merchantCode'      => $merchant_id,
+                'merchantRefNumber' => $order_id,
+                'signature'         => hash('SHA256', $status_sign)
             ];
-            $response = $this->paymentService->confirm($transaction, $confirm_params);
-            if ($response['is_success'] == 'ok') {
-                return [
-                    'status' => 'success',
-                ];
+            $query_params = [];
+            foreach ($status_params as $k => $v) {
+                $query_params[] = "$k=$v";
             }
-        } else {
-            Log::warning('ONLINE PAYMENT, Fawrypay(order status is wrong): The current order status is ' . $order_status);
+            $status_url .= '?' . implode('&', $query_params);
+            $client = new Client();
+            $response = $client->request('GET', $status_url);
+            $status_code    = $response->getStatusCode();
+            $return_content = $response->getBody()->getContents();
+            $result         = json_decode($return_content, true);
+            if ($status_code == 200 && !empty($result)) {
+                if ($result['orderStatus'] != 'PAID') {
+                    $queue_status = false;
+                    if ($transaction['t_in_queue'] == true) {
+                        if (isset($params['queueStatus'])) { $queue_status = true; }
+                    } else {
+                        $this->transactionService->update(['t_transaction_id' => $order_id], ['t_in_queue' => true]);
+                        $queue_status = true;
+                    }
+                    if ($queue_status) {
+                        $params['queueStatus'] = true;
+                        $fawry_job = new FawryPaymentJob($params);
+                        dispatch($fawry_job->delay(Carbon::now()->addMinute(1)))->onConnection('tlscontact_fawry_payment_queue')->onQueue('tlscontact_fawry_payment_queue');
+                    }
+                    Log::warning('ONLINE PAYMENT, Fawrypay(order status is wrong): The current order status is ' . $order_status);
+                    return [
+                        'status' => 'fail',
+                        'message' => 'unknown_error',
+                    ];
+                }
+            }
+        }
+        // if orderStatus is PAID, update transaction
+        $confirm_params = [
+            'gateway'        => $this->getPaymentGatewayName(),
+            'amount'         => floatval($transaction['t_amount']),
+            'currency'       => $transaction['t_currency'],
+            'transaction_id' => $transaction['t_transaction_id'],
+            'gateway_transaction_id' => '',
+        ];
+        $response = $this->paymentService->confirm($transaction, $confirm_params);
+        if ($response['is_success'] == 'ok') {
             return [
-                'status' => 'fail',
-                'message' => 'unknown_error',
+                'status' => 'success',
             ];
         }
     }

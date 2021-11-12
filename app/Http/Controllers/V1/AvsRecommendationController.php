@@ -26,7 +26,7 @@ class AvsRecommendationController extends BaseController
      *     description="get the services by directus recommendation priority",
      *      @OA\Parameter(
      *          name="f_id",
-     *          in="query",
+     *          in="path",
      *          description="the tlsconnect f_id",
      *          required=true,
      *          @OA\Schema(type="integer", example="10001"),

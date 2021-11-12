@@ -443,8 +443,8 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               args:
-                  cd /opt/app-root/src/;
-                  php artisan queue:work tlscontact_fawry_payment_queue --tries=3 --timeout=60
+                - -c
+                - cd /opt/app-root/src/; php artisan queue:work tlscontact_fawry_payment_queue --tries=3 --timeout=60
               volumeMounts:
                 - mountPath: /opt/app-root/src/httpd-cfg
                   name: volume-apache-config

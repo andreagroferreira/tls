@@ -65,6 +65,13 @@ return [
             'block_for' => null,
         ],
 
+        'tlscontact_fawry_payment_queue' => [
+            'driver' => 'database',
+            'connection' => 'payment_pgsql',
+            'table' => 'jobs',
+            'queue' => 'tlscontact_fawry_payment_queue',
+            'retry_after' => 90,
+        ],
     ],
 
     /*
@@ -79,8 +86,8 @@ return [
     */
 
     'failed' => [
-        'database' => env('DB_CONNECTION', 'mysql'),
-        'table' => env('QUEUE_FAILED_TABLE', 'failed_jobs'),
+        'database' => 'payment_pgsql',
+        'table' => 'failed_jobs',
     ],
 
 ];

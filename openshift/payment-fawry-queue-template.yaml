@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: payment-template
+  name: payment-callback-queue-template
   annotations:
     description: This template defines objects that are required to spin up a TLS Connect application
 parameters:

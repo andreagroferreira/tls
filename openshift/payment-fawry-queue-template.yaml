@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: payment-callback-queue-template
+  name: payment-template
   annotations:
     description: This template defines objects that are required to spin up a TLS Connect application
 parameters:
@@ -193,87 +193,18 @@ parameters:
     required: false
 objects:
   - apiVersion: v1
-    kind: ServiceAccount
-    metadata:
-      name: php-cron-sa
-  - apiVersion: rbac.authorization.k8s.io/v1
-    kind: Role
-    metadata:
-      name: cron-pod-command-execution
-      labels:
-        app: ${APPLICATION_NAME}-callback-queue
-    rules:
-      - apiGroups:
-          - ''
-        resources:
-          - pods
-        verbs:
-          - get
-          - list
-      - apiGroups:
-          - ''
-        resources:
-          - pods/exec
-        verbs:
-          - create
-  -
-    apiVersion: v1
-    kind: BuildConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}-callback-queue
-      name: ${APPLICATION_NAME}-callback-queue
-    spec:
-      failedBuildsHistoryLimit: 5
-      nodeSelector: null
-      output:
-        to:
-          kind: ImageStreamTag
-          name: ${APPLICATION_NAME}-callback-queue:latest
-      postCommit: {}
-      resources: {}
-      runPolicy: Serial
-      source:
-        binary: {}
-        type: Binary
-      strategy:
-        sourceStrategy:
-          env:
-            - name: DOCUMENTROOT
-              value: /public
-            - name: SHORT_OPEN_TAG
-              value: "On"
-            - name: SESSION_COOKIE_SECURE
-              Value: "True"
-          from:
-            kind: ImageStreamTag
-            name: tlsconnect-php73-s2i:latest
-            namespace: openshift
-        type: Source
-      successfulBuildsHistoryLimit: 5
-  -
-    apiVersion: v1
-    kind: ImageStream
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}-callback-queue
-      name: ${APPLICATION_NAME}-callback-queue
-  -
-    apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
     metadata:
       labels:
         app: ${APPLICATION_NAME}-callback-queue
       name: ${APPLICATION_NAME}-callback-queue
     spec:
-      selector:
-        app: ${APPLICATION_NAME}-callback-queue
-        deploymentconfig: ${APPLICATION_NAME}-callback-queue
       triggers:
         - imageChangeParams:
             automatic: true
             containerNames:
-              - ${APPLICATION_NAME}-callback-queue
+              - ${APPLICATION_NAME}
+              - ${APPLICATION_NAME}-init
             from:
               kind: ImageStreamTag
               name: "${APPLICATION_NAME}:${IMAGE_TAG}"
@@ -287,220 +218,196 @@ objects:
             deploymentconfig: ${APPLICATION_NAME}-callback-queue
         spec:
           containers:
+            - command: [ "/bin/sh" ]
+              args:
+                - -c
+                - cd /opt/app-root/src/; echo '{"autoload":{"psr-4":{"App\\":"app/"}}}' > composer.json; php artisan queue:work tlscontact_fawry_payment_queue --tries=3 --timeout=60
             - env:
-              - name: APPLICATION_ENV
-                value: ${APPLICATION_ENV}
-              - name: APP_DEBUG
-                value: ${DEBUG_MODE}
-              - name: VERIFYPEER
-                value: ${VERIFYPEER}
-              - name: POSTGRES_DB_HOST
-                value: ${POSTGRES_DB_HOST}
-              - name: POSTGRES_DB_PORT
-                value: "5432"
-              - name: POSTGRES_DB_USERNAME
-                valueFrom:
-                  secretKeyRef:
-                    name: ${POSTGRES_SECRET_NAME}
-                    key: username
-              - name: POSTGRES_DB_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: ${POSTGRES_SECRET_NAME}
-                    key: password
-              - name: POSTGRES_DEPLOY_DB_USERNAME
-                valueFrom:
-                  secretKeyRef:
-                    name: ${POSTGRES_ADMIN_SECRET_NAME}
-                    key: username
-              - name: POSTGRES_DEPLOY_DB_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: ${POSTGRES_ADMIN_SECRET_NAME}
-                    key: password
-              - name: POSTGRES_PAYMENT_DB_DATABASE
-                value: ${POSTGRES_PAYMENT_DB_DATABASE}
-              - name: KBANK_THBKK2BE_SANDBOX_API_KEY
-                value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
-              - name: KBANK_THBKK2BE_SANDBOX_SECRET
-                value: ${KBANK_THBKK2BE_SANDBOX_SECRET}
-              - name: KBANK_THBKK2BE_SANDBOX_MID
-                value: ${KBANK_THBKK2BE_SANDBOX_MID}
-              - name: KBANK_THBKK2BE_API_KEY
-                value: ${KBANK_THBKK2BE_API_KEY}
-              - name: KBANK_THBKK2BE_SECRET
-                value: ${KBANK_THBKK2BE_SECRET}
-              - name: KBANK_THBKK2BE_MID
-                value: ${KBANK_THBKK2BE_MID}
-              - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
-                value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
-              - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
-                value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
-              - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
-                value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
-              - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
-                value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST}
-              - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
-                value: ${ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST}
-              - name: ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER
-                value: ${ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER}
-              - name: ENVPAY_TINGG_COMMON_SERVICE_CODE
-                value: ${ENVPAY_TINGG_COMMON_SERVICE_CODE}
-              - name: ENVPAY_TINGG_COMMON_IVKEY
-                value: ${ENVPAY_TINGG_COMMON_IVKEY}
-              - name: ENVPAY_TINGG_COMMON_SECRET_KEY
-                value: ${ENVPAY_TINGG_COMMON_SECRET_KEY}
-              - name: ENVPAY_TINGG_COMMON_ACCESS_KEY
-                value: ${ENVPAY_TINGG_COMMON_ACCESS_KEY}
-              - name: ENVPAY_TINGG_COMMON_CLIENT_ID
-                value: ${ENVPAY_TINGG_COMMON_CLIENT_ID}
-              - name: ENVPAY_TINGG_COMMON_CLIENT_SECRET
-                value: ${ENVPAY_TINGG_COMMON_CLIENT_SECRET}
-              - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
-                value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
-              - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
-                value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
-              - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
-                value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
-              - name: PAYGATE_ZAALL2BE_SANDBOX_ID
-                value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
-              - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
-                value: ${PAYGATE_ZAALL2BE_ENCRYPTION_KEY}
-              - name: PAYGATE_ZAALL2BE_ID
-                value: ${PAYGATE_ZAALL2BE_ID}
-              - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
-                value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
-              - name: FAW_COMMON_SANDBOX_MERCHANT_ID
-                value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
-              - name: FAW_COMMON_SANDBOX_SECRET_KEY
-                value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
-              - name: FAW_egAll2be_MERCHANT_ID
-                value: ${FAW_egAll2be_MERCHANT_ID}
-              - name: FAW_egAll2be_SECURITY_KEY
-                value: ${FAW_egAll2be_SECURITY_KEY}
-              - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
-                value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
-              - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
-                value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
-              - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
-                value: ${ENVPAY_GLO_BEgbALL2be_ACCOUNT}
-              - name: ENVPAY_GLO_COMMON_MERCHANT_ID
-                value: ${ENVPAY_GLO_COMMON_MERCHANT_ID}
-              - name: ENVPAY_GLO_COMMON_SECRET
-                value: ${ENVPAY_GLO_COMMON_SECRET}
-              - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
-                value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
-              - name: PAYU_NGALL2BE_SANDBOX_APP_ID
-                value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
-              - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
-                value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
-              - name: PAYU_KEALL2BE_SANDBOX_APP_ID
-                value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
-              - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
-                value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
-              - name: PAYU_NGALL2BE_APP_ID
-                value: ${PAYU_NGALL2BE_APP_ID}
-              - name: PAYU_NGALL2BE_PRIVATE_KEY
-                value: ${PAYU_NGALL2BE_PRIVATE_KEY}
-              - name: PAYU_KEALL2BE_APP_ID
-                value: ${PAYU_KEALL2BE_APP_ID}
-              - name: PAYU_KEALL2BE_PRIVATE_KEY
-                value: ${PAYU_KEALL2BE_PRIVATE_KEY}
-              - name: CLICTOPAY_SANDBOX_USER_NAME
-                value: ${CLICTOPAY_SANDBOX_USER_NAME}
-              - name: CLICTOPAY_SANDBOX_PASSWORD
-                value: ${CLICTOPAY_SANDBOX_PASSWORD}
-              - name: BANK_PAYMENT_SECRET
-                value: ${BANK_PAYMENT_SECRET}
-              - name: PAYMENT_SERVICE_DOMAIN
-                value: ${PAYMENT_SERVICE_DOMAIN}
-              - name: SANDBOX_PAYFORT_MERCHANT_ID
-                value: ${SANDBOX_PAYFORT_MERCHANT_ID}
-              - name: SANDBOX_PAYFORT_ACCESS_CODE
-                value: ${SANDBOX_PAYFORT_ACCESS_CODE}
-              - name: SANDBOX_PAYFORT_REQUEST_PHRASE
-                value: ${SANDBOX_PAYFORT_REQUEST_PHRASE}
-              - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
-                value: ${SANDBOX_PAYFORT_RESPONSE_PHRASE}
-              - name: PAYFORT_MERCHANT_ID
-                value: ${PAYFORT_MERCHANT_ID}
-              - name: PAYFORT_ACCESS_CODE
-                value: ${PAYFORT_ACCESS_CODE}
-              - name: PAYFORT_REQUEST_PHRASE
-                value: ${PAYFORT_REQUEST_PHRASE}
-              - name: PAYFORT_RESPONSE_PHRASE
-                value: ${PAYFORT_RESPONSE_PHRASE}
-              - name: TLSCONTACT_API
-                value: ${TLSCONTACT_API}
-              - name: CLIENT
-                value: ${CLIENT}
-              - name: DIRECTUS_DOMAIN
-                value: ${DIRECTUS_DOMAIN}
-              - name: PGPASSFILE
-                value: /opt/app-root/pgpass/.pgpass
-              - name: APP_ENV
-                value: ${APP_ENV}
-              - name: PROJECT
-                value: ${NAMESPACE}
-              - name: AWS_ACCESS_KEY_ID
-                valueFrom:
-                  secretKeyRef:
-                    name: ${AWS_ACCOUNT_S3}
-                    key: AWS_ACCESS_KEY_ID
-              - name: AWS_SECRET_ACCESS_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: ${AWS_ACCOUNT_S3}
-                    key: AWS_SECRET_ACCESS_KEY
-              - name: AWS_DEFAULT_REGION
-                valueFrom:
-                  secretKeyRef:
-                    name: ${AWS_ACCOUNT_S3}
-                    key: AWS_REGION
-              - name: AWS_BUCKET
-                valueFrom:
-                  secretKeyRef:
-                    name: ${AWS_ACCOUNT_S3}
-                    key: AWS_BUCKET_NAME
-              - name: LOG_CHANNEL
-                value: "stdout"
-              - name: ELASTIC_APM_SERVICE_NAME
-                value: "${OPENSHIFT_ENV}-${PROJECT}-${APPLICATION_NAME}"
-              - name: ELASTIC_APM_SECRET_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    key: ELASTIC_APM_SECRET_TOKEN
-                    name: elastic-apm
-              - name: ELASTIC_APM_SERVER_URL
-                valueFrom:
-                  secretKeyRef:
-                    key: ELASTIC_APM_SERVER_URLS
-                    name: elastic-apm
-              - name: ELASTIC_APM_VERIFY_SERVER_CERT
-                value: 'false'
+                - name: POSTGRES_DB_HOST
+                  value: ${POSTGRES_DB_HOST}
+                - name: TLSCONTACT_API
+                  value: ${TLSCONTACT_API}
+                - name: CLIENT
+                  value: ${CLIENT}
+                - name: DIRECTUS_DOMAIN
+                  value: ${DIRECTUS_DOMAIN}
+                - name: VERIFYPEER
+                  value: ${VERIFYPEER}
+                - name: POSTGRES_DEPLOY_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DEPLOY_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: password
+                - name: POSTGRES_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_SECRET_NAME}
+                      key: password
+                - name: POSTGRES_PAYMENT_DB_DATABASE
+                  value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: KEYCLOAK_BASE_URL
+                  value: ${KEYCLOAK_BASE_URL}
+                - name: KEYCLOAK_REALM
+                  value: ${KEYCLOAK_REALM}
+                - name: KEYCLOAK_CLIENT_ID
+                  value: ${KEYCLOAK_CLIENT_ID}
+                - name: KBANK_THBKK2BE_SANDBOX_API_KEY
+                  value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
+                - name: KBANK_THBKK2BE_SANDBOX_SECRET
+                  value: ${KBANK_THBKK2BE_SANDBOX_SECRET}
+                - name: KBANK_THBKK2BE_SANDBOX_MID
+                  value: ${KBANK_THBKK2BE_SANDBOX_MID}
+                - name: KBANK_THBKK2BE_API_KEY
+                  value: ${KBANK_THBKK2BE_API_KEY}
+                - name: KBANK_THBKK2BE_SECRET
+                  value: ${KBANK_THBKK2BE_SECRET}
+                - name: KBANK_THBKK2BE_MID
+                  value: ${KBANK_THBKK2BE_MID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST}
+                - name: ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_ACCESS_KEY}
+                - name: ENVPAY_TINGG_COMMON_CLIENT_ID
+                  value: ${ENVPAY_TINGG_COMMON_CLIENT_ID}
+                - name: ENVPAY_TINGG_COMMON_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_COMMON_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
+                - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
+                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+                  value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_KEY}
+                - name: PAYGATE_ZAALL2BE_ID
+                  value: ${PAYGATE_ZAALL2BE_ID}
+                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+                  value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
+                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
+                - name: FAW_COMMON_SANDBOX_SECRET_KEY
+                  value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
+                - name: FAW_egAll2be_MERCHANT_ID
+                  value: ${FAW_egAll2be_MERCHANT_ID}
+                - name: FAW_egAll2be_SECURITY_KEY
+                  value: ${FAW_egAll2be_SECURITY_KEY}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
+                - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
+                  value: ${ENVPAY_GLO_BEgbALL2be_ACCOUNT}
+                - name: ENVPAY_GLO_COMMON_MERCHANT_ID
+                  value: ${ENVPAY_GLO_COMMON_MERCHANT_ID}
+                - name: ENVPAY_GLO_COMMON_SECRET
+                  value: ${ENVPAY_GLO_COMMON_SECRET}
+                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+                  value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_NGALL2BE_APP_ID
+                  value: ${PAYU_NGALL2BE_APP_ID}
+                - name: PAYU_NGALL2BE_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_APP_ID
+                  value: ${PAYU_KEALL2BE_APP_ID}
+                - name: PAYU_KEALL2BE_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: CLICTOPAY_SANDBOX_USER_NAME
+                  value: ${CLICTOPAY_SANDBOX_USER_NAME}
+                - name: CLICTOPAY_SANDBOX_PASSWORD
+                  value: ${CLICTOPAY_SANDBOX_PASSWORD}
+                - name: BANK_PAYMENT_SECRET
+                  value: ${BANK_PAYMENT_SECRET}
+                - name: SANDBOX_PAYFORT_MERCHANT_ID
+                  value: ${SANDBOX_PAYFORT_MERCHANT_ID}
+                - name: SANDBOX_PAYFORT_ACCESS_CODE
+                  value: ${SANDBOX_PAYFORT_ACCESS_CODE}
+                - name: SANDBOX_PAYFORT_REQUEST_PHRASE
+                  value: ${SANDBOX_PAYFORT_REQUEST_PHRASE}
+                - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
+                  value: ${SANDBOX_PAYFORT_RESPONSE_PHRASE}
+                - name: PAYFORT_MERCHANT_ID
+                  value: ${PAYFORT_MERCHANT_ID}
+                - name: PAYFORT_ACCESS_CODE
+                  value: ${PAYFORT_ACCESS_CODE}
+                - name: PAYFORT_REQUEST_PHRASE
+                  value: ${PAYFORT_REQUEST_PHRASE}
+                - name: PAYFORT_RESPONSE_PHRASE
+                  value: ${PAYFORT_RESPONSE_PHRASE}
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_DEFAULT_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_REGION
+                - name: AWS_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_BUCKET_NAME
               image: ' '
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}
-              ports:
-                - containerPort: 8443
-                  protocol: TCP
-                  name: https
               resources:
                 requests:
                   memory: ${MEMORY_REQUEST}
@@ -508,22 +415,9 @@ objects:
                   memory: ${MEMORY_LIMIT}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
-              args:
-                - -c
-                - cd /opt/app-root/src/; php artisan queue:work tlscontact_fawry_payment_queue --tries=3 --timeout=60
               volumeMounts:
-                - mountPath: /opt/app-root/src/httpd-cfg
-                  name: volume-apache-config
-                - mountPath: /opt/app-root/src/httpd-ssl/
-                  name: volume-ssl
-                - mountPath: /opt/app-root/httpd-ssl
-                  name: volume-ssl-move
-                - mountPath: /opt/app-root/pgpass
-                  name: volume-pgpass
                 - mountPath: /opt/app-root/src/log
                   name: volume-logs
-                - mountPath: /opt/app-root/src/data/
-                  name: volume-application-data
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -531,26 +425,7 @@ objects:
           terminationGracePeriodSeconds: 30
           volumes:
             - emptyDir: {}
-              name: volume-application-data
-            - emptyDir: {}
               name: volume-logs
-            - emptyDir: {}
-              name: volume-apache-config
-            - emptyDir: {}
-              name: volume-ssl-move
-            - emptyDir: {}
-              name: volume-ssl
-            - emptyDir: {}
-              name: volume-pgpass
-            - name: volume-ssl-init
-              secret:
-                defaultMode: 420
-                items:
-                  - key: tls.crt
-                    path: ./certs/cert.pem
-                  - key: tls.key
-                    path: ./private/key.pem
-                secretName: ${APPLICATION_NAME}-x509-https-secret
   -
     apiVersion: v1
     kind: Service
@@ -594,8 +469,12 @@ objects:
       ingress:
         - from:
             - namespaceSelector:
-                matchLabels:
-                  name: default
+                matchExpressions:
+                  - key: name
+                    operator: In
+                    values:
+                      - default
+                      - openshift-ingress
           ports:
             - port: 8443
               protocol: TCP
@@ -656,3 +535,37 @@ objects:
       podSelector:
         matchLabels:
           app: 'tlsconnect-service-api'
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-customer-service
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}
+          ports:
+            - port: 8080
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: customerservice
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-pgbouncer-rds-tlspay-api
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: "${APPLICATION_NAME}"
+          ports:
+            - port: 5432
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: pgbouncer

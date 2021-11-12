@@ -130,23 +130,6 @@ objects:
       labels:
         app: ${APPLICATION_NAME}
       name: ${APPLICATION_NAME}
-  - apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: ${APPLICATION_NAME}-${PROJECT}
-    data:
-      00-app.conf: |
-        SetEnv APPLICATION_ENV "${APPLICATION_ENV}"
-        SetEnv PROJECT $PROJECT
-        php_flag log_errors on
-        php_flag track_errors on
-        CustomLog "|/usr/bin/cat" "{ \"time\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\", \"remoteIP\":\"%a\", \"host\":\"%V\", \"requestPath\":\"%U\", \"query\":\"%q\",\"method\":\"%m\", \"status\":\"%>s\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }"
-        LogFormat "{ \"time\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\", \"remoteIP\":\"%a\", \"host\":\"%V\", \"requestPath\":\"%U\", \"query\":\"%q\",\"method\":\"%m\", \"status\":\"%>s\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }"
-        TransferLog "|/usr/bin/cat"
-        ErrorLogFormat "{ \"time\":\"%{%Y-%m-%dT%T}t\", \"%-m\":\"%l\", \"pid\":\"%P\", \"Message\":\"%M\" }"
-
   -
     apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig

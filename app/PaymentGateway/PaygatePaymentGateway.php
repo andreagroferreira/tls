@@ -104,7 +104,7 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
             'gateway_transaction_id' => $pay_request_id,
         ];
         $response = $this->paymentService->confirm($transaction, $confirm_params);
-        if($response['status'] != 'ok') {
+        if($response['is_success'] != 'ok') {
             exit;
         }
         //核对支付授权状态

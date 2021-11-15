@@ -19,9 +19,137 @@ parameters:
     required: true
   - name: TLSCONTACT_API
     required: true
+  - name: CLIENT
+    required: true
+  - name: DIRECTUS_DOMAIN
+    required: true
   - name: AWS_ACCOUNT_S3
     required: true
+  - name: KBANK_THBKK2BE_SANDBOX_API_KEY
+    required: true
+  - name: KBANK_THBKK2BE_SANDBOX_SECRET
+    required: true
+  - name: KBANK_THBKK2BE_SANDBOX_MID
+    required: true
+  - name: KBANK_THBKK2BE_API_KEY
+    required: true
+  - name: KBANK_THBKK2BE_SECRET
+    required: true
+  - name: KBANK_THBKK2BE_MID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_COMMON_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_ACCESS_KEY
+    required: true
+  - name: ENVPAY_TINGG_COMMON_CLIENT_ID
+    required: true
+  - name: ENVPAY_TINGG_COMMON_CLIENT_SECRET
+    required: true
+  - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
+    required: true
+  - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
+    required: true
+  - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+    required: true
+  - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
+    required: true
+  - name: PAYGATE_ZAALL2BE_ID
+    required: true
+  - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+    required: true
+  - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_COMMON_SANDBOX_SECRET_KEY
+    required: true
+  - name: FAW_egAll2be_MERCHANT_ID
+    required: true
+  - name: FAW_egAll2be_SECURITY_KEY
+    required: true
+  - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+    required: true
+  - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
+    required: true
+  - name: ENVPAY_GLO_COMMON_MERCHANT_ID
+    required: true
+  - name: ENVPAY_GLO_COMMON_SECRET
+    required: true
+  - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+    required: true
+  - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+    required: true
+  - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+    required: true
+  - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+    required: true
+  - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+    required: true
+  - name: PAYU_NGALL2BE_APP_ID
+    required: true
+  - name: PAYU_NGALL2BE_PRIVATE_KEY
+    required: true
+  - name: PAYU_KEALL2BE_APP_ID
+    required: true
+  - name: PAYU_KEALL2BE_PRIVATE_KEY
+    required: true
+  - name: CLICTOPAY_SANDBOX_USER_NAME
+    required: true
+  - name: CLICTOPAY_SANDBOX_PASSWORD
+    required: true
+  - name: BANK_PAYMENT_SECRET
+    required: true
   - name: PAYMENT_SERVICE_DOMAIN
+    required: true
+  - name: SANDBOX_PAYFORT_MERCHANT_ID
+    required: true
+  - name: SANDBOX_PAYFORT_ACCESS_CODE
+    required: true
+  - name: SANDBOX_PAYFORT_REQUEST_PHRASE
+    required: true
+  - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
+    required: true
+  - name: PAYFORT_MERCHANT_ID
+    required: true
+  - name: PAYFORT_ACCESS_CODE
+    required: true
+  - name: PAYFORT_REQUEST_PHRASE
+    required: true
+  - name: PAYFORT_RESPONSE_PHRASE
     required: true
   - name: APPLICATION_ENV
     value: prod
@@ -65,87 +193,18 @@ parameters:
     required: false
 objects:
   - apiVersion: v1
-    kind: ServiceAccount
-    metadata:
-      name: php-cron-sa
-  - apiVersion: rbac.authorization.k8s.io/v1
-    kind: Role
-    metadata:
-      name: cron-pod-command-execution
-      labels:
-        app: ${APPLICATION_NAME}
-    rules:
-      - apiGroups:
-          - ''
-        resources:
-          - pods
-        verbs:
-          - get
-          - list
-      - apiGroups:
-          - ''
-        resources:
-          - pods/exec
-        verbs:
-          - create
-  -
-    apiVersion: v1
-    kind: BuildConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: ${APPLICATION_NAME}
-    spec:
-      failedBuildsHistoryLimit: 5
-      nodeSelector: null
-      output:
-        to:
-          kind: ImageStreamTag
-          name: ${APPLICATION_NAME}:latest
-      postCommit: {}
-      resources: {}
-      runPolicy: Serial
-      source:
-        binary: {}
-        type: Binary
-      strategy:
-        sourceStrategy:
-          env:
-            - name: DOCUMENTROOT
-              value: /public
-            - name: SHORT_OPEN_TAG
-              value: "On"
-            - name: SESSION_COOKIE_SECURE
-              Value: "True"
-          from:
-            kind: ImageStreamTag
-            name: tlsconnect-php73-s2i:latest
-            namespace: openshift
-        type: Source
-      successfulBuildsHistoryLimit: 5
-  -
-    apiVersion: v1
-    kind: ImageStream
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: ${APPLICATION_NAME}
-  -
-    apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
     metadata:
       labels:
-        app: ${APPLICATION_NAME}-send-queue
-      name: ${APPLICATION_NAME}-send-queue
+        app: ${APPLICATION_NAME}-callback-queue
+      name: ${APPLICATION_NAME}-callback-queue
     spec:
-      selector:
-        app: ${APPLICATION_NAME}-send-queue
-        deploymentconfig: ${APPLICATION_NAME}-send-queue
       triggers:
         - imageChangeParams:
             automatic: true
             containerNames:
-              - ${APPLICATION_NAME}-send-queue
+              - ${APPLICATION_NAME}
+              - ${APPLICATION_NAME}-init
             from:
               kind: ImageStreamTag
               name: "${APPLICATION_NAME}:${IMAGE_TAG}"
@@ -155,25 +214,23 @@ objects:
       template:
         metadata:
           labels:
-            app: ${APPLICATION_NAME}-send-queue
-            deploymentconfig: ${APPLICATION_NAME}-send-queue
+            app: ${APPLICATION_NAME}-callback-queue
+            deploymentconfig: ${APPLICATION_NAME}-callback-queue
         spec:
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: tls-node-type
-                        operator: In
-                        values:
-                          - 'default'
-                    weight: 1
-          initContainers:
-            - env:
+          containers:
+            - command: [ "/bin/sh" ]
+              args:
+                - -c
+                - cd /opt/app-root/src/; echo '{"autoload":{"psr-4":{"App\\":"app/"}}}' > composer.json; php artisan queue:work tlscontact_fawry_payment_queue --tries=3 --timeout=60
+              env:
                 - name: POSTGRES_DB_HOST
                   value: ${POSTGRES_DB_HOST}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
+                - name: CLIENT
+                  value: ${CLIENT}
+                - name: DIRECTUS_DOMAIN
+                  value: ${DIRECTUS_DOMAIN}
                 - name: VERIFYPEER
                   value: ${VERIFYPEER}
                 - name: POSTGRES_DEPLOY_DB_USERNAME
@@ -204,6 +261,130 @@ objects:
                   value: ${KEYCLOAK_REALM}
                 - name: KEYCLOAK_CLIENT_ID
                   value: ${KEYCLOAK_CLIENT_ID}
+                - name: KBANK_THBKK2BE_SANDBOX_API_KEY
+                  value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
+                - name: KBANK_THBKK2BE_SANDBOX_SECRET
+                  value: ${KBANK_THBKK2BE_SANDBOX_SECRET}
+                - name: KBANK_THBKK2BE_SANDBOX_MID
+                  value: ${KBANK_THBKK2BE_SANDBOX_MID}
+                - name: KBANK_THBKK2BE_API_KEY
+                  value: ${KBANK_THBKK2BE_API_KEY}
+                - name: KBANK_THBKK2BE_SECRET
+                  value: ${KBANK_THBKK2BE_SECRET}
+                - name: KBANK_THBKK2BE_MID
+                  value: ${KBANK_THBKK2BE_MID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
+                  value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
+                - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
+                  value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST}
+                - name: ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST}
+                - name: ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_COMMON_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_COMMON_SERVICE_CODE}
+                - name: ENVPAY_TINGG_COMMON_IVKEY
+                  value: ${ENVPAY_TINGG_COMMON_IVKEY}
+                - name: ENVPAY_TINGG_COMMON_SECRET_KEY
+                  value: ${ENVPAY_TINGG_COMMON_SECRET_KEY}
+                - name: ENVPAY_TINGG_COMMON_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_COMMON_ACCESS_KEY}
+                - name: ENVPAY_TINGG_COMMON_CLIENT_ID
+                  value: ${ENVPAY_TINGG_COMMON_CLIENT_ID}
+                - name: ENVPAY_TINGG_COMMON_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_COMMON_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
+                - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
+                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
+                  value: ${PAYGATE_ZAALL2BE_SANDBOX_ID}
+                - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
+                  value: ${PAYGATE_ZAALL2BE_ENCRYPTION_KEY}
+                - name: PAYGATE_ZAALL2BE_ID
+                  value: ${PAYGATE_ZAALL2BE_ID}
+                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
+                  value: ${PAYGATE_ZAALL2BE_SELLER_EMAIL}
+                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
+                - name: FAW_COMMON_SANDBOX_SECRET_KEY
+                  value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
+                - name: FAW_egAll2be_MERCHANT_ID
+                  value: ${FAW_egAll2be_MERCHANT_ID}
+                - name: FAW_egAll2be_SECURITY_KEY
+                  value: ${FAW_egAll2be_SECURITY_KEY}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
+                  value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
+                - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
+                  value: ${ENVPAY_GLO_BEgbALL2be_ACCOUNT}
+                - name: ENVPAY_GLO_COMMON_MERCHANT_ID
+                  value: ${ENVPAY_GLO_COMMON_MERCHANT_ID}
+                - name: ENVPAY_GLO_COMMON_SECRET
+                  value: ${ENVPAY_GLO_COMMON_SECRET}
+                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
+                  value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
+                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_NGALL2BE_APP_ID
+                  value: ${PAYU_NGALL2BE_APP_ID}
+                - name: PAYU_NGALL2BE_PRIVATE_KEY
+                  value: ${PAYU_NGALL2BE_PRIVATE_KEY}
+                - name: PAYU_KEALL2BE_APP_ID
+                  value: ${PAYU_KEALL2BE_APP_ID}
+                - name: PAYU_KEALL2BE_PRIVATE_KEY
+                  value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: CLICTOPAY_SANDBOX_USER_NAME
+                  value: ${CLICTOPAY_SANDBOX_USER_NAME}
+                - name: CLICTOPAY_SANDBOX_PASSWORD
+                  value: ${CLICTOPAY_SANDBOX_PASSWORD}
+                - name: BANK_PAYMENT_SECRET
+                  value: ${BANK_PAYMENT_SECRET}
+                - name: SANDBOX_PAYFORT_MERCHANT_ID
+                  value: ${SANDBOX_PAYFORT_MERCHANT_ID}
+                - name: SANDBOX_PAYFORT_ACCESS_CODE
+                  value: ${SANDBOX_PAYFORT_ACCESS_CODE}
+                - name: SANDBOX_PAYFORT_REQUEST_PHRASE
+                  value: ${SANDBOX_PAYFORT_REQUEST_PHRASE}
+                - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
+                  value: ${SANDBOX_PAYFORT_RESPONSE_PHRASE}
+                - name: PAYFORT_MERCHANT_ID
+                  value: ${PAYFORT_MERCHANT_ID}
+                - name: PAYFORT_ACCESS_CODE
+                  value: ${PAYFORT_ACCESS_CODE}
+                - name: PAYFORT_REQUEST_PHRASE
+                  value: ${PAYFORT_REQUEST_PHRASE}
+                - name: PAYFORT_RESPONSE_PHRASE
+                  value: ${PAYFORT_RESPONSE_PHRASE}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -224,899 +405,9 @@ objects:
                     secretKeyRef:
                       name: ${AWS_ACCOUNT_S3}
                       key: AWS_BUCKET_NAME
-                - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: merchant_id
-                - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: secret
-                - name: ENVPAY_GLO_COMMON_SANDBOX_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: account
-                - name: ENVPAY_GLO_COMMON_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: merchant_id
-                - name: ENVPAY_GLO_COMMON_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: secret
-                - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: account
-                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-cmi
-                        key: merchant_id
-                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-cmi
-                        key: storekey
-                - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-cmi
-                        key: merchant_id
-                - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-cmi
-                        key: storekey
-                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: key
-                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: id
-                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: email
-                - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: key
-                - name: PAYGATE_ZAALL2BE_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: id
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEcmYAO2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEcmYAO2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEcmYAO2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEcmYAO2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEcmYAO2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEcmDLA2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEcmDLA2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEcmDLA2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEcmDLA2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEcmDLA2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEsnDKR2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEsnDKR2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEsnDKR2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEsnDKR2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEsnDKR2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEetADD2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEetADD2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEetADD2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEetADD2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEetADD2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BErwKGL2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BErwKGL2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BErwKGL2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BErwKGL2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BErwKGL2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEugKLA2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEugKLA2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEugKLA2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEugKLA2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEugKLA2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-faw
-                        key: merchant_id
-                - name: FAW_COMMON_SANDBOX_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-faw
-                        key: secret_key
-                - name: FAW_egAll2be_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-faw
-                        key: merchant_id
-                - name: FAW_egAll2be_SECURITY_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-faw
-                        key: secret_key
-                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paypal
-                        key: account
-                - name: ENVPAY_PAY_BEruMOW2be_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paypal
-                        key: account
-                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: ngall2be_app_id
-                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: ngall2be_private_key
-                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: keall2be_app_id
-                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: keall2be_private_key
-                - name: PAYU_NGALL2BE_APP_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: ngall2be_app_id
-                - name: PAYU_NGALL2BE_PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: ngall2be_private_key
-                - name: PAYU_KEALL2BE_APP_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: keall2be_app_id
-                - name: PAYU_KEALL2BE_PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: keall2be_private_key
-                - name: BANK_PAYMENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-bank
-                        key: password
-                - name: KBANK_THBKK2BE_SANDBOX_API_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: api_key
-                - name: KBANK_THBKK2BE_SANDBOX_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: secret
-                - name: KBANK_THBKK2BE_SANDBOX_MID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: mid
-                - name: KBANK_THBKK2BE_API_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: api_key
-                - name: KBANK_THBKK2BE_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: secret
-                - name: KBANK_THBKK2BE_MID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: mid
-                - name: SANDBOX_PAYFORT_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: merchant_id
-                - name: SANDBOX_PAYFORT_ACCESS_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: access_code
-                - name: SANDBOX_PAYFORT_REQUEST_PHRASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: request_phrase
-                - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: response_phrase
-                - name: PAYFORT_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: merchant_id
-                - name: PAYFORT_ACCESS_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: access_code
-                - name: PAYFORT_REQUEST_PHRASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: request_phrase
-                - name: PAYFORT_RESPONSE_PHRASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: response_phrase
-              name: ${APPLICATION_NAME}-init
               image: ' '
-              command: [ '/bin/bash','-c' ]
-              volumeMounts:
-                - mountPath: /opt/app-root/httpd-cfg-init/
-                  name: volume-apache-config-init
-                - mountPath: /opt/app-root/src/httpd-cfg/
-                  name: volume-apache-config
-                - mountPath: /opt/app-root/ssl-init/
-                  name: volume-ssl-init
-                - mountPath: /opt/app-root/src/httpd-ssl/
-                  name: volume-ssl
-                - mountPath: /opt/app-root/pgpass
-                  name: volume-pgpass
-                - mountPath: /opt/app-root/src/data/
-                  name: volume-application-data
-          containers:
-            - env:
-                - name: APPLICATION_ENV
-                  value: ${APPLICATION_ENV}
-                - name: APP_DEBUG
-                  value: ${DEBUG_MODE}
-                - name: VERIFYPEER
-                  value: ${VERIFYPEER}
-                - name: POSTGRES_DB_HOST
-                  value: ${POSTGRES_DB_HOST}
-                - name: POSTGRES_DB_PORT
-                  value: "5432"
-                - name: POSTGRES_DB_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${POSTGRES_SECRET_NAME}
-                      key: username
-                - name: POSTGRES_DB_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${POSTGRES_SECRET_NAME}
-                      key: password
-                - name: POSTGRES_DEPLOY_DB_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${POSTGRES_ADMIN_SECRET_NAME}
-                      key: username
-                - name: POSTGRES_DEPLOY_DB_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${POSTGRES_ADMIN_SECRET_NAME}
-                      key: password
-                - name: POSTGRES_PAYMENT_DB_DATABASE
-                  value: ${POSTGRES_PAYMENT_DB_DATABASE}
-                - name: PAYMENT_SERVICE_DOMAIN
-                  value: ${PAYMENT_SERVICE_DOMAIN}
-                - name: TLSCONTACT_API
-                  value: ${TLSCONTACT_API}
-                - name: PGPASSFILE
-                  value: /opt/app-root/pgpass/.pgpass
-                - name: APP_ENV
-                  value: ${APP_ENV}
-                - name: PROJECT
-                  value: ${NAMESPACE}
-                - name: AWS_ACCESS_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${AWS_ACCOUNT_S3}
-                      key: AWS_ACCESS_KEY_ID
-                - name: AWS_SECRET_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${AWS_ACCOUNT_S3}
-                      key: AWS_SECRET_ACCESS_KEY
-                - name: AWS_DEFAULT_REGION
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${AWS_ACCOUNT_S3}
-                      key: AWS_REGION
-                - name: AWS_BUCKET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${AWS_ACCOUNT_S3}
-                      key: AWS_BUCKET_NAME
-                - name: LOG_CHANNEL
-                  value: "stdout"
-                - name: ELASTIC_APM_SERVICE_NAME
-                  value: "${OPENSHIFT_ENV}-${PROJECT}-${APPLICATION_NAME}"
-                - name: ELASTIC_APM_SECRET_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      key: ELASTIC_APM_SECRET_TOKEN
-                      name: elastic-apm
-                - name: ELASTIC_APM_SERVER_URL
-                  valueFrom:
-                    secretKeyRef:
-                      key: ELASTIC_APM_SERVER_URLS
-                      name: elastic-apm
-                - name: ELASTIC_APM_VERIFY_SERVER_CERT
-                  value: 'false'
-                - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: merchant_id
-                - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: secret
-                - name: ENVPAY_GLO_COMMON_SANDBOX_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: account
-                - name: ENVPAY_GLO_COMMON_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: merchant_id
-                - name: ENVPAY_GLO_COMMON_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: secret
-                - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-glo
-                        key: account
-                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-cmi
-                        key: merchant_id
-                - name: ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-cmi
-                        key: storekey
-                - name: ENVPAY_CMI_BEmaAll2be_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-cmi
-                        key: merchant_id
-                - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-cmi
-                        key: storekey
-                - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: key
-                - name: PAYGATE_ZAALL2BE_SANDBOX_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: id
-                - name: PAYGATE_ZAALL2BE_SELLER_EMAIL
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: email
-                - name: PAYGATE_ZAALL2BE_ENCRYPTION_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: key
-                - name: PAYGATE_ZAALL2BE_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paygate
-                        key: id
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEcmYAO2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEcmYAO2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEcmYAO2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEcmYAO2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEcmYAO2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEcmDLA2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEcmDLA2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEcmDLA2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEcmDLA2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEcmDLA2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEsnDKR2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEsnDKR2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEsnDKR2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEsnDKR2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEsnDKR2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEetADD2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEetADD2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEetADD2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEetADD2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEetADD2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BErwKGL2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BErwKGL2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BErwKGL2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BErwKGL2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BErwKGL2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: ENVPAY_TINGG_BEugKLA2be_ACCOUNT_NUMBER
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: account
-                - name: ENVPAY_TINGG_BEugKLA2be_SERVICE_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: service_code
-                - name: ENVPAY_TINGG_BEugKLA2be_IVKEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: ivkey
-                - name: ENVPAY_TINGG_BEugKLA2be_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: secret_key
-                - name: ENVPAY_TINGG_BEugKLA2be_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-tingg
-                        key: access_key
-                - name: FAW_COMMON_SANDBOX_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-faw
-                        key: merchant_id
-                - name: FAW_COMMON_SANDBOX_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-faw
-                        key: secret_key
-                - name: FAW_egAll2be_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-faw
-                        key: merchant_id
-                - name: FAW_egAll2be_SECURITY_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-faw
-                        key: secret_key
-                - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paypal
-                        key: account
-                - name: ENVPAY_PAY_BEruMOW2be_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-paypal
-                        key: account
-                - name: PAYU_NGALL2BE_SANDBOX_APP_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: ngall2be_app_id
-                - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: ngall2be_private_key
-                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: keall2be_app_id
-                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: keall2be_private_key
-                - name: PAYU_NGALL2BE_APP_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: ngall2be_app_id
-                - name: PAYU_NGALL2BE_PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: ngall2be_private_key
-                - name: PAYU_KEALL2BE_APP_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: keall2be_app_id
-                - name: PAYU_KEALL2BE_PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payu
-                        key: keall2be_private_key
-                - name: BANK_PAYMENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-bank
-                        key: password
-                - name: KBANK_THBKK2BE_SANDBOX_API_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: api_key
-                - name: KBANK_THBKK2BE_SANDBOX_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: secret
-                - name: KBANK_THBKK2BE_SANDBOX_MID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: mid
-                - name: KBANK_THBKK2BE_API_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: api_key
-                - name: KBANK_THBKK2BE_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: secret
-                - name: KBANK_THBKK2BE_MID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-kbank
-                        key: mid
-                - name: SANDBOX_PAYFORT_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: merchant_id
-                - name: SANDBOX_PAYFORT_ACCESS_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: access_code
-                - name: SANDBOX_PAYFORT_REQUEST_PHRASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: request_phrase
-                - name: SANDBOX_PAYFORT_RESPONSE_PHRASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: response_phrase
-                - name: PAYFORT_MERCHANT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: merchant_id
-                - name: PAYFORT_ACCESS_CODE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: access_code
-                - name: PAYFORT_REQUEST_PHRASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: request_phrase
-                - name: PAYFORT_RESPONSE_PHRASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: envpay-payfort
-                        key: response_phrase
-              image: ' '
-              imagePullPolicy: Always
               name: ${APPLICATION_NAME}
-              ports:
-                - containerPort: 8443
-                  protocol: TCP
-                  name: https
+              imagePullPolicy: Always
               resources:
                 requests:
                   memory: ${MEMORY_REQUEST}
@@ -1124,29 +415,9 @@ objects:
                   memory: ${MEMORY_LIMIT}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
-              args:
-                - cp -Lr /opt/app-root/ssl-init/* /opt/app-root/src/httpd-ssl/;
-                  cp -Lr /opt/app-root/httpd-cfg-init/* /opt/app-root/src/httpd-cfg/;
-                  echo "$POSTGRES_DB_HOST:5432:$POSTGRES_PAYMENT_DB_DATABASE:$POSTGRES_DB_USERNAME:$POSTGRES_DB_PASSWORD" > /opt/app-root/pgpass/.pgpass;
-                  echo "${POSTGRES_DB_HOST}-pgbouncer:5432:$POSTGRES_PAYMENT_DB_DATABASE:$POSTGRES_DB_USERNAME:$POSTGRES_DB_PASSWORD" >> /opt/app-root/pgpass/.pgpass;
-                  chmod 600 /opt/app-root/pgpass/.pgpass;
-                  mkdir -p /opt/app-root/src/data/application_data;
-                  cd /opt/app-root/src/;
-                  php artisan queue:work  tlscontact_fawry_payment_queue
-
               volumeMounts:
-                - mountPath: /opt/app-root/src/httpd-cfg
-                  name: volume-apache-config
-                - mountPath: /opt/app-root/src/httpd-ssl/
-                  name: volume-ssl
-                - mountPath: /opt/app-root/httpd-ssl
-                  name: volume-ssl-move
-                - mountPath: /opt/app-root/pgpass
-                  name: volume-pgpass
                 - mountPath: /opt/app-root/src/log
                   name: volume-logs
-                - mountPath: /opt/app-root/src/data/
-                  name: volume-application-data
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -1154,88 +425,11 @@ objects:
           terminationGracePeriodSeconds: 30
           volumes:
             - emptyDir: {}
-              name: volume-application-data
-            - emptyDir: {}
               name: volume-logs
-            - emptyDir: {}
-              name: volume-apache-config
-            - emptyDir: {}
-              name: volume-ssl-move
-            - emptyDir: {}
-              name: volume-ssl
-            - emptyDir: {}
-              name: volume-pgpass
-            - name: volume-ssl-init
-              secret:
-                defaultMode: 420
-                items:
-                  - key: tls.crt
-                    path: ./certs/cert.pem
-                  - key: tls.key
-                    path: ./private/key.pem
-                secretName: ${APPLICATION_NAME}-x509-https-secret
-            - configMap:
-                defaultMode: 420
-                items:
-                  - key: 00-app.conf
-                    path: 00-app.conf
-                name: ${APPLICATION_NAME}-${PROJECT}
-              name: volume-apache-config-init
-  -
-    apiVersion: v1
-    kind: Service
-    metadata:
-      annotations:
-        service.alpha.openshift.io/serving-cert-secret-name: ${APPLICATION_NAME}-x509-https-secret
-      labels:
-        app: ${APPLICATION_NAME}
-      name: ${APPLICATION_NAME}
-    spec:
-      selector:
-        app: ${APPLICATION_NAME}
-      ports:
-        - name: https
-          port: 8443
-  -
-    kind: Route
-    apiVersion: v1
-    id: "${APPLICATION_NAME}-https"
-    metadata:
-      name: ${APPLICATION_NAME}
-      labels:
-        app: "${APPLICATION_NAME}"
-      annotations:
-        description: Route for ${APPLICATION_NAME}'s https service.
-        kubernetes.io/tls-acme: 'true'
-        haproxy.router.openshift.io/ip_whitelist: ${ROUTE_IP_WHITE_LIST}
-        haproxy.router.openshift.io/timeout: "60s"
-    spec:
-      host: "${HOSTNAME_HTTPS}"
-      to:
-        name: ${APPLICATION_NAME}
-      tls:
-        termination: reencrypt
-        insecureEdgeTerminationPolicy: Redirect
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}-router
-    spec:
-      ingress:
-        - from:
-            - namespaceSelector:
-                matchLabels:
-                  name: default
-          ports:
-            - port: 8443
-              protocol: TCP
-      podSelector:
-        matchLabels:
-          app: ${APPLICATION_NAME}
-  - apiVersion: networking.k8s.io/v1
-    kind: NetworkPolicy
-    metadata:
-      name: allow-${APPLICATION_NAME}-pgbouncer
+      name: allow-${APPLICATION_NAME}-callback-queue-pgbouncer
       labels:
         app: ${APPLICATION_NAME}
     spec:
@@ -1243,7 +437,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}
+                  app: ${APPLICATION_NAME}-callback-queue
           ports:
             - port: 5432
               protocol: TCP
@@ -1253,7 +447,7 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}-pgcluster
+      name: allow-${APPLICATION_NAME}-callback-queue-pgcluster
       labels:
         app: ${APPLICATION_NAME}
     spec:
@@ -1261,7 +455,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}
+                  app: ${APPLICATION_NAME}-callback-queue
           ports:
             - port: 5432
               protocol: TCP
@@ -1271,7 +465,7 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}-service-api
+      name: allow-${APPLICATION_NAME}-callback-queue-service-api
       labels:
         app: ${APPLICATION_NAME}
     spec:
@@ -1279,44 +473,10 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}
+                  app: ${APPLICATION_NAME}-callback-queue
           ports:
             - port: 8443
               protocol: TCP
       podSelector:
         matchLabels:
           app: 'tlsconnect-service-api'
-  - apiVersion: networking.k8s.io/v1
-    kind: NetworkPolicy
-    metadata:
-      name: allow-${APPLICATION_NAME}-customer-service
-      labels:
-        app: ${APPLICATION_NAME}
-    spec:
-      ingress:
-        - from:
-            - podSelector:
-                matchLabels:
-                  app: ${APPLICATION_NAME}
-          ports:
-            - port: 8080
-              protocol: TCP
-      podSelector:
-        matchLabels:
-          app: customerservice
-  - apiVersion: networking.k8s.io/v1
-    kind: NetworkPolicy
-    metadata:
-      name: allow-pgbouncer-rds-tlspay-api
-    spec:
-      ingress:
-        - from:
-            - podSelector:
-                matchLabels:
-                  app: "${APPLICATION_NAME}"
-          ports:
-            - port: 5432
-              protocol: TCP
-      podSelector:
-        matchLabels:
-          app: pgbouncer

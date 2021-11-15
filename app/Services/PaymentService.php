@@ -108,7 +108,7 @@ class PaymentService
         } else {
             return [
                 'status'    => 'error',
-                'error_msg' => json_encode($response['body']['message'], JSON_UNESCAPED_UNICODE)
+                'error_msg' => $response['body']['message']
             ];
         }
     }

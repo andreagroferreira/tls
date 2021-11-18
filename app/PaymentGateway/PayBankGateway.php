@@ -115,6 +115,9 @@ class PayBankGateway implements PaymentGatewayInterface
             'transaction_id' => $transaction_id,
             'gateway_transaction_id' => '',
         ];
+        if (isset($params['agent_name'])) {
+            $confirm_params['agent_name'] = $params['agent_name'];
+        }
         $response = $this->paymentService->confirm($transaction, $confirm_params);
 
         $return['status'] = $response['is_success'] == 'ok' ? 'success' : 'fail';

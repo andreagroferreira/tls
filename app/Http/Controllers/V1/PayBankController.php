@@ -111,6 +111,13 @@ class PayBankController extends BaseController
      *           required=true,
      *           @OA\Schema(type="float", example="10.00"),
      *       ),
+     *     @OA\Parameter(
+     *           name="agent_name",
+     *           in="query",
+     *           description="the amount of bank payment paid",
+     *           required=false,
+     *           @OA\Schema(type="string", example="test"),
+     *       ),
      *      @OA\Parameter(
      *           name="token",
      *           in="query",

@@ -45,7 +45,8 @@ class ApiService
 
     private function getDirectusApiDomain()
     {
-        return env('DIRECTUS_DOMAIN');
+//        return env('DIRECTUS_DOMAIN');
+        return 'https://directus-visa-uk-dev.atlas-iet2.tlscontact.com';
     }
 
     public function callDirectusApi($method, $url) {

@@ -208,6 +208,9 @@ class AvsRecommendationService
                     'sku' => $sku
                 ]);
             }
+            if ($avs['paid']) {
+                $item['paid_price'] = $avs['paid_price'];
+            }
             $item['quantity'] = $avs['av_value'];
             $item['a_id'] = $avs['a_id'];
             array_push($return_avses, $item);

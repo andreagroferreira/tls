@@ -11,6 +11,16 @@ class AvsRecommendationService
     protected $directusService;
     protected $recommendationRuleEngineService;
     protected $recommendationResultRepositories;
+    private $avsItemTemplate = [
+        'vat' => '0.00',
+        'price' => '0.00',
+        'currency' => '',
+        'avs_description' => null,
+        'sku_description' => null,
+        'avs_sale_script' => null,
+        'sku_sale_script' => null,
+        'recommendation_priority' => null
+    ];
 
     public function __construct(
         ApiService                       $apiService,
@@ -194,10 +204,8 @@ class AvsRecommendationService
             } else {
                 $item = $this->avsItemTemplate;
                 $item = array_merge($item, [
-                    'service_name' => $avs['avs_title'],
-                    'sku' => $sku,
-                    'price' => $avs['s_price'],
-                    'currency' => $avs['e_currency'],
+                    'service_name' => $sku,
+                    'sku' => $sku
                 ]);
             }
             $item['quantity'] = $avs['av_value'];

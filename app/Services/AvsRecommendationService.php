@@ -11,6 +11,16 @@ class AvsRecommendationService
     protected $directusService;
     protected $recommendationRuleEngineService;
     protected $recommendationResultRepositories;
+    private $avsItemTemplate = [
+        'vat' => '0.00',
+        'price' => '0.00',
+        'currency' => '',
+        'avs_description' => null,
+        'sku_description' => null,
+        'avs_sale_script' => null,
+        'sku_sale_script' => null,
+        'recommendation_priority' => null
+    ];
 
     public function __construct(
         ApiService                       $apiService,
@@ -41,6 +51,7 @@ class AvsRecommendationService
         }
         $application = $application_response['body'];
         $issuer_avses = $this->getIssuerAvs($application['f_xcopy_ug_xref_i_tag']);
+        $issuer_avses = array_column($issuer_avses, null, 'sku');
 
         //get the recommendation avs
         $recommend_skus = $this->getRecommendSkus($source, $application, $issuer_avses, $step, $limit);
@@ -49,34 +60,23 @@ class AvsRecommendationService
         //get the recommendation result from recommendation result table
         $rcd_result_skus = $this->getRecommendResultSkus($f_id);
 
-        $requested_avs = [];
-        $paid_avs = [];
+        $requested_avs = $this->getShowingAvs($basket_avs['requested'] ?? [], $issuer_avses);
+        $paid_avs = $this->getShowingAvs($basket_avs['paid'] ?? [], $issuer_avses);
+
+
+        $requested_skus = array_keys($basket_avs['requested'] ?? []);
+        $paid_skus = array_keys($basket_avs['paid'] ?? []);
+        $denied_skus = array_keys($rcd_result_skus['deny'] ?? []);
         $denied_avs = [];
         $all_avs = [];
-
         foreach($issuer_avses as $item) {
             $avs_sku = $item['sku'];
-            $display = true;
-            if(in_array($avs_sku, array_keys($basket_avs['requested'] ?? []))) {
-                $item['quantity'] = $basket_avs['requested'][$avs_sku]['av_value'];
-                $item['a_id'] = $basket_avs['requested'][$avs_sku]['a_id'];
-                array_push($requested_avs, $item);
-                $display = false;
-            }
-            if(in_array($avs_sku, array_keys($basket_avs['paid'] ?? []))) {
-                $item['quantity'] = $basket_avs['paid'][$avs_sku]['av_value'];
-                array_push($paid_avs, $item);
-                $display = false;
-            }
             if(in_array($avs_sku, array_keys($rcd_result_skus['deny'] ?? []))) {
                 $item['rcd_id'] = $rcd_result_skus['deny'][$avs_sku]['rr_id'];
                 array_push($denied_avs, $item);
-                $display = false;
             }
-            $item['is_display'] = $display;
+            $item['is_display'] = !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus));
             $item['is_recommended'] = in_array($item['sku'], $recommend_skus);
-            unset($item['quantity']);
-            unset($item['a_id']);
             unset($item['rcd_id']);
             array_push($all_avs, $item);
         }
@@ -189,5 +189,32 @@ class AvsRecommendationService
             'top' => $limit
         ];
         return $this->recommendationRuleEngineService->fetchRules($condition);
+    }
+
+    private function getShowingAvs($avses, $issuer_avses) {
+        if (empty($avses)) {
+            return [];
+        }
+        $search_skus = array_keys($issuer_avses);
+        $return_avses = [];
+        foreach(($avses ?? []) as $avs) {
+            $sku = $avs['s_sku'];
+            if(in_array($sku, $search_skus)) {
+                $item = $issuer_avses[$sku];
+            } else {
+                $item = $this->avsItemTemplate;
+                $item = array_merge($item, [
+                    'service_name' => $sku,
+                    'sku' => $sku
+                ]);
+            }
+            if ($avs['paid']) {
+                $item['paid_price'] = $avs['paid_price'];
+            }
+            $item['quantity'] = $avs['av_value'];
+            $item['a_id'] = $avs['a_id'];
+            array_push($return_avses, $item);
+        }
+        return $return_avses;
     }
 }

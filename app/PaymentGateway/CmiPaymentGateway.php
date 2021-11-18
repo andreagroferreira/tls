@@ -76,7 +76,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         }
 
         $response = $this->paymentService->confirm($transaction, $confirm_params);
-        if ($response['status'] != 'ok') {
+        if ($response['is_success'] != 'ok') {
             exit;
         }
 

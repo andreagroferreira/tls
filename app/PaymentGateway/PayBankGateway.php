@@ -118,6 +118,9 @@ class PayBankGateway implements PaymentGatewayInterface
         if (isset($params['agent_name'])) {
             $confirm_params['agent_name'] = $params['agent_name'];
         }
+        if (isset($params['force_pay_for_not_online_payment_avs']) && $params['force_pay_for_not_online_payment_avs'] == 'yes') {
+            $confirm_params['force_pay_for_not_online_payment_avs'] = $params['force_pay_for_not_online_payment_avs'];
+        }
         $response = $this->paymentService->confirm($transaction, $confirm_params);
 
         $return['status'] = $response['is_success'] == 'ok' ? 'success' : 'fail';

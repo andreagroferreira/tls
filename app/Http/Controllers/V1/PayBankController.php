@@ -119,7 +119,7 @@ class PayBankController extends BaseController
      *           @OA\Schema(type="string", example="test"),
      *       ),
      *     @OA\Parameter(
-     *           name="agent_avs_paid_flag",
+     *           name="force_pay_for_not_online_payment_avs",
      *           in="query",
      *           description="agent avs paid flag",
      *           required=false,

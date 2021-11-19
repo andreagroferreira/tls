@@ -118,6 +118,9 @@ class PayBankGateway implements PaymentGatewayInterface
         if (isset($params['agent_name'])) {
             $confirm_params['agent_name'] = $params['agent_name'];
         }
+        if (isset($params['agent_avs_paid_flag']) && $params['agent_avs_paid_flag'] == 'yes') {
+            $confirm_params['agent_avs_paid_flag'] = $params['agent_avs_paid_flag'];
+        }
         $response = $this->paymentService->confirm($transaction, $confirm_params);
 
         $return['status'] = $response['is_success'] == 'ok' ? 'success' : 'fail';

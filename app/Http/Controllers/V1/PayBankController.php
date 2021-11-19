@@ -118,6 +118,13 @@ class PayBankController extends BaseController
      *           required=false,
      *           @OA\Schema(type="string", example="test"),
      *       ),
+     *     @OA\Parameter(
+     *           name="agent_avs_paid_flag",
+     *           in="query",
+     *           description="agent avs paid flag",
+     *           required=false,
+     *           @OA\Schema(type="string", example="yes"),
+     *       ),
      *      @OA\Parameter(
      *           name="token",
      *           in="query",

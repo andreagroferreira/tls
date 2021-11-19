@@ -652,6 +652,16 @@
                         }
                     },
                     {
+                        "name": "agent_avs_paid_flag",
+                        "in": "query",
+                        "description": "agent avs paid flag",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "yes"
+                        }
+                    },
+                    {
                         "name": "token",
                         "in": "query",
                         "description": "the amount of bank payment paid",

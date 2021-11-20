@@ -12,11 +12,11 @@
                     "Payment API"
                 ],
                 "description": "get the services by directus recommendation priority",
-                "operationId": "App\\Http\\Controllers\\V1\\AvsRecommendationController::fetch",
+                "operationId": "4ea8d86a3e10336d0864f91c8e33e978",
                 "parameters": [
                     {
                         "name": "f_id",
-                        "in": "query",
+                        "in": "path",
                         "description": "the tlsconnect f_id",
                         "required": true,
                         "schema": {
@@ -76,7 +76,7 @@
                     "Payment API"
                 ],
                 "description": "get the transaction details according to fg_id",
-                "operationId": "App\\Http\\Controllers\\V1\\CheckoutController::checkout",
+                "operationId": "8b1dc1b961c8233f601507a00ccf3c55",
                 "parameters": [
                     {
                         "name": "t_id",
@@ -113,7 +113,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from clictopay",
-                "operationId": "App\\Http\\Controllers\\V1\\ClictopayController::redirto",
+                "operationId": "23b9be415226142321151a289e6da579",
                 "parameters": [
                     {
                         "name": "t_id",
@@ -168,7 +168,7 @@
                     "Payment API"
                 ],
                 "description": "redirect request from CMI",
-                "operationId": "App\\Http\\Controllers\\V1\\CmiController::redirto",
+                "operationId": "ccffb34cf3817a4e56b7e352f8a0b7c0",
                 "parameters": [
                     {
                         "name": "t_id",
@@ -223,7 +223,7 @@
                     "Payment API"
                 ],
                 "description": "background callback from CMI",
-                "operationId": "App\\Http\\Controllers\\V1\\CmiController::notify",
+                "operationId": "647885e5d4398049f877c09185311bad",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -245,7 +245,7 @@
                     "Payment API"
                 ],
                 "description": "background callback from fawry",
-                "operationId": "App\\Http\\Controllers\\V1\\FawryController::redirto",
+                "operationId": "644767f4e55d3aa543a44323bbcceb8a",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -267,7 +267,7 @@
                     "Payment API"
                 ],
                 "description": "background callback from fawry",
-                "operationId": "App\\Http\\Controllers\\V1\\FawryController::notify",
+                "operationId": "50de3d3a2e92172b25918c657b041a09",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -310,7 +310,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from globaliris",
-                "operationId": "App\\Http\\Controllers\\V1\\GlobalirisController::redirto",
+                "operationId": "d0cde0d0284d1c11fa5ac18f0e8b2f28",
                 "parameters": [
                     {
                         "name": "t_id",
@@ -365,7 +365,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from globaliris",
-                "operationId": "App\\Http\\Controllers\\V1\\GlobalirisController::redirect",
+                "operationId": "ee5a4f7b46857db42e90f84270e90499",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -387,7 +387,7 @@
                     "Payment API"
                 ],
                 "description": "download the invoice file according to transaction_id",
-                "operationId": "App\\Http\\Controllers\\V1\\InvoiceController::fetch",
+                "operationId": "40b28a98c72f1fc2992730f13ac506e3",
                 "parameters": [
                     {
                         "name": "transaction_id",
@@ -422,7 +422,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from k-bank",
-                "operationId": "App\\Http\\Controllers\\V1\\KBankController::redirto",
+                "operationId": "87278bb290183479cd329eca7388036d",
                 "parameters": [
                     {
                         "name": "t_id",
@@ -466,7 +466,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from k-bank",
-                "operationId": "App\\Http\\Controllers\\V1\\KBankController::notify",
+                "operationId": "4ce4bb5218a791845405df6ca96c3068",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -509,7 +509,7 @@
                     "Payment API"
                 ],
                 "description": "return config for k-bank",
-                "operationId": "App\\Http\\Controllers\\V1\\KBankController::fetchConfig",
+                "operationId": "cd8ad5f8c5504d68dc4596e15a9ba7b0",
                 "parameters": [
                     {
                         "name": "client",
@@ -566,7 +566,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
-                "operationId": "App\\Http\\Controllers\\V1\\PayBankController::redirto",
+                "operationId": "e8be94033150decf4fa1179570b9b317",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -609,7 +609,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
-                "operationId": "App\\Http\\Controllers\\V1\\PayBankController::notify",
+                "operationId": "65b042a91ed7fd82365948dd7c7ecc81",
                 "parameters": [
                     {
                         "name": "transaction",
@@ -639,6 +639,26 @@
                         "schema": {
                             "type": "float",
                             "example": "10.00"
+                        }
+                    },
+                    {
+                        "name": "agent_name",
+                        "in": "query",
+                        "description": "the amount of bank payment paid",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "test"
+                        }
+                    },
+                    {
+                        "name": "force_pay_for_not_online_payment_avs",
+                        "in": "query",
+                        "description": "agent avs paid flag",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "yes"
                         }
                     },
                     {
@@ -673,7 +693,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
-                "operationId": "App\\Http\\Controllers\\V1\\PayLaterController::redirto",
+                "operationId": "a715fb88fe71db5a726781a4737f7f15",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -716,7 +736,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
-                "operationId": "App\\Http\\Controllers\\V1\\PayPalController::redirto",
+                "operationId": "e6dcda7c64cec917374823f78b365525",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -738,7 +758,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
-                "operationId": "App\\Http\\Controllers\\V1\\PayPalController::notify",
+                "operationId": "3e487ffc6f68022a836ad82df8b59213",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -781,7 +801,7 @@
                     "Payment API"
                 ],
                 "description": "get the payment status",
-                "operationId": "App\\Http\\Controllers\\V1\\PayPalController::wait",
+                "operationId": "e3bf2db53097101aa4a13c074c9ccd11",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -803,7 +823,7 @@
                     "Payment API"
                 ],
                 "description": "return transaction parameters for payfort",
-                "operationId": "App\\Http\\Controllers\\V1\\PayfortController::redirto",
+                "operationId": "56189a388df45d2009d5af187591a2a2",
                 "parameters": [
                     {
                         "name": "t_id",
@@ -858,7 +878,7 @@
                     "Payment API"
                 ],
                 "description": "return message to payment gateway",
-                "operationId": "App\\Http\\Controllers\\V1\\PayfortController::notify",
+                "operationId": "08fcaa3e12a4537fc132cba895d14de4",
                 "responses": {
                     "200": {
                         "description": "transaction success",
@@ -880,7 +900,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from globaliris",
-                "operationId": "App\\Http\\Controllers\\V1\\PaygateController::redirto",
+                "operationId": "dde8e8134c2106b97b35144570c09ce1",
                 "parameters": [
                     {
                         "name": "t_id",
@@ -914,7 +934,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
-                "operationId": "App\\Http\\Controllers\\V1\\PaygateController::notify",
+                "operationId": "975d55e742b99b8b46aec1678d19d3f7",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -957,7 +977,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from payu",
-                "operationId": "App\\Http\\Controllers\\V1\\PayuController::redirto",
+                "operationId": "9ffaeb88f6edb90ef6353ab8f58ee948",
                 "parameters": [
                     {
                         "name": "t_id",
@@ -1012,7 +1032,7 @@
                     "Payment API"
                 ],
                 "description": "add a recommendation result",
-                "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::create",
+                "operationId": "b56c8f28f6aae38e3fd2b625da80f3df",
                 "parameters": [
                     {
                         "name": "f_id",
@@ -1086,7 +1106,7 @@
                     "Payment API"
                 ],
                 "description": "get the recommendation result according to f_id",
-                "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::fetchAll",
+                "operationId": "35a08b0716b6192144edfadbc2b90937",
                 "parameters": [
                     {
                         "name": "f_id",
@@ -1120,7 +1140,7 @@
                     "Payment API"
                 ],
                 "description": "delete the recommendation results according to rcd_id",
-                "operationId": "App\\Http\\Controllers\\V1\\RecommendationResultController::delete",
+                "operationId": "f11e25101967a354e14903541a51ad4c",
                 "parameters": [
                     {
                         "name": "rcd_id",
@@ -1174,7 +1194,7 @@
                     "Payment API"
                 ],
                 "description": "get the recommendation services by rule engine",
-                "operationId": "App\\Http\\Controllers\\V1\\RecommendationRuleEngineController::fetch",
+                "operationId": "6f400200555896d2c06f800707f51e61",
                 "parameters": [
                     {
                         "name": "issuer",
@@ -1288,7 +1308,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
-                "operationId": "App\\Http\\Controllers\\V1\\TinggController::redirto",
+                "operationId": "cf90f9c0cf5824b5d0d505c45217da9d",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -1331,7 +1351,7 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
-                "operationId": "App\\Http\\Controllers\\V1\\TinggController::notify",
+                "operationId": "e264337105fc6b26f4a5ae16dae9ff7c",
                 "responses": {
                     "200": {
                         "description": "transaction created",
@@ -1353,7 +1373,7 @@
                     "Payment API"
                 ],
                 "description": "get the transaction details according to fg_id",
-                "operationId": "App\\Http\\Controllers\\V1\\TransactionController::fetch",
+                "operationId": "d218fd8352206dbbbd39b0a778558d30",
                 "parameters": [
                     {
                         "name": "fg_id",
@@ -1400,7 +1420,7 @@
                     "Payment API"
                 ],
                 "description": "create a new transaction",
-                "operationId": "App\\Http\\Controllers\\V1\\TransactionController::create",
+                "operationId": "1e5d79344831342dc54e615e9136c1b3",
                 "parameters": [
                     {
                         "name": "fg_id",
@@ -1524,7 +1544,7 @@
                     "Payment API"
                 ],
                 "description": "get all transactions",
-                "operationId": "App\\Http\\Controllers\\V1\\TransactionController::fetchAll",
+                "operationId": "d19fe52c210336d1a4f815d46ab9cc82",
                 "parameters": [
                     {
                         "name": "page",

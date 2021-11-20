@@ -13,6 +13,8 @@ class PaymentService
     protected $transactionLogsService;
     protected $invoiceService;
     protected $apiService;
+    protected $agent_name = '';
+    protected $force_pay_for_not_online_payment_avs = 'no';//支持支付 s_online_avs=no 的avs
 
     public function __construct(
         TransactionService $transactionService,
@@ -43,6 +45,12 @@ class PaymentService
         $amount_matched   = (strval($transaction['t_amount']) == strval($confirm_params['amount']));
         $currency_matched = (trim($transaction['t_currency']) == trim($confirm_params['currency']));
         $error_msg        = [];
+        if (isset($confirm_params['agent_name'])) {
+            $this->agent_name = $confirm_params['agent_name'];
+        }
+        if (isset($confirm_params['force_pay_for_not_online_payment_avs']) && $confirm_params['force_pay_for_not_online_payment_avs'] == 'yes') {
+            $this->force_pay_for_not_online_payment_avs = $confirm_params['force_pay_for_not_online_payment_avs'];
+        }
         if (!$amount_matched || !$currency_matched) {
             Log::warning("ONLINE PAYMENT, $payment_gateway data check failed-1 : ($amount_matched) ($currency_matched)");
             Log::warning("ONLINE PAYMENT, $payment_gateway data check failed-2 : " . json_encode($_POST, JSON_UNESCAPED_UNICODE));
@@ -101,6 +109,12 @@ class PaymentService
             't_transaction_id' => $transaction['t_transaction_id'],
             't_issuer' => $transaction['t_issuer']
         ];
+        if ($this->agent_name) {
+            $data['agent_name'] = $this->agent_name;
+        }
+        if ($this->force_pay_for_not_online_payment_avs == 'yes') {
+            $data['force_pay_for_not_online_payment_avs'] = $this->force_pay_for_not_online_payment_avs;
+        }
         $response = $this->apiService->callTlsApi('POST', '/tls/v1/' . $client . '/sync_payment_action', $data);
 
         if($response['status'] == 200){

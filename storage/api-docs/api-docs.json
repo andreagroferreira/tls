@@ -1513,6 +1513,16 @@
                         }
                     },
                     {
+                        "name": "payment_method",
+                        "in": "query",
+                        "description": "tls agent payment method",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "card"
+                        }
+                    },
+                    {
                         "name": "items",
                         "in": "query",
                         "description": "transaction items. ",

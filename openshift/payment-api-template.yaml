@@ -300,6 +300,8 @@ objects:
       replicas: 1
       template:
         metadata:
+          annotations:
+            central-logging: "true"
           labels:
             app: ${APPLICATION_NAME}
             deploymentconfig: ${APPLICATION_NAME}

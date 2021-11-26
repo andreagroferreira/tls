@@ -82,8 +82,11 @@ class AvsRecommendationService
         }
 
         $all_avs = collect($all_avs)
-            ->sortByDesc('recommendation_priority')
-            ->sortByDesc('is_recommended')
+            ->sortBy(function($item){
+                $recommendation_priority = $item['recommendation_priority'] ? : 1000;
+                $is_recommended = $item['is_recommended'] ? 0 : 1000;
+                return $recommendation_priority + $is_recommended;
+            })
             ->values();
 
         return [

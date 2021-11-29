@@ -108,6 +108,97 @@ abstract class TestCase extends \TestCase
         $rr_id = $db_connection->insertGetId($params, 'rr_id');
         return $db_connection->where('rr_id', $rr_id)->first();
     }
+
+    public function getTransactions($where) {
+        return DB::connection('unit_test_payment_pgsql')
+            ->table('transactions')
+            ->where($where)
+            ->first();
+    }
+
+    public function getFormGroupResponse() {
+        return [
+            'code' => 200,
+            'body' => [
+                "fg_id" => 10000,
+                "fg_xref_u_id" => 10001,
+                "fg_name" => "default group",
+                "fg_tech_modification" => "2021-11-22T17:13:03.000000Z",
+                "fg_tech_creation" => "2021-11-22T17:12:20.000000Z",
+                "fg_tech_deleted" => false,
+                "fg_csl" => null,
+                "fg_visa_type" => null,
+                "fg_trav_purpose" => null,
+                "fg_departure_date_old" => null,
+                "fg_return_date_old" => null,
+                "fg_is_anonymised" => false,
+                "fg_tour_leader_pax" => null,
+                "fg_tour_leader_name" => null,
+                "fg_note" => null,
+                "fg_tour_leader_id" => null,
+                "fg_student_id" => null,
+                "fg_departure_date" => null,
+                "fg_return_date" => null,
+                "fg_return_arrival_time" => null,
+                "fg_return_flight" => null,
+                "fg_reporting_nb_ok" => null,
+                "fg_reporting_nb_summoned" => null,
+                "fg_tour_leader_mobile_phone" => null,
+                "fg_application_path" => "postal",
+                "fg_day_until_next_appointment" => null,
+                "fg_process" => "schengen_vac",
+                "fg_cai" => null,
+                "fg_is_purged" => false,
+                "u_id" => 10010,
+                "u_xref_ug_id" => 38,
+                "u_password" => "b:\$2y\$10\$ZhsVfoB4o1diVC.woUNcd.dhi6/1GI7V7Z64wDVm72WBlnKjYHs6W",
+                "u_surname" => null,
+                "u_givenname" => null,
+                "u_tech_modification" => "2021-11-22 18:12:16.280758+01",
+                "u_tech_creation" => "2021-11-22 18:12:16.280758+01",
+                "u_tech_deleted" => false,
+                "u_email" => "user1-14420@test.fr",
+                "u_tech_activated" => true,
+                "u_tech_activation_code" => "bfb03530b539658c4889657e219075a07517f03673016c24bad588e5f6120601",
+                "u_tech_activation" => null,
+                "u_role" => null,
+                "u_pref_language" => null,
+                "u_is_anonymised" => false,
+                "u_nickname" => null,
+                "u_csl" => null,
+                "u_pref_homepage" => null,
+                "u_login" => null,
+                "u_password_last_modification" => "2021-11-22 18:12:16.280758+01",
+                "u_change_password_when_login" => false,
+                "u_relative_email" => "user1-14420@test.fr",
+                "u_logged_times" => 0,
+                "u_last_login" => "2021-11-22 18:12:16.280758",
+                "u_last_session" => "",
+                "u_block_expiration" => null,
+                "u_password_salt" => null,
+                "u_is_purged" => false,
+                "ug_type" => "INDI",
+                "ug_xref_i_tag" => "gbLON2be",
+                "ug_admin_type" => null,
+                "ug_xref_gaug_id" => null,
+                "ug_en" => "Individual gbLON2be",
+                "ug_id" => 38,
+                "ug_tech_modification" => "2016-10-18 08:17:07.675123+01",
+                "ug_tech_creation" => "2016-10-18 08:17:07.675123+01",
+                "ug_tech_deleted" => false
+            ]
+        ];
+    }
+
+    public function getPaymentAction() {
+        return [
+            'code' => 200,
+            'body' => [
+                "status"    => "ok",
+                "error_msg" => []
+            ]
+        ];
+    }
 }
 
 

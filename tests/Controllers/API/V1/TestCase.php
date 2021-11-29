@@ -120,8 +120,8 @@ abstract class TestCase extends \TestCase
         return [
             'code' => 200,
             'body' => [
-                "fg_id" => 10000,
-                "fg_xref_u_id" => 10001,
+                "fg_id" => 10001,
+                "fg_xref_u_id" => 10003,
                 "fg_name" => "default group",
                 "fg_tech_modification" => "2021-11-22T17:13:03.000000Z",
                 "fg_tech_creation" => "2021-11-22T17:12:20.000000Z",

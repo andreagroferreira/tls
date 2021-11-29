@@ -14,8 +14,8 @@ class FawryControllerTest extends TestCase
         parent::setUp();
         // create transaction
         $base_url = '/api/v1/transaction';
-        $items = json_encode([['f_id' => 10001, 'skus' => [['sku' => 1, 'price' => $this->amount, 'vat' => 1]]]]);
-        $post_data = ['fg_id' => 10000, 'client' => 'be', 'issuer' => 'egCAI2be', 'currency' => 'EGP', 'redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr', 'onerror_url' => 'onError_tlsweb_url?lang=fr-fr', 'reminder_url' => 'callback_to_send_reminder?lang=fr-fr', 'callback_url' => 'receipt_url/{fg_id}?lang=fr-fr', 'workflow' => 'vac', 'payment_method' => '', 'items' => $items];
+        $items = json_encode([['f_id' => 10002, 'skus' => [['sku' => 1, 'price' => $this->amount, 'vat' => 1]]]]);
+        $post_data = ['fg_id' => 10001, 'client' => 'be', 'issuer' => 'egCAI2be', 'currency' => 'EGP', 'redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr', 'onerror_url' => 'onError_tlsweb_url?lang=fr-fr', 'reminder_url' => 'callback_to_send_reminder?lang=fr-fr', 'callback_url' => 'receipt_url/{fg_id}?lang=fr-fr', 'workflow' => 'vac', 'payment_method' => '', 'items' => $items];
         $this->post($base_url, $post_data);
         $response_array = $this->response->decodeResponseJson();
         $this->transactions = $this->getTransactions(['t_id' => array_get($response_array, 't_id')]);

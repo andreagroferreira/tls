@@ -223,26 +223,16 @@ objects:
                 - -c
                 - cd /opt/app-root/src/; echo '{"autoload":{"psr-4":{"App\\":"app/"}}}' > composer.json; php artisan queue:work tlscontact_fawry_payment_queue --tries=3 --timeout=60
               env:
-                - name: POSTGRES_DB_HOST
-                  value: ${POSTGRES_DB_HOST}
-                - name: TLSCONTACT_API
-                  value: ${TLSCONTACT_API}
-                - name: CLIENT
-                  value: ${CLIENT}
-                - name: DIRECTUS_DOMAIN
-                  value: ${DIRECTUS_DOMAIN}
+                - name: APPLICATION_ENV
+                  value: ${APPLICATION_ENV}
+                - name: APP_DEBUG
+                  value: ${DEBUG_MODE}
                 - name: VERIFYPEER
                   value: ${VERIFYPEER}
-                - name: POSTGRES_DEPLOY_DB_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${POSTGRES_ADMIN_SECRET_NAME}
-                      key: username
-                - name: POSTGRES_DEPLOY_DB_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${POSTGRES_ADMIN_SECRET_NAME}
-                      key: password
+                - name: POSTGRES_DB_HOST
+                  value: ${POSTGRES_DB_HOST}
+                - name: POSTGRES_DB_PORT
+                  value: "5432"
                 - name: POSTGRES_DB_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -253,14 +243,18 @@ objects:
                     secretKeyRef:
                       name: ${POSTGRES_SECRET_NAME}
                       key: password
+                - name: POSTGRES_DEPLOY_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DEPLOY_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: password
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
-                - name: KEYCLOAK_BASE_URL
-                  value: ${KEYCLOAK_BASE_URL}
-                - name: KEYCLOAK_REALM
-                  value: ${KEYCLOAK_REALM}
-                - name: KEYCLOAK_CLIENT_ID
-                  value: ${KEYCLOAK_CLIENT_ID}
                 - name: KBANK_THBKK2BE_SANDBOX_API_KEY
                   value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_SECRET
@@ -369,6 +363,8 @@ objects:
                   value: ${CLICTOPAY_SANDBOX_PASSWORD}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
+                - name: PAYMENT_SERVICE_DOMAIN
+                  value: ${PAYMENT_SERVICE_DOMAIN}
                 - name: SANDBOX_PAYFORT_MERCHANT_ID
                   value: ${SANDBOX_PAYFORT_MERCHANT_ID}
                 - name: SANDBOX_PAYFORT_ACCESS_CODE
@@ -385,6 +381,18 @@ objects:
                   value: ${PAYFORT_REQUEST_PHRASE}
                 - name: PAYFORT_RESPONSE_PHRASE
                   value: ${PAYFORT_RESPONSE_PHRASE}
+                - name: TLSCONTACT_API
+                  value: ${TLSCONTACT_API}
+                - name: CLIENT
+                  value: ${CLIENT}
+                - name: DIRECTUS_DOMAIN
+                  value: ${DIRECTUS_DOMAIN}
+                - name: PGPASSFILE
+                  value: /opt/app-root/pgpass/.pgpass
+                - name: APP_ENV
+                  value: ${APP_ENV}
+                - name: PROJECT
+                  value: ${NAMESPACE}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -405,6 +413,22 @@ objects:
                     secretKeyRef:
                       name: ${AWS_ACCOUNT_S3}
                       key: AWS_BUCKET_NAME
+                - name: LOG_CHANNEL
+                  value: "stdout"
+                - name: ELASTIC_APM_SERVICE_NAME
+                  value: "${OPENSHIFT_ENV}-${PROJECT}-${APPLICATION_NAME}"
+                - name: ELASTIC_APM_SECRET_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      key: ELASTIC_APM_SECRET_TOKEN
+                      name: elastic-apm
+                - name: ELASTIC_APM_SERVER_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: ELASTIC_APM_SERVER_URLS
+                      name: elastic-apm
+                - name: ELASTIC_APM_VERIFY_SERVER_CERT
+                  value: 'false'
               image: ' '
               name: ${APPLICATION_NAME}
               imagePullPolicy: Always

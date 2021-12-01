@@ -1,14 +1,37 @@
-Issuer	Service ID	Priority	Visa Type	Travel Purpose	Visa SubType (UK)	In a group	Age Range	City of residence	Nationality	Account Type	Step	Rule
-esMAD2uk	Premium	1	short_stay				25-35		cn	INDI	Welcome	ADD
-esMAD2uk	Premium	1	short_stay									ADD
-esMAD2uk	Premium	1	short_stay	business								ADD
-esMAD2uk	Courier	2	short_stay	business		No						ADD
-esMAD2uk	Premium	1										ADD
-esMAD2uk	Courier	2										ADD
-esMAD2uk	SMS	3										ADD
-esMAD2uk	Keep My Pax	4										ADD
-esMAD2uk	Assisted	5										ADD
-esMAD2uk	Flexi	6										ADD
-esMAD2uk	Premium										Doc, Bio	REMOVE
-esMAD2uk	Keep My Pax		long_stay									REMOVE
-esMAD2uk	Premium						1-25					REMOVE
+Rule,Scope,Service ID,Priority,Visa Type,Travel Purpose,Visa SubType,In a group,Age Range,City of residence,Nationality,Account Type,Workflow,AVS Conflict,On Site,Step,Creator
+Remove,2uk,UK-PV,,,in_list(settlement),,,,,,,,,,,
+Remove,2uk,UK-PV,,,,,,,,,,,in_list(UK-KMPWA),,,
+Remove,2uk,UK-PV,,,,,,,,,,"workflow_status(transfer, 'send,done')",,,,
+Remove,2uk,UK-PV,,,,,,,,,,"workflow_status(return, 'send,done')",,,,
+Remove,2uk,UK-PVS,,,not_in_list(settlement),,,,,,,,,,,
+Remove,2uk,UK-PVS,,,,,,,,,,"workflow_status(transfer, 'send,done')",,,,
+Remove,2uk,UK-PVS,,,,,,,,,,"workflow_status(return, 'send,done')",,,,
+Remove,2uk,UK-SPV,,,,,,,,,,,in_list(UK-KMPWA),,,
+Remove,2uk,UK-SPV,,,,,,,,,,"workflow_status(transfer, 'send,done')",,,,
+Remove,2uk,UK-PTA,,,,,,,,,,"workflow_status(appointment, 'done')",,,,
+Remove,2uk,UK-WIWA,,,,,,,,,,"workflow_status(appointment, 'done')",,,,
+Remove,2uk,UK-PL,,,,,,,,,,"workflow_status(appointment, 'done')",,,,
+Remove,2uk,UK-UAS,,,,,,,,,,,in_list(UK-APPTSTAREG),,,
+Remove,2uk,UK-UAS,,,,,,,,,,"workflow_status(transfer, 'send,done')",,,,
+Remove,2uk,UK-ASS,,,not_in_list(settlement),,,,,,,,,,,
+Remove,2uk,UK-ASSP,,,not_in_list(settlement),,,,,,,,,,,
+Remove,2uk,UK-ASSP,,,,,,,,,,,in_list(UK-ASS),,,
+Remove,2uk,UK-ECR-IN,,,,,,,,,,,in_list(UK-ECR-OUT),,,
+Remove,2uk,UK-ECR-IN,,,,,,,,,,"workflow_status(delivery, 'done')",,,,
+Remove,2uk,UK-ECR-OUT,,,,,,,,,,,in_list(UK-ECR-IN),,,
+Remove,2uk,UK-ECR-OUT,,,,,,,,,,"workflow_status(delivery, 'done')",,,,
+Remove,2uk,UK-CDAC,,,,,,,,,,,not_in_list(UK-ECR-IN),,,
+Remove,2uk,UK-CDAC,,,,,,,,,,"workflow_status(delivery, 'done')",,,,
+Remove,2uk,UK-CDAC-INT,,,,,,,,,,"workflow_status(delivery, 'done')",,,,
+Remove,2uk,UK-CDAC-INT,,,,,,,,,,,not_in_list(UK-ECR-OUT),,,
+Remove,2uk,UK-FFA,,,,,,,,,,"workflow_status(appointment, 'done')",,,,
+Remove,2uk,UK-SMS,,,,,,,,,,"workflow_status(delivery, 'done')",,,,
+Remove,2uk,UK-KMPWA,,,,,,,,,,"workflow_status(delivery, 'done')",,,,
+Remove,2uk,UK-KMPWA,,,,,,,,,,,"in_list(UK-PV, UK-SPV)",,,
+Add,2uk,UK-PL,1,,,,,,,,,,,,,
+Add,2uk,UK-PV,2,,,,,,,,,,,,,
+Add,2uk,UK-SPV,2,,,,,,,,,,,,,
+Add,2uk,UK-ECR-IN,3,,,,,,,,,,,,,
+Add,2uk,UK-ECR-OUT,3,,,,,,,,,,,,,
+Add,2uk,UK-SMS,4,,,,,,,,,,,,,
+Add,2uk,UK-COPY-FULLPP,5,,,,,,,,,,,,,

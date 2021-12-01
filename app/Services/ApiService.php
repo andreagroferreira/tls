@@ -16,6 +16,7 @@ class ApiService
 
     private function getTlsApiDomain()
     {
+        return 'https://test2.api.app.tlscontact.com';
         return env('TLSCONTACT_API');
     }
 
@@ -26,6 +27,7 @@ class ApiService
 
     public function getProjectId($project = '')
     {
+        return 'uk';
         $project = $project ?: getenv('CLIENT');
         switch ($project) {
             case 'gss-us':
@@ -45,6 +47,7 @@ class ApiService
 
     private function getDirectusApiDomain()
     {
+        return 'https://directus-visa-uk-dev.atlas-iet2.tlscontact.com';
         return env('DIRECTUS_DOMAIN');
     }
 

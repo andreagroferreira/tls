@@ -83,7 +83,8 @@ class AvsRecommendationService
             }
             $item['is_display'] = !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus, $removed_skus));
             $item['avs_conflict'] = in_array($item['sku'], $conflict_skus);
-            $item['_score'] = is_null($item['recommendation_priority']) ? 9999 : $item['recommendation_priority'];
+            $item['_score'] = is_null($item['recommendation_priority']) ? 1000 : $item['recommendation_priority'];
+            $item['_score'] += ($item['is_display'] ? 0 : 1000);
             unset($item['rcd_id']);
             array_push($all_avs, $item);
         }
@@ -92,10 +93,13 @@ class AvsRecommendationService
         $all_avs = collect($all_avs)
             ->sortBy('_score')
             ->map(function($avs) use (&$count, $limit) {
-                $avs['is_recommended'] = $count < $limit;
-                $count ++;
+                if(!is_null($avs['recommendation_priority']) && $avs['is_display']) {
+                    $avs['is_recommended'] = $count < $limit;
+                    $count ++;
+                }
                 return $avs;
-            })->values();
+            })
+            ->values();
 
         return [
             'all_avs' => $all_avs,

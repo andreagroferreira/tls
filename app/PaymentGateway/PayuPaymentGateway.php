@@ -91,7 +91,7 @@ class PayuPaymentGateway implements PaymentGatewayInterface
             'merchant_site_url' => get_callback_url($payu_config['common']['return_url'])
         );
         $charges_payments = $this->paymentInitiateService->paymentInitiate('post', $paymentsos_charges_host, json_encode($charges_params), false, $header);
-        if (strpos($charges_payments,'error') !== false) {return ['status' => 'fail', 'content' => $charges_payments]; }
+        if (strpos($charges_payments,'error') !== false) {return ['status' => 'fail', 'message' => $charges_payments]; }
         $charges_payments = json_decode($charges_payments, true);
         if (!empty($charges_payments['id'])) {
             $this->transactionService->updateById($t_id, ['t_gateway_transaction_id' => $charges_payments['id']]);
@@ -115,14 +115,14 @@ class PayuPaymentGateway implements PaymentGatewayInterface
             Log::warning("ONLINE PAYMENT, PAYU : No transaction found in the database for " . $charge_id . "\n" .
                 json_encode($_POST, JSON_UNESCAPED_UNICODE));
             return [
-                'status'  => 'error',
+                'status'  => 'fail',
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
         $payu_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
         $charges_host = $payu_config['common']['paymentsos_host'] . '/' . $payment_id . '/charges/' . $charge_id;
         $charges_payments = $this->paymentInitiateService->paymentInitiate('get', $charges_host, '', false, $this->getHeader($payu_config, $app_env));
-        if (strpos($charges_payments,'error') !== false) {return ['status' => 'fail', 'content' => $charges_payments]; }
+        if (strpos($charges_payments,'error') !== false) {return ['status' => 'fail', 'message' => $charges_payments]; }
         $charges_payments = json_decode($charges_payments, true);
         if ($charges_payments['result']['status'] == 'Succeed') {
             $confirm_params = [

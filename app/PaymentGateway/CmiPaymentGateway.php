@@ -50,10 +50,10 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $this->paymentService->saveTransactionLog($transaction_id, $params, $this->getPaymentGatewayName());
 
         if (empty($transaction_id)) {
-            return json_encode([
-                'code' => 400,
-                'msg'  => 'Illegal parameter',
-            ]);
+            return [
+                'status'  => 'error',
+                'message' => 'Illegal parameter'
+            ];
         }
         $confirm_params = [
             'gateway'                => $this->getPaymentGatewayName(),
@@ -64,7 +64,10 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         ];
         $transaction    = $this->transactionService->fetchTransaction(['t_transaction_id' => $transaction_id]);
         if (empty($transaction)) {
-            return 'APPROVED';
+            return [
+                'status'  => 'error',
+                'message' => 'APPROVED'
+            ];
         }
 
         $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
@@ -72,19 +75,28 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $isValid    = $this->validate($cmi_config['storeKey'] ?? [], $params);
 
         if (!$isValid) {
-            return 'APPROVED';
+            return [
+                'status'  => 'error',
+                'message' => 'APPROVED'
+            ];
         }
 
         $response = $this->paymentService->confirm($transaction, $confirm_params);
         if ($response['is_success'] != 'ok') {
-            exit;
+            return [
+                'status'  => 'error',
+                'message' => $response['message']
+            ];
         }
 
         if (($params['Response'] == 'Approved') && ($params['ProcReturnCode'] == '00')) {
             return "ACTION=POSTAUTH";
         } else {
             Log::warning("ONLINE PAYMENT, CMI: Payment authorization check failed : " . json_encode($_POST, JSON_UNESCAPED_UNICODE));
-            return "APPROVED";
+            return [
+                'status'  => 'error',
+                'message' => 'APPROVED'
+            ];
         }
 
     }
@@ -93,7 +105,10 @@ class CmiPaymentGateway implements PaymentGatewayInterface
     {
         $transaction = $this->transactionService->getTransaction($t_id);
         if (empty($transaction)) {
-            return 'error';
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
         }
         $client      = $transaction['t_client'];
         $issuer      = $transaction['t_issuer'];

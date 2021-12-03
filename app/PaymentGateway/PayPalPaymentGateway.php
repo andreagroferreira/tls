@@ -44,7 +44,10 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
         $orderId = $params['urlData']['transid'];
         if (!$orderId || !$params['urlData']['fg_id']) {
             Log::warning("ONLINE PAYMENT, Paypal: No forms group provided");
-            exit;
+            return [
+                'status' => 'error',
+                'message' => 'ONLINE PAYMENT, Paypal: No forms group provided',
+            ];
         }
         $error_msg = array();
         $translationsData =  $this->transactionService->fetchTransaction(['t_transaction_id' => $params['urlData']['transid']]);
@@ -61,12 +64,6 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
             // Test account
             $url = $onlinePayment['sandbox']['sandbox_host'];
         }
-        if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] != 'POST') {
-            Log::warning("ONLINE PAYMENT, Paypal: Invalid HTTP request method");
-            exit();
-            // it does not make sense to redirect in backend post request, so just exit here
-//            return redirect($translationsData['t_redirect_url']);
-        }
         $result = $this->paymentNotify($url);
         if ($result['verified']) {
             $payment_status       = $params['formData']['payment_status'];
@@ -76,8 +73,11 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
                     $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $orderId]);
                     if (!isset($transaction)) {
                         Log::warning("ONLINE PAYMENT, Paypal: No transaction found in the database for " . $orderId);
+                        return [
+                            'status' => 'error',
+                            'message' => 'ONLINE PAYMENT, Paypal: No transaction found in the database for ' . $orderId,
+                        ];
                         // it does not make sense to redirect in backend post request, so just exit here
-                        exit();
 //                        return redirect($transaction['t_redirect_url']);
                     }
                     $confirm_params = [

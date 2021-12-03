@@ -671,13 +671,13 @@ return [
                 ],
                 'sandbox' => [
                     'sandbox_host'      => 'https://test.clictopay.com/payment/rest',
-                    'sandbox_user_name' => env('CLICTOPAY_TNTUN2BE_USER_NAME'),
-                    'sandbox_password'  => env('CLICTOPAY_TNTUN2BE_PASSWORD')
+                    'sandbox_user_name' => env('CLICTOPAY_SANDBOX_USER_NAME'),
+                    'sandbox_password'  => env('CLICTOPAY_SANDBOX_PASSWORD')
                 ],
                 'prod'    => [
                     'host'      => 'https://ipay.clictopay.com/payment/rest',
-                    'user_name' => env('CLICTOPAY_TNTUN2BE_USER_NAME'),
-                    'password'  => env('CLICTOPAY_TNTUN2BE_PASSWORD')
+                    'user_name' => env('CLICTOPAY_USER_NAME'),
+                    'password'  => env('CLICTOPAY_PASSWORD')
                 ]
             ],
             'pay_later' => [

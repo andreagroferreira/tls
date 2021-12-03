@@ -675,7 +675,7 @@ return [
                     'sandbox_password'  => env('CLICTOPAY_SANDBOX_PASSWORD')
                 ],
                 'prod'    => [
-                    'host'      => '',
+                    'host'      => 'https://ipay.clictopay.com/payment/rest',
                     'user_name' => env('CLICTOPAY_USER_NAME'),
                     'password'  => env('CLICTOPAY_PASSWORD')
                 ]

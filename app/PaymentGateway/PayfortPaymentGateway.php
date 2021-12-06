@@ -2,6 +2,7 @@
 
 namespace App\PaymentGateway;
 
+use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\PaymentInitiateService;
@@ -18,6 +19,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
     private $transactionLogsService;
     private $transactionService;
     private $transactionItemsService;
+    private $formGroupService;
     private $gatewayService;
     private $paymentService;
     private $apiService;
@@ -27,6 +29,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         TransactionService $transactionService,
         TransactionLogsService $transactionLogsService,
         TransactionItemsService $transactionItemsService,
+        FormGroupService $formGroupService,
         GatewayService $gatewayService,
         PaymentService $paymentService,
         ApiService $apiService
@@ -36,6 +39,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         $this->transactionService     = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->transactionItemsService = $transactionItemsService;
+        $this->formGroupService   = $formGroupService;
         $this->gatewayService     = $gatewayService;
         $this->paymentService     = $paymentService;
         $this->apiService         = $apiService;
@@ -65,8 +69,8 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         $fg_id   = $translations_data['t_xref_fg_id'];
         $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $pay_config     = $this->getPaySecret($payfort_config, $app_env);
-        $application    = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
-        $u_email        = $application['body']['u_relative_email'] ?? $application['body']['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
+        $application    = $this->formGroupService->fetch($fg_id, $client);
+        $u_email        = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $params = [
             'command'             => 'PURCHASE',
             'access_code'         => $pay_config['access_code'],

@@ -4,6 +4,7 @@ namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\ApiService;
+use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
@@ -12,18 +13,21 @@ use Illuminate\Support\Facades\Log;
 class CmiPaymentGateway implements PaymentGatewayInterface
 {
     private $transactionService;
+    private $formGroupService;
     private $gatewayService;
     private $paymentService;
     private $apiService;
 
     public function __construct(
         TransactionService $transactionService,
+        FormGroupService $formGroupService,
         GatewayService $gatewayService,
         PaymentService $paymentService,
         ApiService $apiService
     )
     {
         $this->transactionService = $transactionService;
+        $this->formGroupService   = $formGroupService;
         $this->gatewayService     = $gatewayService;
         $this->paymentService     = $paymentService;
         $this->apiService         = $apiService;
@@ -115,8 +119,8 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $fg_id       = $transaction['t_xref_fg_id'];
         $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $cmi_config  = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
-        $application = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
-        $u_email     = $application['body']['u_relative_email'] ?? $application['body']['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
+        $application = $this->formGroupService->fetch($fg_id, $client);
+        $u_email     = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $params      = [
             'clientid'      => $cmi_config['merchant_id'],
             'storetype'     => $cmi_config['storetype'],

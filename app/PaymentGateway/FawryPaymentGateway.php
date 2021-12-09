@@ -3,6 +3,7 @@
 namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionLogsService;
@@ -20,6 +21,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     private $transactionService;
     private $transactionLogsService;
     private $transactionItemsService;
+    private $formGroupService;
     private $gatewayService;
     private $paymentService;
     private $apiService;
@@ -28,6 +30,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         TransactionService $transactionService,
         TransactionLogsService $transactionLogsService,
         TransactionItemsService $transactionItemsService,
+        FormGroupService $formGroupService,
         GatewayService $gatewayService,
         PaymentService $paymentService,
         ApiService $apiService
@@ -35,6 +38,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $this->transactionService     = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->transactionItemsService = $transactionItemsService;
+        $this->formGroupService   = $formGroupService;
         $this->gatewayService     = $gatewayService;
         $this->paymentService     = $paymentService;
         $this->apiService         = $apiService;
@@ -73,8 +77,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $issuer         = $translations_data['t_issuer'];
         $fg_id          = $translations_data['t_xref_fg_id'];
         $order_id       = $translations_data['t_transaction_id'] ?? '';
-        $application    = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
-        $u_email        = $application['body']['u_relative_email'] ?? $application['body']['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
+        $application    = $this->formGroupService->fetch($fg_id, $client);
+        $u_email        = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $payment_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $is_live        = $payment_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
@@ -97,7 +101,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $charge_items = [];
         $quantity = '';
         $sku_list = '';
-        $profile_id = $application['body']['fg_xref_u_id'] ?? $application['body']['u_id'];
+        $profile_id = $application['fg_xref_u_id'] ?? $application['u_id'];
         $items = $this->transactionItemsService->fetchItemsByTransactionId($order_id);
 
         if (!empty($items)) {

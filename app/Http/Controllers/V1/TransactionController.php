@@ -150,6 +150,13 @@ class TransactionController extends BaseController
      *          @OA\Schema(type="string", example="postal"),
      *      ),
      *     @OA\Parameter(
+     *          name="payment_method",
+     *          in="query",
+     *          description="tls agent payment method",
+     *          required=false,
+     *          @OA\Schema(type="string", example="card"),
+     *      ),
+     *     @OA\Parameter(
      *          name="items",
      *          in="query",
      *          description="transaction items. ",
@@ -180,6 +187,7 @@ class TransactionController extends BaseController
             'reminder_url' => 'required|string',
             'callback_url' => 'required|string',
             'workflow' => 'required|string',
+            'payment_method' => 'nullable',
             'items' => [
                 'bail',
                 'required',

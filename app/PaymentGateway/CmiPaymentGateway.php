@@ -4,6 +4,7 @@ namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\ApiService;
+use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
@@ -12,18 +13,21 @@ use Illuminate\Support\Facades\Log;
 class CmiPaymentGateway implements PaymentGatewayInterface
 {
     private $transactionService;
+    private $formGroupService;
     private $gatewayService;
     private $paymentService;
     private $apiService;
 
     public function __construct(
         TransactionService $transactionService,
+        FormGroupService $formGroupService,
         GatewayService $gatewayService,
         PaymentService $paymentService,
         ApiService $apiService
     )
     {
         $this->transactionService = $transactionService;
+        $this->formGroupService   = $formGroupService;
         $this->gatewayService     = $gatewayService;
         $this->paymentService     = $paymentService;
         $this->apiService         = $apiService;
@@ -50,10 +54,10 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $this->paymentService->saveTransactionLog($transaction_id, $params, $this->getPaymentGatewayName());
 
         if (empty($transaction_id)) {
-            return json_encode([
-                'code' => 400,
-                'msg'  => 'Illegal parameter',
-            ]);
+            return [
+                'status'  => 'error',
+                'message' => 'Illegal parameter'
+            ];
         }
         $confirm_params = [
             'gateway'                => $this->getPaymentGatewayName(),
@@ -64,7 +68,10 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         ];
         $transaction    = $this->transactionService->fetchTransaction(['t_transaction_id' => $transaction_id]);
         if (empty($transaction)) {
-            return 'APPROVED';
+            return [
+                'status'  => 'error',
+                'message' => 'APPROVED'
+            ];
         }
 
         $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
@@ -72,19 +79,28 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $isValid    = $this->validate($cmi_config['storeKey'] ?? [], $params);
 
         if (!$isValid) {
-            return 'APPROVED';
+            return [
+                'status'  => 'error',
+                'message' => 'APPROVED'
+            ];
         }
 
         $response = $this->paymentService->confirm($transaction, $confirm_params);
         if ($response['is_success'] != 'ok') {
-            exit;
+            return [
+                'status'  => 'error',
+                'message' => $response['message']
+            ];
         }
 
         if (($params['Response'] == 'Approved') && ($params['ProcReturnCode'] == '00')) {
             return "ACTION=POSTAUTH";
         } else {
             Log::warning("ONLINE PAYMENT, CMI: Payment authorization check failed : " . json_encode($_POST, JSON_UNESCAPED_UNICODE));
-            return "APPROVED";
+            return [
+                'status'  => 'error',
+                'message' => 'APPROVED'
+            ];
         }
 
     }
@@ -93,15 +109,18 @@ class CmiPaymentGateway implements PaymentGatewayInterface
     {
         $transaction = $this->transactionService->getTransaction($t_id);
         if (empty($transaction)) {
-            return 'error';
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
         }
         $client      = $transaction['t_client'];
         $issuer      = $transaction['t_issuer'];
         $fg_id       = $transaction['t_xref_fg_id'];
         $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $cmi_config  = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
-        $application = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
-        $u_email     = $application['body']['u_relative_email'] ?? $application['body']['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
+        $application = $this->formGroupService->fetch($fg_id, $client);
+        $u_email     = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $params      = [
             'clientid'      => $cmi_config['merchant_id'],
             'storetype'     => $cmi_config['storetype'],

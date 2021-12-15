@@ -18,6 +18,7 @@ variables:
   DATABASE: $DATABASE
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  DIRECTUS_ROUTE: "directus"
 
 stages:
   - build
@@ -109,7 +110,7 @@ sonarcloud-check:
   script:
     - oc project "$PROJECT" 2> /dev/null || oc new-project "$PROJECT"
     - export PAYMENT_SERVICE_URL=`oc get route payment -o jsonpath='{.spec.host}'`
-    - export DIRECTUS_HOST=`oc get route directus -o jsonpath='{.spec.host}'`
+    - export DIRECTUS_HOST=`oc get route ${DIRECTUS_ROUTE} -o jsonpath='{.spec.host}'`
     - oc process -f ./openshift/payment-api-template.yaml APPLICATION_NAME=$APPLICATION_NAME PROJECT=$INSTANCE
       NAMESPACE=$PROJECT
       APP_ENV=$APP_ENV

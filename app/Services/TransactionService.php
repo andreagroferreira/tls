@@ -120,6 +120,9 @@ class TransactionService
             't_workflow' => $attributes['workflow'],
             't_expiration' => Carbon::parse($this->dbConnectionService->getDbNowTime())->addMinutes(config('payment_gateway.expiration_minutes')),
         ];
+        if (isset($attributes['payment_method'])) {
+            $transaction_data['t_payment_method'] = $attributes['payment_method'];
+        }
         $transaction_data['t_transaction_id'] = $this->generateTransactionId($transaction_data['t_id'], $transaction_data['t_issuer']);
 
         $db_connection = DB::connection($this->dbConnectionService->getConnection());

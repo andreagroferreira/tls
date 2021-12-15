@@ -11,6 +11,16 @@ class AvsRecommendationService
     protected $directusService;
     protected $recommendationRuleEngineService;
     protected $recommendationResultRepositories;
+    private $avsItemTemplate = [
+        'vat' => '0.00',
+        'price' => '0.00',
+        'currency' => '',
+        'avs_description' => null,
+        'sku_description' => null,
+        'avs_sale_script' => null,
+        'sku_sale_script' => null,
+        'recommendation_priority' => null
+    ];
 
     public function __construct(
         ApiService                       $apiService,
@@ -33,57 +43,62 @@ class AvsRecommendationService
         $f_id   = $params['f_id'];
         $step   = $params['step'];
         $limit  = $params['limit'];
-        $source = $params['source'];
 
         $application_response = $this->apiService->callTlsApi('GET', 'tls/v2/' . $this->client . '/application/' . $f_id);
         if ($application_response['status'] != 200 || empty($application_response['body'])) {
             return [];
         }
         $application = $application_response['body'];
-        $issuer_avses = $this->getIssuerAvs($application['f_xcopy_ug_xref_i_tag']);
+        $issuer_avses = $this->getIssuerAvsWithPriority($application['f_xcopy_ug_xref_i_tag']);
+        $issuer_avses = array_column($issuer_avses, null, 'sku');
 
-        //get the recommendation avs
-        $recommend_skus = $this->getRecommendSkus($source, $application, $issuer_avses, $step, $limit);
         //get the basket requested and paid avs from tlsconnect
         $basket_avs = $this->getBasketAvs($f_id);
+        $requested_skus = array_keys($basket_avs['requested'] ?? []);
+        $paid_skus = array_keys($basket_avs['paid'] ?? []);
+
+        //get the rule engine recommendation avs
+        $basket_skus = array_merge($requested_skus, $paid_skus);
+        $rule_engine_avs = $this->getRecommendByRuleEngine($params, $application, $basket_skus);
+        $removed_skus = array_keys($rule_engine_avs['remove']);
+        $add_skus = array_keys($rule_engine_avs['add']);
+        $conflict_skus = $rule_engine_avs['conflict'] ?? [];
+
         //get the recommendation result from recommendation result table
         $rcd_result_skus = $this->getRecommendResultSkus($f_id);
 
-        $requested_avs = [];
-        $paid_avs = [];
+        $requested_avs = $this->getShowingAvs($basket_avs['requested'] ?? [], $issuer_avses);
+        $paid_avs = $this->getShowingAvs($basket_avs['paid'] ?? [], $issuer_avses);
+        $denied_skus = array_keys($rcd_result_skus['deny'] ?? []);
         $denied_avs = [];
         $all_avs = [];
-
         foreach($issuer_avses as $item) {
             $avs_sku = $item['sku'];
-            $display = true;
-            if(in_array($avs_sku, array_keys($basket_avs['requested'] ?? []))) {
-                $item['quantity'] = $basket_avs['requested'][$avs_sku]['av_value'];
-                $item['a_id'] = $basket_avs['requested'][$avs_sku]['a_id'];
-                array_push($requested_avs, $item);
-                $display = false;
-            }
-            if(in_array($avs_sku, array_keys($basket_avs['paid'] ?? []))) {
-                $item['quantity'] = $basket_avs['paid'][$avs_sku]['av_value'];
-                array_push($paid_avs, $item);
-                $display = false;
-            }
             if(in_array($avs_sku, array_keys($rcd_result_skus['deny'] ?? []))) {
                 $item['rcd_id'] = $rcd_result_skus['deny'][$avs_sku]['rr_id'];
                 array_push($denied_avs, $item);
-                $display = false;
             }
-            $item['is_display'] = $display;
-            $item['is_recommended'] = in_array($item['sku'], $recommend_skus);
-            unset($item['quantity']);
-            unset($item['a_id']);
+            if(in_array($avs_sku, $add_skus)) {
+                $item['recommendation_priority'] = (int) $rule_engine_avs['add'][$avs_sku]['Priority'];
+            }
+            $item['is_display'] = !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus, $removed_skus));
+            $item['avs_conflict'] = in_array($item['sku'], $conflict_skus);
+            $item['_score'] = is_null($item['recommendation_priority']) ? 1000 : $item['recommendation_priority'];
+            $item['_score'] += ($item['is_display'] ? 0 : 1000);
             unset($item['rcd_id']);
             array_push($all_avs, $item);
         }
 
+        $count = 0;
         $all_avs = collect($all_avs)
-            ->sortByDesc('recommendation_priority')
-            ->sortByDesc('is_recommended')
+            ->sortBy('_score')
+            ->map(function($avs) use (&$count, $limit) {
+                if(!is_null($avs['recommendation_priority']) && $avs['is_display']) {
+                    $avs['is_recommended'] = $count < $limit;
+                    $count ++;
+                }
+                return $avs;
+            })
             ->values();
 
         return [
@@ -94,7 +109,9 @@ class AvsRecommendationService
         ];
     }
 
-    private function getIssuerAvs($issuer) {
+    //if no local avs recommendation priority, we use global avs recommendation priority
+    // and not fetch the sales script and description in api
+    private function getIssuerAvsWithPriority($issuer){
         $filters = [
             'vac.code'=>[
                 'eq' => $issuer
@@ -103,21 +120,21 @@ class AvsRecommendationService
                 'eq' => 'published'
             ],
         ];
-        $select = 'avs.sku,avs.translation.*,vat,price,currency.code,specific_infos.*,recommendation_priority';
+        $select = 'avs.sku, avs.recommendation_priority, vat,price,currency.code, recommendation_priority';
         $all_avs_infos = $this->directusService->getContent('vac_avs', $select, $filters);
         $all_avs = [];
         foreach($all_avs_infos as $avs) {
             $all_avs[] = [
-                'service_name' => array_get($avs, 'specific_infos.0.name')?: array_get($avs, 'avs.sku'),
+                'service_name' => null,
                 'sku' => array_get($avs, 'avs.sku'),
                 'vat' => number_format(array_get($avs, 'vat'), 2),
                 'price' => number_format(array_get($avs, 'price'), 2),
                 'currency' => array_get($avs, 'currency.code'),
-                'avs_description' => array_get($avs, 'specific_infos.0.long_description'),
-                'sku_description' => array_get($avs, 'avs.translation.0.long_description'),
-                'avs_sale_script' => array_get($avs, 'specific_infos.0.sales_script'),
-                'sku_sale_script' => array_get($avs, 'avs.translation.0.sales_script'),
-                'recommendation_priority' => array_get($avs, 'recommendation_priority')
+                'avs_description' => null,
+                'sku_description' => null,
+                'avs_sale_script' => null,
+                'sku_sale_script' => null,
+                'recommendation_priority' => array_get($avs, 'recommendation_priority') ?: array_get($avs, 'avs.recommendation_priority')
             ];
         }
         return $all_avs;
@@ -148,46 +165,49 @@ class AvsRecommendationService
         })->toArray();
     }
 
-    private function getRecommendSkus($source, $application, $issuer_avses, $step, $limit)
+    private function getRecommendByRuleEngine($params, $application, $basket_skus)
     {
-        switch ($source) {
-            case 'directus':
-                $result = $this->getRecommendByDirectus($issuer_avses, $limit);
-                break;
-            case 'rule_engine':
-                $result = $this->getRecommendByRuleEngine( $application, $step, $limit);
-                break;
-            default:
-                $result =[];
-                break;
-        }
-        return $result;
-    }
-
-    private function getRecommendByDirectus($issuer_avses, $limit)
-    {
-        return collect($issuer_avses)
-            ->sortByDesc('recommendation_priority')
-            ->pluck('sku')
-            ->take($limit)
-            ->toArray();
-    }
-
-    private function getRecommendByRuleEngine($application, $step, $limit)
-    {
+        $stages_response = $this->apiService->callTlsApi('GET', 'tls/v1/' . $this->client . '/form_stages_statues/' . $params['f_id']);
+        $stage_status = array_column($stages_response['body']['stage_status'] ?? [], 'status', 'stage');
         $condition = [
             'issuer' => $application['f_xcopy_ug_xref_i_tag'],
             'Visa Type' => $application['f_visa_type'],
             'Travel Purpose' => $application['f_trav_purpose'],
-            'Age' => $application['f_pers_age'],
+            'Age Range' => $application['f_pers_age'],
             'Nationality' => $application['f_pers_nationality'],
             'Account Type' => $application['ug_type'],
             'In a group' => null,
-            'Step' => $step,
+            'Step' => $params['step'],
             'Visa SubType (UK)' => $application['f_ext_visa_purpose'],
-            'City of residence' => null,
-            'top' => $limit
+            'City of residence' => null
         ];
-        return $this->recommendationRuleEngineService->fetchRules($condition);
+        return $this->recommendationRuleEngineService->fetchRules($condition, $stage_status, $basket_skus);
+    }
+
+    private function getShowingAvs($avses, $issuer_avses) {
+        if (empty($avses)) {
+            return [];
+        }
+        $search_skus = array_keys($issuer_avses);
+        $return_avses = [];
+        foreach(($avses ?? []) as $avs) {
+            $sku = $avs['s_sku'];
+            if(in_array($sku, $search_skus)) {
+                $item = $issuer_avses[$sku];
+            } else {
+                $item = $this->avsItemTemplate;
+                $item = array_merge($item, [
+                    'service_name' => $sku,
+                    'sku' => $sku
+                ]);
+            }
+            if ($avs['paid']) {
+                $item['paid_price'] = $avs['paid_price'];
+            }
+            $item['quantity'] = $avs['av_value'];
+            $item['a_id'] = $avs['a_id'];
+            array_push($return_avses, $item);
+        }
+        return $return_avses;
     }
 }

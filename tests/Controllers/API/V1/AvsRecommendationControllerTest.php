@@ -212,7 +212,11 @@ class AvsRecommendationControllerTest extends TestCase
                     ],
                  ],
             ],
-
+            [
+                'code' => 200,
+                'body' => [
+                ],
+            ],
         ];
         $this->createSimpleMockResponse($responses);
 

@@ -83,9 +83,10 @@ class PayBankGateway implements PaymentGatewayInterface
         $transaction_id = $params['transaction'] ?? '';
         $payment_amount = $params['amount'] ?? '';
         $currency = $params['currency'] ?? '';
-        $this->paymentService->saveTransactionLog($transaction_id, $params, $this->getPaymentGatewayName());
         // find transaction in database
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $transaction_id, 't_tech_deleted' => false]);
+        $paymentMethod = $transaction['t_payment_method'] ? $transaction['t_payment_method'] : $this->getPaymentGatewayName();
+        $this->paymentService->saveTransactionLog($transaction_id, $params, $paymentMethod);
         if (empty($transaction)) {
             Log::warning("ONLINE PAYMENT, BANK PAYMENT: notify check failed : the transaction number $transaction_id does not exist");
             return [
@@ -109,12 +110,18 @@ class PayBankGateway implements PaymentGatewayInterface
         }
 
         $confirm_params = [
-            'gateway'        => $this->getPaymentGatewayName(),
+            'gateway'        => $paymentMethod,
             'amount'         => $payment_amount,
             'currency'       => $currency,
             'transaction_id' => $transaction_id,
             'gateway_transaction_id' => '',
         ];
+        if (isset($params['agent_name'])) {
+            $confirm_params['agent_name'] = $params['agent_name'];
+        }
+        if (isset($params['force_pay_for_not_online_payment_avs']) && $params['force_pay_for_not_online_payment_avs'] == 'yes') {
+            $confirm_params['force_pay_for_not_online_payment_avs'] = $params['force_pay_for_not_online_payment_avs'];
+        }
         $response = $this->paymentService->confirm($transaction, $confirm_params);
 
         $return['status'] = $response['is_success'] == 'ok' ? 'success' : 'fail';

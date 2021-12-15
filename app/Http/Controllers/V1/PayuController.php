@@ -41,10 +41,9 @@ class PayuController extends BaseController
         try {
             $result = $this->paymentGateway->redirto($t_id);
             if (!empty($result['status']) && $result['status'] == 'fail') {
-                return $this->sendError('P0023', 'payu error:' . $result['content'], 400);
-            } else {
-                return $this->sendResponse($result, 200);
+                return $this->sendError('P0023', 'payu error:' . $result['message'], 400);
             }
+            return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);
         }
@@ -73,6 +72,9 @@ class PayuController extends BaseController
         }
         try {
             $init_data = $this->paymentGateway->return($return_params);
+            if (!empty($init_data['status']) && $init_data['status'] == 'fail') {
+                return $this->sendError('P0023', 'payu error:' . $init_data['message'], 400);
+            }
             return $this->sendResponse($init_data, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

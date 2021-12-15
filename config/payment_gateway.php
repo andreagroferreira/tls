@@ -127,13 +127,6 @@ return [
                     'merchant_id' => env("ENVPAY_CMI_BEmaAll2be_MERCHANT_ID"),
                     'storeKey' => env("ENVPAY_CMI_BEmaAll2be_STOREKEY")
                 ]
-            ],
-            'pay_bank' => [
-                'label' => 'Bank payment',
-                'common' => [
-                    'return_url' => '/pay_bank/return',
-                    'expiration_minutes' => 48 * 60
-                ]
             ]
         ],
         'zaCPT2be' => [
@@ -192,9 +185,6 @@ return [
                     'paygate_id' => env('PAYGATE_ZAALL2BE_ID'),
                     'seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL')
                 ]
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
             ]
         ],
         'zaDUR2be' => [
@@ -224,9 +214,6 @@ return [
                     'paygate_id' => env('PAYGATE_ZAALL2BE_ID'),
                     'seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL')
                 ]
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
             ]
         ],
         'cmYAO2be' => [
@@ -329,9 +316,6 @@ return [
                     'oauthHost'     => env('ENVPAY_TINGG_COMMON_OAUTH_HOST'),
                     'queryStatusHost' => env('ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST')
                 ]
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
             ]
         ],
         'etADD2be' => [
@@ -434,9 +418,6 @@ return [
                     'oauthHost'     => env('ENVPAY_TINGG_COMMON_OAUTH_HOST'),
                     'queryStatusHost' => env('ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST')
                 ]
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
             ]
         ],
         'egCAI2be' => [
@@ -514,9 +495,6 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
             ]
         ],
         'ngLGV2be' => [
@@ -542,9 +520,6 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
             ]
         ],
         'keNBO2be' => [
@@ -571,16 +546,8 @@ return [
                     'payments_os_env' => 'live'
                 ]
             ]
-
         ],
         'dzALG2be' => [
-            'pay_bank' => [
-                'label' => 'Bank payment',
-                'common' => [
-                    'return_url' => '/pay_bank/return',
-                    'expiration_minutes' => 48 * 60
-                ]
-            ],
             'pay_later' => [
                 'label' => "Pay later",
             ]
@@ -588,31 +555,31 @@ return [
         'joAMM2be' => [
             'pay_later' => [
                 'label' => "Pay later",
-            ],
-            'payfort' => [
-                'label' => 'payfort pay',
-                'common' => [
-                    'env' => 'live',
-                    'activated' => true,
-                    'currency' => 'LBP',
-                    'return_url' => '/payfort/return',
-                    'notify_url' => '/payfort/notify',
-                ],
-                'sandbox' => [
-                    'host'            => 'https://sbcheckout.payfort.com/FortAPI/paymentPage',
-                    'merchant_id'     => env('SANDBOX_PAYFORT_MERCHANT_ID'),
-                    'access_code'     => env('SANDBOX_PAYFORT_ACCESS_CODE'),
-                    'request_phrase'  => env('SANDBOX_PAYFORT_REQUEST_PHRASE'),
-                    'response_phrase' => env('SANDBOX_PAYFORT_RESPONSE_PHRASE')
-                ],
-                'prod' => [
-                    'host'            => 'https://checkout.payfort.com/FortAPI/paymentPage',
-                    'merchant_id'     => env('PAYFORT_MERCHANT_ID'),
-                    'access_code'     => env('PAYFORT_ACCESS_CODE'),
-                    'request_phrase'  => env('PAYFORT_REQUEST_PHRASE'),
-                    'response_phrase' => env('PAYFORT_RESPONSE_PHRASE')
-                ]
             ]
+//            'payfort' => [
+//                'label' => 'payfort pay',
+//                'common' => [
+//                    'env' => 'live',
+//                    'activated' => true,
+//                    'currency' => 'LBP',
+//                    'return_url' => '/payfort/return',
+//                    'notify_url' => '/payfort/notify',
+//                ],
+//                'sandbox' => [
+//                    'host'            => 'https://sbcheckout.payfort.com/FortAPI/paymentPage',
+//                    'merchant_id'     => env('SANDBOX_PAYFORT_MERCHANT_ID'),
+//                    'access_code'     => env('SANDBOX_PAYFORT_ACCESS_CODE'),
+//                    'request_phrase'  => env('SANDBOX_PAYFORT_REQUEST_PHRASE'),
+//                    'response_phrase' => env('SANDBOX_PAYFORT_RESPONSE_PHRASE')
+//                ],
+//                'prod' => [
+//                    'host'            => 'https://checkout.payfort.com/FortAPI/paymentPage',
+//                    'merchant_id'     => env('PAYFORT_MERCHANT_ID'),
+//                    'access_code'     => env('PAYFORT_ACCESS_CODE'),
+//                    'request_phrase'  => env('PAYFORT_REQUEST_PHRASE'),
+//                    'response_phrase' => env('PAYFORT_RESPONSE_PHRASE')
+//                ]
+//            ]
         ],
         'iqBGW2be' => [
             'pay_later' => [
@@ -653,9 +620,6 @@ return [
                     'secret'        => env('KBANK_THBKK2BE_SECRET'),
                     'mid'           => env('KBANK_THBKK2BE_MID')
                 ]
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
             ]
         ],
         'tnTUN2be' => [
@@ -679,9 +643,6 @@ return [
                     'user_name' => env('CLICTOPAY_USER_NAME'),
                     'password'  => env('CLICTOPAY_PASSWORD')
                 ]
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
             ]
         ],
     ]

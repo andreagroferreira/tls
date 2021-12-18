@@ -50,6 +50,7 @@ class TransactionRepository
             ->select([
                 't_id',
                 't_gateway AS gateway',
+                't_payment_method AS agent_gateway',
                 't_transaction_id AS transaction_id',
                 't_gateway_transaction_id AS gateway_transaction_id',
                 't_currency AS currency',

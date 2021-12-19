@@ -14,7 +14,7 @@ class AddFieldTiQuantityToPaymentTable extends Migration
     public function up()
     {
         Schema::connection('deploy_payment_pgsql')->table('transaction_items', function (Blueprint $table) {
-            $table->bigInteger('ti_quantity')->nullable(true)->comment('avs quantity');
+            $table->bigInteger('ti_quantity')->nullable(true)->default(1)->comment('avs quantity');
         });
     }
 

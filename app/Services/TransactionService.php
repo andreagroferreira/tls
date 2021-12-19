@@ -161,6 +161,10 @@ class TransactionService
                     'ti_vat' => $sku['vat'],
                     'ti_amount' => $sku['price'],
                 ];
+                //agent receipt is used
+                if (isset($sku['quantity'])) {
+                    $res['ti_quantity'] = $sku['quantity'];
+                }
                 if (filled($add_field)) {
                     $res = $res + $add_field;
                 }

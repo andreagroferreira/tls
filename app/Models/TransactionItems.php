@@ -19,5 +19,6 @@ class TransactionItems extends Model
         'ti_fee_type',
         'ti_vat',
         'ti_amount',
+        'ti_quantity'
     ];
 }

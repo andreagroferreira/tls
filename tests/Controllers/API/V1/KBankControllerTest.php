@@ -26,7 +26,7 @@ class KBankControllerTest extends TestCase
         $transaction_service->update(['t_transaction_id' => $this->transactions->t_transaction_id], ['t_gateway_transaction_id' => $this->gateway_id]);
     }
 
-/*    public function testRedirto()
+    public function testRedirto()
     {
         putenv('PROJECT=be');
         $base_url = '/api/v1/test/redirto';
@@ -56,7 +56,7 @@ class KBankControllerTest extends TestCase
         $post_data = ['t_id' => $this->transactions->t_id, 'token' => $this->token];
         $this->post($base_url, $post_data);
         $this->response->assertStatus(200);
-    }*/
+    }
 
     public function testReturn() {
         putenv('PROJECT=be');
@@ -82,7 +82,7 @@ class KBankControllerTest extends TestCase
         $this->response->assertStatus(200);
     }
 
-/*    public function testNotify() {
+    public function testNotify() {
         putenv('PROJECT=be');
         $base_url = '/api/v1/test/notify';
         $this->post($base_url);
@@ -120,7 +120,7 @@ class KBankControllerTest extends TestCase
         $post_data['checksum'] = $this->getHash($post_data);
         $this->post($base_url, $post_data);
         $this->response->assertStatus(200);
-    }*/
+    }
 
     private function getHash($post_data) {
         $secret = env('APP_ENV') === 'production' ? env('KBANK_THBKK2BE_SECRET') : env('KBANK_THBKK2BE_SANDBOX_SECRET');

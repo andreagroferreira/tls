@@ -65,23 +65,21 @@ class TinggControllerTest extends TestCase
 
         $base_url = '/api/v1/tingg/return';
         $this->post($base_url);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0011",
-                "message" => "Tingg error:no_data_received"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0011', array_get($response_array, 'error'));
+        $this->assertEquals('Tingg error:no_data_received', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $post_data = [
             'merchantTransactionID' => str_replace('-', '_', $this->transactions->t_transaction_id)
         ];
         $this->post($base_url, $post_data);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0011",
-                "message" => "Tingg error:no_data_received"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0011', array_get($response_array, 'error'));
+        $this->assertEquals('Tingg error:no_data_received', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $responses[] = $this->getTinggAuthorization();
         $responses[] = $this->getTinggQueryStatus();

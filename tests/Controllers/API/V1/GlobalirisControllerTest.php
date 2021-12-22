@@ -70,12 +70,11 @@ class GlobalirisControllerTest extends TestCase
 
         $post_data = ['ORDER_ID' => $this->transactions->t_transaction_id];
         $this->post($base_url, $post_data);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P10013",
-                "message" => "ONLINE PAYMENT, Globaliris: digital signature check failed"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P10013', array_get($response_array, 'error'));
+        $this->assertEquals('ONLINE PAYMENT, Globaliris: digital signature check failed', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $responses[] = $this->getFormGroupResponse();
         $responses[] = $this->getPaymentAction();

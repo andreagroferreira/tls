@@ -107,7 +107,7 @@ class PaygateController extends BaseController
                 return $this->sendResponse($init_data, 200);
             } else {
                 // paggate error
-                return $this->sendError('P0019', 'paygate error:' . $message, 400);
+                return $this->sendError('P0019', ['message' => 'paygate error:' . $message, 'href' => array_get($init_data, 'href')], 400);
             }
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

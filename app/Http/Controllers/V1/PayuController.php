@@ -73,7 +73,7 @@ class PayuController extends BaseController
         try {
             $init_data = $this->paymentGateway->return($return_params);
             if (!empty($init_data['status']) && $init_data['status'] == 'fail') {
-                return $this->sendError('P0023', 'payu error:' . $init_data['message'], 400);
+                return $this->sendError('P0023', ['message' => 'payu error:' . $init_data['message'], 'href' => array_get($init_data, 'href')], 400);
             }
             return $this->sendResponse($init_data, 200);
         } catch (\Exception $e) {

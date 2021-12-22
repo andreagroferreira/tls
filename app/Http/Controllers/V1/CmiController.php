@@ -73,7 +73,7 @@ class CmiController extends BaseController
         try {
             $result = $this->paymentGateway->return($params);
             if (isset($result['status']) && $result['status'] == 'error') {
-                return $this->sendError('P0006', $result['message'], 400);
+                return $this->sendError('P0006', ['message' => $result['message'], 'href' => array_get($result, 'href')], 400);
             }
             return $this->sendResponse($result, 200);
         } catch (\Exception $e) {

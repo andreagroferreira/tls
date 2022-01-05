@@ -70,7 +70,7 @@ class TinggController extends BaseController
         try {
             $result = $this->paymentGateway->return($params);
             if (!empty($result['status']) && $result['status'] == 'error') {
-                return $this->sendError('P0011', 'Tingg error:' . $result['message'], 400);
+                return $this->sendError('P0011', ['message' => 'Tingg error:' . $result['message'], 'href' => array_get($result, 'href')], 400);
             }
             return $this->sendResponse($result, 200);
         } catch (\Exception $e) {

@@ -64,12 +64,11 @@ class PayuControllerTest extends TestCase
 
         $base_url = '/api/v1/payu/return';
         $this->post($base_url);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0023",
-                "message" => "payu error:Transaction ERROR: transaction not found"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0023', array_get($response_array, 'error'));
+        $this->assertEquals('payu error:Transaction ERROR: transaction not found', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $responses[] = $this->getFormGroupResponse();
         $responses[] = $this->getPaymentAction();

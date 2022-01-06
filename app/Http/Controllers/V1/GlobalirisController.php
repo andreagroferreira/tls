@@ -69,7 +69,7 @@ class GlobalirisController extends BaseController
         try {
             $result = $this->paymentGateway->return($params);
         } catch (\Exception $e) {
-            return $this->sendError('P0006', $e->getMessage(), 400);
+            return $this->sendError('P0006', ['message' => $e->getMessage()], 400);
         }
         $status = $result['is_success'] ?? '';
         $message = $result['message'];

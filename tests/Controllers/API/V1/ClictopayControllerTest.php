@@ -65,12 +65,11 @@ class ClictopayControllerTest extends TestCase
 
         $base_url = '/api/v1/clictopay/return';
         $this->post($base_url);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0006",
-                "message" => "Undefined index: lang"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0006', array_get($response_array, 'error'));
+        $this->assertEquals('Undefined index: lang', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $responses[] = $this->getOrderStatusExtended();
         $responses[] = $this->getFormGroupResponse();

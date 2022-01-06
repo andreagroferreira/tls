@@ -61,21 +61,19 @@ class FawryControllerTest extends TestCase
 
         $base_url = '/api/v1/fawry/return';
         $this->post($base_url);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0009",
-                "message" => "no_data_received"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0009', array_get($response_array, 'error'));
+        $this->assertEquals('no_data_received', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $post_data = ['merchantRefNumber' => $this->transactions->t_transaction_id];
         $this->post($base_url, $post_data);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0006",
-                "message" => "unknown_error: transaction_has_not_been_paid"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0006', array_get($response_array, 'error'));
+        $this->assertEquals('unknown_error: transaction_has_not_been_paid', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $responses[] = $this->getFormGroupResponse();
         $responses[] = $this->getPaymentAction();

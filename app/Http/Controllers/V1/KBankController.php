@@ -114,7 +114,7 @@ class KBankController extends BaseController
     public function return(Request $request) {
         $return_params = $request->post();
         if (empty($return_params)) {
-            $this->sendError('P0009', "no_data_received", 400);
+            $this->sendError('P0009', ['message' => "no_data_received"], 400);
         }
         try {
             $init_data = $this->paymentGateway->return($return_params);
@@ -127,7 +127,7 @@ class KBankController extends BaseController
                 return $this->sendError('P0019', ['message' => 'k-bank error:' . $message, 'href' => array_get($init_data, 'href')], 400);
             }
         } catch (\Exception $e) {
-            return $this->sendError('P0006', $e->getMessage(), 400);
+            return $this->sendError('P0006', ['message' => $e->getMessage()], 400);
         }
     }
 

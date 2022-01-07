@@ -177,7 +177,8 @@ class RecommendationRuleEngineService
     private function getIssuerRules($issuer)
     {
         $issuer_rule_cache_key = $this->getIssuerRulesCacheKey($issuer);
-        if(apcu_exists($issuer_rule_cache_key)) {
+        // refresh cache
+        if (false && apcu_exists($issuer_rule_cache_key)) {
             return apcu_fetch($issuer_rule_cache_key);
         }
         $country = substr($issuer, 0, 2);
@@ -187,8 +188,7 @@ class RecommendationRuleEngineService
         $issuer_rules = collect($client_rules)->filter(function($rule) use ($country, $city, $dest){
             return in_array($rule['Scope'], [$country, $city, $dest]);
         })->values()->toArray();
-        apcu_delete($issuer_rule_cache_key);
-        apcu_add($issuer_rule_cache_key, $issuer_rules);
+        apcu_store($issuer_rule_cache_key, $issuer_rules);
         return $issuer_rules;
     }
 

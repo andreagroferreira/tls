@@ -111,6 +111,7 @@ sonarcloud-check:
     - oc project "$PROJECT" 2> /dev/null || oc new-project "$PROJECT"
     - export PAYMENT_SERVICE_URL=`oc get route payment -o jsonpath='{.spec.host}'`
     - export DIRECTUS_HOST=`oc get route ${DIRECTUS_ROUTE} -o jsonpath='{.spec.host}'`
+    - export REDIS_HOST=$(oc get svc $PROJECT-redis-cluster-aws -o json | jq -r .spec.externalName)
     - oc process -f ./openshift/payment-api-template.yaml APPLICATION_NAME=$APPLICATION_NAME PROJECT=$INSTANCE
       NAMESPACE=$PROJECT
       APP_ENV=$APP_ENV
@@ -204,6 +205,7 @@ sonarcloud-check:
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://$PAYMENT_SERVICE_URL"
       DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="$TLSCONTACT_API"
       CLIENT="$CLIENT"
       KBANK_THBKK2BE_SANDBOX_API_KEY=$KBANK_THBKK2BE_SANDBOX_API_KEY

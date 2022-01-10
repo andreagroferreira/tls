@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use function Illuminate\Events\queueable;
 
@@ -178,8 +179,8 @@ class RecommendationRuleEngineService
     {
         $issuer_rule_cache_key = $this->getIssuerRulesCacheKey($issuer);
         // refresh cache
-        if (apcu_exists($issuer_rule_cache_key)) {
-            return apcu_fetch($issuer_rule_cache_key);
+        if (Cache::has($issuer_rule_cache_key)) {
+            return Cache::get($issuer_rule_cache_key);
         }
         $country = substr($issuer, 0, 2);
         $city = substr($issuer, 2, 3);
@@ -188,7 +189,7 @@ class RecommendationRuleEngineService
         $issuer_rules = collect($client_rules)->filter(function($rule) use ($country, $city, $dest){
             return in_array($rule['Scope'], [$country, $city, $dest]);
         })->values()->toArray();
-        apcu_store($issuer_rule_cache_key, $issuer_rules, 15 * 60);
+        Cache::put($issuer_rule_cache_key, $issuer_rules, 15 * 60);
         return $issuer_rules;
     }
 

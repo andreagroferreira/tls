@@ -4,6 +4,7 @@
     "keywords": ["framework", "laravel", "lumen"],
     "license": "MIT",
     "type": "project",
+    "version": "1.3.0",
     "require": {
         "php": "^7.3|^8.0",
         "darkaonline/swagger-lume": "^8.0",

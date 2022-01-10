@@ -118,9 +118,11 @@ class TransactionService
             't_callback_url' => $attributes['callback_url'],
             't_currency' => $attributes['currency'],
             't_workflow' => $attributes['workflow'],
-            't_payment_method' => $attributes['payment_method'],
             't_expiration' => Carbon::parse($this->dbConnectionService->getDbNowTime())->addMinutes(config('payment_gateway.expiration_minutes')),
         ];
+        if (isset($attributes['payment_method'])) {
+            $transaction_data['t_payment_method'] = $attributes['payment_method'];
+        }
         $transaction_data['t_transaction_id'] = $this->generateTransactionId($transaction_data['t_id'], $transaction_data['t_issuer']);
 
         $db_connection = DB::connection($this->dbConnectionService->getConnection());
@@ -159,6 +161,10 @@ class TransactionService
                     'ti_vat' => $sku['vat'],
                     'ti_amount' => $sku['price'],
                 ];
+                //agent receipt is used
+                if (isset($sku['quantity'])) {
+                    $res['ti_quantity'] = $sku['quantity'];
+                }
                 if (filled($add_field)) {
                     $res = $res + $add_field;
                 }

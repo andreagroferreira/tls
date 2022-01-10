@@ -41,6 +41,9 @@ class TinggController extends BaseController
         $t_id = $request->get('t_id');
         try {
             $result = $this->paymentGateway->redirto($t_id);
+            if (!empty($result['status']) && $result['status'] == 'error') {
+                return $this->sendError('P0011', 'Tingg error:' . $result['message'], 400);
+            }
             return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);
@@ -66,14 +69,12 @@ class TinggController extends BaseController
         $params = $request->post();
         try {
             $result = $this->paymentGateway->return($params);
-            $message = $result['message'] ?? '';
-            if ($message == 'transaction_id_not_exists') {
-                return $this->sendError('P0011', 'transaction id does not exists', 400);
-            } else {
-                return $this->sendResponse($result, 200);
+            if (!empty($result['status']) && $result['status'] == 'error') {
+                return $this->sendError('P0011', ['message' => 'Tingg error:' . $result['message'], 'href' => array_get($result, 'href')], 400);
             }
+            return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
-            return $this->sendError('P0006', $e->getMessage(), 400);
+            return $this->sendError('P0006', ['message' => $e->getMessage()], 400);
         }
     }
 
@@ -97,12 +98,10 @@ class TinggController extends BaseController
         $params = $request->post();
         try {
             $result = $this->paymentGateway->notify($params);
-            $message = $result['message'] ?? '';
-            if ($message == 'transaction_id_not_exists') {
-                return $this->sendError('P0011', 'transaction id does not exists', 400);
-            } else {
-                return $this->sendResponse($result, 200);
+            if (!empty($result['status']) && $result['status'] == 'error') {
+                return $this->sendError('P0011', 'Tingg error:' . $result['message'], 400);
             }
+            return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);
         }

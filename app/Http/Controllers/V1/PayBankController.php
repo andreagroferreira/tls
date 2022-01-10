@@ -81,7 +81,7 @@ class PayBankController extends BaseController
             $result = $this->paymentGateway->return($params);
             return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
-            return $this->sendError('P0006', $e->getMessage(), 400);
+            return $this->sendError('P0006', ['message' => $e->getMessage()], 400);
         }
     }
 

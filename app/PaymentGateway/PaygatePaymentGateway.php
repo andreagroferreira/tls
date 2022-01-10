@@ -3,6 +3,7 @@
 namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\PaymentInitiateService;
@@ -17,6 +18,7 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
     private $transactionLogsService;
     private $transactionService;
     private $transactionItemsService;
+    private $formGroupService;
     private $gatewayService;
     private $paymentService;
     private $apiService;
@@ -26,6 +28,7 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
                                 TransactionService $transactionService,
                                 TransactionLogsService $transactionLogsService,
                                 TransactionItemsService $transactionItemsService,
+                                FormGroupService $formGroupService,
                                 GatewayService $gatewayService,
                                 PaymentService $paymentService,
                                 ApiService $apiService
@@ -34,6 +37,7 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         $this->transactionService     = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->transactionItemsService = $transactionItemsService;
+        $this->formGroupService   = $formGroupService;
         $this->gatewayService     = $gatewayService;
         $this->paymentService     = $paymentService;
         $this->apiService         = $apiService;
@@ -123,8 +127,8 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         $issuer  = $translationsData['t_issuer'];
         $fg_id   = $translationsData['t_xref_fg_id'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
-        $application = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
-        $u_email     = $application['body']['u_relative_email'] ?? $application['body']['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
+        $application = $this->formGroupService->fetch($fg_id, $client);
+        $u_email     = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $paygate_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $is_live        = $paygate_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {

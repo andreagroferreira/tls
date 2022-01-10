@@ -11,6 +11,7 @@ class PaymentService
 {
     protected $transactionService;
     protected $transactionLogsService;
+    protected $formGroupService;
     protected $invoiceService;
     protected $apiService;
     protected $agent_name = '';
@@ -19,12 +20,14 @@ class PaymentService
     public function __construct(
         TransactionService $transactionService,
         TransactionLogsService $transactionLogsService,
+        FormGroupService $formGroupService,
         InvoiceService $invoiceService,
         ApiService $apiService
     )
     {
         $this->transactionService   = $transactionService;
         $this->transactionLogsService   = $transactionLogsService;
+        $this->formGroupService     = $formGroupService;
         $this->invoiceService       = $invoiceService;
         $this->apiService  = $apiService;
     }
@@ -95,7 +98,7 @@ class PaymentService
     private function syncAction($transaction, $gateway)
     {
         $client = $transaction['t_client'];
-        $formGroupInfo = $this->formGroupInfo($transaction['t_xref_fg_id'], $client);
+        $formGroupInfo = $this->formGroupService->fetch($transaction['t_xref_fg_id'], $client);
         if(empty($formGroupInfo)) {
             return [
                 'status'    => 'error',
@@ -107,7 +110,8 @@ class PaymentService
             'u_id' => !empty($formGroupInfo['fg_xref_u_id']) ? $formGroupInfo['fg_xref_u_id'] : 0,
             't_items' => $transaction['t_items'],
             't_transaction_id' => $transaction['t_transaction_id'],
-            't_issuer' => $transaction['t_issuer']
+            't_issuer' => $transaction['t_issuer'],
+            't_currency' => $transaction['t_currency']
         ];
         if ($this->agent_name) {
             $data['agent_name'] = $this->agent_name;
@@ -125,10 +129,5 @@ class PaymentService
                 'error_msg' => $response['body']['message']
             ];
         }
-    }
-
-    private function formGroupInfo($fg_id, $client) {
-        $response = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
-        return $response['status'] == 200 ? $response['body'] : [];
     }
 }

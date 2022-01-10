@@ -43,6 +43,9 @@ class CmiController extends BaseController
         $t_id = $request->input('t_id');
         try {
             $body = $this->paymentGateway->redirto($t_id);
+            if (isset($body['status']) && $body['status'] == 'error') {
+                return $this->sendError('P0006', $body['message'], 400);
+            }
             return $this->sendResponse($body, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);
@@ -69,9 +72,12 @@ class CmiController extends BaseController
         $params = $request->post();
         try {
             $result = $this->paymentGateway->return($params);
+            if (isset($result['status']) && $result['status'] == 'error') {
+                return $this->sendError('P0006', ['message' => $result['message'], 'href' => array_get($result, 'href')], 400);
+            }
             return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
-            return $this->sendError('P0006', $e->getMessage(), 400);
+            return $this->sendError('P0006', ['message' => $e->getMessage()], 400);
         }
     }
     /**
@@ -94,6 +100,9 @@ class CmiController extends BaseController
         $params = $request->post();
         try {
             $notify_result = $this->paymentGateway->notify($params);
+            if (isset($notify_result['status']) && $notify_result['status'] == 'error') {
+                return $this->sendError('P0006', $notify_result['message'], 400);
+            }
             // here notify the payment gateway by echo a string
             return $this->sendResponse($notify_result, 200);
         } catch (\Exception $e) {

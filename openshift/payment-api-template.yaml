@@ -23,6 +23,8 @@ parameters:
     required: true
   - name: DIRECTUS_DOMAIN
     required: true
+  - name: REDIS_HOST
+    required: true
   - name: AWS_ACCOUNT_S3
     required: true
   - name: KBANK_THBKK2BE_SANDBOX_API_KEY
@@ -300,6 +302,8 @@ objects:
       replicas: 1
       template:
         metadata:
+          annotations:
+            central-logging: "true"
           labels:
             app: ${APPLICATION_NAME}
             deploymentconfig: ${APPLICATION_NAME}
@@ -314,6 +318,8 @@ objects:
                   value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
+                - name: REDIS_HOST
+                  value: ${REDIS_HOST}
                 - name: VERIFYPEER
                   value: ${VERIFYPEER}
                 - name: POSTGRES_DEPLOY_DB_USERNAME
@@ -681,6 +687,8 @@ objects:
                   value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
+                - name: REDIS_HOST
+                  value: ${REDIS_HOST}
                 - name: PGPASSFILE
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV

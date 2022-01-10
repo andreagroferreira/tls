@@ -23,6 +23,9 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('transaction', 'TransactionController@create');
     $router->get('transactions', 'TransactionController@fetchAll');
 
+    // form group api
+    $router->get('form_group/{fg_id}', 'FormGroupController@fetch');
+
     // invoice api
     $router->get('invoice/{transaction_id}', 'InvoiceController@fetch');
 

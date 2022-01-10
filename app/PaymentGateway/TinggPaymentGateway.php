@@ -4,6 +4,7 @@ namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\ApiService;
+use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
@@ -14,18 +15,21 @@ use Illuminate\Support\Facades\Log;
 class TinggPaymentGateway implements PaymentGatewayInterface
 {
     private $transactionService;
+    private $formGroupService;
     private $gatewayService;
     private $paymentService;
     private $apiService;
 
     public function __construct(
         TransactionService $transactionService,
+        FormGroupService $formGroupService,
         GatewayService $gatewayService,
         PaymentService $paymentService,
         ApiService $apiService
     )
     {
         $this->transactionService = $transactionService;
+        $this->formGroupService   = $formGroupService;
         $this->gatewayService     = $gatewayService;
         $this->paymentService     = $paymentService;
         $this->apiService         = $apiService;
@@ -114,10 +118,10 @@ class TinggPaymentGateway implements PaymentGatewayInterface
         $issuer       = $transaction['t_issuer'];
         $fg_id        = $transaction['t_xref_fg_id'];
         $tingg_config = $this->getTinggConfig($transaction);
-        $application  = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
-        $u_surname    = $application['body']['u_surname'] ?? '';
-        $u_givenname  = $application['body']['u_givenname'] ?? '';
-        $u_email      = $application['body']['u_relative_email'] ?? $application['body']['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
+        $application  = $this->formGroupService->fetch($fg_id, $client);
+        $u_surname    = $application['u_surname'] ?? '';
+        $u_givenname  = $application['u_givenname'] ?? '';
+        $u_email      = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $params       = [
             'merchantTransactionID' => str_replace('-', '_', $transaction['t_transaction_id']),
             'requestAmount'         => $transaction['t_amount'],

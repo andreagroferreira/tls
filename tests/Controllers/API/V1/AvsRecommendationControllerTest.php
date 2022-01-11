@@ -153,7 +153,8 @@ class AvsRecommendationControllerTest extends TestCase
                   "fi_pers_occupation_area"=> "Architect",
                   "fi_employer_name"=> "RAWR",
                   "fi_employer_address"=> "\n\n\n\n\nrwar\n\ntn\n\n\n\n",
-                  "fi_duration_of_stay"=> "12"
+                  "fi_duration_of_stay"=> "12",
+                  "ug_type" => "INDI"
                 ],
             ],
             [

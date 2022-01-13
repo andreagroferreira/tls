@@ -668,11 +668,11 @@ return [
                 ],
 //                'prod'    => [
 //                    'host'          => 'https://online.tingg.africa/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_BEugKLA2be_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_BEugKLA2be_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_BEugKLA2be_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_BEugKLA2be_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_BEugKLA2be_ACCESS_KEY")
+//                    'accountNumber' => env("ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_DEtzDAR2de_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY")
 //                ]
             ],
         ],
@@ -696,11 +696,11 @@ return [
                 ],
 //                'prod'    => [
 //                    'host'          => 'https://online.tingg.africa/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_BEugKLA2be_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_BEugKLA2be_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_BEugKLA2be_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_BEugKLA2be_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_BEugKLA2be_ACCESS_KEY")
+//                    'accountNumber' => env("ENVPAY_TINGG_DEugKLA2de_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_DEugKLA2de_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_DEugKLA2de_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_DEugKLA2de_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_DEugKLA2de_ACCESS_KEY")
 //                ]
             ],
         ],

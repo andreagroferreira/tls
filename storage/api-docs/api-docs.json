@@ -45,6 +45,16 @@
                         }
                     },
                     {
+                        "name": "refresh_cache",
+                        "in": "query",
+                        "description": "refresh cache",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "false"
+                        }
+                    },
+                    {
                         "name": "limit",
                         "in": "query",
                         "description": "number of recommended services, default for 6",
@@ -300,6 +310,50 @@
                     },
                     "400": {
                         "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/form_group/{fg_id}": {
+            "get": {
+                "tags": [
+                    "TLS API"
+                ],
+                "description": "Get form group data",
+                "operationId": "86f78b0869d0da4325d655b934771ba7",
+                "parameters": [
+                    {
+                        "name": "fg_id",
+                        "in": "path",
+                        "description": "the form group id in database",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "client",
+                        "in": "query",
+                        "description": "define which client you want to create the acccount in",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "be"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the form group information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request, form group not found"
                     }
                 }
             }

@@ -83,6 +83,8 @@ class AvsRecommendationService
             }
             $item['is_display'] = !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus, $removed_skus));
             $item['avs_conflict'] = in_array($item['sku'], $conflict_skus);
+            $item['not_recommended'] = in_array($item['sku'], $removed_skus);
+            $item['not_recommended_display'] = $item['not_recommended'] && !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus));
             $item['_score'] = is_null($item['recommendation_priority']) ? 1000 : $item['recommendation_priority'];
             $item['_score'] += ($item['is_display'] ? 0 : 1000);
             unset($item['rcd_id']);

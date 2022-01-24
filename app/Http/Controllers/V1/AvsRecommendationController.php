@@ -46,6 +46,13 @@ class AvsRecommendationController extends BaseController
      *          @OA\Schema(type="string", example="rule_engine"),
      *      ),
      *      @OA\Parameter(
+     *          name="refresh_cache",
+     *          in="query",
+     *          description="refresh cache",
+     *          required=false,
+     *          @OA\Schema(type="string", example="false"),
+     *      ),
+     *      @OA\Parameter(
      *          name="limit",
      *          in="query",
      *          description="number of recommended services, default for 6",
@@ -69,11 +76,13 @@ class AvsRecommendationController extends BaseController
             'f_id' => $request->route('f_id'),
             'limit' => $request->get('limit', 6),
             'source' => $request->get('source', 'directus'),
-            'step' => $request->get('step')
+            'step' => $request->get('step'),
+            'refresh_cache' => $request->boolean('refresh_cache')
         ];
         $validator = validator($params, [
             'f_id' => 'required|integer',
             'limit' => 'required|integer',
+            'refresh_cache' => 'nullable',
             'source' => [
                 'required',
                 Rule::in(['rule_engine', 'directus'])

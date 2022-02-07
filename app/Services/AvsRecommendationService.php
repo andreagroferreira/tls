@@ -8,6 +8,8 @@ class AvsRecommendationService
 {
     protected $client;
     protected $apiService;
+    protected $cacheKey;
+    protected $refreshCache = false;
     protected $directusService;
     protected $recommendationRuleEngineService;
     protected $recommendationResultRepositories;
@@ -49,6 +51,8 @@ class AvsRecommendationService
             return [];
         }
         $application = $application_response['body'];
+        $this->cacheKey = 'directus_avs_list_' . $this->apiService->getProjectId() . '_' . $application['f_xcopy_ug_xref_i_tag'] . '_' . $f_id;
+        $this->refreshCache = $params['refresh_cache'];
         $issuer_avses = $this->getIssuerAvsWithPriority($application['f_xcopy_ug_xref_i_tag']);
         $issuer_avses = array_column($issuer_avses, null, 'sku');
 
@@ -83,6 +87,8 @@ class AvsRecommendationService
             }
             $item['is_display'] = !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus, $removed_skus));
             $item['avs_conflict'] = in_array($item['sku'], $conflict_skus);
+            $item['not_recommended'] = in_array($item['sku'], $removed_skus);
+            $item['not_recommended_display'] = $item['not_recommended'] && !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus));
             $item['_score'] = is_null($item['recommendation_priority']) ? 1000 : $item['recommendation_priority'];
             $item['_score'] += ($item['is_display'] ? 0 : 1000);
             unset($item['rcd_id']);
@@ -121,7 +127,7 @@ class AvsRecommendationService
             ],
         ];
         $select = 'avs.sku, avs.recommendation_priority, vat,price,currency.code, recommendation_priority';
-        $all_avs_infos = $this->directusService->getContent('vac_avs', $select, $filters);
+        $all_avs_infos = $this->directusService->getContent('vac_avs', $select, $filters, [], ['cacheKey' => $this->cacheKey, 'refreshCache' => $this->refreshCache]);
         $all_avs = [];
         foreach($all_avs_infos as $avs) {
             $all_avs[] = [

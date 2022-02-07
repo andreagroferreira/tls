@@ -183,6 +183,10 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $status_code = $response->getStatusCode();
             $payment_id = $response->getBody()->getContents();
             if ($status_code==200 && $payment_id) {
+                if (filter_var($payment_id, FILTER_VALIDATE_URL)) {
+                    parse_str(parse_url($payment_id, PHP_URL_QUERY), $query);
+                    $payment_id = array_get($query, 'payment-id');
+                }
                 return [
                     'form_method' => 'get',
                     'form_action' => $host_url . '/atfawry/plugin/',

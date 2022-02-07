@@ -14,6 +14,11 @@ class DirectusService
     }
 
     public function getContent($item, $filed, $filters, $options = [], $cacheAttr = []) {
+        if (isset($cacheAttr['cacheKey']) && isset($cacheAttr['refreshCache'])) {
+            if (Cache::has($cacheAttr['cacheKey']) && !$cacheAttr['refreshCache']) {
+                return Cache::get($cacheAttr['cacheKey']);
+            }
+        }
         $queryParams = [
             'fields' => $filed,
             'filter' => $filters
@@ -27,11 +32,7 @@ class DirectusService
             return [];
         }
         if (isset($cacheAttr['cacheKey']) && isset($cacheAttr['refreshCache'])) {
-            if(Cache::has($cacheAttr['cacheKey']) && !$cacheAttr['refreshCache']) {
-                return Cache::get($cacheAttr['cacheKey']);
-            } else {
-                Cache::put($cacheAttr['cacheKey'], $result['body']['data'], 15 * 60);
-            }
+            Cache::put($cacheAttr['cacheKey'], $result['body']['data'], 15 * 60);
         }
         return $result['body']['data'];
     }

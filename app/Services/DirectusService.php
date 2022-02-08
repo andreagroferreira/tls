@@ -18,6 +18,10 @@ class DirectusService
             'fields' => $filed,
             'filter' => $filters
         ];
+        $cacheKey = $this->getCacheKey($queryParams);
+        if (isset($cacheAttr['refreshCache']) && Cache::has($cacheKey) && !$cacheAttr['refreshCache']) {
+            return Cache::get($cacheKey);
+        }
         if($options) {
             $queryParams = array_merge($queryParams, $options);
         }
@@ -26,14 +30,19 @@ class DirectusService
         if($result && $result['status'] != 200) {
             return [];
         }
-        if (isset($cacheAttr['cacheKey']) && isset($cacheAttr['refreshCache'])) {
-            if(Cache::has($cacheAttr['cacheKey']) && !$cacheAttr['refreshCache']) {
-                return Cache::get($cacheAttr['cacheKey']);
-            } else {
-                Cache::put($cacheAttr['cacheKey'], $result['body']['data'], 15 * 60);
-            }
-        }
+        Cache::put($cacheKey, $result['body']['data'], 15 * 60);
         return $result['body']['data'];
+    }
+
+    private function getCacheKey($attr, $column = 'directus_cache_') {
+        foreach ($attr as $key => $value) {
+         if (!is_array($value)) {
+             $column .= $key . '_' . trim($value) . '_';
+         } else {
+             return $this->getCacheKey($value, $column);
+         }
+        }
+        return str_replace(',', '_', $column) . $this->apiService->getProjectId();
     }
 
     public function getAvsWithServiceName($issuer, $lang) {

@@ -133,6 +133,10 @@ parameters:
     required: true
   - name: CLICTOPAY_SANDBOX_PASSWORD
     required: true
+  - name: CLICTOPAY_USER_NAME
+    required: true
+  - name: CLICTOPAY_PASSWORD
+    required: true
   - name: BANK_PAYMENT_SECRET
     required: true
   - name: PAYMENT_SERVICE_DOMAIN
@@ -363,6 +367,10 @@ objects:
                   value: ${CLICTOPAY_SANDBOX_USER_NAME}
                 - name: CLICTOPAY_SANDBOX_PASSWORD
                   value: ${CLICTOPAY_SANDBOX_PASSWORD}
+                - name: CLICTOPAY_USER_NAME
+                  value: ${CLICTOPAY_USER_NAME}
+                - name: CLICTOPAY_PASSWORD
+                  value: ${CLICTOPAY_PASSWORD}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: PAYMENT_SERVICE_DOMAIN

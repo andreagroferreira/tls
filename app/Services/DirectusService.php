@@ -19,10 +19,8 @@ class DirectusService
             'filter' => $filters
         ];
         $cacheKey = $this->getCacheKey($queryParams);
-        if (isset($cacheAttr['refreshCache'])) {
-            if (Cache::has($cacheKey) && !$cacheAttr['refreshCache']) {
-                return Cache::get($cacheKey);
-            }
+        if (isset($cacheAttr['refreshCache']) && Cache::has($cacheKey) && !$cacheAttr['refreshCache']) {
+            return Cache::get($cacheKey);
         }
         if($options) {
             $queryParams = array_merge($queryParams, $options);

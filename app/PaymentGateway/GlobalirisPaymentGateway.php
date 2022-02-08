@@ -152,9 +152,9 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             $merchantid     = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
             $secret         = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
         }
-        $tmp = $timestamp.$merchantid.$orderId.$result.$message.$pasref.$authcode;
+        $tmp = "$timestamp.$merchantid.$orderId.$result.$message.$pasref.$authcode";
         $sha1hash = sha1($tmp);
-        $tmp = $sha1hash.$secret;
+        $tmp = "$sha1hash.$secret";
         $sha1hash = sha1($tmp);
         if ($result == "00") {
             $flag = true;

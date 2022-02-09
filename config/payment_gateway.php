@@ -645,6 +645,30 @@ return [
                 ]
             ]
         ],
+    ],
+    'pl' => [
+        'uaKBP2pl' => [
+            'paysoft' => [
+                'label' => 'Paysoft pay',
+                'active' => true,
+                'common' => [
+                    'env' => 'live',
+                    'return_url' => '/paysoft/return',
+                ],
+                'sandbox' => [
+                    'host' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST'),
+                    'merchant_id' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID'),
+                    'signature_algorithm' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM'),
+                    'signature_secret_key' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY'),
+                ],
+                'prod' => [
+                    'host' => env('ENVPAY_PAYSOFT_uaKBP2pl_HOST'),
+                    'merchant_id' => env('ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID'),
+                    'signature_algorithm' => env('ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM'),
+                    'signature_secret_key' => env('ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY'),
+                ]
+            ],
+        ],
     ]
 
 ];

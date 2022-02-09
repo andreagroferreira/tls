@@ -304,6 +304,50 @@
                 }
             }
         },
+        "/api/v1/form_group/{fg_id}": {
+            "get": {
+                "tags": [
+                    "TLS API"
+                ],
+                "description": "Get form group data",
+                "operationId": "86f78b0869d0da4325d655b934771ba7",
+                "parameters": [
+                    {
+                        "name": "fg_id",
+                        "in": "path",
+                        "description": "the form group id in database",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "client",
+                        "in": "query",
+                        "description": "define which client you want to create the acccount in",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "be"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the form group information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request, form group not found"
+                    }
+                }
+            }
+        },
         "/api/v1/globaliris/redirto": {
             "get": {
                 "tags": [
@@ -956,6 +1000,83 @@
                     "Payment API"
                 ],
                 "description": "return reqeust from paygate",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paysoft/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paysoft",
+                "operationId": "ef14dda6365391361cbb881b3ed34e9c",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paysoft/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "5c14a3b2a06fd4ca0572979408c26c2d",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/paysoft/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paysoft",
                 "responses": {
                     "200": {
                         "description": "transaction created",

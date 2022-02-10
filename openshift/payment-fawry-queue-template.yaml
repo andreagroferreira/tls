@@ -157,6 +157,22 @@ parameters:
     required: true
   - name: PAYFORT_RESPONSE_PHRASE
     required: true
+  - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST
+    required: true
+  - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM
+    required: true
+  - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY
+    required: true
+  - name: ENVPAY_PAYSOFT_uaKBP2pl_HOST
+    required: true
+  - name: ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID
+    required: true
+  - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM
+    required: true
+  - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -391,6 +407,22 @@ objects:
                   value: ${PAYFORT_REQUEST_PHRASE}
                 - name: PAYFORT_RESPONSE_PHRASE
                   value: ${PAYFORT_RESPONSE_PHRASE}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_HOST
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_HOST}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT

@@ -174,7 +174,7 @@ class KBankController extends BaseController
             $this->sendError('P0009', "client or issuer, payment no_data_received", 400);
         }
         try {
-            $kbank_config = $this->gatewayService->getGateway($params['client'], $params['issuer'], $params['payment']);
+            $kbank_config = $this->gatewayService->getKbankConfig($params['client'], $params['issuer'], $params['payment']);
             if (!empty($kbank_config)) {
                 return $this->sendResponse($kbank_config, 200);
             } else {

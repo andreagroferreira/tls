@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 
 class DirectusService
 {
@@ -12,11 +13,15 @@ class DirectusService
         $this->apiService = $apiService;
     }
 
-    public function getContent($item, $filed, $filters, $options = []) {
+    public function getContent($item, $filed, $filters, $options = [], $cacheAttr = []) {
         $queryParams = [
             'fields' => $filed,
             'filter' => $filters
         ];
+        $cacheKey = $this->getCacheKey($queryParams);
+        if (isset($cacheAttr['refreshCache']) && Cache::has($cacheKey) && !$cacheAttr['refreshCache']) {
+            return Cache::get($cacheKey);
+        }
         if($options) {
             $queryParams = array_merge($queryParams, $options);
         }
@@ -25,7 +30,19 @@ class DirectusService
         if($result && $result['status'] != 200) {
             return [];
         }
+        Cache::put($cacheKey, $result['body']['data'], 15 * 60);
         return $result['body']['data'];
+    }
+
+    private function getCacheKey($attr, $column = 'directus_cache_') {
+        foreach ($attr as $key => $value) {
+         if (!is_array($value)) {
+             $column .= $key . '_' . trim($value) . '_';
+         } else {
+             return $this->getCacheKey($value, $column);
+         }
+        }
+        return str_replace(',', '_', $column) . $this->apiService->getProjectId();
     }
 
     public function getAvsWithServiceName($issuer, $lang) {

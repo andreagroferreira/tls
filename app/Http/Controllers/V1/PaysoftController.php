@@ -43,7 +43,7 @@ class PaysoftController extends BaseController
         try {
             $result = $this->paymentGateway->redirto($t_id);
             if (array_get($result, 'status') == 'error') {
-                return $this->sendError('P0001', 'Paysoft error: ' . array_get($result, 'message'));
+                return $this->sendError('P0001', array_get($result, 'message'));
             }
 
             return $this->sendResponse($result);
@@ -70,8 +70,13 @@ class PaysoftController extends BaseController
      */
     public function notify(Request $request)
     {
+        $params = $request->input();
+        if (blank($params)) {
+            return $this->sendError('P0006', 'Illegal parameter');
+        }
+
         try {
-            $result = $this->paymentGateway->notify($request->all());
+            $result = $this->paymentGateway->notify($params);
             if ($result) {
                 return $this->sendResponse($result);
             } else {
@@ -114,7 +119,7 @@ class PaysoftController extends BaseController
         if ($status == 'ok') {
             return $this->sendResponse($result, 200);
         } else {
-            return $this->sendError('P10006', ['message' => array_get($result, 'message', 'unknown_error'), 'href' => array_get($result, 'href')], 400);
+            return $this->sendError('P0006', ['message' => array_get($result, 'message', 'unknown_error'), 'href' => array_get($result, 'href')], 400);
         }
     }
 }

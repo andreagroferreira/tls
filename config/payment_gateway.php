@@ -620,6 +620,9 @@ return [
                     'secret'        => env('KBANK_THBKK2BE_SECRET'),
                     'mid'           => env('KBANK_THBKK2BE_MID')
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'tnTUN2be' => [

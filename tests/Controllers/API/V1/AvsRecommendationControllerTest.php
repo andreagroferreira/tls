@@ -153,7 +153,8 @@ class AvsRecommendationControllerTest extends TestCase
                   "fi_pers_occupation_area"=> "Architect",
                   "fi_employer_name"=> "RAWR",
                   "fi_employer_address"=> "\n\n\n\n\nrwar\n\ntn\n\n\n\n",
-                  "fi_duration_of_stay"=> "12"
+                  "fi_duration_of_stay"=> "12",
+                  "ug_type" => "INDI"
                 ],
             ],
             [
@@ -227,18 +228,19 @@ class AvsRecommendationControllerTest extends TestCase
         $this->response->assertJsonFragment([
             'all_avs' => [
                 [
-                    "service_name" => "Premium Lounge",
+                    "_score" => 1006,
+                    "avs_conflict" => false,
+                    "service_name" => null,
                     "sku" => "PREMIUM-LOUNGE",
                     "vat" => "0.00",
                     "price" => "500.00",
                     "currency" => "XAF",
-                    "avs_description" => 'Upgrade to experience the ultimate in convenience, comfort, and support for your application in a dedicated space with fewer queues.Upgrading to our Premium Lounge gives you the space and comfort to submit your visa application in an exclusive and spacious environment without queues. You’ll enjoy privacy and a selection of complimentary refreshments while receiving one-to-one assistance and support from one of our experienced agents. With the added convenience of a flexible booking, and the opportunity to submit any missing documents later in the day, upgrade to Premium Lounge today to experience the ultimate in comfort and peace of mind.To purchase this service, please Contact Us.',
+                    "avs_description" => null,
                     "sku_description" => null,
                     "avs_sale_script" => null,
                     "sku_sale_script" => null,
                     "recommendation_priority" => 6,
-                    'is_display' => false,
-                    'is_recommended' => true
+                    'is_display' => false
                 ]
             ]
         ]);
@@ -246,13 +248,13 @@ class AvsRecommendationControllerTest extends TestCase
             'requested_avs' => [
                 [
                     "a_id" => 1,
-                    "service_name" => "Premium Lounge",
+                    "service_name" => null,
                     "sku" => "PREMIUM-LOUNGE",
                     "vat" => "0.00",
                     "price" => "500.00",
                     "quantity" => "1",
                     "currency" => "XAF",
-                    "avs_description" => 'Upgrade to experience the ultimate in convenience, comfort, and support for your application in a dedicated space with fewer queues.Upgrading to our Premium Lounge gives you the space and comfort to submit your visa application in an exclusive and spacious environment without queues. You’ll enjoy privacy and a selection of complimentary refreshments while receiving one-to-one assistance and support from one of our experienced agents. With the added convenience of a flexible booking, and the opportunity to submit any missing documents later in the day, upgrade to Premium Lounge today to experience the ultimate in comfort and peace of mind.To purchase this service, please Contact Us.',
+                    "avs_description" => null,
                     "recommendation_priority" => 6,
                     "sku_description" => null,
                     "avs_sale_script" => null,

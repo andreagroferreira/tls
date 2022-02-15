@@ -88,4 +88,8 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     $router->post('clictopay/redirto', 'ClictopayController@redirto');
     $router->post('clictopay/return', 'ClictopayController@return');
+
+    $router->post('paysoft/redirto', 'PaysoftController@redirto');
+    $router->post('paysoft/notify', 'PaysoftController@notify');
+    $router->post('paysoft/return', 'PaysoftController@return');
 });

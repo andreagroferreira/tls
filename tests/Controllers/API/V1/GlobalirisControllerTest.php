@@ -19,6 +19,9 @@ class GlobalirisControllerTest extends TestCase
         $this->post($base_url, $post_data);
         $response_array = $this->response->decodeResponseJson();
         $this->transactions = $this->getTransactions(['t_id' => array_get($response_array, 't_id')]);
+
+        config(['payment_gateway.be.gbLON2be.globaliris.sandbox.sandbox_merchant_id' => '123456']);
+        config(['payment_gateway.be.gbLON2be.globaliris.sandbox.sandbox_secret' => 'secret']);
     }
 
     public function testRedirto()
@@ -102,9 +105,18 @@ class GlobalirisControllerTest extends TestCase
     }
 
     private function getHash($post_data) {
-        $merchantid = env('APP_ENV') === 'production' ? env('ENVPAY_GLO_COMMON_MERCHANT_ID') : env('ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID');
-        $secret = env('APP_ENV') === 'production' ? env('ENVPAY_GLO_COMMON_SECRET') : 'secret';
-        $tmp = $merchantid.$post_data['ORDER_ID'].$post_data['RESULT'];
-        return sha1(sha1($tmp) . $secret);
+        $merchantid = env('APP_ENV') === 'production' ? config('payment_gateway.be.gbLON2be.globaliris.prod.merchant_id') : config('payment_gateway.be.gbLON2be.globaliris.sandbox.sandbox_merchant_id');
+        $secret = env('APP_ENV') === 'production' ? config('payment_gateway.be.gbLON2be.globaliris.prod.secret') : 'secret';
+
+        $timestamp = $post_data['TIMESTAMP'] ?? '';
+        $result = $post_data['RESULT'] ?? '';
+        $orderId = $post_data['ORDER_ID'] ?? '';
+        $message = $post_data['MESSAGE'] ?? '';
+        $authcode = $post_data['AUTHCODE'] ?? '';
+        $pasref = $post_data['PASREF'] ?? '';
+        $tmp = "$timestamp.$merchantid.$orderId.$result.$message.$pasref.$authcode";
+        $sha1hash = sha1($tmp);
+        $tmp = "$sha1hash.$secret";
+        return sha1($tmp);
     }
 }

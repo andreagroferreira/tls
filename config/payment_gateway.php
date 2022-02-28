@@ -706,6 +706,31 @@ return [
 //                ]
             ],
         ],
+        'keNBO2de' => [
+            'payu' => [
+                'label' => 'payu pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency'  => 'USD',
+                    'payment_method'  => 'CREDITCARD',
+                    'paymentsos_host' => 'https://api.paymentsos.com/payments',
+                    'return_url' => '/payu/return'
+                ],
+                'sandbox' => [
+                    'sandbox_app_id'      => env('PAYU_KEALL2DE_SANDBOX_APP_ID'),
+                    'sandbox_private_key' => env('PAYU_KEALL2DE_SANDBOX_PRIVATE_KEY'),
+                    'sandbox_api_version' => '1.3.0',
+                    'sandbox_payments_os_env' => 'test'
+                ],
+                'prod' => [
+                    'app_id'      => env('PAYU_KEALL2DE_APP_ID'),
+                    'private_key' => env('PAYU_KEALL2DE_PRIVATE_KEY'),
+                    'api_version' => '1.3.0',
+                    'payments_os_env' => 'live'
+                ]
+            ]
+        ],
     ],
     'pl' => [
         'uaKBP2pl' => [

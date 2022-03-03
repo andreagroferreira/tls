@@ -61,21 +61,19 @@ class CmiControllerTest extends TestCase
 
         $base_url = '/api/v1/cmi/return';
         $this->post($base_url);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0006",
-                "message" => "Transaction ERROR: transaction not found"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0006', array_get($response_array, 'error'));
+        $this->assertEquals('Transaction ERROR: transaction not found', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $post_data = ['oid' => $this->transactions->t_transaction_id];
         $this->post($base_url, $post_data);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0006",
-                "message" => "Undefined index: HASH"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0006', array_get($response_array, 'error'));
+        $this->assertEquals('Undefined index: HASH', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $responses[] = $this->getFormGroupResponse();
         $responses[] = $this->getPaymentAction();

@@ -178,7 +178,8 @@ class RecommendationRuleEngineService
     private function getIssuerRules($issuer)
     {
         $issuer_rule_cache_key = $this->getIssuerRulesCacheKey($issuer);
-        if(Cache::has($issuer_rule_cache_key)) {
+        // refresh cache
+        if (Cache::has($issuer_rule_cache_key)) {
             return Cache::get($issuer_rule_cache_key);
         }
         $country = substr($issuer, 0, 2);

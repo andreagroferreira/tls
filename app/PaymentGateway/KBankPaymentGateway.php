@@ -77,7 +77,7 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $charges_payments = $this->paymentInitiateService->paymentInitiate('get', $charge_host, '', false, $header);
         if (strpos($charges_payments,'error') !== false) { return ['status' => 'fail', 'content' => $charges_payments]; }
         $charges_payments_data = json_decode($charges_payments, true);
-        $hash_string = $charge_id . number_format($transaction['t_amount'], 4) . $transaction['t_currency'] . $charges_payments_data['status'] . $charges_payments_data['transaction_state'] . $secret;
+        $hash_string = $charge_id . str_replace(',', '', number_format($transaction['t_amount'], 4)) . $transaction['t_currency'] . $charges_payments_data['status'] . $charges_payments_data['transaction_state'] . $secret;
         $hash = hash('SHA256', $hash_string);
 
         // 验证数字签名

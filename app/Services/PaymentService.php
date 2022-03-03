@@ -110,7 +110,8 @@ class PaymentService
             'u_id' => !empty($formGroupInfo['fg_xref_u_id']) ? $formGroupInfo['fg_xref_u_id'] : 0,
             't_items' => $transaction['t_items'],
             't_transaction_id' => $transaction['t_transaction_id'],
-            't_issuer' => $transaction['t_issuer']
+            't_issuer' => $transaction['t_issuer'],
+            't_currency' => $transaction['t_currency']
         ];
         if ($this->agent_name) {
             $data['agent_name'] = $this->agent_name;

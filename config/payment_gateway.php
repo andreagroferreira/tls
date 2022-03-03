@@ -534,8 +534,8 @@ return [
                     'return_url' => '/payu/return'
                 ],
                 'sandbox' => [
-                    'sandbox_app_id'      => env('PAYU_KEALL2BE_SANDBOX_APP_ID'),
-                    'sandbox_private_key' => env('PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY'),
+                    'sandbox_app_id'      => env('PAYU_KENYA_SANDBOX_APP_ID'),
+                    'sandbox_private_key' => env('PAYU_KENYA_SANDBOX_PRIVATE_KEY'),
                     'sandbox_api_version' => '1.3.0',
                     'sandbox_payments_os_env' => 'test'
                 ],
@@ -620,6 +620,9 @@ return [
                     'secret'        => env('KBANK_THBKK2BE_SECRET'),
                     'mid'           => env('KBANK_THBKK2BE_MID')
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'tnTUN2be' => [
@@ -644,6 +647,113 @@ return [
                     'password'  => env('CLICTOPAY_PASSWORD')
                 ]
             ]
+        ],
+    ],
+    'de' => [
+        'tzDAR2de' => [
+            'tingg' => [
+                'label'   => 'Tingg pay',
+                'active'  => true,
+                'common'  => [
+                    'successRedirectUrl' => 'tingg/return',
+                    'failRedirectUrl'    => 'checkout/',
+                    'pendingRedirectUrl' => 'checkout/',
+                    'paymentWebhookUrl'  => 'tingg/notify'
+                ],
+                'sandbox' => [
+                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
+                ],
+//                'prod'    => [
+//                    'host'          => 'https://online.tingg.africa/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_DEtzDAR2de_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY")
+//                ]
+            ],
+        ],
+        'ugKLA2de' => [
+            'tingg' => [
+                'label'   => 'Tingg pay',
+                'active'  => true,
+                'common'  => [
+                    'successRedirectUrl' => 'tingg/return',
+                    'failRedirectUrl'    => 'checkout/',
+                    'pendingRedirectUrl' => 'checkout/',
+                    'paymentWebhookUrl'  => 'tingg/notify'
+                ],
+                'sandbox' => [
+                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
+                ],
+//                'prod'    => [
+//                    'host'          => 'https://online.tingg.africa/v2/express/',
+//                    'accountNumber' => env("ENVPAY_TINGG_DEugKLA2de_ACCOUNT_NUMBER"),
+//                    'serviceCode'   => env("ENVPAY_TINGG_DEugKLA2de_SERVICE_CODE"),
+//                    'ivKey'         => env("ENVPAY_TINGG_DEugKLA2de_IVKEY"),
+//                    'secretKey'     => env("ENVPAY_TINGG_DEugKLA2de_SECRET_KEY"),
+//                    'accessKey'     => env("ENVPAY_TINGG_DEugKLA2de_ACCESS_KEY")
+//                ]
+            ],
+        ],
+        'keNBO2de' => [
+            'payu' => [
+                'label' => 'payu pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency'  => 'USD',
+                    'payment_method'  => 'CREDITCARD',
+                    'paymentsos_host' => 'https://api.paymentsos.com/payments',
+                    'return_url' => '/payu/return'
+                ],
+                'sandbox' => [
+                    'sandbox_app_id'      => env('PAYU_KENYA_SANDBOX_APP_ID'),
+                    'sandbox_private_key' => env('PAYU_KENYA_SANDBOX_PRIVATE_KEY'),
+                    'sandbox_api_version' => '1.3.0',
+                    'sandbox_payments_os_env' => 'test'
+                ],
+                'prod' => [
+                    'app_id'      => env('PAYU_KEALL2DE_APP_ID'),
+                    'private_key' => env('PAYU_KEALL2DE_PRIVATE_KEY'),
+                    'api_version' => '1.3.0',
+                    'payments_os_env' => 'live'
+                ]
+            ]
+        ],
+    ],
+    'pl' => [
+        'uaKBP2pl' => [
+            'paysoft' => [
+                'label' => 'Paysoft pay',
+                'active' => true,
+                'common' => [
+                    'env' => 'live',
+                    'return_url' => '/paysoft/return',
+                ],
+                'sandbox' => [
+                    'host' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST'),
+                    'merchant_id' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID'),
+                    'signature_algorithm' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM'),
+                    'signature_secret_key' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY'),
+                ],
+                'prod' => [
+                    'host' => env('ENVPAY_PAYSOFT_uaKBP2pl_HOST'),
+                    'merchant_id' => env('ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID'),
+                    'signature_algorithm' => env('ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM'),
+                    'signature_secret_key' => env('ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY'),
+                ]
+            ],
         ],
     ]
 

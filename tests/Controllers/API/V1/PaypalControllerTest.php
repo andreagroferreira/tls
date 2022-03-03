@@ -65,21 +65,19 @@ class PaypalControllerTest extends TestCase
 
         $base_url = '/api/v1/paypal/return';
         $this->post($base_url);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0006",
-                "message" => "Undefined index: t_redirect_url"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0006', array_get($response_array, 'error'));
+        $this->assertEquals('Undefined index: t_redirect_url', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $post_data = ['t_id' => '999999'];
         $this->post($base_url, $post_data);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0006",
-                "message" => "Undefined index: t_redirect_url"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0006', array_get($response_array, 'error'));
+        $this->assertEquals('Undefined index: t_redirect_url', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $post_data = ['t_id' => $this->transactions->t_id];
         $this->post($base_url, $post_data);

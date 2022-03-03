@@ -65,22 +65,20 @@ class PaygateControllerTest extends TestCase
 
         $base_url = '/api/v1/paygate/return';
         $this->post($base_url);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0006",
-                "message" => "Undefined index: PAY_REQUEST_ID"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0006', array_get($response_array, 'error'));
+        $this->assertEquals('Undefined index: PAY_REQUEST_ID', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $transactions = $this->getTransactions(['t_id' => $this->transactions->t_id]);
         $post_data = ['PAY_REQUEST_ID' => $transactions->t_gateway_transaction_id];
         $this->post($base_url, $post_data);
-        $this->response->assertStatus(400)
-            ->assertJson([
-                "status" => "fail",
-                "error" => "P0006",
-                "message" => "Undefined index: TRANSACTION_STATUS"
-            ]);
+        $this->response->assertStatus(400);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals('fail', array_get($response_array, 'status'));
+        $this->assertEquals('P0006', array_get($response_array, 'error'));
+        $this->assertEquals('Undefined index: TRANSACTION_STATUS', array_get(json_decode(array_get($response_array, 'message'), true), 'message'));
 
         $responses[] = $this->getFormGroupResponse();
         $responses[] = $this->getPaymentAction();

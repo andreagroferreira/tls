@@ -116,32 +116,32 @@ class FawryController extends BaseController
     public function return(Request $request) {
         $return_params = $request->post();
         if (empty($return_params)) {
-            return $this->sendError('P0009', 'no_data_received', 400);
+            return $this->sendError('P0009', ['message' => 'no_data_received'], 400);
         }
         try {
             $init_data = $this->paymentGateway->return($return_params);
         } catch (\Exception $e) {
-            return $this->sendError('P0006', $e->getMessage(), 400);
+            return $this->sendError('P0006', ['message' => $e->getMessage()], 400);
         }
         $status = $init_data['is_success'] ?? '';
         $message = $init_data['message'] ?? '';
         if ($status == 'ok') {
             return $this->sendResponse($init_data, 200);
         } else if ($message == 'empty_charge_response_fawry') {
-            return $this->sendError('P0015', 'empty charge response from fawry', 400);
+            return $this->sendError('P0015', ['message' => 'empty charge response from fawry', 'href' => array_get($init_data, 'href')], 400);
         } else if ($message == 'empty_merchant_ref_number') {
-            return $this->sendError('P0010', 'merchantRefNumber is empty', 400);
+            return $this->sendError('P0010', ['message' => 'merchantRefNumber is empty', 'href' => array_get($init_data, 'href')], 400);
         } else if ($message == 'transaction_id_not_exists') {
-            return $this->sendError('P0011', 'transaction id does not exists', 400);
+            return $this->sendError('P0011', ['message' => 'transaction id does not exists', 'href' => array_get($init_data, 'href')], 400);
         } else if ($message == 'payment_amount_incorrect') {
-            return $this->sendError('P0014', 'payment amount is incorrect', 400);
+            return $this->sendError('P0014', ['message' => 'payment amount is incorrect', 'href' => array_get($init_data, 'href')], 400);
         } else if ($message == 'transaction_has_been_paid_already') {
-            return $this->sendError('P0017', 'transaction has been paid already', 400);
+            return $this->sendError('P0017', ['message' => 'transaction has been paid already', 'href' => array_get($init_data, 'href')], 400);
         } else if ($message == 'unknown_error') {
-            return $this->sendError('P0006', 'unknown_error', 400);
+            return $this->sendError('P0006', ['message' => 'unknown_error', 'href' => array_get($init_data, 'href')], 400);
         } else {
             // other error from fawry
-            return $this->sendError('P0006', 'unknown_error: ' . $message, 400);
+            return $this->sendError('P0006', ['message' => 'unknown_error: ' . $message], 400);
         }
     }
 }

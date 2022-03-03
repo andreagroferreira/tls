@@ -23,6 +23,8 @@ parameters:
     required: true
   - name: DIRECTUS_DOMAIN
     required: true
+  - name: REDIS_HOST
+    required: true
   - name: AWS_ACCOUNT_S3
     required: true
   - name: KBANK_THBKK2BE_SANDBOX_API_KEY
@@ -115,9 +117,9 @@ parameters:
     required: true
   - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
     required: true
-  - name: PAYU_KEALL2BE_SANDBOX_APP_ID
+  - name: PAYU_KENYA_SANDBOX_APP_ID
     required: true
-  - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
+  - name: PAYU_KENYA_SANDBOX_PRIVATE_KEY
     required: true
   - name: PAYU_NGALL2BE_APP_ID
     required: true
@@ -130,6 +132,10 @@ parameters:
   - name: CLICTOPAY_SANDBOX_USER_NAME
     required: true
   - name: CLICTOPAY_SANDBOX_PASSWORD
+    required: true
+  - name: CLICTOPAY_USER_NAME
+    required: true
+  - name: CLICTOPAY_PASSWORD
     required: true
   - name: BANK_PAYMENT_SECRET
     required: true
@@ -150,6 +156,22 @@ parameters:
   - name: PAYFORT_REQUEST_PHRASE
     required: true
   - name: PAYFORT_RESPONSE_PHRASE
+    required: true
+  - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST
+    required: true
+  - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM
+    required: true
+  - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY
+    required: true
+  - name: ENVPAY_PAYSOFT_uaKBP2pl_HOST
+    required: true
+  - name: ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID
+    required: true
+  - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM
+    required: true
+  - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY
     required: true
   - name: APPLICATION_ENV
     value: prod
@@ -316,6 +338,8 @@ objects:
                   value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
+                - name: REDIS_HOST
+                  value: ${REDIS_HOST}
                 - name: VERIFYPEER
                   value: ${VERIFYPEER}
                 - name: POSTGRES_DEPLOY_DB_USERNAME
@@ -436,10 +460,10 @@ objects:
                   value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
                 - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
                   value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
-                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
-                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
-                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
-                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_KENYA_SANDBOX_APP_ID
+                  value: ${PAYU_KENYA_SANDBOX_APP_ID}
+                - name: PAYU_KENYA_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_KENYA_SANDBOX_PRIVATE_KEY}
                 - name: PAYU_NGALL2BE_APP_ID
                   value: ${PAYU_NGALL2BE_APP_ID}
                 - name: PAYU_NGALL2BE_PRIVATE_KEY
@@ -452,6 +476,10 @@ objects:
                   value: ${CLICTOPAY_SANDBOX_USER_NAME}
                 - name: CLICTOPAY_SANDBOX_PASSWORD
                   value: ${CLICTOPAY_SANDBOX_PASSWORD}
+                - name: CLICTOPAY_USER_NAME
+                  value: ${CLICTOPAY_USER_NAME}
+                - name: CLICTOPAY_PASSWORD
+                  value: ${CLICTOPAY_PASSWORD}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: SANDBOX_PAYFORT_MERCHANT_ID
@@ -470,6 +498,22 @@ objects:
                   value: ${PAYFORT_REQUEST_PHRASE}
                 - name: PAYFORT_RESPONSE_PHRASE
                   value: ${PAYFORT_RESPONSE_PHRASE}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_HOST
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_HOST}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -641,10 +685,10 @@ objects:
                   value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
                 - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
                   value: ${PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY}
-                - name: PAYU_KEALL2BE_SANDBOX_APP_ID
-                  value: ${PAYU_KEALL2BE_SANDBOX_APP_ID}
-                - name: PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY
-                  value: ${PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY}
+                - name: PAYU_KENYA_SANDBOX_APP_ID
+                  value: ${PAYU_KENYA_SANDBOX_APP_ID}
+                - name: PAYU_KENYA_SANDBOX_PRIVATE_KEY
+                  value: ${PAYU_KENYA_SANDBOX_PRIVATE_KEY}
                 - name: PAYU_NGALL2BE_APP_ID
                   value: ${PAYU_NGALL2BE_APP_ID}
                 - name: PAYU_NGALL2BE_PRIVATE_KEY
@@ -657,6 +701,10 @@ objects:
                   value: ${CLICTOPAY_SANDBOX_USER_NAME}
                 - name: CLICTOPAY_SANDBOX_PASSWORD
                   value: ${CLICTOPAY_SANDBOX_PASSWORD}
+                - name: CLICTOPAY_USER_NAME
+                  value: ${CLICTOPAY_USER_NAME}
+                - name: CLICTOPAY_PASSWORD
+                  value: ${CLICTOPAY_PASSWORD}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: PAYMENT_SERVICE_DOMAIN
@@ -677,12 +725,30 @@ objects:
                   value: ${PAYFORT_REQUEST_PHRASE}
                 - name: PAYFORT_RESPONSE_PHRASE
                   value: ${PAYFORT_RESPONSE_PHRASE}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM}
+                - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY
+                  value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_HOST
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_HOST}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM}
+                - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY
+                  value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT
                   value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
+                - name: REDIS_HOST
+                  value: ${REDIS_HOST}
                 - name: PGPASSFILE
                   value: /opt/app-root/pgpass/.pgpass
                 - name: APP_ENV

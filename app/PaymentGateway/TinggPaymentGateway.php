@@ -126,7 +126,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             'merchantTransactionID' => str_replace('-', '_', $transaction['t_transaction_id']),
             'requestAmount'         => $transaction['t_amount'],
             'currencyCode'          => $transaction['t_currency'],
-            'accountNumber'         => $tingg_config['accountNumber'],
+            'accountNumber'         => $fg_id,
             'serviceCode'           => $tingg_config['serviceCode'],
             'dueDate'               => Carbon::now()->addMinutes(30)->format('Y-m-d H:i:s'),
             'requestDescription'    => 'Tlscontact fees for group ' . $fg_id,

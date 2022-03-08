@@ -125,9 +125,9 @@ parameters:
     required: true
   - name: PAYU_NGALL2BE_PRIVATE_KEY
     required: true
-  - name: PAYU_KEALL2BE_APP_ID
+  - name: PAYU_KENYA_APP_ID
     required: true
-  - name: PAYU_KEALL2BE_PRIVATE_KEY
+  - name: PAYU_KENYA_PRIVATE_KEY
     required: true
   - name: CLICTOPAY_SANDBOX_USER_NAME
     required: true
@@ -468,10 +468,10 @@ objects:
                   value: ${PAYU_NGALL2BE_APP_ID}
                 - name: PAYU_NGALL2BE_PRIVATE_KEY
                   value: ${PAYU_NGALL2BE_PRIVATE_KEY}
-                - name: PAYU_KEALL2BE_APP_ID
-                  value: ${PAYU_KEALL2BE_APP_ID}
-                - name: PAYU_KEALL2BE_PRIVATE_KEY
-                  value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: PAYU_KENYA_APP_ID
+                  value: ${PAYU_KENYA_APP_ID}
+                - name: PAYU_KENYA_PRIVATE_KEY
+                  value: ${PAYU_KENYA_PRIVATE_KEY}
                 - name: CLICTOPAY_SANDBOX_USER_NAME
                   value: ${CLICTOPAY_SANDBOX_USER_NAME}
                 - name: CLICTOPAY_SANDBOX_PASSWORD
@@ -693,10 +693,10 @@ objects:
                   value: ${PAYU_NGALL2BE_APP_ID}
                 - name: PAYU_NGALL2BE_PRIVATE_KEY
                   value: ${PAYU_NGALL2BE_PRIVATE_KEY}
-                - name: PAYU_KEALL2BE_APP_ID
-                  value: ${PAYU_KEALL2BE_APP_ID}
-                - name: PAYU_KEALL2BE_PRIVATE_KEY
-                  value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: PAYU_KENYA_APP_ID
+                  value: ${PAYU_KENYA_APP_ID}
+                - name: PAYU_KENYA_PRIVATE_KEY
+                  value: ${PAYU_KENYA_PRIVATE_KEY}
                 - name: CLICTOPAY_SANDBOX_USER_NAME
                   value: ${CLICTOPAY_SANDBOX_USER_NAME}
                 - name: CLICTOPAY_SANDBOX_PASSWORD

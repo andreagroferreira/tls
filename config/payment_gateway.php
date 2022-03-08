@@ -540,8 +540,8 @@ return [
                     'sandbox_payments_os_env' => 'test'
                 ],
                 'prod' => [
-                    'app_id'      => env('PAYU_KENYA_APP_ID'),
-                    'private_key' => env('PAYU_KENYA_PRIVATE_KEY'),
+                    'app_id'      => env('PAYU_KEALL2BE_APP_ID'),
+                    'private_key' => env('PAYU_KEALL2BE_PRIVATE_KEY'),
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
@@ -724,8 +724,8 @@ return [
                     'sandbox_payments_os_env' => 'test'
                 ],
                 'prod' => [
-                    'app_id'      => env('PAYU_KENYA_APP_ID'),
-                    'private_key' => env('PAYU_KENYA_PRIVATE_KEY'),
+                    'app_id'      => env('PAYU_KEALL2BE_APP_ID'),
+                    'private_key' => env('PAYU_KEALL2BE_PRIVATE_KEY'),
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]

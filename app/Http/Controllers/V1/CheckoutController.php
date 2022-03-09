@@ -79,8 +79,8 @@ class CheckoutController extends BaseController
                     'transaction_id' => $transaction['t_transaction_id'],
                 ]);
             }
-            $expiration_time = Carbon::parse($transaction['t_expiration'], $this->transactionService->getDbTimeZone())->getTimestamp();
-            $now_time = $this->transactionService->getDbNowTime();
+            $expiration_time = strtotime(Carbon::parse($transaction['t_expiration'], $this->transactionService->getDbTimeZone())->toDateTimeString());
+            $now_time = strtotime($this->transactionService->getDbNowTime()->toDateTimeString());
             if ($now_time > $expiration_time) {
                 // transaction expired
                 return $this->sendError('P0004', [

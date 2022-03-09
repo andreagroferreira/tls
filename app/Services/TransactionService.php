@@ -219,7 +219,7 @@ class TransactionService
     }
 
     public function getDbNowTime() {
-        return Carbon::parse($this->dbConnectionService->getDbNowTime())->getTimestamp();
+        return Carbon::parse($this->dbConnectionService->getDbNowTime());
     }
 
     public function getDbTimeZone() {

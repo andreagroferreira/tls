@@ -731,6 +731,16 @@ return [
                 ]
             ]
         ],
+        'tnTUN2de' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'lyTIP2de' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
     ],
     'pl' => [
         'uaKBP2pl' => [

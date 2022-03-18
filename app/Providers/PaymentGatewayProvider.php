@@ -11,6 +11,8 @@ use App\Http\Controllers\V1\PayLaterController;
 use App\Http\Controllers\V1\PaysoftController;
 use App\Http\Controllers\V1\PayuController;
 use App\Http\Controllers\V1\TinggController;
+use App\Http\Controllers\V1\AlipayController;
+use App\PaymentGateway\AlipayPaymentGateway;
 use App\PaymentGateway\ClictopayPaymentGateway;
 use App\PaymentGateway\CmiPaymentGateway;
 use App\PaymentGateway\KBankPaymentGateway;
@@ -110,6 +112,12 @@ class PaymentGatewayProvider extends ServiceProvider
             ->needs(PaymentGatewayInterface::class)
             ->give(function ($app) {
                 return $app->make(PaysoftPaymentGateway::class);
+            });
+        //支付宝支付
+        $this->app->when(AlipayController::class)
+            ->needs(PaymentGatewayInterface::class)
+            ->give(function ($app) {
+                return $app->make(AlipayPaymentGateway::class);
             });
     }
 

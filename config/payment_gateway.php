@@ -650,6 +650,31 @@ return [
         ],
     ],
     'de' => [
+        'cnBJS2de' => [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_DEcnBJS2de_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_DEcnBJS2de_PRIVATE_KEY'),
+                    'public_key' => env('ALI_DEcnBJS2de_PUBLIC_KEY'),
+                ]
+            ]
+        ],
         'tzDAR2de' => [
             'tingg' => [
                 'label'   => 'Tingg pay',

@@ -27,6 +27,26 @@ parameters:
     required: true
   - name: AWS_ACCOUNT_S3
     required: true
+  - name: ALIPAY_PRODUCT_CODE
+    required: true
+  - name: ALIPAY_METHOD
+    required: true
+  - name: ALIPAY_SANDBOX_APP_ID
+    required: true
+  - name: ALIPAY_SANDBOX_GATEWAY
+    required: true
+  - name: ALIPAY_SANDBOX_PRIVATE_KEY
+    required: true
+  - name: ALIPAY_SANDBOX_PUBLIC_KEY
+    required: true
+  - name: ALI_DEcnBJS2de_APP_ID
+    required: true
+  - name: ALIPAY_GATEWAY
+    required: true
+  - name: ALI_DEcnBJS2de_PRIVATE_KEY
+    required: true
+  - name: ALI_DEcnBJS2de_PUBLIC_KEY
+    required: true
   - name: KBANK_THBKK2BE_SANDBOX_API_KEY
     required: true
   - name: KBANK_THBKK2BE_SANDBOX_SECRET
@@ -370,6 +390,26 @@ objects:
                   value: ${KEYCLOAK_REALM}
                 - name: KEYCLOAK_CLIENT_ID
                   value: ${KEYCLOAK_CLIENT_ID}
+                - name: ALIPAY_PRODUCT_CODE
+                  value: ${ALIPAY_PRODUCT_CODE}
+                - name: ALIPAY_METHOD
+                  value: ${ALIPAY_METHOD}
+                - name: ALIPAY_SANDBOX_APP_ID
+                  value: ${ALIPAY_SANDBOX_APP_ID}
+                - name: ALIPAY_SANDBOX_GATEWAY
+                  value: ${ALIPAY_SANDBOX_GATEWAY}
+                - name: ALIPAY_SANDBOX_PRIVATE_KEY
+                  value: ${ALIPAY_SANDBOX_PRIVATE_KEY}
+                - name: ALIPAY_SANDBOX_PUBLIC_KEY
+                  value: ${ALIPAY_SANDBOX_PUBLIC_KEY}
+                - name: ALI_DEcnBJS2de_APP_ID
+                  value: ${ALI_DEcnBJS2de_APP_ID}
+                - name: ALIPAY_GATEWAY
+                  value: ${ALIPAY_GATEWAY}
+                - name: ALI_DEcnBJS2de_PRIVATE_KEY
+                  value: ${ALI_DEcnBJS2de_PRIVATE_KEY}
+                - name: ALI_DEcnBJS2de_PUBLIC_KEY
+                  value: ${ALI_DEcnBJS2de_PUBLIC_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_API_KEY
                   value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_SECRET
@@ -595,6 +635,26 @@ objects:
                       key: password
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: ALIPAY_PRODUCT_CODE
+                  value: ${ALIPAY_PRODUCT_CODE}
+                - name: ALIPAY_METHOD
+                  value: ${ALIPAY_METHOD}
+                - name: ALIPAY_SANDBOX_APP_ID
+                  value: ${ALIPAY_SANDBOX_APP_ID}
+                - name: ALIPAY_SANDBOX_GATEWAY
+                  value: ${ALIPAY_SANDBOX_GATEWAY}
+                - name: ALIPAY_SANDBOX_PRIVATE_KEY
+                  value: ${ALIPAY_SANDBOX_PRIVATE_KEY}
+                - name: ALIPAY_SANDBOX_PUBLIC_KEY
+                  value: ${ALIPAY_SANDBOX_PUBLIC_KEY}
+                - name: ALI_DEcnBJS2de_APP_ID
+                  value: ${ALI_DEcnBJS2de_APP_ID}
+                - name: ALIPAY_GATEWAY
+                  value: ${ALIPAY_GATEWAY}
+                - name: ALI_DEcnBJS2de_PRIVATE_KEY
+                  value: ${ALI_DEcnBJS2de_PRIVATE_KEY}
+                - name: ALI_DEcnBJS2de_PUBLIC_KEY
+                  value: ${ALI_DEcnBJS2de_PUBLIC_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_API_KEY
                   value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_SECRET

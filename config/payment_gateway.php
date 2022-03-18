@@ -707,7 +707,7 @@ return [
             ],
         ],
         'keNBO2de' => [
-            'payu' => [
+            /*'payu' => [
                 'label' => 'payu pay',
                 'common' => [
                     'env' => 'live',
@@ -729,6 +729,9 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
+            ],*/
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'tnTUN2de' => [

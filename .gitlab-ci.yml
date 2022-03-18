@@ -52,6 +52,7 @@ test-unit:
   before_script:
     - apk add g++ make zlib-dev autoconf file gcc libc-dev make g++ pkgconf re2c;
     - pecl install xdebug && docker-php-ext-enable xdebug;
+    - docker-php-ext-install bcmath;
     - apk add postgresql postgresql-dev;
     - docker-php-ext-install pdo pgsql pdo_pgsql;
     - addgroup -S postgres && adduser -S postgres -G postgres;

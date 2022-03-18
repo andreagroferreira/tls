@@ -28,7 +28,7 @@ parameters:
   - name: AWS_ACCOUNT_S3
     required: true
   - name: ALIPAY_PRODUCT_CODE
-      required: true
+    required: true
   - name: ALIPAY_METHOD
     required: true
   - name: ALIPAY_SANDBOX_APP_ID

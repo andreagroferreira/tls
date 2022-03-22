@@ -260,13 +260,13 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         Log::info('alipay start notify:'.json_encode($notify_params));
         $app_id = $notify_params['app_id'];
         $sign = $notify_params['sign'];
-        if (empty($order_id)) {
-            $msg = 'empty_out_trade_no';
-            return $msg;
-        }
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         if($transaction){
             $this->transactionLogsService->create(['tl_xref_transaction_id' => $transaction['t_transaction_id'], 'tl_content' =>json_encode($notify_params)]);
+        }
+        if (empty($order_id)) {
+            $msg = 'empty_out_trade_no';
+            return $msg;
         }
         if (empty($transaction)) {
             $msg = 'transaction_id_not_exists';
@@ -347,7 +347,7 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
                 Log::info('alipay notify signature verified failure！');
             }
         }
-
+        Log::info("alipay notify done");
         if ($expected_sign) {
             //$transaction_error = true;
             Log::warning("alipay notify: digital signature check failed : ". print_r($notify_params, 'error'));
@@ -360,7 +360,6 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         } else {
             return "success";
         }
-        Log::info("alipay notify done");
     }
 
     private function getPaySecret($pay_config, $app_env) {

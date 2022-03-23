@@ -98,4 +98,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('alipay/notify', 'AlipayController@notify');
     $router->post('alipay/return', 'AlipayController@return');
 
+    $router->post('switch/redirto', 'SwitchController@redirto');
+    $router->post('switch/return', 'SwitchController@return');
 });

@@ -27,6 +27,18 @@ parameters:
     required: true
   - name: AWS_ACCOUNT_S3
     required: true
+  - name: ENVPAY_SWITCH_COMMON_SANDBOX_HOST
+    required: true
+  - name: ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID
+    required: true
+  - name: ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN
+    required: true
+  - name: ENVPAY_SWITCH_iqAll2be_HOST
+    required: true
+  - name: ENVPAY_SWITCH_iqAll2be_ENTITY_ID
+    required: true
+  - name: ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN
+    required: true
   - name: ALIPAY_PRODUCT_CODE
     required: true
   - name: ALIPAY_METHOD
@@ -297,6 +309,18 @@ objects:
                       key: password
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN}
+                - name: ENVPAY_SWITCH_iqAll2be_HOST
+                  value: ${ENVPAY_SWITCH_iqAll2be_HOST}
+                - name: ENVPAY_SWITCH_iqAll2be_ENTITY_ID
+                  value: ${ENVPAY_SWITCH_iqAll2be_ENTITY_ID}
+                - name: ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN
+                  value: ${ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN}
                 - name: ALIPAY_PRODUCT_CODE
                   value: ${ALIPAY_PRODUCT_CODE}
                 - name: ALIPAY_METHOD

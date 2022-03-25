@@ -68,7 +68,6 @@ class SwitchController extends BaseController
      *      ),
      * )
      */
-    // todo
     public function notify(Request $request)
     {
         $params = $request->input();
@@ -104,7 +103,6 @@ class SwitchController extends BaseController
      *      ),
      * )
      */
-    // todo
     public function return(Request $request)
     {
         $return_params = $request->post();

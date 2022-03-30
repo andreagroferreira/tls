@@ -228,8 +228,6 @@ class AvsRecommendationControllerTest extends TestCase
         $this->response->assertJsonFragment([
             'all_avs' => [
                 [
-                    "_score" => 1006,
-                    "avs_conflict" => false,
                     "service_name" => null,
                     "sku" => "PREMIUM-LOUNGE",
                     "vat" => "0.00",
@@ -240,7 +238,11 @@ class AvsRecommendationControllerTest extends TestCase
                     "avs_sale_script" => null,
                     "sku_sale_script" => null,
                     "recommendation_priority" => 6,
-                    'is_display' => false
+                    'is_display' => false,
+                    "avs_conflict" => false,
+                    "not_recommended" => false,
+                    "not_recommended_display" => false,
+                    "_score" => 1006
                 ]
             ]
         ]);

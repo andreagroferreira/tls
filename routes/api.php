@@ -92,4 +92,11 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('paysoft/redirto', 'PaysoftController@redirto');
     $router->post('paysoft/notify', 'PaysoftController@notify');
     $router->post('paysoft/return', 'PaysoftController@return');
+
+    $router->post('alipay/redirto', 'AlipayController@redirto');
+    $router->post('alipay/notify', 'AlipayController@notify');
+    $router->post('alipay/return', 'AlipayController@return');
+
+    $router->post('switch/redirto', 'SwitchController@redirto');
+    $router->post('switch/return', 'SwitchController@return');
 });

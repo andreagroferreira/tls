@@ -27,6 +27,38 @@ parameters:
     required: true
   - name: AWS_ACCOUNT_S3
     required: true
+  - name: ENVPAY_SWITCH_COMMON_SANDBOX_HOST
+    required: true
+  - name: ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID
+    required: true
+  - name: ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN
+    required: true
+  - name: ENVPAY_SWITCH_iqAll2be_HOST
+    required: true
+  - name: ENVPAY_SWITCH_iqAll2be_ENTITY_ID
+    required: true
+  - name: ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN
+    required: true
+  - name: ALIPAY_PRODUCT_CODE
+    required: true
+  - name: ALIPAY_METHOD
+    required: true
+  - name: ALIPAY_SANDBOX_APP_ID
+    required: true
+  - name: ALIPAY_SANDBOX_GATEWAY
+    required: true
+  - name: ALIPAY_SANDBOX_PRIVATE_KEY
+    required: true
+  - name: ALIPAY_SANDBOX_PUBLIC_KEY
+    required: true
+  - name: ALI_DEcnBJS2de_APP_ID
+    required: true
+  - name: ALIPAY_GATEWAY
+    required: true
+  - name: ALI_DEcnBJS2de_PRIVATE_KEY
+    required: true
+  - name: ALI_DEcnBJS2de_PUBLIC_KEY
+    required: true
   - name: KBANK_THBKK2BE_SANDBOX_API_KEY
     required: true
   - name: KBANK_THBKK2BE_SANDBOX_SECRET
@@ -128,6 +160,10 @@ parameters:
   - name: PAYU_KEALL2BE_APP_ID
     required: true
   - name: PAYU_KEALL2BE_PRIVATE_KEY
+    required: true
+  - name: PAYU_KEALL2DE_APP_ID
+    required: true
+  - name: PAYU_KEALL2DE_PRIVATE_KEY
     required: true
   - name: CLICTOPAY_SANDBOX_USER_NAME
     required: true
@@ -370,6 +406,38 @@ objects:
                   value: ${KEYCLOAK_REALM}
                 - name: KEYCLOAK_CLIENT_ID
                   value: ${KEYCLOAK_CLIENT_ID}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN}
+                - name: ENVPAY_SWITCH_iqAll2be_HOST
+                  value: ${ENVPAY_SWITCH_iqAll2be_HOST}
+                - name: ENVPAY_SWITCH_iqAll2be_ENTITY_ID
+                  value: ${ENVPAY_SWITCH_iqAll2be_ENTITY_ID}
+                - name: ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN
+                  value: ${ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN}
+                - name: ALIPAY_PRODUCT_CODE
+                  value: ${ALIPAY_PRODUCT_CODE}
+                - name: ALIPAY_METHOD
+                  value: ${ALIPAY_METHOD}
+                - name: ALIPAY_SANDBOX_APP_ID
+                  value: ${ALIPAY_SANDBOX_APP_ID}
+                - name: ALIPAY_SANDBOX_GATEWAY
+                  value: ${ALIPAY_SANDBOX_GATEWAY}
+                - name: ALIPAY_SANDBOX_PRIVATE_KEY
+                  value: ${ALIPAY_SANDBOX_PRIVATE_KEY}
+                - name: ALIPAY_SANDBOX_PUBLIC_KEY
+                  value: ${ALIPAY_SANDBOX_PUBLIC_KEY}
+                - name: ALI_DEcnBJS2de_APP_ID
+                  value: ${ALI_DEcnBJS2de_APP_ID}
+                - name: ALIPAY_GATEWAY
+                  value: ${ALIPAY_GATEWAY}
+                - name: ALI_DEcnBJS2de_PRIVATE_KEY
+                  value: ${ALI_DEcnBJS2de_PRIVATE_KEY}
+                - name: ALI_DEcnBJS2de_PUBLIC_KEY
+                  value: ${ALI_DEcnBJS2de_PUBLIC_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_API_KEY
                   value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_SECRET
@@ -472,6 +540,10 @@ objects:
                   value: ${PAYU_KEALL2BE_APP_ID}
                 - name: PAYU_KEALL2BE_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: PAYU_KEALL2DE_APP_ID
+                  value: ${PAYU_KEALL2DE_APP_ID}
+                - name: PAYU_KEALL2DE_PRIVATE_KEY
+                  value: ${PAYU_KEALL2DE_PRIVATE_KEY}
                 - name: CLICTOPAY_SANDBOX_USER_NAME
                   value: ${CLICTOPAY_SANDBOX_USER_NAME}
                 - name: CLICTOPAY_SANDBOX_PASSWORD
@@ -595,6 +667,38 @@ objects:
                       key: password
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID}
+                - name: ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN
+                  value: ${ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN}
+                - name: ENVPAY_SWITCH_iqAll2be_HOST
+                  value: ${ENVPAY_SWITCH_iqAll2be_HOST}
+                - name: ENVPAY_SWITCH_iqAll2be_ENTITY_ID
+                  value: ${ENVPAY_SWITCH_iqAll2be_ENTITY_ID}
+                - name: ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN
+                  value: ${ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN}
+                - name: ALIPAY_PRODUCT_CODE
+                  value: ${ALIPAY_PRODUCT_CODE}
+                - name: ALIPAY_METHOD
+                  value: ${ALIPAY_METHOD}
+                - name: ALIPAY_SANDBOX_APP_ID
+                  value: ${ALIPAY_SANDBOX_APP_ID}
+                - name: ALIPAY_SANDBOX_GATEWAY
+                  value: ${ALIPAY_SANDBOX_GATEWAY}
+                - name: ALIPAY_SANDBOX_PRIVATE_KEY
+                  value: ${ALIPAY_SANDBOX_PRIVATE_KEY}
+                - name: ALIPAY_SANDBOX_PUBLIC_KEY
+                  value: ${ALIPAY_SANDBOX_PUBLIC_KEY}
+                - name: ALI_DEcnBJS2de_APP_ID
+                  value: ${ALI_DEcnBJS2de_APP_ID}
+                - name: ALIPAY_GATEWAY
+                  value: ${ALIPAY_GATEWAY}
+                - name: ALI_DEcnBJS2de_PRIVATE_KEY
+                  value: ${ALI_DEcnBJS2de_PRIVATE_KEY}
+                - name: ALI_DEcnBJS2de_PUBLIC_KEY
+                  value: ${ALI_DEcnBJS2de_PUBLIC_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_API_KEY
                   value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_SECRET
@@ -697,6 +801,10 @@ objects:
                   value: ${PAYU_KEALL2BE_APP_ID}
                 - name: PAYU_KEALL2BE_PRIVATE_KEY
                   value: ${PAYU_KEALL2BE_PRIVATE_KEY}
+                - name: PAYU_KEALL2DE_APP_ID
+                  value: ${PAYU_KEALL2DE_APP_ID}
+                - name: PAYU_KEALL2DE_PRIVATE_KEY
+                  value: ${PAYU_KEALL2DE_PRIVATE_KEY}
                 - name: CLICTOPAY_SANDBOX_USER_NAME
                   value: ${CLICTOPAY_SANDBOX_USER_NAME}
                 - name: CLICTOPAY_SANDBOX_PASSWORD

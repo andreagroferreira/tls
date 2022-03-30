@@ -582,11 +582,47 @@ return [
 //            ]
         ],
         'iqBGW2be' => [
+            'switch' => [
+                'label' => 'Switch pay',
+                'active' => true,
+                'common' => [
+                    'env' => 'live',
+                    'return_url' => '/switch/return',
+                ],
+                'sandbox' => [
+                    'host' => env('ENVPAY_SWITCH_COMMON_SANDBOX_HOST'),
+                    'entity_id' => env('ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID'),
+                    'access_token' => env('ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN')
+                ],
+                'prod' => [
+                    'host' => env('ENVPAY_SWITCH_iqAll2be_HOST'),
+                    'entity_id' => env('ENVPAY_SWITCH_iqAll2be_ENTITY_ID'),
+                    'access_token' => env('ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN')
+                ]
+            ],
             'pay_later' => [
                 'label' => "Pay later",
             ]
         ],
         'iqEBL2be' => [
+            'switch' => [
+                'label' => 'Switch pay',
+                'active' => true,
+                'common' => [
+                    'env' => 'live',
+                    'return_url' => '/switch/return',
+                ],
+                'sandbox' => [
+                    'host' => env('ENVPAY_SWITCH_COMMON_SANDBOX_HOST'),
+                    'entity_id' => env('ENVPAY_SWITCH_COMMON_SANDBOX_ENTITY_ID'),
+                    'access_token' => env('ENVPAY_SWITCH_COMMON_SANDBOX_ACCESS_TOKEN')
+                ],
+                'prod' => [
+                    'host' => env('ENVPAY_SWITCH_iqAll2be_HOST'),
+                    'entity_id' => env('ENVPAY_SWITCH_iqAll2be_ENTITY_ID'),
+                    'access_token' => env('ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN')
+                ]
+            ],
             'pay_later' => [
                 'label' => "Pay later",
             ]
@@ -650,6 +686,31 @@ return [
         ],
     ],
     'de' => [
+        'cnBJS2de' => [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_DEcnBJS2de_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_DEcnBJS2de_PRIVATE_KEY'),
+                    'public_key' => env('ALI_DEcnBJS2de_PUBLIC_KEY'),
+                ]
+            ]
+        ],
         'tzDAR2de' => [
             'tingg' => [
                 'label'   => 'Tingg pay',
@@ -707,7 +768,7 @@ return [
             ],
         ],
         'keNBO2de' => [
-            /*'payu' => [
+            'payu' => [
                 'label' => 'payu pay',
                 'common' => [
                     'env' => 'live',
@@ -724,12 +785,12 @@ return [
                     'sandbox_payments_os_env' => 'test'
                 ],
                 'prod' => [
-                    'app_id'      => env('PAYU_KEALL2BE_APP_ID'),
-                    'private_key' => env('PAYU_KEALL2BE_PRIVATE_KEY'),
+                    'app_id'      => env('PAYU_KEALL2DE_APP_ID'),
+                    'private_key' => env('PAYU_KEALL2DE_PRIVATE_KEY'),
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
-            ],*/
+            ],
             'pay_later' => [
                 'label' => "Pay later",
             ]
@@ -742,6 +803,81 @@ return [
         'lyTIP2de' => [
             'pay_later' => [
                 'label' => "Pay later",
+            ]
+        ],
+        'maRBA2de' => [
+            'cmi' => [
+                'label' => 'CMI pay',
+                'active' => true,
+                'common' => [
+                    'storetype' => '3d_pay_hosting',
+                    'tranType' => 'PreAuth',
+                    'okUrl' => '/cmi/return',
+                    'failUrl' => 'cmi/return',
+                    'hashAlgorithm' => 'ver3',
+                    'shopurl' => '/checkout/',
+                    'callbackUrl' => '/cmi/notify',
+                ],
+                'sandbox' => [
+                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY'),
+                ],
+                'prod' => [
+                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => '',
+                    'storeKey' => ''
+                ]
+            ]
+        ],
+        'maTNG2de' => [
+            'cmi' => [
+                'label' => 'CMI pay',
+                'active' => true,
+                'common' => [
+                    'storetype' => '3d_pay_hosting',
+                    'tranType' => 'PreAuth',
+                    'okUrl' => '/cmi/return',
+                    'failUrl' => 'cmi/return',
+                    'hashAlgorithm' => 'ver3',
+                    'shopurl' => '/checkout/',
+                    'callbackUrl' => '/cmi/notify',
+                ],
+                'sandbox' => [
+                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY'),
+                ],
+                'prod' => [
+                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => '',
+                    'storeKey' => ''
+                ]
+            ]
+        ],
+        'maRAK2de' => [
+            'cmi' => [
+                'label' => 'CMI pay',
+                'active' => true,
+                'common' => [
+                    'storetype' => '3d_pay_hosting',
+                    'tranType' => 'PreAuth',
+                    'okUrl' => '/cmi/return',
+                    'failUrl' => 'cmi/return',
+                    'hashAlgorithm' => 'ver3',
+                    'shopurl' => '/checkout/',
+                    'callbackUrl' => '/cmi/notify',
+                ],
+                'sandbox' => [
+                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY'),
+                ],
+                'prod' => [
+                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => '',
+                    'storeKey' => ''
+                ]
             ]
         ],
     ],
@@ -768,6 +904,164 @@ return [
                 ]
             ],
         ],
+    ],
+    'hmpo_uk' => [
+        'itAll2uk' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
+                ]
+            ]
+        ],
+        'gbAll2uk' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
+                ]
+            ]
+        ],
+        'byMSQ2uk' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
+                ]
+            ]
+        ],
+        'ruEKA2uk' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
+                ]
+            ]
+        ],
+        'ruLED2uk' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
+                ]
+            ]
+        ],
+        'kzALA2uk' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
+                ]
+            ]
+        ]
     ]
 
 ];

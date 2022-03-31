@@ -880,6 +880,96 @@ return [
                 ]
             ]
         ],
+        'egCAI2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'ENVPAY_FAW_egAll2be_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egAll2be_SECURITY_KEY',
+                ]
+            ]
+        ],
+        'egALY2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'ENVPAY_FAW_egAll2be_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egAll2be_SECURITY_KEY',
+                ]
+            ]
+        ],
+        'egHRG2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'ENVPAY_FAW_egAll2be_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egAll2be_SECURITY_KEY',
+                ]
+            ]
+        ]
     ],
     'pl' => [
         'uaKBP2pl' => [

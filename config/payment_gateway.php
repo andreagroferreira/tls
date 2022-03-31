@@ -534,8 +534,8 @@ return [
                     'return_url' => '/payu/return'
                 ],
                 'sandbox' => [
-                    'sandbox_app_id'      => env('PAYU_KENYA_SANDBOX_APP_ID'),
-                    'sandbox_private_key' => env('PAYU_KENYA_SANDBOX_PRIVATE_KEY'),
+                    'sandbox_app_id'      => env('PAYU_KEALL2BE_SANDBOX_APP_ID'),
+                    'sandbox_private_key' => env('PAYU_KEALL2BE_SANDBOX_PRIVATE_KEY'),
                     'sandbox_api_version' => '1.3.0',
                     'sandbox_payments_os_env' => 'test'
                 ],

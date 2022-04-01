@@ -209,6 +209,10 @@ parameters:
     required: true
   - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY
     required: true
+  - name: ENVPAY_PAY_BEzaALL2be_ACCOUNT
+    required: true
+  - name: ENVPAY_PAY_CHphMNL2ch_ACCOUNT
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -586,6 +590,10 @@ objects:
                   value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM}
                 - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY
                   value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY}
+                - name: ENVPAY_PAY_BEzaALL2be_ACCOUNT
+                  value: ${ENVPAY_PAY_BEzaALL2be_ACCOUNT}
+                - name: ENVPAY_PAY_CHphMNL2ch_ACCOUNT
+                  value: ${ENVPAY_PAY_CHphMNL2ch_ACCOUNT}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -849,6 +857,10 @@ objects:
                   value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_ALGORITHM}
                 - name: ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY
                   value: ${ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY}
+                - name: ENVPAY_PAY_BEzaALL2be_ACCOUNT
+                  value: ${ENVPAY_PAY_BEzaALL2be_ACCOUNT}
+                - name: ENVPAY_PAY_CHphMNL2ch_ACCOUNT
+                  value: ${ENVPAY_PAY_CHphMNL2ch_ACCOUNT}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT

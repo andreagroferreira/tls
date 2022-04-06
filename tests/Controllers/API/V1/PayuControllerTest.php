@@ -2,6 +2,8 @@
 
 namespace Tests\Controllers\API\V1;
 
+use App\Models\Transactions;
+use App\Services\TransactionService;
 use Illuminate\Support\Carbon;
 
 class PayuControllerTest extends TestCase
@@ -73,12 +75,39 @@ class PayuControllerTest extends TestCase
         $responses[] = $this->getFormGroupResponse();
         $responses[] = $this->getPaymentAction();
         $this->createSimpleMockResponse($responses);
+
         $transactions = $this->getTransactions(['t_id' => $this->transactions->t_id]);
+        $this->mockServices((array) $transactions);
         $post_data = [
             'payment_id' => $this->payment_id,
             'charge_id' => $transactions->t_gateway_transaction_id
         ];
         $this->post($base_url, $post_data);
         $this->response->assertStatus(200);
+    }
+
+    private function mockServices(array $transactions): void
+    {
+        $transactions_array = $transactions;
+        //Add missing values to the transaction
+        $transactions_array['t_amount'] = 100;
+        $transactions_array['t_items'] = [];
+
+        //mock transaction service fetchTransaction to return transaction from testing env
+        $transaction_service_mock = \Mockery::mock('App\Services\TransactionService');
+        $transaction_service_mock->shouldReceive('fetchTransaction')->atLeast(1)->andReturn($transactions_array);
+        $transaction_service_mock->shouldReceive('updateById')->atLeast(1);
+        $this->app->instance('App\Services\TransactionService', $transaction_service_mock);
+
+        //mock call to initiate payment
+        $mocked_result = [
+            'result' => [
+                'status' => 'Succeed',
+            ],
+            'amount' => 10000
+        ];
+        $payment_initiate_service_mock = \Mockery::mock('App\Services\PaymentInitiateService');
+        $payment_initiate_service_mock->shouldReceive('paymentInitiate')->atLeast(1)->andReturn(json_encode($mocked_result));
+        $this->app->instance('App\Services\PaymentInitiateService', $payment_initiate_service_mock);
     }
 }

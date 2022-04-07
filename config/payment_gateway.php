@@ -582,7 +582,7 @@ return [
 //            ]
         ],
         'iqBGW2be' => [
-            'switch' => [
+            /*'switch' => [
                 'label' => 'Switch pay',
                 'active' => true,
                 'common' => [
@@ -599,13 +599,13 @@ return [
                     'entity_id' => env('ENVPAY_SWITCH_iqAll2be_ENTITY_ID'),
                     'access_token' => env('ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN')
                 ]
-            ],
+            ],*/
             'pay_later' => [
                 'label' => "Pay later",
             ]
         ],
         'iqEBL2be' => [
-            'switch' => [
+            /*'switch' => [
                 'label' => 'Switch pay',
                 'active' => true,
                 'common' => [
@@ -622,7 +622,7 @@ return [
                     'entity_id' => env('ENVPAY_SWITCH_iqAll2be_ENTITY_ID'),
                     'access_token' => env('ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN')
                 ]
-            ],
+            ],*/
             'pay_later' => [
                 'label' => "Pay later",
             ]

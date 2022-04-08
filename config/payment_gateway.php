@@ -899,14 +899,14 @@ return [
                     'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
                     'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
                     'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
                     'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
                     'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
                     'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
                     'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
-                ],
+                ],*/
             ],
         ],
         'zaCPT2de' => [
@@ -928,14 +928,14 @@ return [
                     'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
                     'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
                     'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
                     'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
                     'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
                     'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
                     'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
-                ],
+                ],*/
             ],
         ],
         'zaPLZ2de' => [
@@ -957,14 +957,14 @@ return [
                     'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
                     'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
                     'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
                     'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
                     'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
                     'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
                     'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
-                ],
+                ],*/
             ],
         ],
         'zaZAY2de' => [
@@ -986,14 +986,14 @@ return [
                     'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
                     'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
                     'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
                     'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
                     'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
                     'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
                     'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
-                ],
+                ],*/
             ],
         ],
         'zaDUR2de' => [
@@ -1015,14 +1015,14 @@ return [
                     'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
                     'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
                     'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
                     'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
                     'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
                     'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
                     'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
-                ],
+                ],*/
             ],
         ],
         'gbLON2de' => [
@@ -1043,12 +1043,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],
+                ],*/
             ],
         ],
         'gbEDI2de' => [
@@ -1069,12 +1069,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],
+                ],*/
             ],
         ],
         'gbMNC2de' => [
@@ -1095,12 +1095,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],
+                ],*/
             ],
         ],
     ],

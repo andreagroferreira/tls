@@ -702,10 +702,10 @@ return [
                     'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
                     'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_PAY_BEzaALL2be_ACCOUNT'),
                     'host' => 'https://www.paypal.com/cgi-bin/webscr',
-                ],
+                ],*/
             ],
         ],
         'zaCPT2ch' => [
@@ -724,10 +724,10 @@ return [
                     'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
                     'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_PAY_BEzaALL2be_ACCOUNT'),
                     'host' => 'https://www.paypal.com/cgi-bin/webscr',
-                ],
+                ],*/
             ],
         ],
         'zaDUR2ch' => [
@@ -746,10 +746,10 @@ return [
                     'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
                     'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_PAY_BEzaALL2be_ACCOUNT'),
                     'host' => 'https://www.paypal.com/cgi-bin/webscr',
-                ],
+                ],*/
             ],
         ],
         'ruMOW2ch' => [
@@ -768,10 +768,10 @@ return [
                     'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
                     'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_PAY_BEruMOW2be_ACCOUNT'),
                     'host' => 'https://www.paypal.com/cgi-bin/webscr',
-                ],
+                ],*/
             ],
         ],
         'uaKBP2ch' => [
@@ -790,10 +790,10 @@ return [
                     'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
                     'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_PAY_BEzaALL2be_ACCOUNT'),
                     'host' => 'https://www.paypal.com/cgi-bin/webscr',
-                ],
+                ],*/
             ],
         ],
         'phMNL2ch' => [
@@ -812,10 +812,10 @@ return [
                     'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
                     'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_PAY_CHphMNL2ch_ACCOUNT'),
                     'host' => 'https://www.paypal.com/cgi-bin/webscr',
-                ],
+                ],*/
             ],
         ],
         'gbMNC2ch' => [
@@ -836,12 +836,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_GLO_BEgbALL2be_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],
+                ],*/
             ],
         ],
         'gbEDI2ch' => [
@@ -862,12 +862,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_GLO_BEgbALL2be_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],
+                ],*/
             ],
         ],
         'gbLON2ch' => [
@@ -888,12 +888,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'account' => env('ENVPAY_GLO_BEgbALL2be_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],
+                ],*/
             ],
         ],
     ],

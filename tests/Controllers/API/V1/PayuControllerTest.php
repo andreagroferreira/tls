@@ -2,8 +2,6 @@
 
 namespace Tests\Controllers\API\V1;
 
-use Illuminate\Support\Carbon;
-
 class PayuControllerTest extends TestCase
 {
     protected $amount     = '1.00';
@@ -73,12 +71,27 @@ class PayuControllerTest extends TestCase
         $responses[] = $this->getFormGroupResponse();
         $responses[] = $this->getPaymentAction();
         $this->createSimpleMockResponse($responses);
+
         $transactions = $this->getTransactions(['t_id' => $this->transactions->t_id]);
+        $this->mockPaymentInitiateService();
         $post_data = [
             'payment_id' => $this->payment_id,
             'charge_id' => $transactions->t_gateway_transaction_id
         ];
         $this->post($base_url, $post_data);
         $this->response->assertStatus(200);
+    }
+
+    private function mockPaymentInitiateService(): void
+    {
+        $mocked_result = [
+            'result' => [
+                'status' => 'Succeed',
+            ],
+            'amount' => 100
+        ];
+        $payment_initiate_service_mock = \Mockery::mock('App\Services\PaymentInitiateService');
+        $payment_initiate_service_mock->shouldReceive('paymentInitiate')->atLeast(1)->andReturn(json_encode($mocked_result));
+        $this->app->instance('App\Services\PaymentInitiateService', $payment_initiate_service_mock);
     }
 }

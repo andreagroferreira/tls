@@ -338,14 +338,14 @@ return [
                     'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
                     'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET")
                 ],
-                'prod'    => [
+                /*'prod'    => [
                     'host'          => 'https://online.tingg.africa/v2/express/',
                     'accountNumber' => env("ENVPAY_TINGG_BEetADD2be_ACCOUNT_NUMBER"),
                     'serviceCode'   => env("ENVPAY_TINGG_BEetADD2be_SERVICE_CODE"),
                     'ivKey'         => env("ENVPAY_TINGG_BEetADD2be_IVKEY"),
                     'secretKey'     => env("ENVPAY_TINGG_BEetADD2be_SECRET_KEY"),
                     'accessKey'     => env("ENVPAY_TINGG_BEetADD2be_ACCESS_KEY")
-                ]
+                ]*/
             ],
             'pay_later' => [
                 'label' => "Pay later",

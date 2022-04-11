@@ -903,11 +903,11 @@ return [
                     'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
                     'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'host' => 'https://www.atfawry.com',
                     'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
                     'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]
+                ]*/
             ]
         ],
         'egALY2de' => [
@@ -933,11 +933,11 @@ return [
                     'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
                     'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'host' => 'https://www.atfawry.com',
                     'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
                     'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]
+                ]*/
             ]
         ],
         'egHRG2de' => [
@@ -963,11 +963,11 @@ return [
                     'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
                     'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
                 ],
-                'prod' => [
+                /*'prod' => [
                     'host' => 'https://www.atfawry.com',
                     'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
                     'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]
+                ]*/
             ]
         ]
     ],

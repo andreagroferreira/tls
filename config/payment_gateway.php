@@ -587,6 +587,7 @@ return [
                 'active' => true,
                 'common' => [
                     'env' => 'live',
+                    'currency' => 'USD',
                     'return_url' => '/switch/return',
                 ],
                 'sandbox' => [
@@ -610,6 +611,7 @@ return [
                 'active' => true,
                 'common' => [
                     'env' => 'live',
+                    'currency' => 'USD',
                     'return_url' => '/switch/return',
                 ],
                 'sandbox' => [

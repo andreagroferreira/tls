@@ -687,6 +687,218 @@ return [
             ]
         ],
     ],
+    'ch' => [
+        'zaPRY2ch' => [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'EUR',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/paypal/return',
+                    'notify_url' => '/paypal/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+                    'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_PAY_BEzaALL2be_ACCOUNT'),
+                    'host' => 'https://www.paypal.com/cgi-bin/webscr',
+                ],*/
+            ],
+        ],
+        'zaCPT2ch' => [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'EUR',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/paypal/return',
+                    'notify_url' => '/paypal/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+                    'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_PAY_BEzaALL2be_ACCOUNT'),
+                    'host' => 'https://www.paypal.com/cgi-bin/webscr',
+                ],*/
+            ],
+        ],
+        'zaDUR2ch' => [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'EUR',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/paypal/return',
+                    'notify_url' => '/paypal/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+                    'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_PAY_BEzaALL2be_ACCOUNT'),
+                    'host' => 'https://www.paypal.com/cgi-bin/webscr',
+                ],*/
+            ],
+        ],
+        'ruMOW2ch' => [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'RUB',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/paypal/return',
+                    'notify_url' => '/paypal/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+                    'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_PAY_BEruMOW2be_ACCOUNT'),
+                    'host' => 'https://www.paypal.com/cgi-bin/webscr',
+                ],*/
+            ],
+        ],
+        'uaKBP2ch' => [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'EUR',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/paypal/return',
+                    'notify_url' => '/paypal/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+                    'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_PAY_BEzaALL2be_ACCOUNT'),
+                    'host' => 'https://www.paypal.com/cgi-bin/webscr',
+                ],*/
+            ],
+        ],
+        'phMNL2ch' => [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'PHP',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/paypal/return',
+                    'notify_url' => '/paypal/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+                    'sandbox_account' => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT"),
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_PAY_CHphMNL2ch_ACCOUNT'),
+                    'host' => 'https://www.paypal.com/cgi-bin/webscr',
+                ],*/
+            ],
+        ],
+        'gbMNC2ch' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'GBP',
+                    'min_fraction_digits' => '2',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/globaliris/return',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    'sandbox_account' => '',
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_GLO_BEgbALL2be_ACCOUNT'),
+                    'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
+                    'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
+                    'host' => 'https://hpp.globaliris.com/pay',
+                ],*/
+            ],
+        ],
+        'gbEDI2ch' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'GBP',
+                    'min_fraction_digits' => '2',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/globaliris/return',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    'sandbox_account' => '',
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_GLO_BEgbALL2be_ACCOUNT'),
+                    'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
+                    'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
+                    'host' => 'https://hpp.globaliris.com/pay',
+                ],*/
+            ],
+        ],
+        'gbLON2ch' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'GBP',
+                    'min_fraction_digits' => '2',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/globaliris/return',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    'sandbox_account' => '',
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_GLO_BEgbALL2be_ACCOUNT'),
+                    'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
+                    'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
+                    'host' => 'https://hpp.globaliris.com/pay',
+                ],*/
+            ],
+        ],
+    ],
     'de' => [
         'cnBJS2de' => [
             'alipay' => [

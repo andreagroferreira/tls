@@ -582,11 +582,12 @@ return [
 //            ]
         ],
         'iqBGW2be' => [
-            'switch' => [
+            /*'switch' => [
                 'label' => 'Switch pay',
                 'active' => true,
                 'common' => [
                     'env' => 'live',
+                    'currency' => 'USD',
                     'return_url' => '/switch/return',
                 ],
                 'sandbox' => [
@@ -599,17 +600,18 @@ return [
                     'entity_id' => env('ENVPAY_SWITCH_iqAll2be_ENTITY_ID'),
                     'access_token' => env('ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN')
                 ]
-            ],
+            ],*/
             'pay_later' => [
                 'label' => "Pay later",
             ]
         ],
         'iqEBL2be' => [
-            'switch' => [
+            /*'switch' => [
                 'label' => 'Switch pay',
                 'active' => true,
                 'common' => [
                     'env' => 'live',
+                    'currency' => 'USD',
                     'return_url' => '/switch/return',
                 ],
                 'sandbox' => [
@@ -622,7 +624,7 @@ return [
                     'entity_id' => env('ENVPAY_SWITCH_iqAll2be_ENTITY_ID'),
                     'access_token' => env('ENVPAY_SWITCH_iqAll2be_ACCESS_TOKEN')
                 ]
-            ],
+            ],*/
             'pay_later' => [
                 'label' => "Pay later",
             ]
@@ -1091,6 +1093,229 @@ return [
                     'storeKey' => ''
                 ]
             ]
+        ],
+        'zaBFN2de' => [
+            'paygate' => [
+                'label' => 'Paygate pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'ZAR',
+                    'country' => 'ZAF',
+                    'return_url' => '/paygate/return',
+                    'notify_url' => '/paygate/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'sandbox_process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'sandbox_query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'sandbox_encryption_key' => env('PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY'),
+                    'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
+                    'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
+                ],
+                /*'prod' => [
+                    'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
+                    'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
+                    'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
+                ],*/
+            ],
+        ],
+        'zaCPT2de' => [
+            'paygate' => [
+                'label' => 'Paygate pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'ZAR',
+                    'country' => 'ZAF',
+                    'return_url' => '/paygate/return',
+                    'notify_url' => '/paygate/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'sandbox_process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'sandbox_query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'sandbox_encryption_key' => env('PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY'),
+                    'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
+                    'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
+                ],
+                /*'prod' => [
+                    'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
+                    'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
+                    'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
+                ],*/
+            ],
+        ],
+        'zaPLZ2de' => [
+            'paygate' => [
+                'label' => 'Paygate pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'ZAR',
+                    'country' => 'ZAF',
+                    'return_url' => '/paygate/return',
+                    'notify_url' => '/paygate/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'sandbox_process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'sandbox_query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'sandbox_encryption_key' => env('PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY'),
+                    'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
+                    'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
+                ],
+                /*'prod' => [
+                    'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
+                    'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
+                    'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
+                ],*/
+            ],
+        ],
+        'zaZAY2de' => [
+            'paygate' => [
+                'label' => 'Paygate pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'ZAR',
+                    'country' => 'ZAF',
+                    'return_url' => '/paygate/return',
+                    'notify_url' => '/paygate/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'sandbox_process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'sandbox_query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'sandbox_encryption_key' => env('PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY'),
+                    'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
+                    'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
+                ],
+                /*'prod' => [
+                    'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
+                    'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
+                    'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
+                ],*/
+            ],
+        ],
+        'zaDUR2de' => [
+            'paygate' => [
+                'label' => 'Paygate pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'ZAR',
+                    'country' => 'ZAF',
+                    'return_url' => '/paygate/return',
+                    'notify_url' => '/paygate/notify',
+                ],
+                'sandbox' => [
+                    'sandbox_initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'sandbox_process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'sandbox_query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'sandbox_encryption_key' => env('PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY'),
+                    'sandbox_paygate_id' => env('PAYGATE_ZAALL2BE_SANDBOX_ID'),
+                    'sandbox_seller_email' => env('PAYGATE_ZAALL2BE_SELLER_EMAIL'),
+                ],
+                /*'prod' => [
+                    'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+                    'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+                    'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+                    'encryption_key' => env('ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY'),
+                    'paygate_id' => env('ENVPAY_PAYGATE_ZAALL2DE_ID'),
+                    'seller_email' => env('ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL'),
+                ],*/
+            ],
+        ],
+        'gbLON2de' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'GBP',
+                    'min_fraction_digits' => '2',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/globaliris/return',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    'sandbox_account' => '',
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
+                    'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
+                    'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
+                    'host' => 'https://hpp.globaliris.com/pay',
+                ],*/
+            ],
+        ],
+        'gbEDI2de' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'GBP',
+                    'min_fraction_digits' => '2',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/globaliris/return',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    'sandbox_account' => '',
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
+                    'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
+                    'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
+                    'host' => 'https://hpp.globaliris.com/pay',
+                ],*/
+            ],
+        ],
+        'gbMNC2de' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'GBP',
+                    'min_fraction_digits' => '2',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/globaliris/return',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    'sandbox_account' => '',
+                ],
+                /*'prod' => [
+                    'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
+                    'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
+                    'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
+                    'host' => 'https://hpp.globaliris.com/pay',
+                ],*/
+            ],
         ],
     ],
     'pl' => [

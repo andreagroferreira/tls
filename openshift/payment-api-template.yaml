@@ -212,6 +212,13 @@ parameters:
   - name: ENVPAY_PAY_BEzaALL2be_ACCOUNT
     required: true
   - name: ENVPAY_PAY_CHphMNL2ch_ACCOUNT
+  - name: ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY
+    required: true
+  - name: ENVPAY_PAYGATE_ZAALL2DE_ID
+    required: true
+  - name: ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL
+    required: true
+  - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
     required: true
   - name: APPLICATION_ENV
     value: prod
@@ -594,6 +601,14 @@ objects:
                   value: ${ENVPAY_PAY_BEzaALL2be_ACCOUNT}
                 - name: ENVPAY_PAY_CHphMNL2ch_ACCOUNT
                   value: ${ENVPAY_PAY_CHphMNL2ch_ACCOUNT}
+                - name: ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY
+                  value: ${ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY}
+                - name: ENVPAY_PAYGATE_ZAALL2DE_ID
+                  value: ${ENVPAY_PAYGATE_ZAALL2DE_ID}
+                - name: ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL
+                  value: ${ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL}
+                - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
+                  value: ${ENVPAY_GLO_DEgbALL2de_ACCOUNT}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -861,6 +876,14 @@ objects:
                   value: ${ENVPAY_PAY_BEzaALL2be_ACCOUNT}
                 - name: ENVPAY_PAY_CHphMNL2ch_ACCOUNT
                   value: ${ENVPAY_PAY_CHphMNL2ch_ACCOUNT}
+                - name: ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY
+                  value: ${ENVPAY_PAYGATE_ZAALL2DE_ENCRYPTION_KEY}
+                - name: ENVPAY_PAYGATE_ZAALL2DE_ID
+                  value: ${ENVPAY_PAYGATE_ZAALL2DE_ID}
+                - name: ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL
+                  value: ${ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL}
+                - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
+                  value: ${ENVPAY_GLO_DEgbALL2de_ACCOUNT}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT

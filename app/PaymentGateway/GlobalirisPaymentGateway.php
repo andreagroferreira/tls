@@ -192,7 +192,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                 'amount' => $received_amount,
                 'currency' => $params['TLS_CURRENCY'] ?? '',
                 'transaction_id' => $orderId,
-                'gateway_transaction_id' => $params['pas_uuid'] ?? '',
+                'gateway_transaction_id' => $pasref ?? '',
             ];
             return $this->paymentService->confirm($translationsData, $confirm_params);
         } else {

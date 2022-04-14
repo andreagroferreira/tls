@@ -215,11 +215,11 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $country_level_config = $country . 'All2' . $payment_client;
         $global_config = 'allAll2all';
         $client_payment_gateway = config('payment_gateway')[$client];
-        if (array_key_exists($issuer, $client_payment_gateway)) {
+        if (!empty($client_payment_gateway[$issuer])) {
             $config = $client_payment_gateway[$issuer];
-        } elseif (array_key_exists($country_level_config, $client_payment_gateway)) {
+        } elseif (!empty($client_payment_gateway[$country_level_config])) {
             $config = $client_payment_gateway[$country_level_config];
-        } elseif (array_key_exists($global_config, $client_payment_gateway)) {
+        } elseif (!empty($client_payment_gateway[$global_config])) {
             $config = $client_payment_gateway[$global_config];
         } else {
             $config = [];

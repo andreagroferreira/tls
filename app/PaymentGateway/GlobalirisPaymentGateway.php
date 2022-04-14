@@ -50,7 +50,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
         $fg_id = $translationsData['t_xref_fg_id'];
-        $config = $this->getConfig($client,$issuer);
+        $config = $this->getConfig($client, $issuer);
         $onlinePayment = $config ? $config['globaliris'] : [];
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $app_env = $this->isSandBox();
@@ -138,7 +138,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $received_amount   = $params['AMOUNT'] ?? '';
-        $config = $this->getConfig($client,$issuer);;
+        $config = $this->getConfig($client, $issuer);
         $onlinePayment = $config ? $config['globaliris'] : [];
         $app_env = $this->isSandBox();
 

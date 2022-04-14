@@ -6,8 +6,12 @@ namespace App\Services;
 
 class GatewayService
 {
-    public function getGateways($client, $issuer) {
+    public function getGateways($client, $issuer)
+    {
         $all_gateway = config('payment_gateway');
+        if (!array_key_exists($issuer, $all_gateway[$client])) {
+            $issuer = 'allAll2all';
+        }
         return $all_gateway[$client][$issuer] ?? [];
     }
 

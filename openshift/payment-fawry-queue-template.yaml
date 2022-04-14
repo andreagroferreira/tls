@@ -137,6 +137,10 @@ parameters:
     required: true
   - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
     required: true
+  - name: ENVPAY_GLO_HMPO_allALL2all_ACCOUNT
+    required: true
+  - name: ENVPAY_GLO_HMPO_itALL2uk_ACCOUNT
+    required: true
   - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
     required: true
   - name: ENVPAY_GLO_COMMON_MERCHANT_ID
@@ -434,6 +438,10 @@ objects:
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_SECRET}
+                - name: ENVPAY_GLO_HMPO_allALL2all_ACCOUNT
+                  value: ${ENVPAY_GLO_HMPO_allALL2all_ACCOUNT}
+                - name: ENVPAY_GLO_HMPO_itALL2uk_ACCOUNT
+                  value: ${ENVPAY_GLO_HMPO_itALL2uk_ACCOUNT}
                 - name: ENVPAY_GLO_BEgbALL2be_ACCOUNT
                   value: ${ENVPAY_GLO_BEgbALL2be_ACCOUNT}
                 - name: ENVPAY_GLO_COMMON_MERCHANT_ID

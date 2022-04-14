@@ -50,10 +50,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
         $fg_id = $translationsData['t_xref_fg_id'];
-        if (!array_key_exists($issuer, config('payment_gateway')[$client])) {
-            $issuer = 'allAll2all';
-        }
-        $config = config('payment_gateway')[$client][$issuer];
+        $config = $this->getConfig($client,$issuer);
         $onlinePayment = $config ? $config['globaliris'] : [];
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $app_env = $this->isSandBox();
@@ -141,10 +138,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $received_amount   = $params['AMOUNT'] ?? '';
-        if (!array_key_exists($issuer, config('payment_gateway')[$client])) {
-            $issuer = 'allAll2all';
-        }
-        $config = config('payment_gateway')[$client][$issuer];
+        $config = $this->getConfig($client,$issuer);;
         $onlinePayment = $config ? $config['globaliris'] : [];
         $app_env = $this->isSandBox();
 
@@ -212,5 +206,25 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             $this->transactionLogsService->create(['tl_xref_transaction_id' => $translationsData['t_transaction_id'], 'tl_content' =>json_encode($result)]);
             return $result;
         }
+    }
+
+    public function getConfig($client, $issuer)
+    {
+        $country = substr($issuer, 0, 2);
+        $payment_client = substr($issuer, -2);
+        $country_level_config = $country . 'All2' . $payment_client;
+        $global_config = 'allAll2all';
+        $client_payment_gateway = config('payment_gateway')[$client];
+        if (array_key_exists($issuer, $client_payment_gateway)) {
+            $config = $client_payment_gateway[$issuer];
+        } elseif (array_key_exists($country_level_config, $client_payment_gateway)) {
+            $config = $client_payment_gateway[$country_level_config];
+        } elseif (array_key_exists($global_config, $client_payment_gateway)) {
+            $config = $client_payment_gateway[$global_config];
+        } else {
+            $config = [];
+        }
+        return $config;
+
     }
 }

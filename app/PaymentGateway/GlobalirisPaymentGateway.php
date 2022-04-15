@@ -147,10 +147,12 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             // Live account
             $merchantid     = $onlinePayment['prod']['merchant_id'] ?? '';
             $secret         = $onlinePayment['prod']['secret'] ?? '';
+            $subaccount = isset($onlinePayment['prod']['account']) ?? '';
         } else {
             // Test account
             $merchantid     = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
             $secret         = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
+            $subaccount = isset($onlinePayment['sandbox']['sandbox_account']) ?? '';
         }
         $tmp = "$timestamp.$merchantid.$orderId.$result.$message.$pasref.$authcode";
         $sha1hash = sha1($tmp);
@@ -187,6 +189,13 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                     $minFractionDigits--;
                 }
             }
+
+            $global_account = env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT");
+            if ($global_account == $subaccount) {
+                $subaccount = '';
+            }
+            $this->transactionService->updateById($translationsData['t_id'], ['t_gateway_account' => $global_account, 't_gateway_subaccount' => $subaccount,]);
+
             $confirm_params = [
                 'gateway' => $this->getPaymentGatewayName(),
                 'amount' => $received_amount,

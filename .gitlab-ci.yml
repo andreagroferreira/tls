@@ -19,6 +19,7 @@ variables:
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   DIRECTUS_ROUTE: "directus"
+  TLSCONNECT_API_URL: https://tlsconnect-service-api.${PROJECT}.svc:8443
 
 stages:
   - build
@@ -125,7 +126,7 @@ sonarcloud-check:
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://$PAYMENT_SERVICE_URL"
       DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
-      TLSCONTACT_API="$TLSCONTACT_API"
+      TLSCONTACT_API="$TLSCONNECT_API_URL"
       REDIS_HOST="tls://${REDIS_HOST}"
       CLIENT="$CLIENT"
       KBANK_THBKK2BE_SANDBOX_API_KEY=$KBANK_THBKK2BE_SANDBOX_API_KEY
@@ -244,7 +245,7 @@ sonarcloud-check:
       PAYMENT_SERVICE_DOMAIN="https://$PAYMENT_SERVICE_URL"
       DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
-      TLSCONTACT_API="$TLSCONTACT_API"
+      TLSCONTACT_API="$TLSCONNECT_API_URL"
       CLIENT="$CLIENT"
       KBANK_THBKK2BE_SANDBOX_API_KEY=$KBANK_THBKK2BE_SANDBOX_API_KEY
       KBANK_THBKK2BE_SANDBOX_SECRET=$KBANK_THBKK2BE_SANDBOX_SECRET

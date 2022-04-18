@@ -190,14 +190,14 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                 }
             }
 
-            $this->transactionService->updateById($translationsData['t_id'], ['t_gateway_account' => $merchantid, 't_gateway_subaccount' => $subaccount]);
-
             $confirm_params = [
                 'gateway' => $this->getPaymentGatewayName(),
                 'amount' => $received_amount,
                 'currency' => $params['TLS_CURRENCY'] ?? '',
                 'transaction_id' => $orderId,
                 'gateway_transaction_id' => $pasref ?? '',
+                't_gateway_account' => $merchantid ?? '',
+                't_gateway_subaccount' => $subaccount ?? '',
             ];
             return $this->paymentService->confirm($translationsData, $confirm_params);
         } else {

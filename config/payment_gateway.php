@@ -1359,12 +1359,14 @@ return [
                     "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_global_account" => '',
                     "sandbox_account" => ''
                 ],
                 'prod' => [
                     "host" => "https://hpp.globaliris.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "global_account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT"),
                     "account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT")
                 ]
             ]
@@ -1385,12 +1387,14 @@ return [
                     "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_global_account" => '',
                     "sandbox_account" => ''
                 ],
                 'prod' => [
                     "host" => "https://hpp.globaliris.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "global_account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT"),
                     "account" => env("ENVPAY_GLO_HMPO_itALL2uk_ACCOUNT")
                 ]
             ]
@@ -1411,12 +1415,14 @@ return [
                     "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_global_account" => '',
                     "sandbox_account" => ''
                 ],
                 'prod' => [
                     "host" => "https://hpp.globaliris.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "global_account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
             ]
@@ -1437,12 +1443,14 @@ return [
                     "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_global_account" => '',
                     "sandbox_account" => ''
                 ],
                 'prod' => [
                     "host" => "https://hpp.globaliris.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "global_account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
             ]
@@ -1463,12 +1471,14 @@ return [
                     "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_global_account" => '',
                     "sandbox_account" => ''
                 ],
                 'prod' => [
                     "host" => "https://hpp.globaliris.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "global_account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
             ]
@@ -1489,12 +1499,14 @@ return [
                     "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_global_account" => '',
                     "sandbox_account" => ''
                 ],
                 'prod' => [
                     "host" => "https://hpp.globaliris.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "global_account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
             ]
@@ -1515,12 +1527,14 @@ return [
                     "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "global_sandbox_account" => '',
                     "sandbox_account" => ''
                 ],
                 'prod' => [
                     "host" => "https://hpp.globaliris.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "global_account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
             ]

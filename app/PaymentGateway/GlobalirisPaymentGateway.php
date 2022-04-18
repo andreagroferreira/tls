@@ -190,10 +190,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                 }
             }
 
-            if ($merchantid == $subaccount) {
-                $subaccount = '';
-            }
-            $this->transactionService->updateById($translationsData['t_id'], ['t_gateway_account' => $merchantid, 't_gateway_subaccount' => $subaccount,]);
+            $this->transactionService->updateById($translationsData['t_id'], ['t_gateway_account' => $merchantid, 't_gateway_subaccount' => $subaccount]);
 
             $confirm_params = [
                 'gateway' => $this->getPaymentGatewayName(),

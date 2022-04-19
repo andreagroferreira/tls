@@ -66,22 +66,14 @@ class PaymentService
                 $error_msg[] = $actionResult['error_msg'];
             }
         }
-        if (isset($confirm_params['t_gateway_account']) && isset($confirm_params['t_gateway_subaccount'])) {
-            $update_fields = [
-                't_gateway' => $payment_gateway,
-                't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
-                't_status' => 'done',
-                't_gateway_account' => $confirm_params['t_gateway_account'],
-                't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'],
-            ];
-        } else {
-            $update_fields = [
-                't_gateway' => $payment_gateway,
-                't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
-                't_status' => 'done',
-            ];
-        }
 
+        $update_fields = [
+            't_gateway' => $payment_gateway,
+            't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
+            't_status' => 'done',
+            't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
+            't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,
+        ];
         $this->transactionService->updateById($transaction['t_id'], $update_fields);
         foreach ($update_fields as $field_key => $field_val) {
             $transaction[$field_key] = $field_val;

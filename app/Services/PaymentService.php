@@ -67,10 +67,12 @@ class PaymentService
             }
         }
 
-        $update_fields       = [
-            't_gateway'                => $payment_gateway,
+        $update_fields = [
+            't_gateway' => $payment_gateway,
             't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
-            't_status'                 => 'done'
+            't_status' => 'done',
+            't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
+            't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,
         ];
         $this->transactionService->updateById($transaction['t_id'], $update_fields);
         foreach ($update_fields as $field_key => $field_val) {

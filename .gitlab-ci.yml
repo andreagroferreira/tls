@@ -412,3 +412,5 @@ rollback:
   rules:
     - if: '$ROLLBACK == "true"'
       when: on_success
+sast:
+  stage: test

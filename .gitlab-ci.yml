@@ -3,6 +3,7 @@ include:
     ref: production
     file: 'rollback.gitlab-ci.yml'
   - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
 
 image: ${DOCKER_REGISTRY_ADDRESS}/openshift3/ose-cli:${DOCKER_TAG_OSE_CLI}
 

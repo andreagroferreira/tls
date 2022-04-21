@@ -99,4 +99,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     $router->post('switch/redirto', 'SwitchController@redirto');
     $router->post('switch/return', 'SwitchController@return');
+
+    //get transaction sync fail job or resend fail job
+    $router->post('/resend_failed_transaction', 'TransactionController@resend');
+    $router->get('/fetchJob', 'TransactionController@fetchJob');
+    $router->get('/fetchFailJob', 'TransactionController@fetchFailJob');
+
 });

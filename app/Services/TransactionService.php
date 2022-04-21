@@ -5,23 +5,33 @@ namespace App\Services;
 use App\Repositories\TransactionRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\JobRepository;
+use App\Repositories\FailedJobRepository;
+use Illuminate\Support\Facades\Artisan;
 
 class TransactionService
 {
     protected $transactionRepository;
     protected $dbConnectionService;
     protected $transactionItemsService;
+    protected $failedJobRepository;
 
     public function __construct(
         TransactionRepository $transactionRepository,
         DbConnectionService $dbConnectionService,
-        TransactionItemsService $transactionItemsService
+        TransactionItemsService $transactionItemsService,
+        JobRepository $JobRepository,
+        FailedJobRepository $failedJobRepository
     )
     {
         $this->transactionRepository = $transactionRepository;
         $this->dbConnectionService = $dbConnectionService;
         $this->transactionItemsService = $transactionItemsService;
         $this->transactionRepository->setConnection($this->dbConnectionService->getConnection());
+        $this->JobRepository = $JobRepository;
+        $this->JobRepository->setConnection($this->dbConnectionService->getConnection());
+        $this->failedJobRepository = $failedJobRepository;
+        $this->failedJobRepository->setConnection($this->dbConnectionService->getConnection());
     }
 
     public function updateById($t_id, $attributes) {
@@ -225,4 +235,41 @@ class TransactionService
     public function getDbTimeZone() {
         return Carbon::parse($this->dbConnectionService->getDbNowTime())->getTimezone()->toRegionName();
     }
+
+    public function resend($params) {
+        $failedJobs = $this->failedJobRepository->fetchQueue($params)->toArray();
+        if(empty($failedJobs)) {
+            return [
+                'status' => 'fail',
+                'error' => 'job_not_found',
+                'message' => 'Failed transaction job not found'
+            ];
+        }
+        foreach($failedJobs as $failedJob) {
+            Artisan::call('queue:retry', ['id' => $failedJob['id']]);
+        }
+        return [
+            'status' => 'success',
+            'message' => 'Transaction has been resend'
+        ];
+    }
+
+    public function fetchJob($params){
+        $JobsCount = $this->JobRepository->countQueue($params['queue_name']);
+        $Jobs = $this->JobRepository->fetchQueue($params)->toArray();
+        return [
+            'jobs_count' => $JobsCount,
+            'jobs' => $Jobs
+        ];
+    }
+
+    public function fetchFailJob($params){
+        $failedJobsCount = $this->failedJobRepository->countQueue($params['queue_name']);
+        $failedJobs = $this->failedJobRepository->fetchQueue($params)->toArray();
+        return [
+            'failed_jobs_count' => $failedJobsCount,
+            'failed_jobs' => $failedJobs
+        ];
+    }
+
 }

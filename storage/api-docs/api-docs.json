@@ -6,6 +6,83 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/alipay/redirto": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from globaliris",
+                "operationId": "c05972107811113ab1f6100a5ecaeb54",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/alipay/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "c12e7074832b0aa346f059b097d7a3b9",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/alipay/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paysoft",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/avs_recommendation/{f_id}": {
             "post": {
                 "tags": [
@@ -1433,6 +1510,83 @@
                 }
             }
         },
+        "/api/v1/switch/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from switch",
+                "operationId": "207fd93665078c294525cbf83c028e91",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/switch/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "0d74af298379bf8a1d6b6636a2d69680",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/switch/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from switch",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/tingg/redirto": {
             "post": {
                 "tags": [
@@ -1759,6 +1913,135 @@
                     },
                     "400": {
                         "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/resend_failed_transaction": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "resend transaction",
+                "operationId": "709becd333db188120973185e0070909",
+                "parameters": [
+                    {
+                        "name": "queue_name",
+                        "in": "query",
+                        "description": "queue name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "tlscontact_transaction_sync_queue"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "resend transaction failed_job_id",
+                        "required": false,
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "added to transaction queue",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request, added to transaction queue failed"
+                    }
+                }
+            }
+        },
+        "/fetchJob": {
+            "get": {
+                "tags": [
+                    "Email Service"
+                ],
+                "description": "get jobs volume",
+                "operationId": "3c368c514ba3f59899ce79ff82fb6fc8",
+                "parameters": [
+                    {
+                        "name": "queue_name",
+                        "in": "query",
+                        "description": "queue name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "tlscontact_transaction_sync_queue"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "resend transaction job_id",
+                        "required": false,
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "return the volume count",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request, get volume failed"
+                    }
+                }
+            }
+        },
+        "/fetchFailJob": {
+            "get": {
+                "tags": [
+                    "Email Service"
+                ],
+                "description": "get failed_jobs volume",
+                "operationId": "1f44bf2c60f6f7b4cfeb92e9e4fdd890",
+                "parameters": [
+                    {
+                        "name": "queue_name",
+                        "in": "query",
+                        "description": "queue name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "tlscontact_transaction_sync_queue"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "resend transaction failed_job_id",
+                        "required": false,
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "return the volume count",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request, get volume failed"
                     }
                 }
             }

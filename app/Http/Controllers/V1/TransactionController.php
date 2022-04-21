@@ -337,4 +337,169 @@ class TransactionController extends BaseController
 
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/resend_failed_transaction",
+     *     tags={"Payment API"},
+     *     description="resend transaction",
+     *     @OA\Parameter(
+     *          name="queue_name",
+     *          in="query",
+     *          description="queue name",
+     *          required=true,
+     *          @OA\Schema(type="string", example="tlscontact_transaction_sync_queue"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="resend transaction failed_job_id",
+     *          required=false,
+     *          @OA\Schema(type="int"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="added to transaction queue",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request, added to transaction queue failed"
+     *      ),
+     * )
+     */
+
+    public function resend(Request $request)
+    {
+        $params = [
+            'id' => $request->input('id'),
+            'queue_name' => $request->input('queue_name')
+        ];
+        $validator = validator($params, [
+            'queue_name' => 'required|string',
+            'id' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+        $params = $validator->validated();
+        try {
+            $result = $this->transactionService->resend($params);
+            if (isset($result['error'])) {
+                return $this->sendError('fail', $result);
+            }
+            return $this->sendResponse($result);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
+
+    /**
+     * @OA\Get(
+     *     path="/fetchJob",
+     *     tags={"Email Service"},
+     *     description="get jobs volume",
+     *     @OA\Parameter(
+     *          name="queue_name",
+     *          in="query",
+     *          description="queue name",
+     *          required=true,
+     *          @OA\Schema(type="string", example="tlscontact_transaction_sync_queue"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="resend transaction job_id",
+     *          required=false,
+     *          @OA\Schema(type="int"),
+     *      ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="return the volume count",
+     *         @OA\JsonContent(),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Error: bad request, get volume failed"
+     *     ),
+     * )
+     */
+    public function fetchJob(Request $request)
+    {
+        $params = [
+            'id' => $request->input('id'),
+            'queue_name' => $request->input('queue_name')
+        ];
+        $validator = validator($params, [
+            'queue_name' => 'required|string',
+            'id' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+        $params = $validator->validated();
+        try {
+            $result = $this->transactionService->fetchJob($params);
+            return $this->sendResponse($result);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/fetchFailJob",
+     *     tags={"Email Service"},
+     *     description="get failed_jobs volume",
+     *     @OA\Parameter(
+     *          name="queue_name",
+     *          in="query",
+     *          description="queue name",
+     *          required=true,
+     *          @OA\Schema(type="string", example="tlscontact_transaction_sync_queue"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="resend transaction failed_job_id",
+     *          required=false,
+     *          @OA\Schema(type="int"),
+     *      ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="return the volume count",
+     *         @OA\JsonContent(),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Error: bad request, get volume failed"
+     *     ),
+     * )
+     */
+    public function fetchFailJob(Request $request)
+    {
+        $params = [
+            'id' => $request->input('id'),
+            'queue_name' => $request->input('queue_name')
+        ];
+        $validator = validator($params, [
+            'queue_name' => 'required|string',
+            'id' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+        $params = $validator->validated();
+        try {
+            $result = $this->transactionService->fetchFailJob($params);
+            return $this->sendResponse($result);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
 }

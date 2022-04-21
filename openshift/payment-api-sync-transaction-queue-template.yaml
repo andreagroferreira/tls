@@ -72,8 +72,8 @@ objects:
     kind: DeploymentConfig
     metadata:
       labels:
-        app: ${APPLICATION_NAME}-callback-queue
-      name: ${APPLICATION_NAME}-callback-queue
+        app: ${APPLICATION_NAME}-sync-transaction-queue
+      name: ${APPLICATION_NAME}-sync-transaction-queue
     spec:
       triggers:
         - imageChangeParams:
@@ -90,8 +90,8 @@ objects:
       template:
         metadata:
           labels:
-            app: ${APPLICATION_NAME}-callback-queue
-            deploymentconfig: ${APPLICATION_NAME}-callback-queue
+            app: ${APPLICATION_NAME}-sync-transaction-queue
+            deploymentconfig: ${APPLICATION_NAME}-sync-transaction-queue
         spec:
           containers:
             - command: [ "/bin/sh" ]
@@ -205,7 +205,7 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}-callback-queue-pgbouncer
+      name: allow-${APPLICATION_NAME}-sync-transaction-queue-pgbouncer
       labels:
         app: ${APPLICATION_NAME}
     spec:
@@ -213,7 +213,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}-callback-queue
+                  app: ${APPLICATION_NAME}-sync-transaction-queue
           ports:
             - port: 5432
               protocol: TCP
@@ -223,7 +223,7 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}-callback-queue-pgcluster
+      name: allow-${APPLICATION_NAME}-sync-transaction-queue-pgcluster
       labels:
         app: ${APPLICATION_NAME}
     spec:
@@ -231,7 +231,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}-callback-queue
+                  app: ${APPLICATION_NAME}-sync-transaction-queue
           ports:
             - port: 5432
               protocol: TCP
@@ -241,7 +241,7 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}-callback-queue-service-api
+      name: allow-${APPLICATION_NAME}-sync-transaction-queue-service-api
       labels:
         app: ${APPLICATION_NAME}
     spec:
@@ -249,7 +249,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}-callback-queue
+                  app: ${APPLICATION_NAME}-sync-transaction-queue
           ports:
             - port: 8443
               protocol: TCP

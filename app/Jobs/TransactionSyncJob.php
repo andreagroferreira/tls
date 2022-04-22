@@ -30,5 +30,7 @@ class TransactionSyncJob extends Job
     {
         Log::info('Trancaction event');
         event(new TransactionSyncEvent($this->client, $this->data));
+        //$this->fail();
+
     }
 }

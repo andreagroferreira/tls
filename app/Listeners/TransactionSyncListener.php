@@ -32,8 +32,8 @@ class TransactionSyncListener
         $this->apiService = $apiService;
         $this->jobRepository = $jobRepository;
         $this->failedJobRepository = $failedJobRepository;
-        $this->jobRepository->setConnection('payment_pgsql');
-        $this->failedJobRepository->setConnection('payment_pgsql');
+        /*$this->jobRepository->setConnection('payment_pgsql');
+        $this->failedJobRepository->setConnection('payment_pgsql');*/
     }
 
 

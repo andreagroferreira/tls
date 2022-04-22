@@ -21,7 +21,7 @@ class FailedJobRepository
 
     public function countQueue($queueName)
     {
-        return $this->failedJobModel->where('queue', $queueName)->get()->count();
+        return $this->failedJobModel->where('queue', $queueName)->count();
     }
 
     public function fetchQueue($attributes)

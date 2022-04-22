@@ -426,7 +426,7 @@ class TransactionController extends BaseController
      *     ),
      * )
      */
-    public function fetchJob(Request $request)
+    public function health(Request $request)
     {
         $params = [
             'id' => $request->input('id'),
@@ -442,7 +442,7 @@ class TransactionController extends BaseController
         }
         $params = $validator->validated();
         try {
-            $result = $this->transactionService->fetchJob($params);
+            $result = $this->transactionService->health($params);
             return $this->sendResponse($result);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());

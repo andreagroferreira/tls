@@ -254,12 +254,12 @@ class TransactionService
         ];
     }
 
-    public function fetchJob($params){
-        $JobsCount = $this->JobRepository->countQueue($params['queue_name']);
-        $Jobs = $this->JobRepository->fetchQueue($params)->toArray();
+    public function health($params){
+        $count_pending_jobs = $this->JobRepository->countQueue($params['queue_name']);
+        $failed_jobs = $this->failedJobRepository->fetchQueue($params)->toArray();
         return [
-            'jobs_count' => $JobsCount,
-            'jobs' => $Jobs
+            'count_pending_jobs' => $count_pending_jobs,
+            'failed_jobs' => $failed_jobs
         ];
     }
 

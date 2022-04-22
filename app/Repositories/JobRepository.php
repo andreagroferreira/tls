@@ -20,7 +20,7 @@ class JobRepository
     }
 
     public function countQueue($queueName) {
-        return $this->jobModel->where('queue', $queueName)->get()->count();
+        return $this->jobModel->where('queue', $queueName)->count();
     }
 
     public function fetchQueue($attributes)

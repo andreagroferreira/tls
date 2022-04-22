@@ -2,8 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Events\TransactionSyncEvent;
-use Illuminate\Support\Facades\Log;
+//use App\Events\TransactionSyncEvent;
+//use Illuminate\Support\Facades\Log;
+//use App\Services\PaymentService;
 
 class TransactionSyncJob extends Job
 {
@@ -28,9 +29,14 @@ class TransactionSyncJob extends Job
      */
     public function handle()
     {
-        Log::info('Trancaction event');
-        event(new TransactionSyncEvent($this->client, $this->data));
+        //Log::info('Trancaction event');
+        //event(new TransactionSyncEvent($this->client, $this->data));
         //$this->fail();
+        
+        $PaymentService = app()->make('App\Services\PaymentService');
+        $PaymentService->syncTransaction($this->client, $this->data);
+
+
 
     }
 }

@@ -139,11 +139,23 @@ class PaymentService
                 'error_msg' => []
             ];
         } catch (\Exception $e) {
+            Log::info('paymentservice syncAction dispatch error_msg:'.$e->getMessage());
             return [
                 'status'    => 'error',
                 'error_msg' => $e->getMessage()
             ];
-            Log::info('paymentservice syncAction dispatch error_msg:'.$e->getMessage());
+        }
+    }
+
+    public function syncTransaction($client,$data){
+        Log::info('paymentservice syncTransaction:' . $client .'---'. json_encode($data));
+        $response = $this->apiService->callTlsApi('POST', '/tls/v1/' . $client . '/sync_payment_action', $data);
+        Log::info('paymentservice syncTransaction $response:'. json_encode($response));
+        if ($response['status'] != 200) {
+            Log::error('paymentservice sync to tls fail');
+            throw new \Exception("sync to tls fail");
+        } else {
+            Log::info('paymentservice sync to tls success');
         }
     }
 }

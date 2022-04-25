@@ -5,33 +5,23 @@ namespace App\Services;
 use App\Repositories\TransactionRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Repositories\JobRepository;
-use App\Repositories\FailedJobRepository;
-use Illuminate\Support\Facades\Artisan;
 
 class TransactionService
 {
     protected $transactionRepository;
     protected $dbConnectionService;
     protected $transactionItemsService;
-    protected $failedJobRepository;
 
     public function __construct(
         TransactionRepository $transactionRepository,
         DbConnectionService $dbConnectionService,
         TransactionItemsService $transactionItemsService,
-        JobRepository $JobRepository,
-        FailedJobRepository $failedJobRepository
     )
     {
         $this->transactionRepository = $transactionRepository;
         $this->dbConnectionService = $dbConnectionService;
         $this->transactionItemsService = $transactionItemsService;
         $this->transactionRepository->setConnection($this->dbConnectionService->getConnection());
-        $this->JobRepository = $JobRepository;
-        $this->JobRepository->setConnection($this->dbConnectionService->getConnection());
-        $this->failedJobRepository = $failedJobRepository;
-        $this->failedJobRepository->setConnection($this->dbConnectionService->getConnection());
     }
 
     public function updateById($t_id, $attributes) {

@@ -1234,6 +1234,92 @@
                 }
             }
         },
+        "/retry_failed_queue": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "resend transaction",
+                "operationId": "e1f6caf6f923e71395dfda4dad21b042",
+                "parameters": [
+                    {
+                        "name": "queue_name",
+                        "in": "query",
+                        "description": "queue name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "tlscontact_transaction_sync_queue"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "resend transaction failed_job_id",
+                        "required": false,
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "added to transaction queue",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request, added to transaction queue failed"
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": [
+                    "Email Service"
+                ],
+                "description": "get jobs volume",
+                "operationId": "36f000ac4ebe1afeef3c4b2c4cb743bf",
+                "parameters": [
+                    {
+                        "name": "queue_name",
+                        "in": "query",
+                        "description": "queue name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "tlscontact_transaction_sync_queue"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "resend transaction job_id",
+                        "required": false,
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "return the volume count",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request, get volume failed"
+                    }
+                }
+            }
+        },
         "/api/v1/rcd_result": {
             "post": {
                 "tags": [
@@ -1913,135 +1999,6 @@
                     },
                     "400": {
                         "description": "Error: bad request"
-                    }
-                }
-            }
-        },
-        "/resend_failed_transaction": {
-            "post": {
-                "tags": [
-                    "Payment API"
-                ],
-                "description": "resend transaction",
-                "operationId": "709becd333db188120973185e0070909",
-                "parameters": [
-                    {
-                        "name": "queue_name",
-                        "in": "query",
-                        "description": "queue name",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "tlscontact_transaction_sync_queue"
-                        }
-                    },
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "resend transaction failed_job_id",
-                        "required": false,
-                        "schema": {
-                            "type": "int"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "added to transaction queue",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error: bad request, added to transaction queue failed"
-                    }
-                }
-            }
-        },
-        "/fetchJob": {
-            "get": {
-                "tags": [
-                    "Email Service"
-                ],
-                "description": "get jobs volume",
-                "operationId": "3c368c514ba3f59899ce79ff82fb6fc8",
-                "parameters": [
-                    {
-                        "name": "queue_name",
-                        "in": "query",
-                        "description": "queue name",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "tlscontact_transaction_sync_queue"
-                        }
-                    },
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "resend transaction job_id",
-                        "required": false,
-                        "schema": {
-                            "type": "int"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "return the volume count",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error: bad request, get volume failed"
-                    }
-                }
-            }
-        },
-        "/fetchFailJob": {
-            "get": {
-                "tags": [
-                    "Email Service"
-                ],
-                "description": "get failed_jobs volume",
-                "operationId": "1f44bf2c60f6f7b4cfeb92e9e4fdd890",
-                "parameters": [
-                    {
-                        "name": "queue_name",
-                        "in": "query",
-                        "description": "queue name",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "tlscontact_transaction_sync_queue"
-                        }
-                    },
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "resend transaction failed_job_id",
-                        "required": false,
-                        "schema": {
-                            "type": "int"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "return the volume count",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error: bad request, get volume failed"
                     }
                 }
             }

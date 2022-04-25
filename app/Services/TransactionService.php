@@ -236,40 +236,4 @@ class TransactionService
         return Carbon::parse($this->dbConnectionService->getDbNowTime())->getTimezone()->toRegionName();
     }
 
-    public function resend($params) {
-        $failedJobs = $this->failedJobRepository->fetchQueue($params)->toArray();
-        if(empty($failedJobs)) {
-            return [
-                'status' => 'fail',
-                'error' => 'job_not_found',
-                'message' => 'Failed transaction job not found'
-            ];
-        }
-        foreach($failedJobs as $failedJob) {
-            Artisan::call('queue:retry', ['id' => $failedJob['id']]);
-        }
-        return [
-            'status' => 'success',
-            'message' => 'Transaction has been resend'
-        ];
-    }
-
-    public function health($params){
-        $count_pending_jobs = $this->JobRepository->countQueue($params['queue_name']);
-        $failed_jobs = $this->failedJobRepository->fetchQueue($params)->toArray();
-        return [
-            'count_pending_jobs' => $count_pending_jobs,
-            'failed_jobs' => $failed_jobs
-        ];
-    }
-
-    public function fetchFailJob($params){
-        $failedJobsCount = $this->failedJobRepository->countQueue($params['queue_name']);
-        $failedJobs = $this->failedJobRepository->fetchQueue($params)->toArray();
-        return [
-            'failed_jobs_count' => $failedJobsCount,
-            'failed_jobs' => $failedJobs
-        ];
-    }
-
 }

@@ -101,8 +101,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('switch/return', 'SwitchController@return');
 
     //get transaction sync fail job or resend fail job
-    $router->post('/resend_failed_transaction', 'TransactionController@resend');
-    $router->get('/health', 'TransactionController@health');
-    $router->get('/fetchFailJob', 'TransactionController@fetchFailJob');
+    $router->get('/retry_failed_queue', 'QueueController@resend');
+    $router->get('/health', 'QueueController@health');
 
 });

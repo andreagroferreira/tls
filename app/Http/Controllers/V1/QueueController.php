@@ -17,7 +17,7 @@ class QueueController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/retry_failed_queue",
+     *     path="/retry_failed_queue/{queue_name}",
      *     tags={"Payment API"},
      *     description="resend transaction",
      *     @OA\Parameter(
@@ -26,13 +26,6 @@ class QueueController extends BaseController
      *          description="queue name",
      *          required=true,
      *          @OA\Schema(type="string", example="tlscontact_transaction_sync_queue"),
-     *      ),
-     *     @OA\Parameter(
-     *          name="id",
-     *          in="path",
-     *          description="resend transaction failed_job_id",
-     *          required=false,
-     *          @OA\Schema(type="int"),
      *      ),
      *      @OA\Response(
      *          response="200",
@@ -46,15 +39,13 @@ class QueueController extends BaseController
      * )
      */
 
-    public function resend(Request $request,$queue_name)
+    public function resend(Request $request)
     {
         $params = [
-            'id' => $request->get('id'),
-            'queue_name' => $queue_name
+            'queue_name' => $request->route('queue_name')
         ];
         $validator = validator($params, [
             'queue_name' => 'required|string',
-            'id' => 'nullable'
         ]);
 
         if ($validator->fails()) {
@@ -75,7 +66,7 @@ class QueueController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/health",
+     *     path="/health/{queue_name}",
      *     tags={"Email Service"},
      *     description="get jobs volume",
      *     @OA\Parameter(
@@ -84,13 +75,6 @@ class QueueController extends BaseController
      *          description="queue name",
      *          required=true,
      *          @OA\Schema(type="string", example="tlscontact_transaction_sync_queue"),
-     *      ),
-     *     @OA\Parameter(
-     *          name="id",
-     *          in="path",
-     *          description="resend transaction job_id",
-     *          required=false,
-     *          @OA\Schema(type="int"),
      *      ),
      *     @OA\Response(
      *         response="200",
@@ -103,10 +87,10 @@ class QueueController extends BaseController
      *     ),
      * )
      */
-    public function health(Request $request,$queue_name)
+    public function health(Request $request)
     {
         $params = [
-            'queue_name' => $queue_name
+            'queue_name' => $request->route('queue_name')
         ];
         $validator = validator($params, [
             'queue_name' => 'required|string',

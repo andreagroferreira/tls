@@ -24,8 +24,8 @@ variables:
   TLSCONNECT_API_URL: https://tlsconnect-service-api.${PROJECT}.svc:8443
 
 stages:
-  - test
   - build
+  - test
   - analyze
   - deploy
   - expose

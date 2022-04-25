@@ -31,7 +31,6 @@ $app = new Laravel\Lumen\Application(
 $app->configure('payment_gateway');
 
 $app->register(App\Providers\PaymentGatewayProvider::class);
-$app->register(App\Providers\EventServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

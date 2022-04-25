@@ -15,7 +15,7 @@ class TransactionService
     public function __construct(
         TransactionRepository $transactionRepository,
         DbConnectionService $dbConnectionService,
-        TransactionItemsService $transactionItemsService,
+        TransactionItemsService $transactionItemsService
     )
     {
         $this->transactionRepository = $transactionRepository;
@@ -225,5 +225,4 @@ class TransactionService
     public function getDbTimeZone() {
         return Carbon::parse($this->dbConnectionService->getDbNowTime())->getTimezone()->toRegionName();
     }
-
 }

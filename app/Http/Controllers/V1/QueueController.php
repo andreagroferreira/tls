@@ -46,11 +46,11 @@ class QueueController extends BaseController
      * )
      */
 
-    public function resend(Request $request)
+    public function resend(Request $request,$queue_name)
     {
         $params = [
             'id' => $request->get('id'),
-            'queue_name' => $request->get('queue_name')
+            'queue_name' => $queue_name
         ];
         $validator = validator($params, [
             'queue_name' => 'required|string',
@@ -103,15 +103,13 @@ class QueueController extends BaseController
      *     ),
      * )
      */
-    public function health(Request $request)
+    public function health(Request $request,$queue_name)
     {
         $params = [
-            'id' => $request->get('id'),
-            'queue_name' => $request->get('queue_name')
+            'queue_name' => $queue_name
         ];
         $validator = validator($params, [
             'queue_name' => 'required|string',
-            'id' => 'nullable'
         ]);
 
         if ($validator->fails()) {

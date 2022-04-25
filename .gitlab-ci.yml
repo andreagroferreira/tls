@@ -415,3 +415,5 @@ rollback:
       when: on_success
 sast:
   stage: test
+  variables:
+    SAST_EXCLUDED_PATHS: spec, test, tests, tmp, vendor

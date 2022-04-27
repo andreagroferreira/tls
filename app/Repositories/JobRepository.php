@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\Models\Job as JobModel;
+use Illuminate\Support\Facades\DB;
 
 class JobRepository
 {
@@ -19,8 +20,8 @@ class JobRepository
         $this->jobModel->setConnection($connectionName);
     }
 
-    public function countQueue($queueName) {
-        return $this->jobModel->where('queue', $queueName)->count();
+    public function countQueue() {
+        return $this->jobModel->select('queue', DB::raw('count(1) as jobs'))->groupBy("queue")->get()->toArray();
     }
 
     public function fetchQueue($attributes)

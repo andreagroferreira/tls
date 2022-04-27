@@ -1268,19 +1268,19 @@
                 }
             }
         },
-        "/health/{queue_name}": {
+        "/health": {
             "get": {
                 "tags": [
                     "Email Service"
                 ],
                 "description": "get jobs volume",
-                "operationId": "bb6500ddda475d29976dc18d7203ecf1",
+                "operationId": "36f000ac4ebe1afeef3c4b2c4cb743bf",
                 "parameters": [
                     {
                         "name": "queue_name",
                         "in": "query",
                         "description": "queue name",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "string",
                             "example": "tlscontact_transaction_sync_queue"

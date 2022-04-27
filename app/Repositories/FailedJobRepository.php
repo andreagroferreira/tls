@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\FailedJob as FailedJobModel;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class FailedJobRepository
 {
@@ -19,9 +19,9 @@ class FailedJobRepository
         $this->failedJobModel->setConnection($connectionName);
     }
 
-    public function countQueue($queueName)
+    public function countQueue()
     {
-        return $this->failedJobModel->where('queue', $queueName)->count();
+        return $this->failedJobModel->select('queue', DB::raw('count(1) as failed_jobs'))->groupBy("queue")->get()->toArray();
     }
 
     public function fetchQueue($attributes)

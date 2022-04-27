@@ -102,6 +102,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     //get transaction sync fail job or resend fail job
     $router->get('/retry_failed_queue/{queue_name}', 'QueueController@resend');
-    $router->get('/health/{queue_name}', 'QueueController@health');
+    $router->get('/health', 'QueueController@health');
 
 });

@@ -66,14 +66,14 @@ class QueueController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/health/{queue_name}",
+     *     path="/health",
      *     tags={"Email Service"},
      *     description="get jobs volume",
      *     @OA\Parameter(
      *          name="queue_name",
      *          in="query",
      *          description="queue name",
-     *          required=true,
+     *          required=false,
      *          @OA\Schema(type="string", example="tlscontact_transaction_sync_queue"),
      *      ),
      *     @OA\Response(
@@ -87,21 +87,10 @@ class QueueController extends BaseController
      *     ),
      * )
      */
-    public function health(Request $request)
+    public function health()
     {
-        $params = [
-            'queue_name' => $request->route('queue_name')
-        ];
-        $validator = validator($params, [
-            'queue_name' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('params error', $validator->errors()->first());
-        }
-        $params = $validator->validated();
         try {
-            $result = $this->QueueService->health($params);
+            $result = $this->QueueService->health();
             return $this->sendResponse($result);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());

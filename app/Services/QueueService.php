@@ -32,31 +32,31 @@ class QueueService
 
     public function resend($params)
     {
-        $failedJobs = $this->failedJobRepository->fetchQueue($params)->toArray();
-        if (empty($failedJobs)) {
-            return [
-                'status' => 'fail',
-                'error' => 'job_not_found',
-                'message' => 'Failed transaction job not found'
-            ];
-        }
-        foreach ($failedJobs as $failedJob) {
-            Artisan::call('queue:retry', ['id' => $failedJob['id']]);
-        }
+        $queue_name= $params['queue_name'];
+        Artisan::call('queue:retry --queue='.$queue_name);
+
         return [
             'status' => 'success',
             'message' => 'Transaction has been resend'
         ];
     }
 
-    public function health($params)
+    public function health()
     {
-        $jobs = $this->JobRepository->countQueue($params['queue_name']);
-        $failed_jobs = $this->failedJobRepository->countQueue($params['queue_name']);
-        return [
-            'jobs' => $jobs,
-            'failed_jobs' => $failed_jobs
-        ];
+        $jobs = $this->JobRepository->countQueue();
+        $failed_jobs = $this->failedJobRepository->countQueue();
+        $jobs_arr = [];
+        foreach ($jobs as $k => $v) {
+            $jobs_arr[$v['queue']]['jobs'] = $v['jobs'];
+        }
+        $failed_jobs_arr = [];
+        foreach ($failed_jobs as $k => $v) {
+            $failed_jobs_arr[$v['queue']] = $v;
+        }
+        foreach ($failed_jobs_arr as $k => $v) {
+            $jobs_arr[$k]['failed_jobs'] = $v['failed_jobs'];
+        }
+        return $jobs_arr;
     }
 
     public function syncTransaction($client,$data){

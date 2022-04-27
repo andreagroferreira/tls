@@ -1050,12 +1050,14 @@ objects:
       ingress:
         - from:
             - namespaceSelector:
+                matchLabels:
+                  network.openshift.io/policy-group: ingress
+            - namespaceSelector:
                 matchExpressions:
                 - key: name
                   operator: In
                   values:
                   - default
-                  - openshift-ingress
           ports:
             - port: 8443
               protocol: TCP

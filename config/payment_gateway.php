@@ -1526,6 +1526,90 @@ return [
             ]
         ]
 
+    ],
+    'leg_de' => [
+        'cnSHA2de' => [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    "currency" => "RMB",
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_DEcnSHA2de_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_DEcnSHA2de_PRIVATE_KEY'),
+                    'public_key' => env('ALI_DEcnSHA2de_PUBLIC_KEY'),
+                ]
+            ]
+        ],
+        'cnBJS2de' => [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    "currency" => "RMB",
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_DEcnBJS2de_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_DEcnBJS2de_PRIVATE_KEY'),
+                    'public_key' => env('ALI_DEcnBJS2de_PUBLIC_KEY'),
+                ]
+            ]
+        ],
+        'egALL2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'FAW_egAll2de_LEGALIZATION_MERCHANT_ID',
+                    'secret_key' => 'FAW_egAll2de_LEGALIZATION_SECURITY_KEY',
+                ]
+            ]
+        ]
     ]
 
 ];

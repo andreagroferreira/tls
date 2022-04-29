@@ -3,7 +3,7 @@
 
 namespace App\Services;
 
-
+use App\Jobs\TransactionSyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -121,14 +121,18 @@ class PaymentService
         if ($this->force_pay_for_not_online_payment_avs == 'yes') {
             $data['force_pay_for_not_online_payment_avs'] = $this->force_pay_for_not_online_payment_avs;
         }
-        $response = $this->apiService->callTlsApi('POST', '/tls/v1/' . $client . '/sync_payment_action', $data);
-
-        if($response['status'] == 200){
-            return $response['body'];
-        } else {
+        Log::info('paymentservice syncAction start');
+        try {
+            dispatch(new TransactionSyncJob($client, $data))->onConnection('tlscontact_transaction_sync_queue')->onQueue('tlscontact_transaction_sync_queue');
+            Log::info('paymentservice syncAction:dispatch');
+            return [
+                'error_msg' => []
+            ];
+        } catch (\Exception $e) {
+            Log::info('paymentservice syncAction dispatch error_msg:'.$e->getMessage());
             return [
                 'status'    => 'error',
-                'error_msg' => $response['body']['message']
+                'error_msg' => $e->getMessage()
             ];
         }
     }

@@ -59,12 +59,6 @@ parameters:
     required: true
   - name: ALI_DEcnBJS2de_PUBLIC_KEY
     required: true
-  - name: ALI_DEcnSHA2de_APP_ID
-    required: true
-  - name: ALI_DEcnSHA2de_PRIVATE_KEY
-    required: true
-  - name: ALI_DEcnSHA2de_PUBLIC_KEY
-    required: true
   - name: FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID
     required: true
   - name: FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY
@@ -467,12 +461,6 @@ objects:
                   value: ${ALI_DEcnBJS2de_PRIVATE_KEY}
                 - name: ALI_DEcnBJS2de_PUBLIC_KEY
                   value: ${ALI_DEcnBJS2de_PUBLIC_KEY}
-                - name: ALI_DEcnSHA2de_APP_ID
-                  value: ${ALI_DEcnSHA2de_APP_ID}
-                - name: ALI_DEcnSHA2de_PRIVATE_KEY
-                  value: ${ALI_DEcnSHA2de_PRIVATE_KEY}
-                - name: ALI_DEcnSHA2de_PUBLIC_KEY
-                  value: ${ALI_DEcnSHA2de_PUBLIC_KEY}
                 - name: FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID
                    value: ${FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID}
                 - name: FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY
@@ -758,12 +746,6 @@ objects:
                   value: ${ALI_DEcnBJS2de_PRIVATE_KEY}
                 - name: ALI_DEcnBJS2de_PUBLIC_KEY
                   value: ${ALI_DEcnBJS2de_PUBLIC_KEY}
-                - name: ALI_DEcnSHA2de_APP_ID
-                  value: ${ALI_DEcnSHA2de_APP_ID}
-                - name: ALI_DEcnSHA2de_PRIVATE_KEY
-                  value: ${ALI_DEcnSHA2de_PRIVATE_KEY}
-                - name: ALI_DEcnSHA2de_PUBLIC_KEY
-                  value: ${ALI_DEcnSHA2de_PUBLIC_KEY}
                 - name: FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID
                   value: ${FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID}
                 - name: FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY

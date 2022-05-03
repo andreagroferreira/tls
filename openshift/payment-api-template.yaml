@@ -149,6 +149,8 @@ parameters:
     required: true
   - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
     required: true
+  - name: ENVPAY_PAY_BEruMOW2be_ACCOUNT
+    required: true
   - name: PAYU_NGALL2BE_SANDBOX_APP_ID
     required: true
   - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
@@ -543,6 +545,8 @@ objects:
                   value: ${ENVPAY_GLO_COMMON_SECRET}
                 - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
                   value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: ENVPAY_PAY_BEruMOW2be_ACCOUNT
+                  value: ${ENVPAY_PAY_BEruMOW2be_ACCOUNT}
                 - name: PAYU_NGALL2BE_SANDBOX_APP_ID
                   value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
                 - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY
@@ -820,6 +824,8 @@ objects:
                   value: ${ENVPAY_GLO_COMMON_SECRET}
                 - name: ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT
                   value: ${ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT}
+                - name: ENVPAY_PAY_BEruMOW2be_ACCOUNT
+                  value: ${ENVPAY_PAY_BEruMOW2be_ACCOUNT}
                 - name: PAYU_NGALL2BE_SANDBOX_APP_ID
                   value: ${PAYU_NGALL2BE_SANDBOX_APP_ID}
                 - name: PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY

@@ -8,6 +8,7 @@ use App\Services\TransactionService;
 use App\Services\ApiService;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\Log;
+use App\Services\GatewayService;
 
 class GlobalirisPaymentGateway implements PaymentGatewayInterface
 {
@@ -15,17 +16,20 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
     private $transactionLogsService;
     private $transactionService;
     private $apiService;
+    private $gatewayService;
 
     public function __construct(
         TransactionService $transactionService,
         TransactionLogsService $transactionLogsService,
         PaymentService $paymentService,
-        ApiService $apiService
+        ApiService $apiService,
+        GatewayService $gatewayService
     ){
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->paymentService = $paymentService;
         $this->apiService         = $apiService;
+        $this->gatewayService     = $gatewayService;
     }
 
     public function getPaymentGatewayName() {
@@ -50,7 +54,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
         $fg_id = $translationsData['t_xref_fg_id'];
-        $config = $this->getConfig($client, $issuer);
+        $config = $this->gatewayService->getConfig($client, $issuer);
         $onlinePayment = $config ? $config['globaliris'] : [];
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $app_env = $this->isSandBox();
@@ -138,7 +142,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $received_amount   = $params['AMOUNT'] ?? '';
-        $config = $this->getConfig($client, $issuer);
+        $config = $this->gatewayService->getConfig($client, $issuer);
         $onlinePayment = $config ? $config['globaliris'] : [];
         $app_env = $this->isSandBox();
 
@@ -211,25 +215,5 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             $this->transactionLogsService->create(['tl_xref_transaction_id' => $translationsData['t_transaction_id'], 'tl_content' =>json_encode($result)]);
             return $result;
         }
-    }
-
-    public function getConfig($client, $issuer)
-    {
-        $country = substr($issuer, 0, 2);
-        $payment_client = substr($issuer, -2);
-        $country_level_config = $country . 'All2' . $payment_client;
-        $global_config = 'allAll2all';
-        $client_payment_gateway = config('payment_gateway')[$client];
-        if (!empty($client_payment_gateway[$issuer])) {
-            $config = $client_payment_gateway[$issuer];
-        } elseif (!empty($client_payment_gateway[$country_level_config])) {
-            $config = $client_payment_gateway[$country_level_config];
-        } elseif (!empty($client_payment_gateway[$global_config])) {
-            $config = $client_payment_gateway[$global_config];
-        } else {
-            $config = [];
-        }
-        return $config;
-
     }
 }

@@ -1471,6 +1471,38 @@ return [
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'ruOVB2uk' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
+                ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'ruLED2uk' => [
@@ -1497,6 +1529,9 @@ return [
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
+            ],
+            'pay_later' => [
+                'label' => "Pay later",
             ]
         ],
         'kzALA2uk' => [
@@ -1524,8 +1559,17 @@ return [
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
             ]
-        ]
-
+        ],
+        'lbAll2uk' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+        'sdAll2uk' => [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
     ]
 
 ];

@@ -8,6 +8,7 @@ use App\Services\TransactionService;
 use App\Services\ApiService;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\Log;
+use App\Services\GatewayService;
 
 class GlobalirisPaymentGateway implements PaymentGatewayInterface
 {
@@ -15,17 +16,20 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
     private $transactionLogsService;
     private $transactionService;
     private $apiService;
+    private $gatewayService;
 
     public function __construct(
         TransactionService $transactionService,
         TransactionLogsService $transactionLogsService,
         PaymentService $paymentService,
-        ApiService $apiService
+        ApiService $apiService,
+        GatewayService $gatewayService
     ){
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->paymentService = $paymentService;
         $this->apiService         = $apiService;
+        $this->gatewayService     = $gatewayService;
     }
 
     public function getPaymentGatewayName() {
@@ -50,7 +54,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
         $fg_id = $translationsData['t_xref_fg_id'];
-        $config = config('payment_gateway')[$client][$issuer];
+        $config = $this->gatewayService->getConfig($client, $issuer);
         $onlinePayment = $config ? $config['globaliris'] : [];
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $app_env = $this->isSandBox();
@@ -138,7 +142,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $received_amount   = $params['AMOUNT'] ?? '';
-        $config = config('payment_gateway')[$client][$issuer];
+        $config = $this->gatewayService->getConfig($client, $issuer);
         $onlinePayment = $config ? $config['globaliris'] : [];
         $app_env = $this->isSandBox();
 
@@ -147,10 +151,12 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             // Live account
             $merchantid     = $onlinePayment['prod']['merchant_id'] ?? '';
             $secret         = $onlinePayment['prod']['secret'] ?? '';
+            $subaccount = $onlinePayment['prod']['account'] ?? '';
         } else {
             // Test account
             $merchantid     = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
             $secret         = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
+            $subaccount = $onlinePayment['sandbox']['sandbox_account'] ?? '';
         }
         $tmp = "$timestamp.$merchantid.$orderId.$result.$message.$pasref.$authcode";
         $sha1hash = sha1($tmp);
@@ -187,12 +193,15 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                     $minFractionDigits--;
                 }
             }
+
             $confirm_params = [
                 'gateway' => $this->getPaymentGatewayName(),
                 'amount' => $received_amount,
                 'currency' => $params['TLS_CURRENCY'] ?? '',
                 'transaction_id' => $orderId,
-                'gateway_transaction_id' => $params['pas_uuid'] ?? '',
+                'gateway_transaction_id' => $pasref ?? '',
+                't_gateway_account' => $merchantid ?? '',
+                't_gateway_subaccount' => $subaccount ?? '',
             ];
             return $this->paymentService->confirm($translationsData, $confirm_params);
         } else {

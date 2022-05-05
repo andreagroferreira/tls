@@ -66,6 +66,7 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         $app_env = $this->isSandBox();
         $client  = $translationsData['t_client'];
         $issuer  = $translationsData['t_issuer'];
+        $fg_id   = $translationsData['t_xref_fg_id'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $payu_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $paymentsos_host = $payu_config['common']['paymentsos_host'];
@@ -75,7 +76,8 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         $create_params = array(
             'amount'   => $translationsData['t_amount'] * 100,
             'currency' => $translationsData['t_currency'] ?? $payu_config['common']['currency'],
-            'order'    => ['id' => $orderId]
+            'order'    => ['id' => $orderId],
+            'customer' => ['id' => $orderId, 'email' => "$fg_id"]
         );
         $payments = $this->paymentInitiateService->paymentInitiate('post', $paymentsos_host, json_encode($create_params), false, $header);
         if (strpos($payments,'error') !== false) {return ['status' => 'fail', 'content' => $payments]; }

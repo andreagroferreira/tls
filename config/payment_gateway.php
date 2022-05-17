@@ -1448,7 +1448,7 @@ return [
             ]
         ],
         'ruEKA2uk' => [
-            'globaliris' => [
+            /*'globaliris' => [
                 'label' => 'GLOBALIRIS pay',
                 'common' => [
                     'env' => 'live',
@@ -1471,13 +1471,13 @@ return [
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
-            ],
+            ],*/
             'pay_later' => [
                 'label' => "Pay later",
             ]
         ],
         'ruOVB2uk' => [
-            'globaliris' => [
+            /*'globaliris' => [
                 'label' => 'GLOBALIRIS pay',
                 'common' => [
                     'env' => 'live',
@@ -1500,13 +1500,13 @@ return [
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
-            ],
+            ],*/
             'pay_later' => [
                 'label' => "Pay later",
             ]
         ],
         'ruLED2uk' => [
-            'globaliris' => [
+            /*'globaliris' => [
                 'label' => 'GLOBALIRIS pay',
                 'common' => [
                     'env' => 'live',
@@ -1529,7 +1529,7 @@ return [
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
-            ],
+            ],*/
             'pay_later' => [
                 'label' => "Pay later",
             ]

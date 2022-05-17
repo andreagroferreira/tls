@@ -6,13 +6,33 @@ namespace App\Services;
 
 class GatewayService
 {
-    public function getGateways($client, $issuer) {
-        $all_gateway = config('payment_gateway');
-        return $all_gateway[$client][$issuer] ?? [];
+    public function getGateways($client, $issuer)
+    {
+        $config = $this->getConfig($client, $issuer);
+        return $config ?? [];
     }
 
     public function getGateway($client, $issuer, $gateway) {
         return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+    }
+
+    public function getConfig($client, $issuer)
+    {
+        $country = substr($issuer, 0, 2);
+        $payment_client = substr($issuer, -2);
+        $country_level_config = $country . 'All2' . $payment_client;
+        $global_config = 'allAll2all';
+        $client_payment_gateway = config('payment_gateway')[$client];
+        if (!empty($client_payment_gateway[$issuer])) {
+            $config = $client_payment_gateway[$issuer];
+        } elseif (!empty($client_payment_gateway[$country_level_config])) {
+            $config = $client_payment_gateway[$country_level_config];
+        } elseif (!empty($client_payment_gateway[$global_config])) {
+            $config = $client_payment_gateway[$global_config];
+        } else {
+            $config = [];
+        }
+        return $config;
     }
 
     public function getKbankConfig($client, $issuer, $gateway) {

@@ -72,6 +72,14 @@ return [
             'queue' => 'tlscontact_fawry_payment_queue',
             'retry_after' => 90,
         ],
+
+        'tlscontact_transaction_sync_queue' => [
+            'driver' => 'database',
+            'connection' => 'payment_pgsql',
+            'table' => 'jobs',
+            'queue' => 'tlscontact_transaction_sync_queue',
+            'retry_after' => 90,
+        ],
     ],
 
     /*

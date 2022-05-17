@@ -156,8 +156,8 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: payment failed.'
             ];
         }
-        $result_code = array_get($response, 'result.code');
-        if($result_code == '000.000.000'){
+        $result_code = array_get($response, 'body.result.code');
+        if($result_code == '000.000.000' || $result_code == '000.100.110' ){
             if ($transaction['t_status'] == 'pending') {
                 // confirm the elements of the payment
                 $confirm_params = [
@@ -188,7 +188,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
                 return [
                     'is_success' => 'ok',
                     'orderid'    => $transaction['t_transaction_id'],
-                    'message'    => 'unknown_error',
+                    'message'    => 'Order status error',
                     'href'       => $transaction['t_onerror_url']
                 ];
             }

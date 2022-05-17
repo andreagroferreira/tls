@@ -3,7 +3,7 @@
 
 namespace App\Services;
 
-
+use App\Jobs\TransactionSyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -67,10 +67,12 @@ class PaymentService
             }
         }
 
-        $update_fields       = [
-            't_gateway'                => $payment_gateway,
+        $update_fields = [
+            't_gateway' => $payment_gateway,
             't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
-            't_status'                 => 'done'
+            't_status' => 'done',
+            't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
+            't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,
         ];
         $this->transactionService->updateById($transaction['t_id'], $update_fields);
         foreach ($update_fields as $field_key => $field_val) {
@@ -119,14 +121,18 @@ class PaymentService
         if ($this->force_pay_for_not_online_payment_avs == 'yes') {
             $data['force_pay_for_not_online_payment_avs'] = $this->force_pay_for_not_online_payment_avs;
         }
-        $response = $this->apiService->callTlsApi('POST', '/tls/v1/' . $client . '/sync_payment_action', $data);
-
-        if($response['status'] == 200){
-            return $response['body'];
-        } else {
+        Log::info('paymentservice syncAction start');
+        try {
+            dispatch(new TransactionSyncJob($client, $data))->onConnection('tlscontact_transaction_sync_queue')->onQueue('tlscontact_transaction_sync_queue');
+            Log::info('paymentservice syncAction:dispatch');
+            return [
+                'error_msg' => []
+            ];
+        } catch (\Exception $e) {
+            Log::info('paymentservice syncAction dispatch error_msg:'.$e->getMessage());
             return [
                 'status'    => 'error',
-                'error_msg' => $response['body']['message']
+                'error_msg' => $e->getMessage()
             ];
         }
     }

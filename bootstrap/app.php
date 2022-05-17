@@ -32,7 +32,6 @@ $app->configure('payment_gateway');
 
 $app->register(App\Providers\PaymentGatewayProvider::class);
 
-
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -109,7 +108,6 @@ $app->configure('swagger-lume');
 
 $app->register(\Illuminate\Redis\RedisServiceProvider::class);
 $app->register(SwaggerLume\ServiceProvider::class);
-
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

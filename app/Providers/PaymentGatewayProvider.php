@@ -126,6 +126,11 @@ class PaymentGatewayProvider extends ServiceProvider
             ->give(function ($app) {
                 return $app->make(SwitchPaymentGateway::class);
             });
+        $this->app->when(BingaController::class)
+            ->needs(PaymentGatewayInterface::class)
+            ->give(function ($app) {
+                return $app->make(BingaPaymentGateway::class);
+            });
     }
 
     /**

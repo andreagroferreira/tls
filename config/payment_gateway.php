@@ -1530,6 +1530,29 @@ return [
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
                 ]
             ],*/
+            'binga' => [
+                'label' => 'BINGA pay',
+                'common' => [
+                    'env' => 'live',
+                    "currency" => "GBP",
+                    "return_url" => "/binga/return",
+                    "notify_url" => "/binga/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "http://preprod.binga.ma:8080/v1.2/api/orders",
+                    "sandbox_merchant_login" => "ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN",
+                    "sandbox_merchant_password" => "ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD",
+                    "sandbox_store_id" => "ENVPAY_BINGA_SANDBOX_STORE_ID",
+                    "sandbox_store_private_key" => "ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY",
+                ],
+                'prod' => [
+                    "host" => "https://api.binga.ma/bingaApi/api/orders",
+                    "merchant_login" => "ENVPAY_BINGA_MERCHANT_LOGIN",
+                    "merchant_password" => "ENVPAY_BINGA_MERCHANT_PASSWORD",
+                    "store_id" => "ENVPAY_BINGA_STORE_ID",
+                    "store_private_key" => "ENVPAY_BINGA_STORE_PRIVATE_KEY",
+                ]
+            ],
             'pay_later' => [
                 'label' => "Pay later",
             ]

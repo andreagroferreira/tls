@@ -141,6 +141,10 @@ parameters:
     required: true
   - name: FAW_egAll2be_SECURITY_KEY
     required: true
+  - name: FAW_egAll2de_MERCHANT_ID
+    required: true
+  - name: FAW_egAll2de_SECURITY_KEY
+    required: true
   - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
     required: true
   - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
@@ -450,6 +454,10 @@ objects:
                   value: ${FAW_egAll2be_MERCHANT_ID}
                 - name: FAW_egAll2be_SECURITY_KEY
                   value: ${FAW_egAll2be_SECURITY_KEY}
+                - name: FAW_egAll2de_MERCHANT_ID
+                  value: ${FAW_egAll2de_MERCHANT_ID}
+                - name: FAW_egAll2de_SECURITY_KEY
+                  value: ${FAW_egAll2de_SECURITY_KEY}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET

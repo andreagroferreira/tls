@@ -181,6 +181,82 @@ parameters:
     required: true
   - name: PAYU_KEALL2DE_PRIVATE_KEY
     required: true
+  - name: ENVPAY_GLO_FRuzTAS2fr_ACCOUNT
+    required: true
+  - name: FAW_FRegAll2fr_MERCHANT_ID
+    required: true
+  - name: FAW_FRegAll2fr_SECURITY_KEY
+    required: true
+  - name: FAW_egCAI2fr_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_egCAI2fr_SANDBOX_SECURITY_KEY
+    required: true
+  - name: FAW_egCAI2fr_MERCHANT_ID
+    required: true
+  - name: FAW_egCAI2fr_SECURITY_KEY
+    required: true
+  - name: FAW_egALY2fr_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_egALY2fr_SANDBOX_SECURITY_KEY
+    required: true
+  - name: FAW_egALY2fr_MERCHANT_ID
+    required: true
+  - name: FAW_egALY2fr_SECURITY_KEY
+    required: true
+  - name: ALI_FRcnCAN2fr_APP_ID
+    required: true
+  - name: ALI_FRcnCAN2fr_PRIVATE_KEY
+    required: true
+  - name: ALI_FRcnCAN2fr_PUBLIC_KEY
+    required: true
+  - name: ALI_FRcnCNG2fr_APP_ID
+    required: true
+  - name: ALI_FRcnCNG2fr_PRIVATE_KEY
+    required: true
+  - name: ALI_FRcnCNG2fr_PUBLIC_KEY
+    required: true
+  - name: ALI_FRcnSHE2fr_APP_ID
+    required: true
+  - name: ALI_FRcnSHE2fr_PRIVATE_KEY
+    required: true
+  - name: ALI_FRcnSHE2fr_PUBLIC_KEY
+    required: true
+  - name: ALI_FRcnWUH2fr_APP_ID
+    required: true
+  - name: ALI_FRcnWUH2fr_PRIVATE_KEY
+    required: true
+  - name: ALI_FRcnWUH2fr_PUBLIC_KEY
+    required: true
+  - name: ALI_FRcnBJS2fr_APP_ID
+    required: true
+  - name: ALI_FRcnBJS2fr_PRIVATE_KEY
+    required: true
+  - name: ALI_FRcnBJS2fr_PUBLIC_KEY
+    required: true
+  - name: ALI_FRcnSHA2fr_APP_ID
+    required: true
+  - name: ALI_FRcnSHA2fr_PRIVATE_KEY
+    required: true
+  - name: ALI_FRcnSHA2fr_PUBLIC_KEY
+    required: true
+  - name: ENVPAY_GLO_FRgbALL2fr_ACCOUNT
+    required: true
+  - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_CMI_FRmaAll2fr_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_FRmaAll2fr_STOREKEY
+    required: true
+  - name: CLICTOPAY_FRtnAll2fr_SANDBOX_USER_NAME
+    required: true
+  - name: CLICTOPAY_FRtnAll2fr_SANDBOX_PASSWORD
+    required: true
+  - name: CLICTOPAY_FRtnAll2fr_USER_NAME
+    required: true
+  - name: CLICTOPAY_FRtnAll2fr_PASSWORD
+    required: true
   - name: CLICTOPAY_SANDBOX_USER_NAME
     required: true
   - name: CLICTOPAY_SANDBOX_PASSWORD
@@ -494,6 +570,82 @@ objects:
                   value: ${PAYU_KEALL2DE_APP_ID}
                 - name: PAYU_KEALL2DE_PRIVATE_KEY
                   value: ${PAYU_KEALL2DE_PRIVATE_KEY}
+                - name: ENVPAY_GLO_FRuzTAS2fr_ACCOUNT
+                  value: ${ENVPAY_GLO_FRuzTAS2fr_ACCOUNT}
+                - name: FAW_FRegAll2fr_MERCHANT_ID
+                  value: ${FAW_FRegAll2fr_MERCHANT_ID}
+                - name: FAW_FRegAll2fr_SECURITY_KEY
+                  value: ${FAW_FRegAll2fr_SECURITY_KEY}
+                - name: FAW_egCAI2fr_SANDBOX_MERCHANT_ID
+                  value: ${FAW_egCAI2fr_SANDBOX_MERCHANT_ID}
+                - name: FAW_egCAI2fr_SANDBOX_SECURITY_KEY
+                  value: ${FAW_egCAI2fr_SANDBOX_SECURITY_KEY}
+                - name: FAW_egCAI2fr_MERCHANT_ID
+                  value: ${FAW_egCAI2fr_MERCHANT_ID}
+                - name: FAW_egCAI2fr_SECURITY_KEY
+                  value: ${FAW_egCAI2fr_SECURITY_KEY}
+                - name: FAW_egALY2fr_SANDBOX_MERCHANT_ID
+                  value: ${FAW_egALY2fr_SANDBOX_MERCHANT_ID}
+                - name: FAW_egALY2fr_SANDBOX_SECURITY_KEY
+                  value: ${FAW_egALY2fr_SANDBOX_SECURITY_KEY}
+                - name: FAW_egALY2fr_MERCHANT_ID
+                  value: ${FAW_egALY2fr_MERCHANT_ID}
+                - name: FAW_egALY2fr_SECURITY_KEY
+                  value: ${FAW_egALY2fr_SECURITY_KEY}
+                - name: ALI_FRcnCAN2fr_APP_ID
+                  value: ${ALI_FRcnCAN2fr_APP_ID}
+                - name: ALI_FRcnCAN2fr_PRIVATE_KEY
+                  value: ${ALI_FRcnCAN2fr_PRIVATE_KEY}
+                - name: ALI_FRcnCAN2fr_PUBLIC_KEY
+                  value: ${ALI_FRcnCAN2fr_PUBLIC_KEY}
+                - name: ALI_FRcnCNG2fr_APP_ID
+                  value: ${ALI_FRcnCNG2fr_APP_ID}
+                - name: ALI_FRcnCNG2fr_PRIVATE_KEY
+                  value: ${ALI_FRcnCNG2fr_PRIVATE_KEY}
+                - name: ALI_FRcnCNG2fr_PUBLIC_KEY
+                  value: ${ALI_FRcnCNG2fr_PUBLIC_KEY}
+                - name: ALI_FRcnSHE2fr_APP_ID
+                  value: ${ALI_FRcnSHE2fr_APP_ID}
+                - name: ALI_FRcnSHE2fr_PRIVATE_KEY
+                  value: ${ALI_FRcnSHE2fr_PRIVATE_KEY}
+                - name: ALI_FRcnSHE2fr_PUBLIC_KEY
+                  value: ${ALI_FRcnSHE2fr_PUBLIC_KEY}
+                - name: ALI_FRcnWUH2fr_APP_ID
+                  value: ${ALI_FRcnWUH2fr_APP_ID}
+                - name: ALI_FRcnWUH2fr_PRIVATE_KEY
+                  value: ${ALI_FRcnWUH2fr_PRIVATE_KEY}
+                - name: ALI_FRcnWUH2fr_PUBLIC_KEY
+                  value: ${ALI_FRcnWUH2fr_PUBLIC_KEY}
+                - name: ALI_FRcnBJS2fr_APP_ID
+                  value: ${ALI_FRcnBJS2fr_APP_ID}
+                - name: ALI_FRcnBJS2fr_PRIVATE_KEY
+                  value: ${ALI_FRcnBJS2fr_PRIVATE_KEY}
+                - name: ALI_FRcnBJS2fr_PUBLIC_KEY
+                  value: ${ALI_FRcnBJS2fr_PUBLIC_KEY}
+                - name: ALI_FRcnSHA2fr_APP_ID
+                  value: ${ALI_FRcnSHA2fr_APP_ID}
+                - name: ALI_FRcnSHA2fr_PRIVATE_KEY
+                  value: ${ALI_FRcnSHA2fr_PRIVATE_KEY}
+                - name: ALI_FRcnSHA2fr_PUBLIC_KEY
+                  value: ${ALI_FRcnSHA2fr_PUBLIC_KEY}
+                - name: ENVPAY_GLO_FRgbALL2fr_ACCOUNT
+                  value: ${ENVPAY_GLO_FRgbALL2fr_ACCOUNT}
+                - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_FRmaAll2fr_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_FRmaAll2fr_MERCHANT_ID
+                  value: ${ENVPAY_CMI_FRmaAll2fr_MERCHANT_ID}
+                - name: ENVPAY_CMI_FRmaAll2fr_STOREKEY
+                  value: ${ENVPAY_CMI_FRmaAll2fr_STOREKEY}
+                - name: CLICTOPAY_FRtnAll2fr_SANDBOX_USER_NAME
+                  value: ${CLICTOPAY_FRtnAll2fr_SANDBOX_USER_NAME}
+                - name: CLICTOPAY_FRtnAll2fr_SANDBOX_PASSWORD
+                  value: ${CLICTOPAY_FRtnAll2fr_SANDBOX_PASSWORD}
+                - name: CLICTOPAY_FRtnAll2fr_USER_NAME
+                  value: ${CLICTOPAY_FRtnAll2fr_USER_NAME}
+                - name: CLICTOPAY_FRtnAll2fr_PASSWORD
+                  value: ${CLICTOPAY_FRtnAll2fr_PASSWORD}
                 - name: CLICTOPAY_SANDBOX_USER_NAME
                   value: ${CLICTOPAY_SANDBOX_USER_NAME}
                 - name: CLICTOPAY_SANDBOX_PASSWORD

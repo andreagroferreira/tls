@@ -45,7 +45,7 @@ class BingaController extends BaseController
             $body = $this->paymentGateway->redirto($orderId);
             return $this->sendResponse($body, 200);
         } catch (\Exception $e) {
-            return $this->sendError('P0006', $e->getMessage(), 400);
+            return $this->sendError('P0006111', $e->getMessage(), 400);
         }
     }
 

@@ -1534,23 +1534,23 @@ return [
                 'label' => 'BINGA pay',
                 'common' => [
                     'env' => 'live',
-                    "currency" => "GBP",
+                    "currency" => "MAD",
                     "return_url" => "/binga/return",
                     "notify_url" => "/binga/notify"
                 ],
                 'sandbox' => [
                     "host" => "http://preprod.binga.ma:8080/v1.2/api/orders",
-                    "merchant_login" => "ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN",
-                    "merchant_password" => "ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD",
-                    "store_id" => "ENVPAY_BINGA_SANDBOX_STORE_ID",
-                    "store_private_key" => "ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY",
+                    "merchant_login" => env("ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN"),
+                    "merchant_password" => env("ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD"),
+                    "store_id" => env("ENVPAY_BINGA_SANDBOX_STORE_ID"),
+                    "store_private_key" => env("ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY"),
                 ],
                 'prod' => [
                     "host" => "https://api.binga.ma/bingaApi/api/orders",
-                    "merchant_login" => "ENVPAY_BINGA_MERCHANT_LOGIN",
-                    "merchant_password" => "ENVPAY_BINGA_MERCHANT_PASSWORD",
-                    "store_id" => "ENVPAY_BINGA_STORE_ID",
-                    "store_private_key" => "ENVPAY_BINGA_STORE_PRIVATE_KEY",
+                    "merchant_login" => env("ENVPAY_BINGA_MERCHANT_LOGIN"),
+                    "merchant_password" => env("ENVPAY_BINGA_MERCHANT_PASSWORD"),
+                    "store_id" => env("ENVPAY_BINGA_STORE_ID"),
+                    "store_private_key" => env("ENVPAY_BINGA_STORE_PRIVATE_KEY"),
                 ]
             ],
             'pay_later' => [

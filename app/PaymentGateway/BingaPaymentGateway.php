@@ -88,9 +88,12 @@ class BingaPaymentGateway implements PaymentGatewayInterface
             "payUrl"         => get_callback_url($payfort_config['common']['notify_url']),
             "checksum"       => $hash_sign
         ];
-        $response = $this->apiService->callGeneralApi('POST', $host . '/prepayTls', $params, $this->getHeaders($pay_config));
-        Log::info('Switch redirto $response:'.json_encode($response));
-        $this->paymentService->saveTransactionLog($translations_data['t_transaction_id'], $response, $this->getPaymentGatewayName());
+        $response = $this->apiService->callGeneralApiJson('POST', $host . '/prepayTls', $params, $this->getHeaders($pay_config));
+
+        var_dump($response);
+        //Log::info('Binga redirto $response:'.json_encode($response));
+        exit;
+        /*$this->paymentService->saveTransactionLog($translations_data['t_transaction_id'], $response, $this->getPaymentGatewayName());
 
         if (array_get($response, 'status') != 200 || blank(array_get($response, 'body.id'))) {
             $this->logWarning('Create checkout failed.', $post_data);
@@ -98,14 +101,14 @@ class BingaPaymentGateway implements PaymentGatewayInterface
                 'status' => 'error',
                 'message' => 'Transaction ERROR: payment failed.'
             ];
-        }
+        }*/
 
-        if($translations_data['t_status'] == 'pending'){
+        /*if($translations_data['t_status'] == 'pending'){
             $update_fields  = [
                 't_gateway_transaction_id' => array_get($response, 'body.id'),
             ];
             $this->transactionService->updateById($translations_data['t_id'], $update_fields);
-        }
+        }*/
 
         /*return [
             'form_method' => 'post',
@@ -113,8 +116,6 @@ class BingaPaymentGateway implements PaymentGatewayInterface
             'form_fields' => $post_params
         ];*/
     }
-
-
 
     public function return($return_params)
     {
@@ -359,12 +360,14 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         return $pay_config[$key];
     }
 
-    protected function getHeaders(array $config)
+    protected function getHeaders(array $pay_config)
     {
+        $encodedAuth = base64_encode( $pay_config['merchant_login'].":".$pay_config['merchant_password']);
         return [
-            'Authorization' => $config['merchant_login'] . ':' . $config['merchant_password'],
-            'Content-Type' => 'Content-Type: application/json',
-            'Accept' => 'Content-Type: application/json',
+            'Authorization' => 'Basic ' . $encodedAuth,
+            'Content-Type' => "application/json",
+            'Accept' => "application/json",
         ];
     }
+
 }

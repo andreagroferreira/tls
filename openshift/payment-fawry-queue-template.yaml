@@ -59,6 +59,14 @@ parameters:
     required: true
   - name: ALI_DEcnBJS2de_PUBLIC_KEY
     required: true
+  - name: FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY
+    required: true
+  - name: FAW_egAll2de_LEGALIZATION_MERCHANT_ID
+    required: true
+  - name: FAW_egAll2de_LEGALIZATION_SECURITY_KEY
+    required: true
   - name: KBANK_THBKK2BE_SANDBOX_API_KEY
     required: true
   - name: KBANK_THBKK2BE_SANDBOX_SECRET
@@ -364,6 +372,14 @@ objects:
                   value: ${ALI_DEcnBJS2de_PRIVATE_KEY}
                 - name: ALI_DEcnBJS2de_PUBLIC_KEY
                   value: ${ALI_DEcnBJS2de_PUBLIC_KEY}
+                - name: FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID
+                  value: ${FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID}
+                - name: FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY
+                  value: ${FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY}
+                - name: FAW_egAll2de_LEGALIZATION_MERCHANT_ID
+                  value: ${FAW_egAll2de_LEGALIZATION_MERCHANT_ID}
+                - name: FAW_egAll2de_LEGALIZATION_SECURITY_KEY
+                  value: ${FAW_egAll2de_LEGALIZATION_SECURITY_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_API_KEY
                   value: ${KBANK_THBKK2BE_SANDBOX_API_KEY}
                 - name: KBANK_THBKK2BE_SANDBOX_SECRET

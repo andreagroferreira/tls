@@ -217,67 +217,67 @@ return [
             ]
         ],
         'cmYAO2be' => [
-//            'tingg' => [
-//                'label'   => 'Tingg pay',
-//                'active'  => true,
-//                'common'  => [
-//                    'successRedirectUrl' => '/tingg/return',
-//                    'failRedirectUrl'    => '/checkout/',
-//                    'pendingRedirectUrl' => '/checkout/',
-//                    'paymentWebhookUrl'  => '/tingg/notify'
-//                ],
-//                'sandbox' => [
-//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"),
-//                    'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
-//                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET")
-//                ],
-//                'prod'    => [
-//                    'host'          => 'https://online.tingg.africa/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_BEcmYAO2be_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_BEcmYAO2be_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_BEcmYAO2be_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_BEcmYAO2be_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_BEcmYAO2be_ACCESS_KEY")
-//                ]
-//            ],
+            'tingg' => [
+                'label'   => 'Tingg pay',
+                'active'  => true,
+                'common'  => [
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
+                ],
+                'sandbox' => [
+                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"),
+                    'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
+                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET")
+                ],
+                /*'prod'    => [
+                    'host'          => 'https://online.tingg.africa/v2/express/',
+                    'accountNumber' => env("ENVPAY_TINGG_BEcmYAO2be_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_BEcmYAO2be_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_BEcmYAO2be_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_BEcmYAO2be_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_BEcmYAO2be_ACCESS_KEY")
+                ]*/
+            ],
             'pay_later' => [
                 'label' => "Pay later",
             ]
         ],
         'cmDLA2be' => [
-//            'tingg' => [
-//                'label'   => 'Tingg pay',
-//                'active'  => true,
-//                'common'  => [
-//                    'successRedirectUrl' => '/tingg/return',
-//                    'failRedirectUrl'    => '/checkout/',
-//                    'pendingRedirectUrl' => '/checkout/',
-//                    'paymentWebhookUrl'  => '/tingg/notify'
-//                ],
-//                'sandbox' => [
-//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"),
-//                    'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
-//                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET")
-//                ],
-//                'prod'    => [
-//                    'host'          => 'https://online.tingg.africa/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_BEcmDLA2be_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_BEcmDLA2be_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_BEcmDLA2be_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_BEcmDLA2be_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_BEcmDLA2be_ACCESS_KEY")
-//                ]
-//            ],
+            'tingg' => [
+                'label'   => 'Tingg pay',
+                'active'  => true,
+                'common'  => [
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
+                ],
+                'sandbox' => [
+                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"),
+                    'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
+                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET")
+                ],
+                /*'prod'    => [
+                    'host'          => 'https://online.tingg.africa/v2/express/',
+                    'accountNumber' => env("ENVPAY_TINGG_BEcmDLA2be_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_BEcmDLA2be_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_BEcmDLA2be_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_BEcmDLA2be_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_BEcmDLA2be_ACCESS_KEY")
+                ]*/
+            ],
             'pay_later' => [
                 'label' => "Pay later",
             ]
@@ -319,34 +319,34 @@ return [
             ]
         ],
         'etADD2be' => [
-//            'tingg' => [
-//                'label'   => 'Tingg pay',
-//                'active'  => true,
-//                'common'  => [
-//                    'successRedirectUrl' => '/tingg/return',
-//                    'failRedirectUrl'    => '/checkout/',
-//                    'pendingRedirectUrl' => '/checkout/',
-//                    'paymentWebhookUrl'  => '/tingg/notify'
-//                ],
-//                'sandbox' => [
-//                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"),
-//                    'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
-//                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET")
-//                ],
-//                'prod'    => [
-//                    'host'          => 'https://online.tingg.africa/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_BEetADD2be_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_BEetADD2be_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_BEetADD2be_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_BEetADD2be_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_BEetADD2be_ACCESS_KEY")
-//                ]
-//            ],
+            'tingg' => [
+                'label'   => 'Tingg pay',
+                'active'  => true,
+                'common'  => [
+                    'successRedirectUrl' => '/tingg/return',
+                    'failRedirectUrl'    => '/checkout/',
+                    'pendingRedirectUrl' => '/checkout/',
+                    'paymentWebhookUrl'  => '/tingg/notify'
+                ],
+                'sandbox' => [
+                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"),
+                    'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
+                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET")
+                ],
+                /*'prod'    => [
+                    'host'          => 'https://online.tingg.africa/v2/express/',
+                    'accountNumber' => env("ENVPAY_TINGG_BEetADD2be_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_BEetADD2be_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_BEetADD2be_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_BEetADD2be_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_BEetADD2be_ACCESS_KEY")
+                ]*/
+            ],
             'pay_later' => [
                 'label' => "Pay later",
             ]
@@ -1660,6 +1660,67 @@ return [
                 'label' => "Pay later",
             ]
         ],
+    ],
+    'leg_de' => [
+        'egCAI2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'FAW_egAll2de_LEGALIZATION_MERCHANT_ID',
+                    'secret_key' => 'FAW_egAll2de_LEGALIZATION_SECURITY_KEY',
+                ]
+            ]
+        ],
+        'egALY2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'FAW_egAll2de_LEGALIZATION_MERCHANT_ID',
+                    'secret_key' => 'FAW_egAll2de_LEGALIZATION_SECURITY_KEY',
+                ]
+            ]
+        ]
     ]
-
 ];

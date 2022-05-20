@@ -66,64 +66,55 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         $app_env = $this->isSandBox();
         $orderid = $translations_data['t_transaction_id'] ?? '';
         $amount = $translations_data['t_amount'];
+        $expirationDate = $translations_data['t_expiration'];
         $client  = $translations_data['t_client'];
         $issuer  = $translations_data['t_issuer'];
-        $fg_id   = $translations_data['t_xref_fg_id'];
+        //$fg_id   = $translations_data['t_xref_fg_id'];
         $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $pay_config     = $this->getPaySecret($payfort_config, $app_env);
-        $application    = $this->formGroupService->fetch($fg_id, $client);
-        $cai = $application['f_cai'] ?? 'binga';
-        $gateway     = $pay_config['gateway'];
-        $private_key = $pay_config['private_key'];
-        $default_params = [
-            "out_trade_no" => $orderid,
-            "product_code" => $payfort_config['common']['product_code'],
-            "total_amount" => number_format($amount, 2, ".", ""),
-            "subject" => substr($cai, 0, 256)
+        $amount      = str_replace(',', '', $amount);
+        $currency    = $translations_data['t_currency'] ?? $payfort_config['common']['currency'];
+        $store_id = $pay_config['store_id'];
+        $store_private_key = $pay_config['store_private_key'];
+        $host = $pay_config['host'];
+        $hash_sign = md5("PRE-PAY" . $amount . $store_id . $orderid . "TLS Contact" . $store_private_key);
+        $params = [
+            "applicantId"    => $orderid,
+            "amount"         => $amount,
+            "expirationDate" => $expirationDate,
+            "storeId"        => $store_id,
+            "bookedFor"      => "",
+            "country"        => $client,
+            "payUrl"         => get_callback_url($payfort_config['common']['notify_url']),
+            "checksum"       => $hash_sign
         ];
-        $post_params = [
-            'app_id'      => $pay_config['app_id'],
-            'method'      => $payfort_config['common']['method'],
-            'format'      => 'json',
-            'return_url'  => get_callback_url($payfort_config['common']['return_url']),
-            'charset'     => 'UTF-8',
-            'sign_type'   => 'RSA2',
-            'sign'        => '',
-            'timestamp'   => date('Y-m-d H:i:s'),
-            'version'     => '1.0',
-            'notify_url'  => get_callback_url($payfort_config['common']['notify_url']),
-            'biz_content' => json_encode($default_params, JSON_UNESCAPED_UNICODE),
-        ];
-        $search = [
-            "-----BEGIN RSA PRIVATE KEY-----",
-            "-----END RSA PRIVATE KEY-----",
-            "-----BEGIN PUBLIC KEY-----",
-            "-----END PUBLIC KEY-----",
-            "\n",
-            "\r",
-            "\r\n"
-        ];
-        unset($post_params['sign']);
-        ksort($post_params);
-        //dd($post_params);
-        $tmp = urldecode(http_build_query($post_params));
-        $private_res = $search[0] . PHP_EOL . wordwrap($private_key, 64, "\n", true) . PHP_EOL . $search[1];
-        // 生成的签名
-        $private_sign = openssl_sign($tmp, $sign, $private_res, OPENSSL_ALGO_SHA256) ? base64_encode($sign) : null;
-        //$post_params['sign'] = $private_sign;
-        $post_params['sign'] = $private_sign;
-        $post_params['sign_type'] = "RSA2";
-        $gatewayURL = $gateway . "?charset=UTF-8";
-        //$post_params['biz_content'] = $default_params;
-        ksort($post_params);
-        //$parms = http_build_query($post_params);
-        //var_dump($parms);exit;
-        return [
+        $response = $this->apiService->callGeneralApi('POST', $host . '/prepayTls', $params, $this->getHeaders($pay_config));
+        Log::info('Switch redirto $response:'.json_encode($response));
+        $this->paymentService->saveTransactionLog($translations_data['t_transaction_id'], $response, $this->getPaymentGatewayName());
+
+        if (array_get($response, 'status') != 200 || blank(array_get($response, 'body.id'))) {
+            $this->logWarning('Create checkout failed.', $post_data);
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: payment failed.'
+            ];
+        }
+
+        if($translations_data['t_status'] == 'pending'){
+            $update_fields  = [
+                't_gateway_transaction_id' => array_get($response, 'body.id'),
+            ];
+            $this->transactionService->updateById($translations_data['t_id'], $update_fields);
+        }
+
+        /*return [
             'form_method' => 'post',
             'form_action' => $gatewayURL,
             'form_fields' => $post_params
-        ];
+        ];*/
     }
+
+
 
     public function return($return_params)
     {
@@ -366,5 +357,14 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         $is_live = ($pay_config['common']['env'] == 'live');
         $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
         return $pay_config[$key];
+    }
+
+    protected function getHeaders(array $config)
+    {
+        return [
+            'Authorization' => $config['merchant_login'] . ':' . $config['merchant_password'],
+            'Content-Type' => 'Content-Type: application/json',
+            'Accept' => 'Content-Type: application/json',
+        ];
     }
 }

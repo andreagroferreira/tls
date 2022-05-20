@@ -1536,14 +1536,14 @@ return [
                     'env' => 'live',
                     "currency" => "GBP",
                     "return_url" => "/binga/return",
-                    "notify_url" => "/binga/return"
+                    "notify_url" => "/binga/notify"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "http://preprod.binga.ma:8080/v1.2/api/orders",
-                    "sandbox_merchant_login" => "ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN",
-                    "sandbox_merchant_password" => "ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD",
-                    "sandbox_store_id" => "ENVPAY_BINGA_SANDBOX_STORE_ID",
-                    "sandbox_store_private_key" => "ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY",
+                    "host" => "http://preprod.binga.ma:8080/v1.2/api/orders",
+                    "merchant_login" => "ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN",
+                    "merchant_password" => "ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD",
+                    "store_id" => "ENVPAY_BINGA_SANDBOX_STORE_ID",
+                    "store_private_key" => "ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY",
                 ],
                 'prod' => [
                     "host" => "https://api.binga.ma/bingaApi/api/orders",

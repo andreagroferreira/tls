@@ -132,7 +132,7 @@ class ApiService
             'body' => json_decode($response->getBody(), true)
         ];
         if ($response['status'] != 200 && $response['status'] != 201) {
-            Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), $response));
+            Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), json_encode($response)));
         }
         return $response;
     }

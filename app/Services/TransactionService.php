@@ -80,7 +80,7 @@ class TransactionService
                     'status' => 'done',
                     'tech_creation' => $transaction->t_tech_creation,
                     'tech_modification' => $transaction->t_tech_modification,
-                    'items' => $items
+                    'items' => array($items)
                 ];
             }
         }

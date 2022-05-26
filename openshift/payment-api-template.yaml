@@ -243,6 +243,22 @@ parameters:
     required: true
   - name: ENVPAY_GLO_FRgbALL2fr_ACCOUNT
     required: true
+  - name: ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN
+    required: true
+  - name: ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD
+    required: true
+  - name: ENVPAY_BINGA_SANDBOX_STORE_ID
+    required: true
+  - name: ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY
+    required: true
+  - name: ENVPAY_BINGA_MERCHANT_LOGIN
+    required: true
+  - name: ENVPAY_BINGA_MERCHANT_PASSWORD
+    required: true
+  - name: ENVPAY_BINGA_STORE_ID
+    required: true
+  - name: ENVPAY_BINGA_STORE_PRIVATE_KEY
+    required: true
   - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID
     required: true
   - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_STOREKEY
@@ -727,6 +743,22 @@ objects:
                   value: ${ALI_FRcnSHA2fr_PUBLIC_KEY}
                 - name: ENVPAY_GLO_FRgbALL2fr_ACCOUNT
                   value: ${ENVPAY_GLO_FRgbALL2fr_ACCOUNT}
+                - name: ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN
+                  value: ${ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN}
+                - name: ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD
+                  value: ${ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD}
+                - name: ENVPAY_BINGA_SANDBOX_STORE_ID
+                  value: ${ENVPAY_BINGA_SANDBOX_STORE_ID}
+                - name: ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY
+                  value: ${ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY}
+                - name: ENVPAY_BINGA_MERCHANT_LOGIN
+                  value: ${ENVPAY_BINGA_MERCHANT_LOGIN}
+                - name: ENVPAY_BINGA_MERCHANT_PASSWORD
+                  value: ${ENVPAY_BINGA_MERCHANT_PASSWORD}
+                - name: ENVPAY_BINGA_STORE_ID
+                  value: ${ENVPAY_BINGA_STORE_ID}
+                - name: ENVPAY_BINGA_STORE_PRIVATE_KEY
+                  value: ${ENVPAY_BINGA_STORE_PRIVATE_KEY}
                 - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_STOREKEY
@@ -1094,6 +1126,22 @@ objects:
                   value: ${ALI_FRcnSHA2fr_PUBLIC_KEY}
                 - name: ENVPAY_GLO_FRgbALL2fr_ACCOUNT
                   value: ${ENVPAY_GLO_FRgbALL2fr_ACCOUNT}
+                - name: ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN
+                  value: ${ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN}
+                - name: ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD
+                  value: ${ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD}
+                - name: ENVPAY_BINGA_SANDBOX_STORE_ID
+                  value: ${ENVPAY_BINGA_SANDBOX_STORE_ID}
+                - name: ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY
+                  value: ${ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY}
+                - name: ENVPAY_BINGA_MERCHANT_LOGIN
+                  value: ${ENVPAY_BINGA_MERCHANT_LOGIN}
+                - name: ENVPAY_BINGA_MERCHANT_PASSWORD
+                  value: ${ENVPAY_BINGA_MERCHANT_PASSWORD}
+                - name: ENVPAY_BINGA_STORE_ID
+                  value: ${ENVPAY_BINGA_STORE_ID}
+                - name: ENVPAY_BINGA_STORE_PRIVATE_KEY
+                  value: ${ENVPAY_BINGA_STORE_PRIVATE_KEY}
                 - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_CMI_FRmaAll2fr_SANDBOX_STOREKEY

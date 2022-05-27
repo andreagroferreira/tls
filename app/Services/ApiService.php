@@ -117,6 +117,26 @@ class ApiService
         return $response;
     }
 
+    public function callGeneralApiJson($method, $url, $data = [], $headers = [], $auth = []) {
+        $params = [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false
+        ];
+        if (!empty($data))    { $params['json'] = $data; }
+        if (!empty($headers)) { $params['headers']     = $headers; }
+        if (!empty($auth))    { $params['auth']        = $auth; }
+        $response = $this->guzzleClient->request($method, $url, $params);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        if ($response['status'] != 200 && $response['status'] != 201) {
+            Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), json_encode($response)));
+        }
+        return $response;
+    }
+
     public function callInvoiceApi($url, $data)
     {
         return $this->postApi($url, $data);

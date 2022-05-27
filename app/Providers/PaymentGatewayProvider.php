@@ -13,7 +13,9 @@ use App\Http\Controllers\V1\PayuController;
 use App\Http\Controllers\V1\SwitchController;
 use App\Http\Controllers\V1\TinggController;
 use App\Http\Controllers\V1\AlipayController;
+use App\Http\Controllers\V1\BingaController;
 use App\PaymentGateway\AlipayPaymentGateway;
+use App\PaymentGateway\BingaPaymentGateway;
 use App\PaymentGateway\ClictopayPaymentGateway;
 use App\PaymentGateway\CmiPaymentGateway;
 use App\PaymentGateway\KBankPaymentGateway;
@@ -125,6 +127,11 @@ class PaymentGatewayProvider extends ServiceProvider
             ->needs(PaymentGatewayInterface::class)
             ->give(function ($app) {
                 return $app->make(SwitchPaymentGateway::class);
+            });
+        $this->app->when(BingaController::class)
+            ->needs(PaymentGatewayInterface::class)
+            ->give(function ($app) {
+                return $app->make(BingaPaymentGateway::class);
             });
     }
 

@@ -104,4 +104,8 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('/retry_failed_queue/{queue_name}', 'QueueController@resend');
     $router->get('/health', 'QueueController@health');
 
+    $router->post('binga/redirto', 'BingaController@redirto');
+    $router->post('binga/notify', 'BingaController@notify');
+    $router->post('binga/return', 'BingaController@return');
+
 });

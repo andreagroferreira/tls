@@ -1317,6 +1317,96 @@ return [
                 ],*/
             ],
         ],
+        'egCAI2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                ],
+                /*'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
+                ]*/
+            ]
+        ],
+        'egALY2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                ],
+                /*'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
+                ]*/
+            ]
+        ],
+        'egHRG2de' => [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                ],
+                /*'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
+                ]*/
+            ]
+        ]
     ],
     'pl' => [
         'uaKBP2pl' => [
@@ -1340,6 +1430,402 @@ return [
                     'signature_secret_key' => env('ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY'),
                 ]
             ],
+        ],
+    ],
+    'fr' => [
+        'azBAK2fr'=> [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "EUR",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/paypal/return",
+                    "notify_url" => "/paypal/notify"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://www.sandbox.paypal.com/cgi-bin/webscr",
+                    "sandbox_account" => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT")
+                ],
+                'prod' => [
+                    "host" => "https://www.paypal.com/cgi-bin/webscr",
+                    "account" => env("ENVPAY_PAY_BEzaALL2be_ACCOUNT")
+                ]
+            ]
+        ],
+        'uzTAS2fr'=> [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "EUR",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_FRuzTAS2fr_ACCOUNT")
+                ]
+            ]
+        ],
+        /*'thBKK2fr'=> [
+        ],*/
+        'egAll2fr'=> [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'FAW_COMMON_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'FAW_COMMON_SANDBOX_SECRET_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'FAW_FRegAll2fr_MERCHANT_ID',
+                    'secret_key' => 'FAW_FRegAll2fr_SECURITY_KEY',
+                ]
+            ]
+        ],
+        'egCAI2fr'=> [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'FAW_egCAI2fr_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'FAW_egCAI2fr_SANDBOX_SECURITY_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'FAW_egCAI2fr_MERCHANT_ID',
+                    'secret_key' => 'FAW_egCAI2fr_SECURITY_KEY',
+                ]
+            ]
+        ],
+        'egALY2fr'=> [
+            'fawry' => [
+                'label' => 'Fawry pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'version' => 'v2',
+                    'redirect_path_v1' => '/ECommercePlugin/scripts/FawryPay.js',
+                    'redirect_path_v2' => '/atfawry/plugin/assets/payments/js/fawrypay-payments.js',
+                    'verify_path_v1' => '/ECommerceWeb/Fawry/payments/status',
+                    'verify_path_v2' => '/ECommerceWeb/Fawry/payments/status/v2',
+                    'currency' => 'EGP',
+                    'css_path' => '/atfawry/plugin/assets/payments/css/fawrypay-payments.css',
+                    'return_url' => '/fawry/return',
+                    'notify_url' => '/fawry/notify',
+                    'txn_fee_rate' => 0,
+                    'txn_fee_extra' => 0
+                ],
+                'sandbox' => [
+                    'host' => 'https://atfawry.fawrystaging.com',
+                    'merchant_id' => 'FAW_egALY2fr_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'FAW_egALY2fr_SANDBOX_SECURITY_KEY',
+                ],
+                'prod' => [
+                    'host' => 'https://www.atfawry.com',
+                    'merchant_id' => 'FAW_egALY2fr_MERCHANT_ID',
+                    'secret_key' => 'FAW_egALY2fr_SECURITY_KEY',
+                ]
+            ]
+        ],
+        'cnCAN2fr'=> [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    "currency" => "RMB",
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_FRcnCAN2fr_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_FRcnCAN2fr_PRIVATE_KEY'),
+                    'public_key' => env('ALI_FRcnCAN2fr_PUBLIC_KEY'),
+                ]
+            ]
+        ],
+        'cnCNG2fr'=> [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    "currency" => "RMB",
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_FRcnCNG2fr_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_FRcnCNG2fr_PRIVATE_KEY'),
+                    'public_key' => env('ALI_FRcnCNG2fr_PUBLIC_KEY'),
+                ]
+            ]
+        ],
+        'cnSHE2fr'=> [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    "currency" => "RMB",
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_FRcnSHE2fr_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_FRcnSHE2fr_PRIVATE_KEY'),
+                    'public_key' => env('ALI_FRcnSHE2fr_PUBLIC_KEY'),
+                ]
+            ]
+        ],
+        'cnWUH2fr'=> [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    "currency" => "RMB",
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_FRcnWUH2fr_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_FRcnWUH2fr_PRIVATE_KEY'),
+                    'public_key' => env('ALI_FRcnWUH2fr_PUBLIC_KEY'),
+                ]
+            ]
+        ],
+        'cnBJS2fr'=> [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    "currency" => "RMB",
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_FRcnBJS2fr_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_FRcnBJS2fr_PRIVATE_KEY'),
+                    'public_key' => env('ALI_FRcnBJS2fr_PUBLIC_KEY'),
+                ]
+            ]
+        ],
+        'cnSHA2fr'=> [
+            'alipay' => [
+                'label'   => 'Alipay pay',
+                'common'  => [
+                    'env' => 'live',
+                    'activated' => true,
+                    "currency" => "RMB",
+                    'product_code' => env('ALIPAY_PRODUCT_CODE'),
+                    'method' => env('ALIPAY_METHOD'),
+                    'return_url'  => '/alipay/return',
+                    'notify_url'  => '/alipay/notify',
+                ],
+                'sandbox' => [
+                    'app_id' => env('ALIPAY_SANDBOX_APP_ID'),
+                    'gateway' => env('ALIPAY_SANDBOX_GATEWAY'),
+                    'private_key' => env('ALIPAY_SANDBOX_PRIVATE_KEY'),
+                    'public_key' => env('ALIPAY_SANDBOX_PUBLIC_KEY'),
+                ],
+                'prod'    => [
+                    'app_id' => env('ALI_FRcnSHA2fr_APP_ID'),
+                    'gateway' => env('ALIPAY_GATEWAY'),
+                    'private_key' => env('ALI_FRcnSHA2fr_PRIVATE_KEY'),
+                    'public_key' => env('ALI_FRcnSHA2fr_PUBLIC_KEY'),
+                ]
+            ]
+        ],
+        'gbAll2fr'=> [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_FRgbALL2fr_ACCOUNT")
+                ]
+            ]
+        ],
+        'maAll2fr'=> [
+            'binga' => [
+                'label' => 'BINGA pay',
+                'common' => [
+                    'env' => 'live',
+                    "currency" => "MAD",
+                    "cash_url" => "/binga/cash",
+                    "return_url" => "/binga/return",
+                    "notify_url" => "/binga/notify"
+                ],
+                'sandbox' => [
+                    "host" => "http://preprod.binga.ma:8080/v1.2/api/orders",
+                    "merchant_login" => env("ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN"),
+                    "merchant_password" => env("ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD"),
+                    "store_id" => env("ENVPAY_BINGA_SANDBOX_STORE_ID"),
+                    "store_private_key" => env("ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY"),
+                ],
+                'prod' => [
+                    "host" => "https://api.binga.ma/bingaApi/api/orders",
+                    "merchant_login" => env("ENVPAY_BINGA_MERCHANT_LOGIN"),
+                    "merchant_password" => env("ENVPAY_BINGA_MERCHANT_PASSWORD"),
+                    "store_id" => env("ENVPAY_BINGA_STORE_ID"),
+                    "store_private_key" => env("ENVPAY_BINGA_STORE_PRIVATE_KEY"),
+                ]
+            ],
+            'cmi' => [
+                'label' => 'CMI pay',
+                'active' => true,
+                'common' => [
+                    'storetype' => '3d_pay_hosting',
+                    'tranType' => 'PreAuth',
+                    'okUrl' => '/cmi/return',
+                    'failUrl' => 'cmi/return',
+                    'hashAlgorithm' => 'ver3',
+                    'shopurl' => '/checkout/',
+                    'callbackUrl' => '/cmi/notify',
+                ],
+                'sandbox' => [
+                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => env('ENVPAY_CMI_FRmaAll2fr_SANDBOX_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_FRmaAll2fr_SANDBOX_STOREKEY'),
+                ],
+                'prod' => [
+                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => env("ENVPAY_CMI_FRmaAll2fr_MERCHANT_ID"),
+                    'storeKey' => env("ENVPAY_CMI_FRmaAll2fr_STOREKEY")
+                ]
+            ]
+        ],
+        'tnAll2fr'=> [
+            'clictopay' => [
+                'label'   => 'clictopay pay',
+                'active'  => true,
+                'common'  => [
+                    'env'         => 'live',
+                    'activated'   => true,
+                    'currency'    => 'TND',
+                    'language'    => 'en',
+                    'return_url'  => '/clictopay/return'
+                ],
+                'sandbox' => [
+                    'sandbox_host'      => 'https://test.clictopay.com/payment/rest',
+                    'sandbox_user_name' => env('CLICTOPAY_FRtnAll2fr_SANDBOX_USER_NAME'),
+                    'sandbox_password'  => env('CLICTOPAY_FRtnAll2fr_SANDBOX_PASSWORD')
+                ],
+                'prod'    => [
+                    'host'      => 'https://ipay.clictopay.com/payment/rest',
+                    'user_name' => env('CLICTOPAY_FRtnAll2fr_USER_NAME'),
+                    'password'  => env('CLICTOPAY_FRtnAll2fr_PASSWORD')
+                ]
+            ]
         ],
     ],
     'hmpo_uk' => [
@@ -1568,6 +2054,79 @@ return [
         'sdAll2uk' => [
             'pay_later' => [
                 'label' => "Pay later",
+        ]
+
+    ]
+    ],
+    'leg_be' =>[
+        'zaAll2be' => [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "EUR",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/paypal/return",
+                    "notify_url" => "/paypal/notify"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://www.sandbox.paypal.com/cgi-bin/webscr",
+                    "sandbox_account" => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT")
+                ],
+                'prod' => [
+                    "host" => "https://www.paypal.com/cgi-bin/webscr",
+                    "account" => env("ENVPAY_PAY_BEzaALL2be_ACCOUNT")
+                ]
+            ]
+        ],
+        'gbAll2be' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "GBP",
+                    "min_fraction_digits" => "2",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/globaliris/return"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    "sandbox_account" => ''
+                ],
+                'prod' => [
+                    "host" => "https://hpp.globaliris.com/pay",
+                    "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
+                    "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
+                    "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
+                ]
+            ]
+        ],
+        'ruMOW2be' => [
+            'paypal' => [
+                'label' => 'PAYPAL pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "RUB",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "return_url" => "/paypal/return",
+                    "notify_url" => "/paypal/notify"
+                ],
+                'sandbox' => [
+                    "sandbox_host" => "https://www.sandbox.paypal.com/cgi-bin/webscr",
+                    "sandbox_account" => env("ENVPAY_PAY_COMMON_SANDBOX_ACCOUNT")
+                ],
+                'prod' => [
+                    "host" => "https://www.paypal.com/cgi-bin/webscr",
+                    "account" => env("ENVPAY_PAY_BEruMOW2be_ACCOUNT")
+                ]
             ]
         ],
     ],

@@ -206,7 +206,6 @@ class AvsRecommendationService
             }
             if ($avs['paid']) {
                 $item['paid_price'] = $avs['paid_price'];
-                $item['paid_transaction_id'] = $avs['paid_transaction_id'];
             }
             $item['quantity'] = $avs['av_value'];
             $item['a_id'] = $avs['a_id'];

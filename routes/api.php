@@ -20,6 +20,7 @@ $router->get('/', function () use ($router) {
 $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($router) {
     // transaction api
     $router->get('transaction/{fg_id}', 'TransactionController@fetch');
+    $router->get('form_transaction/{f_id}', 'TransactionController@fetchByForm');
     $router->post('transaction', 'TransactionController@create');
     $router->get('transactions', 'TransactionController@fetchAll');
 

@@ -42,6 +42,55 @@ class TransactionService
         });
     }
 
+    public function fetchByForm($params) {
+        $transactions = $this->transactionItemsService->fetch([
+            'ti_xref_f_id' => $params['f_id']
+        ])
+            ->whereNotIn('ti_fee_type', ['service_fees', 'visa_fees'])
+            ->groupBy('ti_xref_transaction_id')
+            ->toArray();
+
+        if(empty($transactions)) {
+            return [];
+        }
+
+        $receipts = [];
+        foreach ($transactions as $transaction_id => $services) {
+            $transaction = $this->transactionRepository->fetch([
+                't_transaction_id' => $transaction_id,
+                't_status' => 'done'
+            ])->first();
+            if(!empty($transaction)) {
+                $items['f_id'] = current($services)['ti_xref_f_id'];
+                foreach($services as $service) {
+                    $items['skus'][] = [
+                        'sku' => $service['ti_fee_type'],
+                        'price' => $service['ti_amount'],
+                        'vat' => $service['ti_vat'],
+                        'quantity' => $service['ti_quantity'],
+                    ];
+                }
+                $receipts[] = [
+                    't_id' => $transaction->t_id,
+                    'gateway' => $transaction->t_gateway,
+                    'agent_gateway' => $transaction->t_payment_method,
+                    'transaction_id' => $transaction_id,
+                    'gateway_transaction_id' => $transaction->t_gateway_transaction_id,
+                    'currency' => $transaction->t_currency,
+                    'status' => 'done',
+                    'tech_creation' => $transaction->t_tech_creation,
+                    'tech_modification' => $transaction->t_tech_modification,
+                    'items' => array($items)
+                ];
+            }
+        }
+        $sort = SORT_DESC;
+        if(!empty($params['sort']) && $params['sort'] == 'asc') {
+            $sort = SORT_ASC;
+        }
+        return collect($receipts)->sortBy('t_id', $sort)->values()->toArray();
+    }
+
     public function fetchAll($attributes)
     {
         $where = collect([

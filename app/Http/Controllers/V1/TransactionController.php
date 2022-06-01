@@ -81,6 +81,72 @@ class TransactionController extends BaseController
         }
     }
 
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/form_transaction/{f_id}",
+     *     tags={"Payment API"},
+     *     description="get the transaction details according to f_id",
+     *      @OA\Parameter(
+     *          name="f_id",
+     *          in="path",
+     *          description="the tlsconnect f_id",
+     *          required=true,
+     *          @OA\Schema(type="integer", example="10000"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="order",
+     *          in="query",
+     *          description="desc or asc",
+     *          required=false,
+     *          @OA\Schema(type="string", example=""),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the transaction information",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="transaction not found"
+     *      ),
+     * )
+     */
+    public function fetchByForm(Request $request)
+    {
+        $params = [
+            'f_id' => $request->route('f_id'),
+            'order' => $request->input('order', 'desc')
+        ];
+        $validator = validator($params, [
+            'f_id' => 'required|integer',
+            'order' => [
+                'required',
+                'string',
+                Rule::in(['desc', 'asc']),
+            ]
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $res = $this->transactionService->fetchByForm($validator->validated());
+            if ($res) {
+                return $this->sendResponse($res);
+            } else {
+                return $this->sendEmptyResponse(204);
+            }
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
     /**
      * @OA\Post(
      *     path="/api/v1/transaction",

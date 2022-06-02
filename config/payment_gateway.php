@@ -971,14 +971,14 @@ return [
                     'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
                     'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY")
                 ],
-//                'prod'    => [
-//                    'host'          => 'https://online.tingg.africa/v2/express/',
-//                    'accountNumber' => env("ENVPAY_TINGG_DEugKLA2de_ACCOUNT_NUMBER"),
-//                    'serviceCode'   => env("ENVPAY_TINGG_DEugKLA2de_SERVICE_CODE"),
-//                    'ivKey'         => env("ENVPAY_TINGG_DEugKLA2de_IVKEY"),
-//                    'secretKey'     => env("ENVPAY_TINGG_DEugKLA2de_SECRET_KEY"),
-//                    'accessKey'     => env("ENVPAY_TINGG_DEugKLA2de_ACCESS_KEY")
-//                ]
+                'prod'    => [
+                    'host'          => 'https://online.tingg.africa/v2/express/',
+                    //'accountNumber' => env("ENVPAY_TINGG_DEugKLA2de_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_DEtzDAR2de_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY")
+                ]
             ],
         ],
         'keNBO2de' => [

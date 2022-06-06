@@ -62,6 +62,7 @@ class TransactionService
             ])->first();
             if(!empty($transaction)) {
                 $items['f_id'] = current($services)['ti_xref_f_id'];
+                $items['skus'] = [];
                 foreach($services as $service) {
                     $items['skus'][] = [
                         'sku' => $service['ti_fee_type'],

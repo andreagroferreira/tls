@@ -91,7 +91,8 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
             'currency'       => $this->currencyCodeService->getCurrencyCode($currency),
             'returnUrl'      => $return_url,
             'language'       => 'en',
-            'pageView'       => 'DESKTOP'
+            'pageView'       => 'DESKTOP',
+            'clientId'       => $translationsData['t_xref_fg_id']
         );
         $init_host_url = $init_hosturl . '/register.do';
         $response = $this->apiService->callGeneralApi('post', $init_host_url, $params);
@@ -162,6 +163,12 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
                 break;
             case 4:
                 $message = "refunded transaction.";
+                break;
+            case 5:
+                $message = "Authorization by ACS of the initiated issuer.";
+                break;
+            case 6:
+                $message = "Permission denied.";
                 break;
             default;
         }

@@ -123,6 +123,14 @@ parameters:
     required: true
   - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
     required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY
+    required: true
   - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
     required: true
   - name: PAYGATE_ZAALL2BE_SANDBOX_ID
@@ -530,6 +538,14 @@ objects:
                   value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
                 - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
                   value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
+                - name: ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE}
+                - name: ENVPAY_TINGG_DEtzDAR2de_IVKEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_IVKEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID

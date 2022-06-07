@@ -952,6 +952,9 @@ return [
                     'accessKey'     => env("ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY")
                 ]
             ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
         ],
         'ugKLA2de' => [
             'tingg' => [

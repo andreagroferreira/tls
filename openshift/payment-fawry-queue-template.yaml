@@ -87,6 +87,14 @@ parameters:
     required: true
   - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
     required: true
+  - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+    required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
     required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -494,6 +502,14 @@ objects:
                   value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
                   value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_STOREKEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE

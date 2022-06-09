@@ -878,7 +878,7 @@ objects:
                   cd /opt/app-root/src/;
                   php artisan  --force migrate --path=database/creation --database=pgsql;
                   php artisan  --force migrate --path=database/migrations --database=deploy_payment_pgsql;
-
+                  cp --no-preserve=mode /etc/pki/ca-trust/extracted/pem/* /trusted-ca && cat /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt >> /trusted-ca/tls-ca-bundle.pem;
               volumeMounts:
                 - mountPath: /opt/app-root/httpd-cfg-init/
                   name: volume-apache-config-init
@@ -892,6 +892,8 @@ objects:
                   name: volume-pgpass
                 - mountPath: /opt/app-root/src/data/
                   name: volume-application-data
+                - mountPath: /trusted-ca
+                  name: trusted-ca
           containers:
             - env:
                 - name: APPLICATION_ENV
@@ -1315,6 +1317,8 @@ objects:
                   name: volume-logs
                 - mountPath: /opt/app-root/src/data/
                   name: volume-application-data
+                - mountPath: /etc/pki/ca-trust/extracted/pem
+                  name: trusted-ca
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -1333,6 +1337,8 @@ objects:
               name: volume-ssl
             - emptyDir: {}
               name: volume-pgpass
+            - emptyDir: {}
+              name: trusted-ca
             - name: volume-ssl-init
               secret:
                 defaultMode: 420

@@ -169,7 +169,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'context' => Str::startsWith(env('REDIS_HOST'), 'tls://') ? [ 'stream' => ['verify_peer' => false]] : null,
+            'context' => Str::startsWith(env('REDIS_HOST'), 'tls://') ? ['verify_peer_name' => false] : null,
             'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'lumen'), '_').'_database_'),
             'parameters' => [
                 'host' => env('REDIS_HOST', '127.0.0.1'),

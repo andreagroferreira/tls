@@ -1420,7 +1420,7 @@ objects:
               protocol: TCP
       podSelector:
         matchLabels:
-          crunchy-pgbouncer: 'true'
+          app: pgbouncer
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:

@@ -30,7 +30,9 @@ class DirectusService
         if($result && $result['status'] != 200) {
             return [];
         }
-        Cache::put($cacheKey, $result['body']['data'], 15 * 60);
+        if(!empty($result['body']['data'])) {
+            Cache::put($cacheKey, $result['body']['data'], 15 * 60);
+        }
         return $result['body']['data'];
     }
 

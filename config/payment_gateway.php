@@ -112,7 +112,7 @@ return [
                     'storetype' => '3d_pay_hosting',
                     'tranType' => 'PreAuth',
                     'okUrl' => '/cmi/return',
-                    'failUrl' => 'cmi/return',
+                    'failUrl' => '/cmi/return',
                     'hashAlgorithm' => 'ver3',
                     'shopurl' => '/checkout/',
                     'callbackUrl' => '/cmi/notify',
@@ -1030,20 +1030,20 @@ return [
                     'storetype' => '3d_pay_hosting',
                     'tranType' => 'PreAuth',
                     'okUrl' => '/cmi/return',
-                    'failUrl' => 'cmi/return',
+                    'failUrl' => '/cmi/return',
                     'hashAlgorithm' => 'ver3',
                     'shopurl' => '/checkout/',
                     'callbackUrl' => '/cmi/notify',
                 ],
                 'sandbox' => [
                     'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY'),
+                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY'),
                 ],
                 'prod' => [
                     'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => '',
-                    'storeKey' => ''
+                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_STOREKEY')
                 ]
             ]
         ],
@@ -1055,20 +1055,20 @@ return [
                     'storetype' => '3d_pay_hosting',
                     'tranType' => 'PreAuth',
                     'okUrl' => '/cmi/return',
-                    'failUrl' => 'cmi/return',
+                    'failUrl' => '/cmi/return',
                     'hashAlgorithm' => 'ver3',
                     'shopurl' => '/checkout/',
                     'callbackUrl' => '/cmi/notify',
                 ],
                 'sandbox' => [
                     'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY'),
+                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY'),
                 ],
                 'prod' => [
                     'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => '',
-                    'storeKey' => ''
+                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_STOREKEY')
                 ]
             ]
         ],
@@ -1080,20 +1080,20 @@ return [
                     'storetype' => '3d_pay_hosting',
                     'tranType' => 'PreAuth',
                     'okUrl' => '/cmi/return',
-                    'failUrl' => 'cmi/return',
+                    'failUrl' => '/cmi/return',
                     'hashAlgorithm' => 'ver3',
                     'shopurl' => '/checkout/',
                     'callbackUrl' => '/cmi/notify',
                 ],
                 'sandbox' => [
                     'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_BEmaAll2be_SANDBOX_STOREKEY'),
+                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY'),
                 ],
                 'prod' => [
                     'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => '',
-                    'storeKey' => ''
+                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_STOREKEY')
                 ]
             ]
         ],
@@ -1790,7 +1790,7 @@ return [
                     'storetype' => '3d_pay_hosting',
                     'tranType' => 'PreAuth',
                     'okUrl' => '/cmi/return',
-                    'failUrl' => 'cmi/return',
+                    'failUrl' => '/cmi/return',
                     'hashAlgorithm' => 'ver3',
                     'shopurl' => '/checkout/',
                     'callbackUrl' => '/cmi/notify',

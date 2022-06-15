@@ -122,6 +122,9 @@ class AvsRecommendationService
             'status' => [
                 'eq' => 'published'
             ],
+            'source' => [
+                'eq' => 'WEBPOS'
+            ],
         ];
         $select = 'avs.sku, avs.recommendation_priority, vat,price,currency.code, recommendation_priority';
         $all_avs_infos = $this->directusService->getContent('vac_avs', $select, $filters, [], ['refreshCache' => $this->refreshCache]);

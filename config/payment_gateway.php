@@ -930,7 +930,6 @@ return [
                 'label'   => 'Tingg pay',
                 'active'  => true,
                 'common'  => [
-                    'currency' => 'TZS',
                     'successRedirectUrl' => '/tingg/return',
                     'failRedirectUrl'    => '/checkout/',
                     'pendingRedirectUrl' => '/checkout/',
@@ -970,7 +969,6 @@ return [
                 'label'   => 'Tingg pay',
                 'active'  => true,
                 'common'  => [
-                    'currency' => 'UGX',
                     'successRedirectUrl' => '/tingg/return',
                     'failRedirectUrl'    => '/checkout/',
                     'pendingRedirectUrl' => '/checkout/',

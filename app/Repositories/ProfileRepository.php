@@ -51,4 +51,16 @@ class ProfileRepository
             ->where('p_profile', $profile)
             ->get();
     }
+
+    public function getMultiProfiles($f_ids)
+    {
+        return $this->profileModel
+            ->select(['p_xref_f_id as f_id', 'p_profile as profile'])
+            ->whereIn('p_xref_f_id', $f_ids)
+            ->where('p_tech_deleted', false)
+            ->distinct('p_xref_f_id')
+            ->orderBy('p_xref_f_id')
+            ->orderBy('p_tech_creation', 'DESC')
+            ->get();
+    }
 }

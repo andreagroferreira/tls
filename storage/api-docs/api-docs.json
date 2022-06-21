@@ -157,6 +157,83 @@
                 }
             }
         },
+        "/api/v1/binga/redirto": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from globaliris",
+                "operationId": "b3788568660bcc161eec8a2495dc82a0",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/binga/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "a519f7258d13cf411fb343d5ea7460f1",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/binga/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paysoft",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/checkout/{t_id}": {
             "get": {
                 "tags": [
@@ -1234,6 +1311,145 @@
                 }
             }
         },
+        "/api/v1/profile": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "description": "Upload profiles for applications. duplicated upload will be ignored",
+                "operationId": "711b7a6a6c77be1a6c6f7bc34e729328",
+                "parameters": [
+                    {
+                        "name": "profiles",
+                        "in": "query",
+                        "description": "profiles for multiple applications",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "[{'f_id': 10001, 'profile': 'PREMIUM'}]"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "all the profile uploaded",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/application-with-profile/{profile}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get all applicant ids with profile name",
+                "operationId": "91646143db5d670100c4925cc9466a3e",
+                "parameters": [
+                    {
+                        "name": "profile",
+                        "in": "path",
+                        "description": "the profile name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "UK-PL"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "all application ids for this profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API"
+                    }
+                }
+            }
+        },
+        "/api/v1/application-profile/{f_id}": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "description": "Get profile for one application",
+                "operationId": "11d6c698834f07a3a1d3178c1a4845e4",
+                "parameters": [
+                    {
+                        "name": "f_id",
+                        "in": "path",
+                        "description": "application f_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "12345"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "profile found for this application",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API"
+                    }
+                }
+            }
+        },
+        "/api/v1/application-profiles": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "description": "Get profile for multiple applications",
+                "operationId": "c6548032bd74b6be082bddc209b4166c",
+                "parameters": [
+                    {
+                        "name": "f_ids",
+                        "in": "query",
+                        "description": "applications f_id",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": "[10001, 10002]"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "profile found for this application",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API"
+                    }
+                }
+            }
+        },
         "/retry_failed_queue/{queue_name}": {
             "get": {
                 "tags": [
@@ -1732,6 +1948,53 @@
                         "name": "fg_id",
                         "in": "path",
                         "description": "the tlsconnect fg_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "desc or asc",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": ""
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the transaction information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    },
+                    "404": {
+                        "description": "transaction not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/form_transaction/{f_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get the transaction details according to f_id",
+                "operationId": "82a61ec3788de6b05be2880aaa33c4f6",
+                "parameters": [
+                    {
+                        "name": "f_id",
+                        "in": "path",
+                        "description": "the tlsconnect f_id",
                         "required": true,
                         "schema": {
                             "type": "integer",

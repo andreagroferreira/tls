@@ -16,25 +16,9 @@ class ProfileService
         $this->profileRepository->setConnection($dbConnectionService->getConnection());
     }
 
-    public function upload($file)
+    public function upload($profiles)
     {
-        $content = file_get_contents($file->getRealPath());
-        $header  = null;
-        foreach (explode("\r", $content) as $item) {
-            if (strpos($item, ',') === false) continue;
-            $row = str_getcsv($item, ',', null);
-            if (!$header) {
-                $header = $row;
-            } else {
-                $data[] = array_combine($header, $row);
-            }
-        }
-
-        $chunk_data = array_chunk($data, 1000);
-        foreach ($chunk_data as $chunk_datum) {
-            dispatch(new ProfileUploadJob($chunk_datum))->onConnection('tlscontact_profile_upload_queue')->onQueue('tlscontact_profile_upload_queue');
-        }
-
+        dispatch(new ProfileUploadJob($profiles))->onConnection('tlscontact_profile_upload_queue')->onQueue('tlscontact_profile_upload_queue');
         return true;
     }
 
@@ -66,5 +50,10 @@ class ProfileService
     public function fetchProfile($f_id)
     {
         return $this->profileRepository->getProfile($f_id);
+    }
+
+    public function fetchMulti($f_ids)
+    {
+        return $this->profileRepository->getMultiProfiles($f_ids);
     }
 }

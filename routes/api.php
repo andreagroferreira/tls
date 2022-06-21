@@ -109,4 +109,8 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('binga/notify', 'BingaController@notify');
     $router->post('binga/return', 'BingaController@return');
 
+    // profile
+    $router->post('profile', 'ProfileController@upload');
+    $router->get('application-with-profile/{profile}', 'ProfileController@fetchApplications');
+    $router->get('application-profile/{f_id}', 'ProfileController@fetchProfile');
 });

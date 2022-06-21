@@ -1,0 +1,232 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: payment-template
+  annotations:
+    description: This template defines objects that are required to spin up a TLS Connect application
+parameters:
+  - name: APPLICATION_NAME
+    description: Name of the application
+    required: true
+    displayName: Application Name
+  - name: POSTGRES_SECRET_NAME
+    required: true
+  - name: POSTGRES_ADMIN_SECRET_NAME
+    required: true
+  - name: POSTGRES_DB_HOST
+    required: true
+  - name: POSTGRES_PAYMENT_DB_DATABASE
+    required: true
+  - name: CLIENT
+    required: true
+  - name: REDIS_HOST
+    required: true
+  - name: AWS_ACCOUNT_S3
+    required: true
+  - name: APPLICATION_ENV
+    value: prod
+    required: true
+  - name: APP_ENV
+    required: true
+  - name: PROJECT
+    required: true
+  - name: OPENSHIFT_ENV
+    required: true
+  - name: NAMESPACE
+    required: true
+  - name: ROUTE_IP_WHITE_LIST
+    required: true
+  - name: IMAGE_TAG
+    value: latest
+  - name: VERIFYPEER
+    required: true
+    value: "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
+  - name: DEBUG_MODE
+    value: "false"
+    required: true
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Volume Capacity
+    name: VOLUME_CAPACITY
+    required: true
+    value: 5Gi
+  - name: MEMORY_REQUEST
+    description: Memory initially requested by the app container
+    displayName: App container requested memory
+    required: true
+  - name: MEMORY_LIMIT
+    description: Maximum memory allocated to the app container
+    displayName: App container maximum memory
+    required: true
+  - displayName: Custom https Route Hostname
+    description: 'Custom hostname for https service route. Leave blank for default hostname,
+      e.g.: <application-name>.<project>.<default-domain-suffix>'
+    name: HOSTNAME_HTTPS
+    value: ''
+    required: false
+objects:
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}-upload-profile-queue
+      name: ${APPLICATION_NAME}-upload-profile-queue
+    spec:
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${APPLICATION_NAME}
+              - ${APPLICATION_NAME}-init
+            from:
+              kind: ImageStreamTag
+              name: "${APPLICATION_NAME}:${IMAGE_TAG}"
+          type: ImageChange
+        - type: ConfigChange
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: ${APPLICATION_NAME}-upload-profile-queue
+            deploymentconfig: ${APPLICATION_NAME}-upload-profile-queue
+        spec:
+          containers:
+            - command: [ "/bin/sh" ]
+              args:
+                - -c
+                - cd /opt/app-root/src/; echo '{"autoload":{"psr-4":{"App\\":"app/"}}}' > composer.json; php artisan queue:work tlscontact_profile_upload_queue --tries=3 --timeout=60
+              env:
+                - name: APPLICATION_ENV
+                  value: ${APPLICATION_ENV}
+                - name: APP_DEBUG
+                  value: ${DEBUG_MODE}
+                - name: VERIFYPEER
+                  value: ${VERIFYPEER}
+                - name: POSTGRES_DB_HOST
+                  value: ${POSTGRES_DB_HOST}
+                - name: POSTGRES_DB_PORT
+                  value: "5432"
+                - name: POSTGRES_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_SECRET_NAME}
+                      key: password
+                - name: POSTGRES_DEPLOY_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: username
+                - name: POSTGRES_DEPLOY_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ADMIN_SECRET_NAME}
+                      key: password
+                - name: POSTGRES_PAYMENT_DB_DATABASE
+                  value: ${POSTGRES_PAYMENT_DB_DATABASE}
+                - name: CLIENT
+                  value: ${CLIENT}
+                - name: REDIS_HOST
+                  value: ${REDIS_HOST}
+                - name: PGPASSFILE
+                  value: /opt/app-root/pgpass/.pgpass
+                - name: APP_ENV
+                  value: ${APP_ENV}
+                - name: PROJECT
+                  value: ${NAMESPACE}
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_DEFAULT_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_REGION
+                - name: AWS_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${AWS_ACCOUNT_S3}
+                      key: AWS_BUCKET_NAME
+                - name: LOG_CHANNEL
+                  value: "stdout"
+                - name: ELASTIC_APM_SERVICE_NAME
+                  value: "${OPENSHIFT_ENV}-${PROJECT}-${APPLICATION_NAME}"
+                - name: ELASTIC_APM_SECRET_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      key: ELASTIC_APM_SECRET_TOKEN
+                      name: elastic-apm
+                - name: ELASTIC_APM_SERVER_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: ELASTIC_APM_SERVER_URLS
+                      name: elastic-apm
+                - name: ELASTIC_APM_VERIFY_SERVER_CERT
+                  value: 'false'
+              image: ' '
+              name: ${APPLICATION_NAME}
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  memory: ${MEMORY_LIMIT}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+                - mountPath: /opt/app-root/src/log
+                  name: volume-logs
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: volume-logs
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-upload-profile-queue-pgbouncer
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}-upload-profile-queue
+          ports:
+            - port: 5432
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: pgbouncer
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-upload-profile-queue-pgcluster
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}-upload-profile-queue
+          ports:
+            - port: 5432
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          pgo-pg-database: 'true'

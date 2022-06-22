@@ -120,6 +120,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $cmi_config  = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
         $application = $this->formGroupService->fetch($fg_id, $client);
+        $form_list   = $this->formGroupService->fetchFomrs($fg_id, $client);
         $u_email     = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $params      = [
             'clientid'      => $cmi_config['merchant_id'],
@@ -129,10 +130,11 @@ class CmiPaymentGateway implements PaymentGatewayInterface
             'currency'      => $transaction['t_currency'],
             'oid'           => $transaction['t_transaction_id'],
             'okUrl'         => get_callback_url($cmi_config['okUrl']),
-            'failUrl'       => $transaction['t_redirect_url'],
+            'failUrl'       => get_callback_url($cmi_config['failUrl']),
             'lang'          => 'fr',
             'email'         => $u_email,
             'rnd'           => microtime(),
+            'BillToName'    => !empty($form_list) ? $form_list[0]['f_pers_surnames'] . ' ' . $form_list[0]['f_pers_givennames'] : '',
             'hashAlgorithm' => $cmi_config['hashAlgorithm'],
             'shopurl'       => $transaction['t_redirect_url'] . $t_id,
             'callbackUrl'   => get_callback_url($cmi_config['callbackUrl']),
@@ -166,7 +168,16 @@ class CmiPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
-
+        if (isset($params['Response']) && $params['Response'] == 'Error') {
+            return [
+                'is_success' => 'error',
+                'orderid' => $transaction['t_transaction_id'],
+                'issuer' => $transaction['t_issuer'],
+                'amount' => $transaction['t_amount'],
+                'message' => $params['ErrMsg'],
+                'href' => $transaction['t_redirect_url']
+            ];
+        }
         $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
         $cmi_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
         $isValid    = $this->validate($cmi_config['storeKey'] ?? '', $params);

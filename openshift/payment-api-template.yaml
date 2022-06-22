@@ -87,6 +87,14 @@ parameters:
     required: true
   - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
     required: true
+  - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+    required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
     required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -122,6 +130,24 @@ parameters:
   - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
     required: true
   - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST
     required: true
   - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
     required: true
@@ -587,6 +613,14 @@ objects:
                   value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
                   value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_STOREKEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -623,6 +657,24 @@ objects:
                   value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
                 - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
                   value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
+                - name: ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE}
+                - name: ENVPAY_TINGG_DEtzDAR2de_IVKEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_IVKEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID}
+                - name: ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST}
+                - name: ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID
@@ -862,7 +914,7 @@ objects:
                   cd /opt/app-root/src/;
                   php artisan  --force migrate --path=database/creation --database=pgsql;
                   php artisan  --force migrate --path=database/migrations --database=deploy_payment_pgsql;
-
+                  cp --no-preserve=mode /etc/pki/ca-trust/extracted/pem/* /trusted-ca && cat /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt >> /trusted-ca/tls-ca-bundle.pem;
               volumeMounts:
                 - mountPath: /opt/app-root/httpd-cfg-init/
                   name: volume-apache-config-init
@@ -876,6 +928,8 @@ objects:
                   name: volume-pgpass
                 - mountPath: /opt/app-root/src/data/
                   name: volume-application-data
+                - mountPath: /trusted-ca
+                  name: trusted-ca
           containers:
             - env:
                 - name: APPLICATION_ENV
@@ -970,6 +1024,14 @@ objects:
                   value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
                   value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_STOREKEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -1006,6 +1068,24 @@ objects:
                   value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
                 - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
                   value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
+                - name: ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER}
+                - name: ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE}
+                - name: ENVPAY_TINGG_DEtzDAR2de_IVKEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_IVKEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID}
+                - name: ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET}
+                - name: ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST}
+                - name: ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID
@@ -1291,6 +1371,8 @@ objects:
                   name: volume-logs
                 - mountPath: /opt/app-root/src/data/
                   name: volume-application-data
+                - mountPath: /etc/pki/ca-trust/extracted/pem
+                  name: trusted-ca
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -1309,6 +1391,8 @@ objects:
               name: volume-ssl
             - emptyDir: {}
               name: volume-pgpass
+            - emptyDir: {}
+              name: trusted-ca
             - name: volume-ssl-init
               secret:
                 defaultMode: 420
@@ -1396,7 +1480,7 @@ objects:
               protocol: TCP
       podSelector:
         matchLabels:
-          crunchy-pgbouncer: 'true'
+          app: pgbouncer
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:

@@ -87,6 +87,14 @@ parameters:
     required: true
   - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
     required: true
+  - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+    required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
     required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -122,6 +130,14 @@ parameters:
   - name: ENVPAY_TINGG_COMMON_OAUTH_HOST
     required: true
   - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_IVKEY
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY
+    required: true
+  - name: ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY
     required: true
   - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
     required: true
@@ -494,6 +510,14 @@ objects:
                   value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
                   value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_STOREKEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -530,6 +554,14 @@ objects:
                   value: ${ENVPAY_TINGG_COMMON_OAUTH_HOST}
                 - name: ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST
                   value: ${ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST}
+                - name: ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE}
+                - name: ENVPAY_TINGG_DEtzDAR2de_IVKEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_IVKEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY}
+                - name: ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY
+                  value: ${ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY}
                 - name: PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY
                   value: ${PAYGATE_ZAALL2BE_ENCRYPTION_SANDBOX_KEY}
                 - name: PAYGATE_ZAALL2BE_SANDBOX_ID
@@ -826,7 +858,7 @@ objects:
               protocol: TCP
       podSelector:
         matchLabels:
-          crunchy-pgbouncer: 'true'
+          app: pgbouncer
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:

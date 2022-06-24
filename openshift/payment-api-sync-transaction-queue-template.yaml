@@ -61,6 +61,10 @@ parameters:
     description: Maximum memory allocated to the app container
     displayName: App container maximum memory
     required: true
+  - name: CPU_REQUEST
+    description: CPU initially requested by the app container
+    displayName: App container requested cpu cores
+    required: true
   - displayName: Custom https Route Hostname
     description: 'Custom hostname for https service route. Leave blank for default hostname,
       e.g.: <application-name>.<project>.<default-domain-suffix>'
@@ -187,6 +191,7 @@ objects:
               resources:
                 requests:
                   memory: ${MEMORY_REQUEST}
+                  cpu: ${CPU_REQUEST}
                 limits:
                   memory: ${MEMORY_LIMIT}
               terminationMessagePath: /dev/termination-log

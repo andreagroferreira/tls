@@ -109,4 +109,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('binga/notify', 'BingaController@notify');
     $router->post('binga/return', 'BingaController@return');
 
+    $router->post('bnp/redirto', 'BnpController@redirto');
+    $router->post('bnp/return', 'BnpController@return');
 });

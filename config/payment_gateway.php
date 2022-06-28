@@ -1732,6 +1732,59 @@ return [
                 ]
             ]
         ],
+        'dzAAE2fr'=> [
+            'bnp' => [
+                'label' => 'BNP Paribas pay',
+                'active' => true,
+                'common' => [
+                    'env' => 'live',
+                    'return_url' => '/bnp/return',
+                    "currency" => "DZD",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "min_fraction_digits" => "2",
+                    "language" => "FR",
+                ],
+                'sandbox' => [
+                    'host' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST'),
+                    'user_name' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME'),
+                    'password' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD'),
+                    'terminal_id' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID'),
+                ],
+//                'prod' => [
+//                    'host' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_HOST'),
+//                    'user_name' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME'),
+//                    'password' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD'),
+//                    'terminal_id' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID'),
+//                ]
+            ],
+        ],
+        'dzORN2fr'=> [
+            'bnp' => [
+                'label' => 'BNP Paribas pay',
+                'active' => true,
+                'common' => [
+                    'env' => 'live',
+                    'return_url' => '/bnp/return',
+                    "currency" => "DZD",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "min_fraction_digits" => "2",
+                ],
+                'sandbox' => [
+                    'host' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST'),
+                    'user_name' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME'),
+                    'password' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD'),
+                    'terminal_id' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID'),
+                ],
+//                'prod' => [
+//                    'host' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_HOST'),
+//                    'user_name' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME'),
+//                    'password' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD'),
+//                    'terminal_id' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID'),
+//                ]
+            ],
+        ],
         'gbAll2fr'=> [
             'globaliris' => [
                 'label' => 'GLOBALIRIS pay',

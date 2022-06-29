@@ -84,7 +84,11 @@ class BnpController extends BaseController
         if ($status == 'ok') {
             return $this->sendResponse($result, 200);
         } else {
-            return $this->sendError('P0006', ['message' => array_get($result, 'message', 'unknown_error'), 'href' => array_get($result, 'href')], 400);
+            return $this->sendError('P0006', [
+                'orderid' => array_get($result, 'orderid'),
+                'message' => array_get($result, 'message', 'unknown_error'),
+                'href' => array_get($result, 'href')
+            ], 400);
         }
     }
 }

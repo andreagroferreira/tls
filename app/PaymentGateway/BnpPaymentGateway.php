@@ -142,6 +142,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
             $this->logWarning('payment api confirm failed.', $response);
             return [
                 'status' => 'fail',
+                'orderid' => array_get($transaction, 't_transaction_id'),
                 'message' => array_get($response, 'body.params.respCode_desc', array_get($response, 'body.actionCodeDescription', 'Payment failed.'))
             ];
         }
@@ -157,13 +158,12 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         ]);
 
         return array_merge($res, ['payment_data' => [
-            Carbon::now()->format('Y-m-d H:i'),
-            array_get($response, 'body.params.respCode_desc'),
-            'Order ID' . ': ' . $payment_order_id,
-            'Order number' . ': ' . $transaction['t_transaction_id'],
-            'Approval code' . ': ' . array_get($response, 'body.approvalCode'),
-            'Amount' . ': ' . $received_amount . ' ' . $received_currency,
-            'Payment mode: CIB card'
+            'now' => Carbon::now()->format('Y-m-d H:i'),
+            'response_code' => array_get($response, 'body.params.respCode_desc'),
+            'order_id' => $payment_order_id,
+            'order_number' => $transaction['t_transaction_id'],
+            'approval_code' => array_get($response, 'body.approvalCode'),
+            'amount' => $received_amount . ' ' . $received_currency,
         ]]);
     }
 

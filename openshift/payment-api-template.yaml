@@ -338,6 +338,22 @@ parameters:
     required: true
   - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
     required: true
+  - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_dzALL2fr_HOST
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -845,6 +861,22 @@ objects:
                   value: ${ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL}
                 - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
                   value: ${ENVPAY_GLO_DEgbALL2de_ACCOUNT}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_HOST
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_HOST}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -1240,6 +1272,22 @@ objects:
                   value: ${ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL}
                 - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
                   value: ${ENVPAY_GLO_DEgbALL2de_ACCOUNT}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_HOST
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_HOST}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT

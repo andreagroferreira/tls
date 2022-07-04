@@ -112,4 +112,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('bnp/redirto', 'BnpController@redirto');
     $router->post('bnp/return', 'BnpController@return');
     $router->post('bnp/receipt', 'BnpController@receipt');
+
+    // profile
+    $router->post('profile', 'ProfileController@upload');
+    $router->get('application-with-profile/{profile}', 'ProfileController@fetchApplications');
+    $router->get('application-profile/{f_id}', 'ProfileController@fetchProfile');
+    $router->post('application-profiles', 'ProfileController@fetchMultiProfiles');
 });

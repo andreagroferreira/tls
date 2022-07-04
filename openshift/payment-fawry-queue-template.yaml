@@ -87,6 +87,14 @@ parameters:
     required: true
   - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
     required: true
+  - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+    required: true
+  - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+    required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
     required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -390,6 +398,10 @@ parameters:
     description: Maximum memory allocated to the app container
     displayName: App container maximum memory
     required: true
+  - name: CPU_REQUEST
+    description: CPU initially requested by the app container
+    displayName: App container requested cpu cores
+    required: true
   - displayName: Custom https Route Hostname
     description: 'Custom hostname for https service route. Leave blank for default hostname,
       e.g.: <application-name>.<project>.<default-domain-suffix>'
@@ -520,6 +532,14 @@ objects:
                   value: ${ENVPAY_CMI_BEmaAll2be_MERCHANT_ID}
                 - name: ENVPAY_CMI_BEmaAll2be_STOREKEY
                   value: ${ENVPAY_CMI_BEmaAll2be_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY}
+                - name: ENVPAY_CMI_DEmaAll2de_MERCHANT_ID
+                  value: ${ENVPAY_CMI_DEmaAll2de_MERCHANT_ID}
+                - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
+                  value: ${ENVPAY_CMI_DEmaAll2de_STOREKEY}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -846,6 +866,7 @@ objects:
               resources:
                 requests:
                   memory: ${MEMORY_REQUEST}
+                  cpu: ${CPU_REQUEST}
                 limits:
                   memory: ${MEMORY_LIMIT}
               terminationMessagePath: /dev/termination-log

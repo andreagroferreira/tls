@@ -354,6 +354,8 @@ parameters:
     required: true
   - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
     required: true
+  - name: EMAIL_SERVICE_DOMAIN
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -877,6 +879,8 @@ objects:
                   value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD}
                 - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
                   value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
+                - name: EMAIL_SERVICE_DOMAIN
+                  value: ${EMAIL_SERVICE_DOMAIN}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -1288,6 +1292,8 @@ objects:
                   value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD}
                 - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
                   value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
+                - name: EMAIL_SERVICE_DOMAIN
+                  value: ${EMAIL_SERVICE_DOMAIN}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT

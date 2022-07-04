@@ -157,6 +157,192 @@
                 }
             }
         },
+        "/api/v1/binga/redirto": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from globaliris",
+                "operationId": "b3788568660bcc161eec8a2495dc82a0",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/binga/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "a519f7258d13cf411fb343d5ea7460f1",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/binga/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paysoft",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/bnp/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from bnp",
+                "operationId": "4e1a73bdcf856f41abfc0a47c8372fc4",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/bnp/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from bnp",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/bnp/receipt": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return receipt",
+                "operationId": "87556ae131cf994a88859b8f933d4d0e",
+                "parameters": [
+                    {
+                        "name": "order_id",
+                        "in": "query",
+                        "description": "the transaction_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "DEVELOPMENT20210414-dzALG2be-0000000055"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "description": "action",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "show/download/send"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "If action is send, you need to fill in email",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "a@a.com"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "receipt content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/checkout/{t_id}": {
             "get": {
                 "tags": [
@@ -1732,6 +1918,53 @@
                         "name": "fg_id",
                         "in": "path",
                         "description": "the tlsconnect fg_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "desc or asc",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": ""
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the transaction information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    },
+                    "404": {
+                        "description": "transaction not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/form_transaction/{f_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get the transaction details according to f_id",
+                "operationId": "82a61ec3788de6b05be2880aaa33c4f6",
+                "parameters": [
+                    {
+                        "name": "f_id",
+                        "in": "path",
+                        "description": "the tlsconnect f_id",
                         "required": true,
                         "schema": {
                             "type": "integer",

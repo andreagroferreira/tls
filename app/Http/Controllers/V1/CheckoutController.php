@@ -23,6 +23,11 @@ class CheckoutController extends BaseController
         $this->gatewayService = $gatewayService;
     }
 
+    public function isSandBox()
+    {
+        return env('APP_ENV') === 'production' ? false : true;
+    }
+
     /**
      * @OA\Get(
      *     path="/api/v1/checkout/{t_id}",
@@ -116,6 +121,15 @@ class CheckoutController extends BaseController
                 $payment_gateways = [
                     $selected_gateway => $payment_gateways[$selected_gateway]
                 ];
+            }
+
+            $app_env = $this->isSandBox() ? 'sandbox' : 'prod';
+            foreach ($payment_gateways as $key => $value) {
+                if ($key !== 'pay_later') {
+                    if (!array_key_exists($app_env, $value)) {
+                        unset($payment_gateways[$key]);
+                    }
+                }
             }
 
             $left_time = $expiration_time - $now_time;

@@ -53,6 +53,7 @@ class RecommendationRuleEngineService
                         case "Nationality":
                         case "Account Type":
                         case "On Site":
+                        case "Profile":
                             $matched = $this->checkString($verified_value, $rule);
                             break;
                         case "Workflow":

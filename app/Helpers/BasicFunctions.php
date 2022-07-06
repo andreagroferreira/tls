@@ -25,6 +25,21 @@ function csv_to_array($filename = '', $delimiter = "\t")
     return $data;
 }
 
+function get_csv_content($filename = '')
+{
+    $content = '';
+    if (!file_exists($filename) || !is_readable($filename)) {
+        return $content;
+    }
+    $handle = fopen($filename,"r");
+    while(! feof($handle))
+    {
+        $content .=fgets($handle);
+    }
+    fclose($handle);
+    return $content;
+}
+
 function in_list($needle, $haystack): bool
 {
     $rule_array = explode(',',  preg_replace('/^in_list\((.*)?\)/', '$1', $haystack));

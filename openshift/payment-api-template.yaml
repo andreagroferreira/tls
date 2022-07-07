@@ -1614,15 +1614,17 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-${APPLICATION_NAME}-email-service
+      labels:
+        app: ${APPLICATION_NAME}
     spec:
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  app: "${APPLICATION_NAME}"
+                  app: ${APPLICATION_NAME}
           ports:
             - port: 8443
               protocol: TCP
-        podSelector:
-          matchLabels:
-            app: 'tlsconnect-email-service'
+      podSelector:
+        matchLabels:
+          app: 'tlsconnect-email-service'

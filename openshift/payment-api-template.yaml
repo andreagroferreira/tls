@@ -1610,3 +1610,19 @@ objects:
       podSelector:
         matchLabels:
           app: pgbouncer
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-email-service
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: "${APPLICATION_NAME}"
+          ports:
+            - port: 8443
+              protocol: TCP
+        podSelector:
+          matchLabels:
+            app: 'tlsconnect-email-service'

@@ -1575,6 +1575,46 @@
                             "type": "string",
                             "example": "I do not need"
                         }
+                    },
+                    {
+                        "name": "issuer",
+                        "in": "query",
+                        "description": "the recommendation result issuer",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ruMOW2uk"
+                        }
+                    },
+                    {
+                        "name": "price",
+                        "in": "query",
+                        "description": "the recommendation result price",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "10.00"
+                        }
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "description": "the recommendation result currency",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": ""
+                        }
+                    },
+                    {
+                        "name": "service_script",
+                        "in": "query",
+                        "description": "the recommendation result service script",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": ""
+                        }
                     }
                 ],
                 "responses": {

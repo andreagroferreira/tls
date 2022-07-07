@@ -22,6 +22,7 @@ variables:
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   DIRECTUS_ROUTE: "directus"
   TLSCONNECT_API_URL: "https://tlsconnect-service-api.${PROJECT}.svc:8443"
+  EMAIL_SERVICE_DOMAIN: "https://tlsconnect-email-service.${PROJECT}.svc:8443"
 
 stages:
   - build

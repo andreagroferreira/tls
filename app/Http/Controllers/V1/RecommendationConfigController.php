@@ -8,13 +8,13 @@ use Illuminate\Http\UploadedFile;
 
 class RecommendationConfigController extends BaseController
 {
-    private $rcdConfigService;
+    private $recommendationConfigService;
 
     public function __construct(
-        RecommendationConfigService $rcdConfigService
+        RecommendationConfigService $recommendationConfigService
     )
     {
-        $this->rcdConfigService = $rcdConfigService;
+        $this->recommendationConfigService = $recommendationConfigService;
     }
 
     /**
@@ -114,7 +114,7 @@ class RecommendationConfigController extends BaseController
                 'rc_comment' => $params['rc_comment']
             ];
             try {
-                $this->rcdConfigService->create($params_create);
+                $this->recommendationConfigService->create($params_create);
                 return $this->sendResponse([
                     'status' => 'success',
                     'message' => 'Upload successful!'

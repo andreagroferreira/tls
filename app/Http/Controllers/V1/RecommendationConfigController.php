@@ -127,4 +127,77 @@ class RecommendationConfigController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/recommendation_configs",
+     *     tags={"Payment API"},
+     *     description="Get the top10 recommendation rule files",
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the recommendation result list",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      )
+     * )
+     */
+    public function fetch()
+    {
+        try {
+            $res = $this->recommendationConfigService->fetch();
+            foreach ($res as $k=>$v){
+                $res[$k]['rc_file_size'] = get_file_size($v['rc_file_size']);
+            }
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/recommendation_config/{rc_id}",
+     *     tags={"Payment API"},
+     *     description="Download the recommendation config files by id",
+     *      @OA\Parameter(
+     *          name="rc_id",
+     *          in="path",
+     *          description="the id for this file",
+     *          required=true,
+     *          @OA\Schema(type="integer", example="10000"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="Download the recommendation config",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      )
+     * )
+     */
+    public function download(Request $request){
+        $params    = [
+            'rc_id' => $request->route('rc_id')
+        ];
+        $validator = validator($params, [
+            'rc_id' => 'required|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $params = $validator->validated();
+            $res    = $this->recommendationConfigService->fetchByRcId($params['rc_id']);
+            export_csv($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
 }

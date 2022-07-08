@@ -27,4 +27,21 @@ class RecommendationConfigRepositories
         return $this->RecommendationConfigModel->newInstance()->create($attributes);
     }
 
+    public function fetch($select = ['*'], $with_delete = false)
+    {
+        return $this->RecommendationConfigModel
+            ->select($select)
+            ->orderByDesc('rc_tech_creation')
+            ->limit(10)
+            ->when(!$with_delete, function ($query) {
+                return $query->where('rc_tech_deleted', false);
+            })
+            ->get();
+    }
+
+    public function fetchByRcId($rc_id)
+    {
+        return $this->RecommendationConfigModel->find($rc_id);
+    }
+
 }

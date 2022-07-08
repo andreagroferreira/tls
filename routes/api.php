@@ -121,4 +121,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     // recommendation config api
     $router->post('recommendation_config-upload', 'RecommendationConfigController@upload');
+    $router->get('recommendation_configs', 'RecommendationConfigController@fetch');
+    $router->get('recommendation_config/{rc_id}', 'RecommendationConfigController@download');
 });

@@ -57,8 +57,17 @@ class RecommendationResultControllerTest extends TestCase
                 'message' => 'The rr result field is required.'
             ]);
 
-        $post_data = ['f_id' => 10000, 'agent' => 'test.test', 'sku' => 'COURIER', 'result' => 'accept'];
-        $this->post($base_url, $post_data);
+        $this->post($base_url, [
+            'f_id'    => 10000,
+            'agent'   => 'test.test',
+            'sku'     => 'COURIER',
+            'result'  => 'accept',
+            'comment' => 'I do not need',
+            'issuer'  => 'ruMOW2uk',
+            'price'   => '20.00'
+            'currency' => 'GBP'
+            'service_script' => 'uk-test'
+        ]);
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
         $this->assertEquals(1, array_get($response_array, 'rr_id'));

@@ -57,7 +57,7 @@ class RecommendationConfigController extends BaseController
     public function upload(Request $request)
     {
         $params = [
-            'rc_file_name' => $request->file('recommendation_rules'),
+            'rc_file_name' => $request->allfiles(),
             'rc_uploaded_by' => $request->input('uploaded_by'),
             'rc_comment' => $request->input('comment'),
         ];
@@ -71,7 +71,7 @@ class RecommendationConfigController extends BaseController
             return $this->sendError('params error', $validator->errors()->first());
         }
         // check file structure
-        $file = $params['rc_file_name'];
+        $file = $params['rc_file_name']['files'];
         if ($file->isValid()) {
             $fileName = $file -> getClientOriginalName();
             $entension = $file->getClientOriginalExtension();

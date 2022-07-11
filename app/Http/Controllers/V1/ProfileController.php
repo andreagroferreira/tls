@@ -120,7 +120,7 @@ class ProfileController extends BaseController
      */
     public function fetchApplications(Request $request)
     {
-        $profile  = $request->route('profile');
+        $profile  = urldecode($request->route('profile'));
         if (empty($profile)) {
             return $this->sendError('miss_fields', 'missing profile');
         }

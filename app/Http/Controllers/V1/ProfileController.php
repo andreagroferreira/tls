@@ -23,9 +23,9 @@ class ProfileController extends BaseController
      *      @OA\Parameter(
      *          name="profiles",
      *          in="query",
-     *          description="profiles for multiple applications",
+     *          description="csv file containing profiles for multiple applications",
      *          required=true,
-     *          @OA\Schema(type="string", example="[{'f_id': 10001, 'profile': 'PREMIUM'}]"),
+     *          @OA\Schema(type="file"),
      *      ),
      *      @OA\Response(
      *          response="200",

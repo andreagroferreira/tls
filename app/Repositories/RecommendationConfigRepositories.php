@@ -27,12 +27,12 @@ class RecommendationConfigRepositories
         return $this->RecommendationConfigModel->newInstance()->create($attributes);
     }
 
-    public function fetch($select = ['*'], $with_delete = false)
+    public function fetch($select = ['*'], $limit, $with_delete = false)
     {
         return $this->RecommendationConfigModel
             ->select($select)
             ->orderByDesc('rc_tech_creation')
-            ->limit(10)
+            ->limit($limit)
             ->when(!$with_delete, function ($query) {
                 return $query->where('rc_tech_deleted', false);
             })

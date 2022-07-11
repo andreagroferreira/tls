@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Services\RecommendationConfigService;
+use AWS\CRT\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
@@ -23,7 +24,7 @@ class RecommendationConfigController extends BaseController
      *     tags={"Payment API"},
      *     description="upload csv file to table recommendataion_config",
      *      @OA\Parameter(
-     *          name="recommendation_rules",
+     *          name="files",
      *          in="query",
      *          description="upload the file name",
      *          required=true,
@@ -57,7 +58,7 @@ class RecommendationConfigController extends BaseController
     public function upload(Request $request)
     {
         $params = [
-            'rc_file_name' => $request->allfiles(),
+            'rc_file_name' => $request->input('files_name'),
             'rc_uploaded_by' => $request->input('uploaded_by'),
             'rc_comment' => $request->input('comment'),
         ];
@@ -66,64 +67,64 @@ class RecommendationConfigController extends BaseController
             'rc_uploaded_by'  => 'required|string',
             'rr_comment' => 'string|nullable'
         ]);
-
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
         }
         // check file structure
-        $file = $params['rc_file_name']['files'];
-        if ($file->isValid()) {
-            $fileName = $file -> getClientOriginalName();
-            $entension = $file->getClientOriginalExtension();
-            $fileSize = $file->getSize();
-            if ($entension != 'csv') {
-                return $this->sendError('file format error', 'Please upload a file in CSV format.');
+        $files = $params['rc_file_name'];
+        if (is_array($files)) {
+            foreach ($files as $name => $content) {
+                $fileInfo = [
+                    'fileName' => $name,
+                    'fileContent' => $content['fileContent']
+                ];
             }
-            $realPath = $file->getRealPath();
+        }
+        $fileName = $fileInfo['fileName'];
+        $entension = substr($fileName,strrpos($fileName,'.')+1);
+        if ($entension != 'csv') {
+            return $this->sendError('file format error', 'Please upload a file in CSV format.');
+        }
+        $fileContent = base64_decode($fileInfo['fileContent']);
+        $fileSize = strlen($fileContent);
+        try{
+            $recommendation_rules_content = csv_content_array($fileContent, ',');
+        } catch (\Exception $e) {
+            return $this->sendError('file error', 'Please upload the correct file');
+        }
+        $header = ['Rule', 'Scope', 'Service ID', 'Priority', 'Profile', 'Visa Type', 'Travel Purpose', 'Workflow', 'AVS Conflict', 'On Site', 'Step', 'Creator'];
+        foreach ($header as $v) {
+            if (!array_key_exists($v, $recommendation_rules_content[0])) {
+                return $this->sendError('File structure error', 'File is missing ' . $v . ' column.');
+            }
+        }
+        foreach ($recommendation_rules_content as $k=>$v){
+            if($v['Priority'] && !is_numeric($v['Priority'])){
+                return $this->sendError('File structure error', 'line '.($k+2).':Priority column format error,Priority should be empty or an integer.');
+            }
+            if($v['Profile'] && (!is_string($v['Profile']) || is_numeric($v['Profile']))){
+                return $this->sendError('File structure error', 'line '.($k+2).':Profile column format error,Profile should be empty or string.');
+            }
+            if(empty($v['Scope'])){
+                return $this->sendError('File structure error', 'line '.($k+2).':Scope column format error,Scope should not be empty.');
+            }
 
-            try{
-                $recommendation_rules_content = csv_to_array($realPath, ',');
-            } catch (\Exception $e) {
-                return $this->sendError('file error', 'Please upload the correct file');
-            }
-
-            $header = ['Rule', 'Scope', 'Service ID', 'Priority', 'Profile', 'Visa Type', 'Travel Purpose', 'Workflow', 'AVS Conflict', 'On Site', 'Step', 'Creator'];
-            foreach ($header as $v) {
-                if (!array_key_exists($v, $recommendation_rules_content[0])) {
-                    return $this->sendError('File structure error', 'File is missing ' . $v . ' column.');
-                }
-            }
-
-            foreach ($recommendation_rules_content as $k=>$v){
-                if($v['Priority'] && !is_numeric($v['Priority'])){
-                    return $this->sendError('File structure error', 'line '.($k+2).':Priority column format error,Priority should be empty or an integer.');
-                }
-                if($v['Profile'] && (!is_string($v['Profile']) || is_numeric($v['Profile']))){
-                    return $this->sendError('File structure error', 'line '.($k+2).':Profile column format error,Profile should be empty or string.');
-                }
-                if(empty($v['Scope'])){
-                    return $this->sendError('File structure error', 'line '.($k+2).':Scope column format error,Scope should not be empty.');
-                }
-
-            }
-            $params_create = [
-                'rc_file_name' => $fileName,
-                'rc_uploaded_by' => $params['rc_uploaded_by'],
-                'rc_content' => get_csv_content($realPath),
-                'rc_file_size' => $fileSize,
-                'rc_comment' => $params['rc_comment']
-            ];
-            try {
-                $this->recommendationConfigService->create($params_create);
-                return $this->sendResponse([
-                    'status' => 'success',
-                    'message' => 'Upload successful!'
-                ]);
-            } catch (\Exception $e) {
-                return $this->sendError('unknown_error', $e->getMessage());
-            }
-        } else {
-            return $this->sendError('Upload failed', 'Upload failed, please try again.');
+        }
+        $params_create = [
+            'rc_file_name' => $fileName,
+            'rc_uploaded_by' => $params['rc_uploaded_by'],
+            'rc_content' => $fileContent,
+            'rc_file_size' => $fileSize,
+            'rc_comment' => $params['rc_comment']
+        ];
+        try {
+            $this->recommendationConfigService->create($params_create);
+            return $this->sendResponse([
+                'status' => 'success',
+                'message' => 'Upload successful!'
+            ]);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
         }
     }
 
@@ -132,6 +133,13 @@ class RecommendationConfigController extends BaseController
      *     path="/api/v1/recommendation-configs",
      *     tags={"Payment API"},
      *     description="Get the top10 recommendation rule files",
+     *     @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          description="number of recommendataion_config, default for 10",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="6"),
+     *      ),
      *      @OA\Response(
      *          response="200",
      *          description="get the recommendation result list",
@@ -143,10 +151,19 @@ class RecommendationConfigController extends BaseController
      *      )
      * )
      */
-    public function fetch()
+    public function fetch(Request $request)
     {
         try {
-            $res = $this->recommendationConfigService->fetch();
+            $params = [
+                'limit' => $request->get('limit', 10),
+            ];
+            $validator = validator($params, [
+                'limit' => 'integer'
+            ]);
+            if($validator->fails()) {
+                return $this->sendError('params error', $validator->errors()->first());
+            }
+            $res = $this->recommendationConfigService->fetch($params['limit']);
             foreach ($res as $k=>$v){
                 $res[$k]['rc_file_size'] = get_file_size($v['rc_file_size']);
             }
@@ -194,7 +211,7 @@ class RecommendationConfigController extends BaseController
         try {
             $params = $validator->validated();
             $res    = $this->recommendationConfigService->fetchByRcId($params['rc_id']);
-            export_csv($res);
+            return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }

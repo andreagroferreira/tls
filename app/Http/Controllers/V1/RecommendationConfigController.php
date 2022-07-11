@@ -136,7 +136,7 @@ class RecommendationConfigController extends BaseController
      *     @OA\Parameter(
      *          name="limit",
      *          in="query",
-     *          description="recommendation result list limit",
+     *          description="number of recommended config, default for 10",
      *          required=false,
      *          @OA\Schema(type="string", example="10"),
      *      ),

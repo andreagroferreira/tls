@@ -25,6 +25,51 @@ function csv_to_array($filename = '', $delimiter = "\t")
     return $data;
 }
 
+function get_csv_content($filename = '')
+{
+    $content = '';
+    if (!file_exists($filename) || !is_readable($filename)) {
+        return $content;
+    }
+    $handle = fopen($filename,"r");
+    while(! feof($handle))
+    {
+        $content .=fgets($handle);
+    }
+    fclose($handle);
+    return $content;
+}
+
+function get_file_size($byte)
+{
+    $KB = 1024;
+    $MB = 1024 * $KB;
+    $GB = 1024 * $MB;
+    $TB = 1024 * $GB;
+    if ($byte < $KB) {
+        return $byte . "B";
+    } elseif ($byte < $MB) {
+        return round($byte / $KB, 2) . "K";
+    } elseif ($byte < $GB) {
+        return round($byte / $MB, 2) . "M";
+    } elseif ($byte < $TB) {
+        return round($byte / $GB, 2) . "G";
+    } else {
+        return round($byte / $TB, 2) . "T";
+    }
+}
+
+function export_csv($data)
+{
+    header('Content-Disposition: attachment;filename='.$data['rc_file_name']);
+    header('Content-Type: application/vnd.ms-excel');
+    header('Cache-Control:max-age=0');
+    header('Accept-Ranges:bytes');
+    $out = fopen('php://output', 'a');
+    fwrite($out, $data['rc_content']);
+    fclose($out);
+}
+
 function in_list($needle, $haystack): bool
 {
     $rule_array = explode(',',  preg_replace('/^in_list\((.*)?\)/', '$1', $haystack));

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Jobs\ProfileUploadJob;
 use App\Repositories\ProfileRepository;
+use Illuminate\Http\File;
+use Illuminate\Http\UploadedFile;
 
 class ProfileService
 {
@@ -18,8 +20,7 @@ class ProfileService
 
     public function upload($profiles)
     {
-        dispatch(new ProfileUploadJob($profiles))->onConnection('tlscontact_profile_upload_queue')->onQueue('tlscontact_profile_upload_queue');
-        return true;
+        $this->insert($profiles);
     }
 
     private function exists($attributes)
@@ -32,8 +33,8 @@ class ProfileService
         $insert_data = [];
         foreach ($data as $datum) {
             $attributes = [
-                'p_xref_f_id' => $datum['f_id'],
-                'p_profile' => $datum['profile'],
+                'p_xref_f_id' => $datum['TLS ID Number'],
+                'p_profile' => $datum['Profile'],
             ];
             if ($this->exists($attributes)) continue;
             $insert_data[] = $attributes;

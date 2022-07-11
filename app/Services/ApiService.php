@@ -48,6 +48,11 @@ class ApiService
         return env('DIRECTUS_DOMAIN');
     }
 
+    private function getEmailApiDomain()
+    {
+        return env('EMAIL_SERVICE_DOMAIN');
+    }
+
     public function callDirectusApi($method, $url) {
         $url = $this->getDirectusApiDomain() . '/' . $url;
         $method = strtolower($method);
@@ -140,6 +145,18 @@ class ApiService
     public function callInvoiceApi($url, $data)
     {
         return $this->postApi($url, $data);
+    }
+
+    public function callEmailApi($method, $url, $data = array(), $options = '')
+    {
+        $url = $this->getEmailApiDomain() . '/' . $url;
+        $response = ['status' => 400, 'body' => 'Method not Allowed!'];
+        if (strtolower($method) == 'post') {
+            for ($i = 1; $i < 3 && $response['status'] != 200; $i++) {
+                $response = $this->postApi($url, $data, $options);
+            }
+        }
+        return $response;
     }
 
     private function getApi($url)

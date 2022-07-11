@@ -109,9 +109,18 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('binga/notify', 'BingaController@notify');
     $router->post('binga/return', 'BingaController@return');
 
+    $router->post('bnp/redirto', 'BnpController@redirto');
+    $router->post('bnp/return', 'BnpController@return');
+    $router->post('bnp/receipt', 'BnpController@receipt');
+
     // profile
     $router->post('profile', 'ProfileController@upload');
     $router->get('application-with-profile/{profile}', 'ProfileController@fetchApplications');
     $router->get('application-profile/{f_id}', 'ProfileController@fetchProfile');
     $router->post('application-profiles', 'ProfileController@fetchMultiProfiles');
+
+    // recommendation config api
+    $router->post('recommendation-config-upload', 'RecommendationConfigController@upload');
+    $router->get('recommendation-configs', 'RecommendationConfigController@fetch');
+    $router->get('recommendation-config/{rc_id}', 'RecommendationConfigController@download');
 });

@@ -192,7 +192,7 @@
                 }
             }
         },
-        "/v1/recommendation_config/{rc_id}": {
+        "/v1/recommendation-config/{rc_id}": {
             "get": {
                 "tags": [
                     "Recommendation config"
@@ -231,7 +231,7 @@
                 }
             }
         },
-        "/v1/recommendation_config-latest": {
+        "/v1/recommendation-config-latest": {
             "get": {
                 "tags": [
                     "Recommendation config"
@@ -261,7 +261,7 @@
                 }
             }
         },
-        "/v1/recommendation_configs": {
+        "/v1/recommendation-configs": {
             "get": {
                 "tags": [
                     "Recommendation config"
@@ -291,7 +291,7 @@
                 }
             }
         },
-        "/v1/recommendation_config-upload": {
+        "/v1/recommendation-config-upload": {
             "post": {
                 "tags": [
                     "Recommendation config"

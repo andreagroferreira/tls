@@ -120,7 +120,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('application-profiles', 'ProfileController@fetchMultiProfiles');
 
     // recommendation config api
-    $router->post('recommendation_config-upload', 'RecommendationConfigController@upload');
-    $router->get('recommendation_configs', 'RecommendationConfigController@fetch');
-    $router->get('recommendation_config/{rc_id}', 'RecommendationConfigController@download');
+    $router->post('recommendation-config-upload', 'RecommendationConfigController@upload');
+    $router->get('recommendation-configs', 'RecommendationConfigController@fetch');
+    $router->get('recommendation-config/{rc_id}', 'RecommendationConfigController@download');
 });

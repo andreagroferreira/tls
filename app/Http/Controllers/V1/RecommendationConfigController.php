@@ -19,7 +19,7 @@ class RecommendationConfigController extends BaseController
 
     /**
      * @OA\Post(
-     *     path="/api/v1/recommendation_config-upload",
+     *     path="/api/v1/recommendation-config-upload",
      *     tags={"Payment API"},
      *     description="upload csv file to table recommendataion_config",
      *      @OA\Parameter(
@@ -129,7 +129,7 @@ class RecommendationConfigController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/v1/recommendation_configs",
+     *     path="/api/v1/recommendation-configs",
      *     tags={"Payment API"},
      *     description="Get the top10 recommendation rule files",
      *      @OA\Response(
@@ -158,7 +158,7 @@ class RecommendationConfigController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/v1/recommendation_config/{rc_id}",
+     *     path="/api/v1/recommendation-config/{rc_id}",
      *     tags={"Payment API"},
      *     description="Download the recommendation config files by id",
      *      @OA\Parameter(

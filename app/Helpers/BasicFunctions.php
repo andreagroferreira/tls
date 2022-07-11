@@ -105,3 +105,55 @@ function workflow_status($stages_status, $haystack):bool
         return in_array($stages_status[$stage], $rules);
     }
 }
+
+function csv2array($in, $option = '', $separator = "\t", $include_comment = false, $regex = '')
+{
+    //  $in = ereg_replace("\"([^\t]*)\"","\\1",$in); // TO BE TESTED, was trying to remove the quotes in fields
+    $arr = array();
+    if (!is_array($in)) {
+        $in = explode("\r", $in);
+    }
+    $first_line = array_shift($in);
+    $field_names = explode($separator, $first_line);
+    $id_field = array_shift($field_names);
+    foreach ($in as $line_num => $line) {
+        if (trim($line) == '') continue;
+        if ($include_comment == false) {
+            if (strpos($line, '#') === 0) continue; // comments
+        }
+        if ($regex != '') {
+            if (preg_match($regex, trim($line)) === 0) continue;
+        }
+        $values = explode($separator, $line);
+        $id = array_shift($values);
+        $id = trim($id);
+        if (isset($arr[$id]) and ($option != 'MULTIPLE_ENTRIES') and ($option != 'INDEXED_ARRAY')) {
+            $err_msg = "csv2array() found duplicate line for id '$id' (around line " . ($line_num + 2) . ")";
+            // error() function might not be declared at this time
+            if (function_exists('error')) {
+                error($err_msg);
+            } else {
+                error_log($err_msg);
+            }
+            return false;
+            //terminateTech();
+        }
+        $new_row = array();
+        if ($option == 'INDEXED_ARRAY') {
+            $new_row[trim($id_field)] = $id;
+        }
+        foreach ($field_names as $k => $field_name) {
+            $field_name = trim($field_name);
+            $new_row[$field_name] = trim(@$values[$k]);
+        }
+        if ($option == 'MULTIPLE_ENTRIES') { // each id (first col) may have more than one line
+            $arr[$id][] = $new_row;
+        } else if ($option == 'INDEXED_ARRAY') {
+            $arr[] = $new_row;
+        } else {
+            $arr[$id] = $new_row;
+        }
+    }
+    //  echo "<pre>"; print_r($arr); echo "</pre>";
+    return $arr;
+}

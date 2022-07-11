@@ -9,6 +9,7 @@ use Illuminate\Http\UploadedFile;
 class RecommendationConfigController extends BaseController
 {
     private $recommendationConfigService;
+    private $recommendationConfigLimit = 10;
 
     public function __construct(
         RecommendationConfigService $recommendationConfigService
@@ -132,6 +133,13 @@ class RecommendationConfigController extends BaseController
      *     path="/api/v1/recommendation-configs",
      *     tags={"Payment API"},
      *     description="Get the top10 recommendation rule files",
+     *     @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          description="recommendation result list limit",
+     *          required=false,
+     *          @OA\Schema(type="string", example="10"),
+     *      ),
      *      @OA\Response(
      *          response="200",
      *          description="get the recommendation result list",
@@ -143,10 +151,11 @@ class RecommendationConfigController extends BaseController
      *      )
      * )
      */
-    public function fetch()
+    public function fetch(Request $request)
     {
+        $limit = $request->get('limit') ?? $this->recommendationConfigLimit;
         try {
-            $res = $this->recommendationConfigService->fetch();
+            $res = $this->recommendationConfigService->fetch($limit);
             foreach ($res as $k=>$v){
                 $res[$k]['rc_file_size'] = get_file_size($v['rc_file_size']);
             }

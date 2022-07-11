@@ -10,12 +10,15 @@ class RecommendationRuleEngineService
 {
     protected $apiService;
     protected $client;
+    protected $recommendationConfigService;
 
     public function __construct(
-        ApiService $apiService
+        ApiService $apiService,
+        RecommendationConfigService $recommendationConfigService
     )
     {
         $this->apiService = $apiService;
+        $this->recommendationConfigService = $recommendationConfigService;
         $this->client = $this->apiService->getProjectId();
     }
 
@@ -183,10 +186,14 @@ class RecommendationRuleEngineService
         if (Cache::has($issuer_rule_cache_key)) {
             return Cache::get($issuer_rule_cache_key);
         }
+
         $country = substr($issuer, 0, 2);
         $city = substr($issuer, 2, 3);
         $dest = substr($issuer, -3);
-        $client_rules = csv_to_array(storage_path('rules/' . $this->client . '/recommendation_rules.csv'), ',');
+        $rule_config  = $this->recommendationConfigService->fetch(1)->toArray();
+        $client_rules = empty($rule_config)
+            ? csv_to_array(storage_path('rules/' . $this->client . '/recommendation_rules.csv'), ',')
+            : csv2array($rule_config[0]['rc_content'], 'INDEXED_ARRAY', ',');
         $issuer_rules = collect($client_rules)->filter(function($rule) use ($country, $city, $dest){
             return in_array($rule['Scope'], [$country, $city, $dest]);
         })->values()->toArray();

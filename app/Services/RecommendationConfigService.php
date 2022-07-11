@@ -20,9 +20,9 @@ class RecommendationConfigService
         return $this->recommendationConfigRepositories->insert($params);
     }
 
-    public function fetch() {
+    public function fetch($limit) {
         $select = ['rc_id', 'rc_file_name', 'rc_content', 'rc_file_size', 'rc_tech_creation'];
-        return $this->recommendationConfigRepositories->fetch($select);
+        return $this->recommendationConfigRepositories->fetch($select, $limit);
     }
 
     public function fetchByRcId($rc_id) {

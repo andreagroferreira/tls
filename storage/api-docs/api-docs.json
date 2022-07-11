@@ -1431,11 +1431,10 @@
                     {
                         "name": "profiles",
                         "in": "query",
-                        "description": "profiles for multiple applications",
+                        "description": "csv file containing profiles for multiple applications",
                         "required": true,
                         "schema": {
-                            "type": "string",
-                            "example": "[{'f_id': 10001, 'profile': 'PREMIUM'}]"
+                            "type": "file"
                         }
                     }
                 ],

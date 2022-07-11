@@ -39,19 +39,59 @@ class ProfileController extends BaseController
      * )
      */
     public function upload(Request $request) {
-        $profiles = $request->input('profiles');
-        if(empty($profiles)) {
-            return $this->sendError('params_error', 'The param profiles is invalid');
+        $file = $request->file('profiles');
+
+        $params = [
+            'profiles' => $file,
+        ];
+        $validator = validator($params, [
+            'profiles'   => 'required|mimes:csv,txt',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
         }
 
-        try {
-            $this->profileService->upload($profiles);
-            return $this->sendResponse([
-                'status' => 'success',
-                'message' => 'profiles add to the queue!'
-            ]);
-        } catch (\Exception $e) {
-            return $this->sendError('unknown_error', $e->getMessage());
+        if ($file->isValid()) {
+            $extension = $file->getClientOriginalExtension();
+            if ($extension !== 'csv') {
+                return $this->sendError('file format error', 'Please upload a file in CSV format.');
+            }
+            $realPath = $file->getRealPath();
+
+            try{
+                $profiles_content = csv_to_array($realPath, ',');
+            } catch (\Exception $e) {
+                return $this->sendError('file error', 'Please upload the correct file');
+            }
+
+            $header = ['TLS ID Number', 'age', 'gender', 'travel_purpose', 'visa_type', 'country', 'city', 'Profile'];
+            foreach ($header as $v) {
+                if (!array_key_exists($v, $profiles_content[0])) {
+                    return $this->sendError('File structure error', 'File is missing ' . $v . ' column.');
+                }
+            }
+
+            foreach ($profiles_content as $k=>$v){
+                if(empty($v['TLS ID Number'])) {
+                    return $this->sendError('File structure error', 'line '.($k+2).':TLS ID Number column format error, TLS ID Number should not be empty.');
+                }
+                if(empty($v['Profile'])) {
+                    return $this->sendError('File structure error', 'line '.($k+2).':Profile column format error, Profile should not be empty.');
+                }
+            }
+
+            try {
+                $this->profileService->upload($profiles_content);
+                return $this->sendResponse([
+                    'status' => 'success',
+                    'message' => 'Upload successful!'
+                ]);
+            } catch (\Exception $e) {
+                return $this->sendError('unknown_error', $e->getMessage());
+            }
+        } else {
+            return $this->sendError('Upload failed', 'Upload failed, please try again.');
         }
     }
 

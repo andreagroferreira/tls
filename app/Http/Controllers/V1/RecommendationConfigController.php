@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Queue;
 class RecommendationConfigController extends BaseController
 {
     private $recommendationConfigService;
+    private $recommendationActionName = 'UploadRuleEngine';
 
     public function __construct(
         RecommendationConfigService $recommendationConfigService
@@ -120,18 +121,19 @@ class RecommendationConfigController extends BaseController
             'rc_file_size' => $fileSize,
             'rc_comment' => $params['rc_comment']
         ];
+        $log_content['action_name'] = $this->recommendationActionName;
         try {
             $this->recommendationConfigService->create($params_create);
-            $params_create['type'] = 'Sucess';
-            Queue::setConnectionName('tlscontact_profile_upload_log_queue')->laterOn('tlscontact_profile_upload_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($params_create));
+            $log_content['type'] = 'Sucess';
+            Queue::setConnectionName('tlscontact_profile_upload_log_queue')->laterOn('tlscontact_profile_upload_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
             return $this->sendResponse([
                 'status' => 'success',
                 'message' => 'Upload successful!'
             ]);
         } catch (\Exception $e) {
-            $params_create['type'] = 'Error';
-            $params_create['errorComment'] = $e->getMessage();
-            Queue::setConnectionName('tlscontact_profile_upload_log_queue')->laterOn('tlscontact_profile_upload_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($params_create));
+            $log_content['type']         = 'Error';
+            $log_content['errorComment'] = $e->getMessage();
+            Queue::setConnectionName('tlscontact_profile_upload_log_queue')->laterOn('tlscontact_profile_upload_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }

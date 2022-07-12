@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Services\ProfileService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Queue;
+use App\Jobs\PaymentProfileProcessLogJob;
+use App\Services\ProfileService;
 
 class ProfileController extends BaseController
 {
     protected $profileService;
+    protected $profileActionName = 'ProfilingFileProcessing';
 
     public function __construct(
         ProfileService $profileService
@@ -81,13 +85,19 @@ class ProfileController extends BaseController
                 }
             }
 
+            $log_content['action_name'] = $this->profileActionName;
             try {
                 $this->profileService->upload($profiles_content);
+                $log_content['type'] = 'Sucess';
+                Queue::setConnectionName('tlscontact_profile_process_log_queue')->laterOn('tlscontact_profile_process_log_queue', Carbon::now()->addMinute(3), new PaymentProfileProcessLogJob($log_content));
                 return $this->sendResponse([
                     'status' => 'success',
                     'message' => 'Upload successful!'
                 ]);
             } catch (\Exception $e) {
+                $log_content['type']         = 'Error';
+                $log_content['errorComment'] = $e->getMessage();
+                Queue::setConnectionName('tlscontact_profile_process_log_queue')->laterOn('tlscontact_profile_process_log_queue', Carbon::now()->addMinute(3), new PaymentProfileProcessLogJob($log_content));
                 return $this->sendError('unknown_error', $e->getMessage());
             }
         } else {

@@ -6,6 +6,7 @@ namespace App\Services;
 use App\Jobs\TransactionSyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class PaymentService
 {
@@ -135,5 +136,34 @@ class PaymentService
                 'error_msg' => $e->getMessage()
             ];
         }
+    }
+
+    public function sendEAuditorLogs($data): bool
+    {
+        $eauditor_log_content = $this->formatData($data);
+        //send eauditor log
+        $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $eauditor_log_content);
+        return true;
+    }
+
+    private function formatData($data): array
+    {
+        $result = array();
+        $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['policy']       = 'audit';
+        $result['tags']         = 'tech';
+        $result['domain']       = 'Profiling';
+        $result['project']      = 'TLSpay';
+        $result['service']      = '';
+        $result['action'] = array();
+        $result['action']['name']       = 'UploadRuleEngine';
+        $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['action']['result']     = $data['type'] === 'Error' ? 'failed to upload' : 'file processed';
+        $result['action']['comment']    = $data['errorComment'] ?? 'Rule engine uploaded successful';
+        $result['action']['type']       = $data['type'] ?? '';
+        $result['client'] = array();
+        $result['client']['code'] = $this->apiService->getProjectId();
+
+        return $result;
     }
 }

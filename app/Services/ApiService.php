@@ -19,6 +19,11 @@ class ApiService
         return env('TLSCONTACT_API');
     }
 
+    private function getEAuditorDomain()
+    {
+        return env('TLSCONTACT_EAUDITOR_DOMAIN');
+    }
+
     public function getApiVersion()
     {
         return 'v2';
@@ -261,5 +266,11 @@ class ApiService
             'body' => json_decode($response->getBody(), true)
         ];
         return $response;
+    }
+
+    public function callEAuditorApi($method, $port, $data = array())
+    {
+        $url = $this->getEAuditorDomain() . ':' . $port;
+        if (strtolower($method) == 'post')    return $this->postApi($url, $data);
     }
 }

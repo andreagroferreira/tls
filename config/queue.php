@@ -88,7 +88,7 @@ return [
             'table' => 'jobs',
             'queue' => 'payment_api_eauditor_log_queue',
             'retry_after' => 90,
-        ]
+        ],
     ],
 
     /*

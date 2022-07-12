@@ -52,13 +52,6 @@ class AvsRecommendationController extends BaseController
      *          required=false,
      *          @OA\Schema(type="string", example="false"),
      *      ),
-     *      @OA\Parameter(
-     *          name="limit",
-     *          in="query",
-     *          description="number of recommended services, default for 6",
-     *          required=false,
-     *          @OA\Schema(type="integer", example="6"),
-     *      ),
      *      @OA\Response(
      *          response="200",
      *          description="get the recommended service success",
@@ -74,14 +67,12 @@ class AvsRecommendationController extends BaseController
     {
         $params = [
             'f_id' => $request->route('f_id'),
-            'limit' => $request->get('limit', 6),
             'source' => $request->get('source', 'directus'),
             'step' => $request->get('step'),
             'refresh_cache' => $request->boolean('refresh_cache')
         ];
         $validator = validator($params, [
             'f_id' => 'required|integer',
-            'limit' => 'required|integer',
             'refresh_cache' => 'nullable',
             'source' => [
                 'required',

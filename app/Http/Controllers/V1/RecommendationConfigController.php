@@ -138,7 +138,7 @@ class RecommendationConfigController extends BaseController
      *          in="query",
      *          description="number of recommendataion_config, default for 10",
      *          required=false,
-     *          @OA\Schema(type="integer", example="6"),
+     *          @OA\Schema(type="integer", example="10"),
      *      ),
      *      @OA\Response(
      *          response="200",

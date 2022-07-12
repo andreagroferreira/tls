@@ -22,7 +22,7 @@ class RecommendationConfigService
 
     public function fetch($limit) {
         $select = ['rc_id', 'rc_file_name', 'rc_content', 'rc_file_size', 'rc_tech_creation'];
-        return $this->recommendationConfigRepositories->fetch($select,$limit);
+        return $this->recommendationConfigRepositories->fetch($select, $limit);
     }
 
     public function fetchByRcId($rc_id) {

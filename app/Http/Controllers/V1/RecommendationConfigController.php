@@ -10,7 +10,6 @@ use Illuminate\Http\UploadedFile;
 class RecommendationConfigController extends BaseController
 {
     private $recommendationConfigService;
-    private $recommendationConfigLimit = 10;
 
     public function __construct(
         RecommendationConfigService $recommendationConfigService
@@ -154,7 +153,6 @@ class RecommendationConfigController extends BaseController
      */
     public function fetch(Request $request)
     {
-        $limit = $request->get('limit') ?? $this->recommendationConfigLimit;
         try {
             $params = [
                 'limit' => $request->get('limit', 10),

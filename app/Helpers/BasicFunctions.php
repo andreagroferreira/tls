@@ -31,10 +31,13 @@ function csv_content_array($content = '')
         return [];
     }
     $data   = [];
-    $content = explode(PHP_EOL,$content);
+    $content = explode("\r\n",$content);
     foreach ($content as $k=>$v){
-        $content[$k] = str_getcsv($v);
+        if($v){
+            $content[$k] = str_getcsv($v);
+        }
     }
+    $content = array_filter($content);
     foreach ($content as $k=>$v){
         if($k != 0){
             $data[] = array_combine($content[0], $content[$k]);

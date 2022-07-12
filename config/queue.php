@@ -80,6 +80,14 @@ return [
             'queue' => 'tlscontact_transaction_sync_queue',
             'retry_after' => 90,
         ],
+
+        'tlscontact_profile_upload_log_queue' => [
+            'driver' => 'database',
+            'connection' => 'payment_pgsql',
+            'table' => 'jobs',
+            'queue' => 'tlscontact_profile_upload_log_queue',
+            'retry_after' => 90,
+        ],
     ],
 
     /*

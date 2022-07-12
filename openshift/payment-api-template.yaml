@@ -337,10 +337,6 @@ parameters:
     required: true
   - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY
     required: true
-  - name: TLSCONTACT_EAUDITOR_DOMAIN
-    required: true
-  - name: TLSCONTACT_EAUDITOR_PORT
-    required: false
   - name: ENVPAY_PAYSOFT_uaKBP2pl_HOST
     required: true
   - name: ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID
@@ -887,10 +883,6 @@ objects:
                   value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM}
                 - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY
                   value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY}
-                - name: TLSCONTACT_EAUDITOR_DOMAIN
-                  value: ${TLSCONTACT_EAUDITOR_DOMAIN}
-                - name: TLSCONTACT_EAUDITOR_PORT
-                  value: ${TLSCONTACT_EAUDITOR_PORT}
                 - name: ENVPAY_PAYSOFT_uaKBP2pl_HOST
                   value: ${ENVPAY_PAYSOFT_uaKBP2pl_HOST}
                 - name: ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID
@@ -1322,10 +1314,6 @@ objects:
                   value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_ALGORITHM}
                 - name: ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY
                   value: ${ENVPAY_PAYSOFT_COMMON_SANDBOX_SIGNATURE_SECRET_KEY}
-                - name: TLSCONTACT_EAUDITOR_DOMAIN
-                  value: ${TLSCONTACT_EAUDITOR_DOMAIN}
-                - name: TLSCONTACT_EAUDITOR_PORT
-                  value: ${TLSCONTACT_EAUDITOR_PORT}
                 - name: ENVPAY_PAYSOFT_uaKBP2pl_HOST
                   value: ${ENVPAY_PAYSOFT_uaKBP2pl_HOST}
                 - name: ENVPAY_PAYSOFT_uaKBP2pl_MERCHANT_ID

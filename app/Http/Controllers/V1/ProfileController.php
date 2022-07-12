@@ -89,7 +89,7 @@ class ProfileController extends BaseController
             try {
                 $this->profileService->upload($profiles_content);
                 $log_content['type'] = 'Sucess';
-                Queue::setConnectionName('tlscontact_profile_process_log_queue')->laterOn('tlscontact_profile_process_log_queue', Carbon::now()->addMinute(3), new PaymentProfileProcessLogJob($log_content));
+                Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileProcessLogJob($log_content));
                 return $this->sendResponse([
                     'status' => 'success',
                     'message' => 'Upload successful!'
@@ -97,7 +97,7 @@ class ProfileController extends BaseController
             } catch (\Exception $e) {
                 $log_content['type']         = 'Error';
                 $log_content['errorComment'] = $e->getMessage();
-                Queue::setConnectionName('tlscontact_profile_process_log_queue')->laterOn('tlscontact_profile_process_log_queue', Carbon::now()->addMinute(3), new PaymentProfileProcessLogJob($log_content));
+                Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileProcessLogJob($log_content));
                 return $this->sendError('unknown_error', $e->getMessage());
             }
         } else {

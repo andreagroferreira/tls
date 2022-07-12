@@ -125,16 +125,16 @@ class RecommendationConfigController extends BaseController
         try {
             $this->recommendationConfigService->create($params_create);
             $log_content['type'] = 'Sucess';
-            Queue::setConnectionName('tlscontact_profile_upload_log_queue')->laterOn('tlscontact_profile_upload_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
-            return $this->sendResponse([
+            Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
+	    return $this->sendResponse([
                 'status' => 'success',
                 'message' => 'Upload successful!'
             ]);
         } catch (\Exception $e) {
             $log_content['type']         = 'Error';
             $log_content['errorComment'] = $e->getMessage();
-            Queue::setConnectionName('tlscontact_profile_upload_log_queue')->laterOn('tlscontact_profile_upload_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
-            return $this->sendError('unknown_error', $e->getMessage());
+            Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
+	    return $this->sendError('unknown_error', $e->getMessage());
         }
     }
 

@@ -25,6 +25,24 @@ function csv_to_array($filename = '', $delimiter = "\t")
     return $data;
 }
 
+function csv_content_array($content = '')
+{
+    if (empty($content)) {
+        return [];
+    }
+    $data   = [];
+    $content = explode(PHP_EOL,$content);
+    foreach ($content as $k=>$v){
+        $content[$k] = str_getcsv($v);
+    }
+    foreach ($content as $k=>$v){
+        if($k != 0){
+            $data[] = array_combine($content[0], $content[$k]);
+        }
+    }
+    return $data;
+}
+
 function get_csv_content($filename = '')
 {
     $content = '';
@@ -57,17 +75,6 @@ function get_file_size($byte)
     } else {
         return round($byte / $TB, 2) . "T";
     }
-}
-
-function export_csv($data)
-{
-    header('Content-Disposition: attachment;filename='.$data['rc_file_name']);
-    header('Content-Type: application/vnd.ms-excel');
-    header('Cache-Control:max-age=0');
-    header('Accept-Ranges:bytes');
-    $out = fopen('php://output', 'a');
-    fwrite($out, $data['rc_content']);
-    fclose($out);
 }
 
 function in_list($needle, $haystack): bool

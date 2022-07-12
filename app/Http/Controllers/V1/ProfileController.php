@@ -23,9 +23,9 @@ class ProfileController extends BaseController
      *      @OA\Parameter(
      *          name="profiles",
      *          in="query",
-     *          description="profiles for multiple applications",
+     *          description="csv file containing profiles for multiple applications",
      *          required=true,
-     *          @OA\Schema(type="string", example="[{'f_id': 10001, 'profile': 'PREMIUM'}]"),
+     *          @OA\Schema(type="file"),
      *      ),
      *      @OA\Response(
      *          response="200",
@@ -120,7 +120,7 @@ class ProfileController extends BaseController
      */
     public function fetchApplications(Request $request)
     {
-        $profile  = $request->route('profile');
+        $profile  = urldecode($request->route('profile'));
         if (empty($profile)) {
             return $this->sendError('miss_fields', 'missing profile');
         }

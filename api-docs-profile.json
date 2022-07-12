@@ -267,6 +267,15 @@
                     "Recommendation config"
                 ],
                 "description": "Get the top10 recommendation rule files",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "description": "number of recommendataion_config, default for 1",
+                        "in": "path",
+                        "required": false,
+                        "example": 1
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "The rule files is uploaded",
@@ -297,6 +306,15 @@
                     "Recommendation config"
                 ],
                 "description": "Upload the recommendation config file",
+                "parameters": [
+                    {
+                        "name": "files",
+                        "description": "the recommendation config file",
+                        "in": "path",
+                        "required": true,
+                        "example": []
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/octet-stream": {

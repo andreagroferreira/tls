@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Services\RecommendationConfigService;
-use AWS\CRT\Log;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use App\Jobs\PaymentProfileUploadLogJob;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Queue;

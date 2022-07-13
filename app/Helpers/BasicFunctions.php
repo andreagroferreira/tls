@@ -31,31 +31,19 @@ function csv_content_array($content = '')
         return [];
     }
     $data   = [];
-    $content = explode(PHP_EOL,$content);
+    $content = explode("\r\n",$content);
     foreach ($content as $k=>$v){
-        $content[$k] = str_getcsv($v);
+        if($v){
+            $content[$k] = str_getcsv($v);
+        }
     }
+    $content = array_filter($content);
     foreach ($content as $k=>$v){
         if($k != 0){
             $data[] = array_combine($content[0], $content[$k]);
         }
     }
     return $data;
-}
-
-function get_csv_content($filename = '')
-{
-    $content = '';
-    if (!file_exists($filename) || !is_readable($filename)) {
-        return $content;
-    }
-    $handle = fopen($filename,"r");
-    while(! feof($handle))
-    {
-        $content .=fgets($handle);
-    }
-    fclose($handle);
-    return $content;
 }
 
 function get_file_size($byte)

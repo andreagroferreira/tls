@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Queue;
 class RecommendationConfigController extends BaseController
 {
     private $recommendationConfigService;
+    private $recommendationActionName = 'UploadRuleEngine';
 
     public function __construct(
         RecommendationConfigService $recommendationConfigService
@@ -120,19 +121,20 @@ class RecommendationConfigController extends BaseController
             'rc_file_size' => $fileSize,
             'rc_comment' => $params['rc_comment']
         ];
+        $log_content['action_name'] = $this->recommendationActionName;
         try {
             $this->recommendationConfigService->create($params_create);
-            $params_create['type'] = 'Sucess';
-            Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($params_create));
-            return $this->sendResponse([
+            $log_content['type'] = 'Sucess';
+            Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
+	    return $this->sendResponse([
                 'status' => 'success',
                 'message' => 'Upload successful!'
             ]);
         } catch (\Exception $e) {
-            $params_create['type'] = 'Error';
-            $params_create['errorComment'] = $e->getMessage();
-            Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($params_create));
-            return $this->sendError('unknown_error', $e->getMessage());
+            $log_content['type']         = 'Error';
+            $log_content['errorComment'] = $e->getMessage();
+            Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
+	    return $this->sendError('unknown_error', $e->getMessage());
         }
     }
 

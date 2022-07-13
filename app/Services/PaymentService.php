@@ -156,7 +156,7 @@ class PaymentService
         $result['project']      = 'TLSpay';
         $result['service']      = '';
         $result['action'] = array();
-        $result['action']['name']       = 'UploadRuleEngine';
+        $result['action']['name']       = $data['action_name'];
         $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
         $result['action']['result']     = $data['type'] === 'Error' ? 'failed to upload' : 'file processed';
         $result['action']['comment']    = $data['errorComment'] ?? 'Rule engine uploaded successful';

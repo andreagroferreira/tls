@@ -513,7 +513,7 @@ deploy-instance:
       FAW_egAll2de_LEGALIZATION_MERCHANT_ID=$FAW_egAll2de_LEGALIZATION_MERCHANT_ID
       FAW_egAll2de_LEGALIZATION_SECURITY_KEY=$FAW_egAll2de_LEGALIZATION_SECURITY_KEY
       HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
-    - oc process -f ./openshift/payment_api_eauditor_log_queue-template.yaml
+    - oc process -f ./openshift/payment-api-eauditor-log-queue-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"
       NAMESPACE="${PROJECT}"

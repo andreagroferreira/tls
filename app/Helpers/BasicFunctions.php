@@ -46,21 +46,6 @@ function csv_content_array($content = '')
     return $data;
 }
 
-function get_csv_content($filename = '')
-{
-    $content = '';
-    if (!file_exists($filename) || !is_readable($filename)) {
-        return $content;
-    }
-    $handle = fopen($filename,"r");
-    while(! feof($handle))
-    {
-        $content .=fgets($handle);
-    }
-    fclose($handle);
-    return $content;
-}
-
 function get_file_size($byte)
 {
     $KB = 1024;

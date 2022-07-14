@@ -122,8 +122,8 @@ class RecommendationConfigController extends BaseController
         $log_content['action_name'] = $this->recommendationActionName;
         try {
             $this->recommendationConfigService->create($params_create);
-            $log_content['type'] = 'Sucess';
-            Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
+            $log_content['type'] = 'Success';
+            dispatch(new PaymentProfileUploadLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
 	    return $this->sendResponse([
                 'status' => 'success',
                 'message' => 'Upload successful!'
@@ -131,7 +131,7 @@ class RecommendationConfigController extends BaseController
         } catch (\Exception $e) {
             $log_content['type']         = 'Error';
             $log_content['errorComment'] = $e->getMessage();
-            Queue::setConnectionName('payment_api_eauditor_log_queue')->laterOn('payment_api_eauditor_log_queue', Carbon::now()->addMinute(3), new PaymentProfileUploadLogJob($log_content));
+            dispatch(new PaymentProfileUploadLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
 	    return $this->sendError('unknown_error', $e->getMessage());
         }
     }

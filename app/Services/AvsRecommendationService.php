@@ -65,7 +65,7 @@ class AvsRecommendationService
 
         //get the rule engine recommendation avs
         $basket_skus = array_merge($requested_skus, $paid_skus);
-        $rule_engine_avs = $this->getRecommendByRuleEngine($params, $application, $basket_skus, $profile);
+        $rule_engine_avs = $this->getRecommendByRuleEngine($params, $application, $basket_skus, strtoupper($profile));
 
         $removed_skus = array_keys($rule_engine_avs['remove']);
         $add_skus = array_keys($rule_engine_avs['add']);

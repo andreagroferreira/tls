@@ -67,7 +67,7 @@ function get_file_size($byte)
 
 function in_list($needle, $haystack): bool
 {
-    $rule_array = explode(',',  preg_replace('/^in_list\((.*)?\)/', '$1', $haystack));
+    $rule_array = explode('|',  preg_replace('/^in_list\((.*)?\)/', '$1', $haystack));
     if(is_string($needle)) {
         return in_array($needle, $rule_array);
     } else if (is_array($needle)) {
@@ -79,7 +79,7 @@ function in_list($needle, $haystack): bool
 
 function not_in_list($needle, $haystack): bool
 {
-    $rule_array = explode(',',  preg_replace('/^not_in_list\((.*)?\)/', '$1', $haystack));
+    $rule_array = explode('|',  preg_replace('/^not_in_list\((.*)?\)/', '$1', $haystack));
     if(is_string($needle)) {
         return !in_array($needle, $rule_array);
     } else if (is_array($needle)) {
@@ -91,13 +91,13 @@ function not_in_list($needle, $haystack): bool
 
 function workflow_status($stages_status, $haystack):bool
 {
-    $preg_str = preg_replace('/^workflow_status\((.*)?\)/', '$1', $haystack);
-    $rules = explode(',', str_replace(['\'', ' ', '"'], '', $preg_str));
+    $preg_str = preg_replace('/^"workflow_status\((.*)?\)/', '$1', $haystack);
+    $rules = explode(':', str_replace(['\'', ' ', '"'], '', $preg_str));
     $stage = array_shift($rules);
     if(empty($stages_status[$stage])) {
         return false;
     } else {
-        return in_array($stages_status[$stage], $rules);
+        return in_array($stages_status[$stage], explode('|', current($rules)));
     }
 }
 

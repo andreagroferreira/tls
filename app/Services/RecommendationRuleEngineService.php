@@ -167,7 +167,7 @@ class RecommendationRuleEngineService
 
     private function checkWorkflowStatus($stages_status, $rule)
     {
-        if (str_starts_with($rule, 'workflow_status')) {
+        if (str_starts_with($rule, '"workflow_status')) {
             return workflow_status($stages_status, $rule);
         } else {
             return false;

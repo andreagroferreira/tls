@@ -25,7 +25,11 @@ class ProfileService
 
     private function exists($p_xref_f_id, $profile)
     {
-        return ($this->profileRepository->fetchLast(['p_xref_f_id' => $p_xref_f_id])->p_profile === $profile);
+        $existing_profile = $this->profileRepository->fetchLast(['p_xref_f_id' => $p_xref_f_id]);
+
+        if (empty($existing_profile)) return false;
+
+        return ($existing_profile->p_profile === $profile);
     }
 
     public function insert($data)

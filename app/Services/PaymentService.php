@@ -152,7 +152,7 @@ class PaymentService
         $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
         $result['policy']       = 'audit';
         $result['tags']         = 'tech';
-        $result['domain']       = 'Profiling';
+        $result['domain']       = 'emetrics';
         $result['project']      = 'TLSpay';
         $result['service']      = '';
         $result['action'] = array();
@@ -163,6 +163,8 @@ class PaymentService
         $result['action']['type']       = $data['type'] ?? '';
         $result['client'] = array();
         $result['client']['code'] = $this->apiService->getProjectId();
+        $result['message'] = array();
+        $result['message']['type'] = 'profilling';
 
         return $result;
     }

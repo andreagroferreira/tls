@@ -23,9 +23,13 @@ class ProfileService
         $this->insert($profiles);
     }
 
-    private function exists($attributes)
+    private function exists($p_xref_f_id, $profile)
     {
-        return !blank($this->profileRepository->fetch($attributes));
+        $existing_profile = $this->profileRepository->fetchLast(['p_xref_f_id' => $p_xref_f_id]);
+
+        if (empty($existing_profile)) return false;
+
+        return ($existing_profile->p_profile === $profile);
     }
 
     public function insert($data)
@@ -36,7 +40,7 @@ class ProfileService
                 'p_xref_f_id' => $datum['TLS ID Number'],
                 'p_profile' => $datum['Profile'],
             ];
-            if ($this->exists($attributes)) continue;
+            if ($this->exists($datum['TLS ID Number'], $datum['Profile'])) continue;
             $insert_data[] = $attributes;
         }
         return $this->profileRepository->createMany($insert_data);

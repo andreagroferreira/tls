@@ -1,85 +1,85 @@
-Rule,Scope,Service ID,Priority,Profile,Visa Type,Travel Purpose,Workflow,AVS Conflict,On Site,Step,Creator
-Add,2uk,UK-WIWA,1,PREMIUM,,,,,,,
-Add,2uk,UK-KMPWA,1,PREMIUM,,,,,,,
-Add,2uk,UK-UAS,3,PREMIUM,,,,,,,
-Add,2uk,UK-PV,1,STATUS SEEKERS,,,,,,,
-Add,2uk,UK-PVS,1,STATUS SEEKERS,,,,,,,
-Add,2uk,UK-ECR-2P,1,STATUS SEEKERS,,,,,,,
-Add,2uk,UK-ECR-IN,2,STATUS SEEKERS,,,,,,,
-Add,2uk,UK-ECR-5P,2,STATUS SEEKERS,,,,,,,
-Add,2uk,UK-ECR-OUT,2,STATUS SEEKERS,,,,,,,
-Add,2uk,UK-PTA,3,STATUS SEEKERS,,,,,,,
-Add,2uk,UK-PL,4,STATUS SEEKERS,,,,,,,
-Add,2uk,UK-PTA,1,FLEXIBILITY SEEKERS,,,,,,,
-Add,2uk,UK-WIWA,2,FLEXIBILITY SEEKERS,,,,,,,
-Add,2uk,UK-COPY-BW,1,BASIC & CHEAP,,,,,,,
-Add,2uk,UK-COPY-MORE10,1,BASIC & CHEAP,,,,,,,
-Add,2uk,UK-SMS,2,BASIC & CHEAP,,,,,,,
-Add,2uk,UK-UAS,3,BASIC & CHEAP,,,,,,,
-Add,2uk,UK-PL,1,NOT INTERESTED,,,,,,,
-Add,2uk,UK-PV,1,DEFAULT,,,,,,,
-Add,2uk,UK-PVS,2,DEFAULT,,,,,,,
-Add,2uk,UK-SMS,3,DEFAULT,,,,,,,
-Add,2uk,UK-PL,4,DEFAULT,,,,,,,
-Remove,2uk,UK-PV,,,,in_list(settlement),,,,,
-Remove,2uk,UK-PV,,,,,,,in_list(UK-KMPWA),,
-Remove,2uk,UK-PV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,2uk,UK-PV,,,,,workflow_status(return: 'sent|done'),,,,
-Remove,2uk,UK-PVS,,,,not_in_list(settlement),,,,,
-Remove,2uk,UK-PVS,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,2uk,UK-PVS,,,,,workflow_status(return: 'sent|done'),,,,
-Remove,AMM,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months),,,,,
-Remove,AMM,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,AMM,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,PRY,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,JNB,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,ABV,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,LGV,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,LOS,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,ANK,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,IST,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,IZM,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,ALA,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,TSE,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,PAR,UK-SPV,,,,not_in_list(visitor|visitor_under_6_months|visitor_over_6_months|family_visitor_under_6_months|family_visitor_over_6_months|tier1|tier2|tier4|tier5|student),,,,,
-Remove,PRY,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,JNB,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,ABV,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,LGV,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,LOS,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,ANK,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,IST,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,IZM,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,ALA,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,TSE,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,PAR,UK-SPV,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,PRY,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,JNB,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,ABV,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,LGV,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,LOS,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,ANK,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,IST,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,IZM,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,ALA,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,TSE,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,PAR,UK-SPV,,,,,,in_list(UK-KMPWA),,,
-Remove,2uk,UK-PTA,,,,,workflow_status(appointment: 'done'),,,,
-Remove,2uk,UK-WIWA,,,,,workflow_status(appointment: 'done'),,,,
-Remove,2uk,UK-PL,,,,,workflow_status(appointment: 'done'),,,,
-Remove,2uk,UK-SPL,,,,,workflow_status(appointment: 'done'),,,,
-Remove,2uk,UK-SPL,,,,,,in_list(UK-PL),,,
-Remove,2uk,UK-UAS,,,,,,in_list(UK-APPTSTAREG),,,
-Remove,2uk,UK-UAS,,,,,workflow_status(transfer: 'sent|done'),,,,
-Remove,2uk,UK-ASS,,,,not_in_list(settlement),,,,,
-Remove,2uk,UK-ASSP,,,,not_in_list(settlement),,,,,
-Remove,2uk,UK-ASSP,,,,,,in_list(UK-ASS),,,
-Remove,2uk,UK-ECR-IN,,,,,,in_list(UK-ECR-OUT),,,
-Remove,2uk,UK-ECR-IN,,,,,workflow_status(delivery: 'done'),,,,
-Remove,2uk,UK-ECR-OUT,,,,,,in_list(UK-ECR-IN),,,
-Remove,2uk,UK-ECR-OUT,,,,,workflow_status(delivery: 'done'),,,,
-Remove,2uk,UK-FFA,,,,,workflow_status(appointment: 'done'),,,,
-Remove,2uk,UK-SMS,,,,,workflow_status(delivery: 'done'),,,,
-Remove,2uk,UK-KMPWA,,,,,workflow_status(delivery: 'done'),,,,
-Remove,2uk,UK-KMPWA,,,,,,in_list(UK-PV|UK-SPV),,,
-Remove,2uk,UK-GROUP,,,,,workflow_status(appointment: 'done'),,,,
+Rule|Scope|Service ID|Priority|Profile|Visa Type|Travel Purpose|Workflow|AVS Conflict|On Site|Step|Creator
+Add|2uk|UK-WIWA|1|PREMIUM|||||||
+Add|2uk|UK-KMPWA|1|PREMIUM|||||||
+Add|2uk|UK-UAS|3|PREMIUM|||||||
+Add|2uk|UK-PV|1|STATUS SEEKERS|||||||
+Add|2uk|UK-PVS|1|STATUS SEEKERS|||||||
+Add|2uk|UK-ECR-2P|1|STATUS SEEKERS|||||||
+Add|2uk|UK-ECR-IN|2|STATUS SEEKERS|||||||
+Add|2uk|UK-ECR-5P|2|STATUS SEEKERS|||||||
+Add|2uk|UK-ECR-OUT|2|STATUS SEEKERS|||||||
+Add|2uk|UK-PTA|3|STATUS SEEKERS|||||||
+Add|2uk|UK-PL|4|STATUS SEEKERS|||||||
+Add|2uk|UK-PTA|1|FLEXIBILITY SEEKERS|||||||
+Add|2uk|UK-WIWA|2|FLEXIBILITY SEEKERS|||||||
+Add|2uk|UK-COPY-BW|1|BASIC & CHEAP|||||||
+Add|2uk|UK-COPY-MORE10|1|BASIC & CHEAP|||||||
+Add|2uk|UK-SMS|2|BASIC & CHEAP|||||||
+Add|2uk|UK-UAS|3|BASIC & CHEAP|||||||
+Add|2uk|UK-PL|1|NOT INTERESTED|||||||
+Add|2uk|UK-PV|1|DEFAULT|||||||
+Add|2uk|UK-PVS|2|DEFAULT|||||||
+Add|2uk|UK-SMS|3|DEFAULT|||||||
+Add|2uk|UK-PL|4|DEFAULT|||||||
+Remove|2uk|UK-PV||||in_list(settlement)|||||
+Remove|2uk|UK-PV|||||||in_list(UK-KMPWA)||
+Remove|2uk|UK-PV|||||workflow_status(transfer, 'sent,done')||||
+Remove|2uk|UK-PV|||||workflow_status(return, 'sent,done')||||
+Remove|2uk|UK-PVS||||not_in_list(settlement)|||||
+Remove|2uk|UK-PVS|||||workflow_status(transfer, 'sent,done')||||
+Remove|2uk|UK-PVS|||||workflow_status(return, 'sent,done')||||
+Remove|AMM|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months)|||||
+Remove|AMM|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|AMM|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|PRY|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|JNB|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|ABV|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|LGV|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|LOS|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|ANK|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|IST|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|IZM|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|ALA|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|TSE|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|PAR|UK-SPV||||not_in_list(visitor,visitor_under_6_months,visitor_over_6_months,family_visitor_under_6_months,family_visitor_over_6_months,tier1,tier2,tier4,tier5,student)|||||
+Remove|PRY|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|JNB|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|ABV|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|LGV|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|LOS|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|ANK|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|IST|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|IZM|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|ALA|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|TSE|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|PAR|UK-SPV|||||workflow_status(transfer, 'sent,done')||||
+Remove|PRY|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|JNB|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|ABV|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|LGV|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|LOS|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|ANK|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|IST|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|IZM|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|ALA|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|TSE|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|PAR|UK-SPV||||||in_list(UK-KMPWA)|||
+Remove|2uk|UK-PTA|||||workflow_status(appointment, 'done')||||
+Remove|2uk|UK-WIWA|||||workflow_status(appointment, 'done')||||
+Remove|2uk|UK-PL|||||workflow_status(appointment, 'done')||||
+Remove|2uk|UK-SPL|||||workflow_status(appointment, 'done')||||
+Remove|2uk|UK-SPL||||||in_list(UK-PL)|||
+Remove|2uk|UK-UAS||||||in_list(UK-APPTSTAREG)|||
+Remove|2uk|UK-UAS|||||workflow_status(transfer, 'sent,done')||||
+Remove|2uk|UK-ASS||||not_in_list(settlement)|||||
+Remove|2uk|UK-ASSP||||not_in_list(settlement)|||||
+Remove|2uk|UK-ASSP||||||in_list(UK-ASS)|||
+Remove|2uk|UK-ECR-IN||||||in_list(UK-ECR-OUT)|||
+Remove|2uk|UK-ECR-IN|||||workflow_status(delivery, 'done')||||
+Remove|2uk|UK-ECR-OUT||||||in_list(UK-ECR-IN)|||
+Remove|2uk|UK-ECR-OUT|||||workflow_status(delivery, 'done')||||
+Remove|2uk|UK-FFA|||||workflow_status(appointment, 'done')||||
+Remove|2uk|UK-SMS|||||workflow_status(delivery, 'done')||||
+Remove|2uk|UK-KMPWA|||||workflow_status(delivery, 'done')||||
+Remove|2uk|UK-KMPWA||||||in_list(UK-PV,UK-SPV)|||
+Remove|2uk|UK-GROUP|||||workflow_status(appointment, 'done')||||

@@ -60,7 +60,7 @@ class RecommendationRuleEngineService
                             $matched = $this->checkString($verified_value, $rule);
                             break;
                         case "Workflow":
-                            $matched = $this->checkWorkflowStatus($stages_status, $rule);
+                            $matched = $this->checkWorkflowStatus($stages_status, trim($rule, '"'));
                             break;
                         case "Age Range":
                             $matched = $this->checkAge($verified_value, $rule);
@@ -167,7 +167,7 @@ class RecommendationRuleEngineService
 
     private function checkWorkflowStatus($stages_status, $rule)
     {
-        if (str_starts_with($rule, '"workflow_status')) {
+        if (str_starts_with($rule, 'workflow_status')) {
             return workflow_status($stages_status, $rule);
         } else {
             return false;
@@ -192,8 +192,8 @@ class RecommendationRuleEngineService
         $dest = substr($issuer, -3);
         $rule_config  = $this->recommendationConfigService->fetch(1)->toArray();
         $client_rules = empty($rule_config)
-            ? csv_to_array(storage_path('rules/' . $this->client . '/recommendation_rules.csv'), ',')
-            : csv2array($rule_config[0]['rc_content'], 'INDEXED_ARRAY', ',');
+            ? csv_to_array(storage_path('rules/' . $this->client . '/recommendation_rules.csv'), '|')
+            : csv2array($rule_config[0]['rc_content'], 'INDEXED_ARRAY', '|');
         $issuer_rules = collect($client_rules)->filter(function($rule) use ($country, $city, $dest){
             return in_array($rule['Scope'], [$country, $city, $dest]);
         })->values()->toArray();

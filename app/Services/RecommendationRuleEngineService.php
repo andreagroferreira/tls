@@ -192,8 +192,8 @@ class RecommendationRuleEngineService
         $dest = substr($issuer, -3);
         $rule_config  = $this->recommendationConfigService->fetch(1)->toArray();
         $client_rules = empty($rule_config)
-            ? csv_to_array(storage_path('rules/' . $this->client . '/recommendation_rules.csv'), '|')
-            : csv2array($rule_config[0]['rc_content'], 'INDEXED_ARRAY', '|');
+            ? csv_to_array(storage_path('rules/' . $this->client . '/recommendation_rules.csv'), ',')
+            : csv_content_array($rule_config[0]['rc_content'], ',');
         $issuer_rules = collect($client_rules)->filter(function($rule) use ($country, $city, $dest){
             return in_array($rule['Scope'], [$country, $city, $dest]);
         })->values()->toArray();

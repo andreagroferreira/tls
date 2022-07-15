@@ -29,6 +29,15 @@ class ProfileRepository
         return $this->profileModel->select($field)->where($where)->get();
     }
 
+    public function fetchLast($where, $field = ['*'])
+    {
+        return $this->profileModel
+            ->select($field)
+            ->where($where)
+            ->orderBy('p_tech_creation', 'DESC')
+            ->first();
+    }
+
     public function getProfile($f_id)
     {
         return $this->profileModel

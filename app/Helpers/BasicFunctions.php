@@ -25,7 +25,7 @@ function csv_to_array($filename = '', $delimiter = "\t")
     return $data;
 }
 
-function csv_content_array($content = '')
+function csv_content_array($content = '', $delimiter = ",")
 {
     if (empty($content)) {
         return [];
@@ -34,7 +34,7 @@ function csv_content_array($content = '')
     $content = explode("\r\n",$content);
     foreach ($content as $k=>$v){
         if($v){
-            $content[$k] = str_getcsv($v);
+            $content[$k] = str_getcsv($v,$delimiter);
         }
     }
     $content = array_filter($content);

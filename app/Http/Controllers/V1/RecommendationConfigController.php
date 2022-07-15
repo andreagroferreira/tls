@@ -90,7 +90,7 @@ class RecommendationConfigController extends BaseController
         $fileContent = base64_decode($fileInfo['fileContent']);
         $fileSize = strlen($fileContent);
         try{
-            $recommendation_rules_content = csv_content_array($fileContent, '|');
+            $recommendation_rules_content = csv_content_array($fileContent, ',');
         } catch (\Exception $e) {
             return $this->sendError('file error', 'Please upload the correct file');
         }

@@ -31,7 +31,7 @@ function csv_content_array($content = '', $delimiter = ",")
         return [];
     }
     $data   = [];
-    $content = explode("\r\n",$content);
+    $content = explode(PHP_EOL,$content);
     foreach ($content as $k=>$v){
         if($v){
             $content[$k] = str_getcsv($v,$delimiter);

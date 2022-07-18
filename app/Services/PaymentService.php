@@ -158,7 +158,7 @@ class PaymentService
         $result['action'] = array();
         $result['action']['name']       = $data['action_name'];
         $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
-        $result['action']['result']     = $data['action_name'];
+        $result['action']['result']     = $data['rc_file_name'];
         $result['action']['comment']    = $data['errorComment'] ?? 'Rule engine uploaded successful';
         $result['action']['type']       = $data['type'] ?? '';
         $result['client'] = array();

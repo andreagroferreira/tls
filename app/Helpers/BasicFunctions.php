@@ -25,21 +25,21 @@ function csv_to_array($filename = '', $delimiter = "\t")
     return $data;
 }
 
-function csv_content_array($content = '')
+function csv_content_array($content = '', $delimiter = ",")
 {
     if (empty($content)) {
         return [];
     }
-    $data   = [];
-    $content = explode("\r\n",$content);
-    foreach ($content as $k=>$v){
-        if($v){
-            $content[$k] = str_getcsv($v);
+    $data = [];
+    $content = explode(PHP_EOL, $content);
+    foreach ($content as $k => $v) {
+        if ($v) {
+            $content[$k] = str_getcsv($v, $delimiter);
         }
     }
     $content = array_filter($content);
-    foreach ($content as $k=>$v){
-        if($k != 0){
+    foreach ($content as $k => $v) {
+        if ($k != 0) {
             $data[] = array_combine($content[0], $content[$k]);
         }
     }

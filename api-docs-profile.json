@@ -395,6 +395,11 @@
                         "description": "file name",
                         "example": "uk_rules_20220701"
                     },
+                    "rc_uploaded_by": {
+                        "type": "string",
+                        "description": "employee login id who upload this file",
+                        "example": "qw@tlscontact.com"
+                    },
                     "rc_content": {
                         "type": "string",
                         "description": "configuration content",

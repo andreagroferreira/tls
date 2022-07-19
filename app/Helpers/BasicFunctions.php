@@ -152,3 +152,13 @@ function csv2array($in, $option = '', $separator = "\t", $include_comment = fals
     //  echo "<pre>"; print_r($arr); echo "</pre>";
     return $arr;
 }
+
+function getCountryName($countryCode)
+{
+    return config('list_countries.'. $countryCode)['gc_name'];
+}
+
+function getCityName($cityCode)
+{
+    return config('list_city.'. $cityCode)['gcc_name'];
+}

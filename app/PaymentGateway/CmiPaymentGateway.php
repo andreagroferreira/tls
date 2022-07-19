@@ -147,6 +147,9 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $params['CallbackURL'] = $params['callbackUrl'];
         unset($params['TranType']);
         unset($params['callbackUrl']);
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transaction);
+
         return [
             'form_method' => 'post',
             'form_action' => $cmi_config['host'],

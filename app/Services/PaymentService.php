@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Jobs\PaymentTransationBeforeLogJob;
 use App\Jobs\TransactionSyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -138,15 +139,15 @@ class PaymentService
         }
     }
 
-    public function sendEAuditorLogs($data): bool
+    public function sendEAuditorProfileLogs($data): bool
     {
-        $eauditor_log_content = $this->formatData($data);
+        $eauditor_log_content = $this->formatProfileData($data);
         //send eauditor log
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $eauditor_log_content);
         return true;
     }
 
-    private function formatData($data): array
+    private function formatProfileData($data): array
     {
         $result = array();
         $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
@@ -168,4 +169,40 @@ class PaymentService
 
         return $result;
     }
+
+
+    public function PaymentTransationBeforeLog($service, $data)
+    {
+        $data['service'] = $service;
+        dispatch(new PaymentTransationBeforeLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+    }
+
+    public function PaymentTransationBeforeLogs($data): bool
+    {
+        $result = array();
+        $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['policy']       = 'audit';
+        $result['tags']         = 'tech';
+        $result['domain']       = 'emetrics';
+        $result['project']      = 'TLSpay';
+        $result['service']      = 'PaymentGatewayApp';
+        $result['city']         = substr($data['t_client'], 2, 3);
+        $result['city_name']    = getCityName($result['city']);
+        $result['country']      = substr($data['t_client'], 0, 2);
+        $result['country_name'] = getCountryName($result['country']);
+        $result['message']      = $data['t_items'] ?? '';
+        $result['action'] = array();
+        $result['action']['result']     = $data['t_transaction_id'] ?? '';
+        $result['action']['comment']    = 'Transfered to ' . $data['service'];
+        $result['action']['name']       = 'PaymentGatewayTrasnfer';
+        $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['client'] = array();
+        $result['client']['code'] = $this->apiService->getProjectId();
+        $result['reference'] = array();
+        $result['reference']['id'] = 'fg_id';
+        info($result);
+        $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
+        return true;
+    }
+
 }

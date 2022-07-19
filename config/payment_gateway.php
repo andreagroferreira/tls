@@ -2134,6 +2134,11 @@ return [
     ]
     ],
     'leg_be' =>[
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'zaAll2be' => [
             'paypal' => [
                 'label' => 'PAYPAL pay',

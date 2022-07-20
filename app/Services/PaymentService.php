@@ -173,7 +173,7 @@ class PaymentService
 
     public function PaymentTransationBeforeLog($service, $data)
     {
-        $data['service'] = $service;
+        $data['comment'] = 'Transfered to ' . $service;
         dispatch(new PaymentTransationBeforeLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
     }
 
@@ -193,16 +193,27 @@ class PaymentService
         $result['message']      = $data['t_items'] ?? '';
         $result['action'] = array();
         $result['action']['result']     = $data['t_transaction_id'] ?? '';
-        $result['action']['comment']    = 'Transfered to ' . $data['service'];
+        $result['action']['comment']    = $data['comment'];
         $result['action']['name']       = 'PaymentGatewayTrasnfer';
         $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
         $result['client'] = array();
         $result['client']['code'] = $this->apiService->getProjectId();
         $result['reference'] = array();
-        $result['reference']['id'] = 'fg_id';
+        $result['reference']['id'] = $data['t_xref_fg_id'];
         info($result);
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
         return true;
+    }
+
+    public function PaymentTransationLog($service, $data, $response, $comment)
+    {
+        $items = $data['t_items'][0]['skus'];
+        $message = ['json'=>['products'=>$items],'text'=>$response];
+        $data['t_items'] = $message;
+        $comments = $comment == 'success' ? "Payment done on {$service}" : "Payment failed on {$service}";
+        $data['comment'] = $comments;
+        info('PaymentTransationLog::'.json_encode($data['t_items']));
+        dispatch(new PaymentTransationBeforeLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
     }
 
 }

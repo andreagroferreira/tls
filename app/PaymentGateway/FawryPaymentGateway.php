@@ -470,6 +470,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $hash_sign = hash('SHA256', $sign_string);
         if ($hash_sign !== $message_signature) {
             Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : signature verification failed");
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return [
                 'status' => 'fail',
                 'message' => "signature_verification_failed",
@@ -479,6 +480,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $t_amount = floatval($transaction['t_amount']);
         if ($t_amount != $payment_amount) {
             Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : payment amount is incorrect");
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return [
                 'status' => 'fail',
                 'message' => "payment_amount_incorrect",
@@ -518,6 +520,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                         dispatch($fawry_job->delay(Carbon::now()->addMinute(1)))->onConnection('tlscontact_fawry_payment_queue')->onQueue('tlscontact_fawry_payment_queue');
                     }
                     Log::warning('ONLINE PAYMENT, Fawrypay(order status is wrong): The current order status is ' . $order_status);
+                    $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
                     return [
                         'status' => 'fail',
                         'message' => 'unknown_error',
@@ -533,6 +536,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             'transaction_id' => $transaction['t_transaction_id'],
             'gateway_transaction_id' => '',
         ];
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         $response = $this->paymentService->confirm($transaction, $confirm_params);
         if ($response['is_success'] == 'ok') {
             return [

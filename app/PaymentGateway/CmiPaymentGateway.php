@@ -185,6 +185,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $cmi_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
         $isValid    = $this->validate($cmi_config['storeKey'] ?? '', $params);
         if (!$isValid) {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return [
                 'status'  => 'error',
                 'message' => 'Request ERROR: params validate failed'
@@ -198,6 +199,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
             'transaction_id'         => $params['oid'],
             'gateway_transaction_id' => $params['TransId'],
         ];
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         return $this->paymentService->confirm($transaction, $confirm_params);
     }
 

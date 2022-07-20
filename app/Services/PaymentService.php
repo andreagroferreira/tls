@@ -199,20 +199,20 @@ class PaymentService
         $result['client'] = array();
         $result['client']['code'] = $data['t_client'];
         $result['reference'] = array();
-        $result['reference']['id'] = 'fg_id';
+        $result['reference']['id'] = $data['t_xref_fg_id'];
         info($result);
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
         return true;
     }
 
-    public function PaymentTransationLog($service, $data, $response, $comment)
+    public function PaymentTransactionCallbackLog($service, $data, $response, $comment)
     {
         $items = $data['t_items'][0]['skus'];
         $message = ['json'=>['products'=>$items],'text'=>$response];
         $data['t_items'] = $message;
         $comments = $comment == 'success' ? "Payment done on {$service}" : "Payment failed on {$service}";
         $data['comment'] = $comments;
-        info('PaymentTransationLog::'.json_encode($data['t_items']));
+        info('PaymentTransactionCallbackLog::'.json_encode($data['t_items']));
         dispatch(new PaymentTransationBeforeLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
     }
 

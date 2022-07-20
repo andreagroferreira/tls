@@ -206,6 +206,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                 't_gateway_account' => $merchantid ?? '',
                 't_gateway_subaccount' => $subaccount ?? '',
             ];
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$translationsData, $params,'success');
             return $this->paymentService->confirm($translationsData, $confirm_params);
         } else {
             $result = [
@@ -215,6 +216,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                 'message' => $msg,
                 'href' => $translationsData['t_redirect_url']
             ];
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$translationsData, $params,'fail');
             $this->transactionLogsService->create(['tl_xref_transaction_id' => $translationsData['t_transaction_id'], 'tl_content' =>json_encode($result)]);
             return $result;
         }

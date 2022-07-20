@@ -106,6 +106,7 @@ class PayBankGateway implements PaymentGatewayInterface
         $realHash = $params['token'] ?? '';
         if ($sha512hash != $realHash) {
             Log::warning("ONLINE PAYMENT, BANK PAYMENT: notify check failed : the token $transaction_id is not matched");
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return [
                 'status' => 'fail',
                 'message' => "token_not_match",
@@ -125,10 +126,12 @@ class PayBankGateway implements PaymentGatewayInterface
         if (isset($params['force_pay_for_not_online_payment_avs']) && $params['force_pay_for_not_online_payment_avs'] == 'yes') {
             $confirm_params['force_pay_for_not_online_payment_avs'] = $params['force_pay_for_not_online_payment_avs'];
         }
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         $response = $this->paymentService->confirm($transaction, $confirm_params);
 
         $return['status'] = $response['is_success'] == 'ok' ? 'success' : 'fail';
         if($return['status'] == 'fail') {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             $return['message'] = $response['message'];
         }
         return $return;

@@ -100,11 +100,13 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
         $error = array_merge($error_msg, $result['error']);
         $this->responseLog($params, $error, $orderId);
         if ($error) {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$translationsData, $params,'fail');
             return [
                 'status' => 'error',
                 'message' => $error,
             ];
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$translationsData, $params,'success');
             return [
                 'status' => 'success',
             ];

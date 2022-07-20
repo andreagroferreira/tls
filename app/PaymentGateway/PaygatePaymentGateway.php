@@ -95,6 +95,7 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         }
         // 验证数字签名
         if($return_checksum != $hash){
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'fail');
             Log::warning("ONLINE PAYMENT, PAYGATE: digital signature check failed : ". json_encode($_POST, JSON_UNESCAPED_UNICODE));
             return "APPROVED";
         }
@@ -113,8 +114,10 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         }
         //核对支付授权状态
         if ($transaction_status == 1) {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'success');
             return "OK";
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'fail');
             return "ONLINE PAYMENT, PAYGATE: Payment authorization check failed : ". json_encode($return_params, JSON_UNESCAPED_UNICODE);
         }
     }

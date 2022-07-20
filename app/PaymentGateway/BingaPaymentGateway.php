@@ -130,6 +130,9 @@ class BingaPaymentGateway implements PaymentGatewayInterface
             'countdown' => $countdown,
             'return_url' => $translations_data['t_redirect_url'],
         ];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => get_callback_url($payfort_config['common']['cash_url']),

@@ -74,6 +74,8 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         $form_fields['LMI_FAIL_URL'] = $return_url;
         $form_fields['LMI_HASH'] = $this->generateSignature($paysoft_config, [$form_fields['LMI_MERCHANT_ID'], $order_id, $form_fields['LMI_PAYMENT_AMOUNT']]);
 
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => array_get($paysoft_config, 'current.host'),

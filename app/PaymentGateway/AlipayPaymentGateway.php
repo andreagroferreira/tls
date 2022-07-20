@@ -117,7 +117,9 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         //$post_params['biz_content'] = $default_params;
         ksort($post_params);
         //$parms = http_build_query($post_params);
-        //var_dump($parms);exit;
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => $gatewayURL,

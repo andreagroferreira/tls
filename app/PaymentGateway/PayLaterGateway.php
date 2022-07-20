@@ -3,14 +3,21 @@
 namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\PaymentService;
 use App\Services\TransactionService;
 
 class PayLaterGateway implements PaymentGatewayInterface
 {
     private $transactionService;
+    private $paymentService;
 
-    public function __construct(TransactionService $transactionService){
+    public function __construct(
+        TransactionService $transactionService,
+        PaymentService $paymentService
+    )
+    {
         $this->transactionService = $transactionService;
+        $this->paymentService     = $paymentService;
     }
 
     public function getPaymentGatewayName()
@@ -49,6 +56,9 @@ class PayLaterGateway implements PaymentGatewayInterface
             'lang' => $lang,
             'redirect_url' => $transaction['t_redirect_url']
         ];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transaction);
+
         return [
             'form_method' => 'post',
             'form_action' => $return_url,

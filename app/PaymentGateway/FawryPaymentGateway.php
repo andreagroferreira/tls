@@ -129,6 +129,9 @@ class FawryPaymentGateway implements PaymentGatewayInterface
 
         $expiry = strtotime("+7 day", strtotime($translations_data['t_expiration'])) * 1000;
         $amount = number_format($translations_data['t_amount'], 2, '.', '');
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         if ($pay_version == 'v1') {
             $sign_string = $merchant_id . $order_id . $sku_list . $quantity . $amount . $expiry . $secret;
             $hash_sign = hash('SHA256', $sign_string);

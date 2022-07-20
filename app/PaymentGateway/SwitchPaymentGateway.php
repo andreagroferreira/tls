@@ -87,6 +87,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             ];
             $this->transactionService->updateById($translations_data['t_id'], $update_fields);
         }
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
         return [
             'form_method' => 'load_js',
             'form_action' => $host . '/v1/paymentWidgets.js?checkoutId=' . array_get($response, 'body.id'),

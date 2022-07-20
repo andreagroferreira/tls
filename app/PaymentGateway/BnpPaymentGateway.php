@@ -96,6 +96,8 @@ class BnpPaymentGateway implements PaymentGatewayInterface
 
         $this->transactionService->updateById($t_id, ['t_gateway_transaction_id' => $payment_order_id]);
 
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => $payment_form_url,

@@ -32,6 +32,6 @@ class PaymentTransationBeforeLogJob implements ShouldQueue
     public function handle()
     {
         $logService = app()->make('App\Services\PaymentService');
-        $logService->PaymentTransationBeforeLogs($this->params);
+        $logService->sendPaymentTransationBeforeLogs($this->params);
     }
 }

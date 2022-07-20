@@ -146,6 +146,9 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         if (!empty($chargeResponseData['id'])) {
             $this->transactionService->update(['t_transaction_id' => $orderId], ['t_gateway_transaction_id' => $chargeResponseData['id'], 't_gateway' => $this->getPaymentGatewayName()]);
         }
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'is_success' => $chargeResponseData['status'] != 'success' ? 'error' : 'ok',
             'orderid'    => $orderId,

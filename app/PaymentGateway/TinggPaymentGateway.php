@@ -147,6 +147,9 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             'params'      => $encryptParams,
             'countryCode' => strtoupper(substr($issuer, 0, 2))
         ];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transaction);
+
         return [
             'form_method' => 'get',
             'form_action' => $tingg_config['host'],

@@ -111,6 +111,9 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             'COMMENT1' => $cai,
             'COMMENT2' => $url
         ];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'form_method' => 'post',
             'form_action' => $hosturl,

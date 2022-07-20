@@ -158,6 +158,9 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
             'return' => $returnurl,
             'notify_url' => $ipnurl,
         ];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'form_method' => 'post',
             'form_action' => $hosturl,

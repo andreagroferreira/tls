@@ -104,6 +104,9 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
             $this->transactionService->update(['t_transaction_id' => $orderId], ['t_gateway_transaction_id' => $responseData['orderId'], 't_gateway' => $this->getPaymentGatewayName()]);
         }
         $payment_page_url = $responseData['formUrl'];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'form_method' => 'get',
             'form_action' => $payment_page_url,

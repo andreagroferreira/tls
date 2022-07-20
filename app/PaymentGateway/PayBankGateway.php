@@ -61,6 +61,9 @@ class PayBankGateway implements PaymentGatewayInterface
             'lang' => $lang,
             'redirect_url' => $transaction['t_redirect_url']
         ];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transaction);
+
         return [
             'form_method' => 'post',
             'form_action' => $return_url,

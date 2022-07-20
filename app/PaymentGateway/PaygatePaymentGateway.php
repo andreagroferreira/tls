@@ -178,6 +178,9 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         if (!empty($results['PAY_REQUEST_ID'])) {
             $this->transactionService->update(['t_transaction_id' => $orderId], ['t_gateway_transaction_id' => $results['PAY_REQUEST_ID'], 't_gateway' => $this->getPaymentGatewayName()]);
         }
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'form_method' => 'post',
             'form_action' => $process_hosturl,

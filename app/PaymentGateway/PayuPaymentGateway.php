@@ -100,6 +100,9 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         }
         $payment_page_url = $charges_payments['redirection']['url'];
         $payUReference    = $charges_payments['provider_data']['transaction_id'];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'form_method' => 'get',
             'form_action' => $payment_page_url,

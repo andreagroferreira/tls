@@ -83,6 +83,9 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
             'return_url'          => get_callback_url($payfort_config['common']['return_url']),
         ];
         $params['signature'] = $this->makeSignature($params, $pay_config['request_phrase']);
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => $pay_config['host'],

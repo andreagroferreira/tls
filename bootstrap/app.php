@@ -73,6 +73,7 @@ $app->configure('list_countries');
 $app->configure('payment_gateway');
 $app->configure('translation');
 $app->configure('swagger-lume');
+$app->configure('payment_service');
 
 /*
 |--------------------------------------------------------------------------

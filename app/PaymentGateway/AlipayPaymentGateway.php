@@ -117,7 +117,9 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         //$post_params['biz_content'] = $default_params;
         ksort($post_params);
         //$parms = http_build_query($post_params);
-        //var_dump($parms);exit;
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => $gatewayURL,
@@ -351,13 +353,16 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         if ($expected_sign) {
             //$transaction_error = true;
             Log::warning("alipay notify: digital signature check failed : ". print_r($notify_params, 'error'));
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
             $msg = 'failure';
             return $msg;
         }
 
         if ($transaction_error) {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
             return "failure";
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
             return "success";
         }
     }

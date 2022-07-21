@@ -104,6 +104,9 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
             $this->transactionService->update(['t_transaction_id' => $orderId], ['t_gateway_transaction_id' => $responseData['orderId'], 't_gateway' => $this->getPaymentGatewayName()]);
         }
         $payment_page_url = $responseData['formUrl'];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'form_method' => 'get',
             'form_action' => $payment_page_url,
@@ -141,6 +144,7 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
         $init_host_url = $init_hosturl . '/getOrderStatusExtended.do?orderId=' . $gateway_id . '&lang=' . $language . '&userName=' . $user_name . '&password=' . $password;
         $response = $this->apiService->callGeneralApi('get', $init_host_url);
         if ($response['status'] != 200 || (isset($response['body']['errorMessage']) && $response['body']['errorMessage'] != 'Success')) {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
             return ['status' => 'fail', 'content' => json_encode($response)];
         }
         $responseData   = $response['body'];
@@ -180,6 +184,7 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
                 'transaction_id'         => $transaction['t_transaction_id'],
                 'gateway_transaction_id' => $order_id,
             ];
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
             return $this->paymentService->confirm($transaction, $confirm_params);
         } else {
             return array(

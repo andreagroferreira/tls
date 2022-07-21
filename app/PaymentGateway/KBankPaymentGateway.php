@@ -94,6 +94,7 @@ class KBankPaymentGateway implements PaymentGatewayInterface
             'transaction_id' => $transaction['t_transaction_id'],
             'gateway_transaction_id' => $charge_id,
         ];
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'success');
         $response = $this->paymentService->confirm($transaction, $confirm_params);
         if($response['is_success'] != 'ok') {
             exit;
@@ -102,6 +103,7 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         if ($status == 'success' && $transaction_state == 'Authorized') {
             return "OK";
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'fail');
             return "ONLINE PAYMENT, K-BANK: Payment authorization check failed : ". json_encode($return_params, JSON_UNESCAPED_UNICODE);
         }
     }
@@ -146,6 +148,9 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         if (!empty($chargeResponseData['id'])) {
             $this->transactionService->update(['t_transaction_id' => $orderId], ['t_gateway_transaction_id' => $chargeResponseData['id'], 't_gateway' => $this->getPaymentGatewayName()]);
         }
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'is_success' => $chargeResponseData['status'] != 'success' ? 'error' : 'ok',
             'orderid'    => $orderId,

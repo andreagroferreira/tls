@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
-class PaymentProfileProcessLogJob implements ShouldQueue
+class PaymentTransationBeforeLogJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
@@ -32,6 +32,6 @@ class PaymentProfileProcessLogJob implements ShouldQueue
     public function handle()
     {
         $logService = app()->make('App\Services\PaymentService');
-        $logService->sendEAuditorProfileLogs($this->params);
+        $logService->sendPaymentTransationBeforeLogs($this->params);
     }
 }

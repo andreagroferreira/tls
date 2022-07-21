@@ -6,6 +6,7 @@ use App\Repositories\JobRepository;
 use App\Repositories\FailedJobRepository;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\ActionRepository;
 
 class QueueService
 {
@@ -13,12 +14,14 @@ class QueueService
     protected $JobRepository;
     protected $failedJobRepository;
     protected $apiService;
+    private $actionRepository;
 
     public function __construct(
         DbConnectionService $dbConnectionService,
         JobRepository       $JobRepository,
         FailedJobRepository $failedJobRepository,
-        ApiService $apiService
+        ApiService $apiService,
+        ActionRepository $actionRepository
     )
     {
         $this->dbConnectionService = $dbConnectionService;
@@ -27,6 +30,7 @@ class QueueService
         $this->failedJobRepository = $failedJobRepository;
         $this->failedJobRepository->setConnection($this->dbConnectionService->getConnection());
         $this->apiService  = $apiService;
+        $this->actionRepository = $actionRepository;
     }
 
 
@@ -67,6 +71,9 @@ class QueueService
             Log::error('QueueService sync to tls fail');
             throw new \Exception("sync to tls fail");
         } else {
+            foreach ($data['t_items'] as $item) {
+                $this->actionRepository->clearActionCache($item['f_id']);
+            }
             Log::info('QueueService sync to tls success');
         }
     }

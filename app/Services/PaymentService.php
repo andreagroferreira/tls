@@ -3,7 +3,7 @@
 
 namespace App\Services;
 
-use App\Jobs\PaymentTransationBeforeLogJob;
+use App\Jobs\PaymentTransationLogJob;
 use App\Jobs\TransactionSyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -174,10 +174,21 @@ class PaymentService
     public function PaymentTransationBeforeLog($service, $data)
     {
         $data['comment'] = 'Transfered to ' . $service;
-        dispatch(new PaymentTransationBeforeLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+        dispatch(new PaymentTransationLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
     }
 
-    public function sendPaymentTransationBeforeLogs($data): bool
+    public function PaymentTransactionCallbackLog($service, $data, $response, $comment)
+    {
+        $items = $data['t_items'][0]['skus'];
+        $message = ['json'=>['products'=>$items],'text'=>$response];
+        $data['t_items'] = $message;
+        $comments = $comment == 'success' ? "Payment done on {$service}" : "Payment failed on {$service}";
+        $data['comment'] = $comments;
+
+        dispatch(new PaymentTransationLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+    }
+
+    public function sendPaymentTransationLogs($data): bool
     {
         $result = array();
         $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
@@ -200,24 +211,18 @@ class PaymentService
         $result['client']['code'] = $data['t_client'];
         $result['reference'] = array();
         $result['reference']['id'] = $data['t_xref_fg_id'];
-        info($result);
+
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
         return true;
     }
 
-    public function PaymentTransactionCallbackLog($service, $data, $response, $comment)
+    public function sendCreatePaymentOrderLogs($data): bool
     {
-        $items = $data['t_items'][0]['skus'];
-        $message = ['json'=>['products'=>$items],'text'=>$response];
-        $data['t_items'] = $message;
-        $comments = $comment == 'success' ? "Payment done on {$service}" : "Payment failed on {$service}";
-        $data['comment'] = $comments;
-        info('PaymentTransactionCallbackLog::'.json_encode($data['t_items']));
-        dispatch(new PaymentTransationBeforeLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
-    }
-
-    public function sendPaymentCreateTransationLogs($t_id): bool
-    {
+        if (isset($data['t_id'])) {
+            $t_id = $data['t_id'];
+        } else {
+            return false;
+        }
         $translations = $this->transactionService->getTransaction($t_id);
 
         $result = array();

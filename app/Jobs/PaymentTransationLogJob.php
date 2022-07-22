@@ -8,20 +8,20 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
-class PaymentCreateTransationLogJob implements ShouldQueue
+class PaymentTransationLogJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
-    private $t_id;
+    private $params;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($t_id)
+    public function __construct($params)
     {
-        $this->t_id = $t_id;
+        $this->params = $params;
     }
 
     /**
@@ -32,6 +32,10 @@ class PaymentCreateTransationLogJob implements ShouldQueue
     public function handle()
     {
         $logService = app()->make('App\Services\PaymentService');
-        $logService->sendPaymentCreateTransationLogs($this->t_id);
+        if ($this->params['queue_type'] ?? '' === 'create_payment_order') {
+            $logService->sendCreatePaymentOrderLogs($this->params);
+        } else {
+            $logService->sendPaymentTransationLogs($this->params);
+        }
     }
 }

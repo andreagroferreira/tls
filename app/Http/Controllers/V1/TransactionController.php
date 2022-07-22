@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Jobs\PaymentCreateTransationLogJob;
+use App\Jobs\PaymentTransationLogJob;
 use App\Services\TransactionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -294,7 +294,11 @@ class TransactionController extends BaseController
             }
 
             $res = $this->transactionService->create($params);
-            dispatch(new PaymentCreateTransationLogJob($res['t_id']))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+
+            $log_params = array();
+            $log_params['queue_type']   = 'create_payment_order';
+            $log_params['t_id']         = $res['t_id'];
+            dispatch(new PaymentTransationLogJob($log_params))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
 
             if ($res) {
                 return $this->sendResponse($res);

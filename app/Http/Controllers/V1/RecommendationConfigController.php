@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Services\RecommendationConfigService;
 use Illuminate\Http\Request;
-use App\Jobs\PaymentProfileUploadLogJob;
+use App\Jobs\PaymentProfileProcessLogJob;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Queue;
 
@@ -123,7 +123,7 @@ class RecommendationConfigController extends BaseController
         try {
             $this->recommendationConfigService->create($params_create);
             $log_content['type'] = 'Success';
-            dispatch(new PaymentProfileUploadLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+            dispatch(new PaymentProfileProcessLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
 	    return $this->sendResponse([
                 'status' => 'success',
                 'message' => 'Upload successful!'
@@ -131,7 +131,7 @@ class RecommendationConfigController extends BaseController
         } catch (\Exception $e) {
             $log_content['type']         = 'Error';
             $log_content['errorComment'] = $e->getMessage();
-            dispatch(new PaymentProfileUploadLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+            dispatch(new PaymentProfileProcessLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
 	    return $this->sendError('unknown_error', $e->getMessage());
         }
     }

@@ -83,6 +83,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
                 'transaction_id' => $transaction_id,
                 'gateway_transaction_id' => current($payment['payments'])['payerTransactionID'] ?? '',
             ];
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
             $notify_response = $this->paymentService->confirm($transaction, $confirm_params);
             $result = [
                 "checkoutRequestID"     => $params['checkoutRequestID'],
@@ -98,6 +99,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             $result['statusCode'] = ($params['requestStatusCode'] == 178) ? 183 : $params['requestStatusCode'];
             return $result;
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
             return [
                 'status' => 'error',
                 'message' => 'transaction_id_not_exists'

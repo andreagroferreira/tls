@@ -139,12 +139,17 @@ class TransactionService
 
         $is_change = false;
         $res = $this->convertItemsFieldToArray($transaction->t_transaction_id, $attributes['items'], ['ti_tech_deleted' => false]);
-        foreach ($res as $key => $item) {
-            if ($this->transactionItemsService->fetch($item)->isEmpty()) {
-                $is_change = true;
-                break;
-            } else {
-                unset($res[$key]);
+        $transItems = $this->transactionItemsService->fetch(['ti_xref_transaction_id' => $transaction->t_transaction_id, 'ti_tech_deleted' => false], ['ti_xref_f_id', 'ti_xref_transaction_id', 'ti_fee_type', 'ti_vat', 'ti_amount', 'ti_tech_deleted'])->toArray();
+        if(count($res) != count($transItems)){
+            $is_change = true;
+        }else{
+            foreach ($res as $key => $item) {
+                if ($this->transactionItemsService->fetch($item)->isEmpty()) {
+                    $is_change = true;
+                    break;
+                } else {
+                    unset($res[$key]);
+                }
             }
         }
         if ($is_change || filled($res)) {

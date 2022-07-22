@@ -226,6 +226,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
                     'transaction_id'         => $transaction['t_transaction_id'],
                     'gateway_transaction_id' => $notify_params['fort_id'],
                 ];
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
                 $response = $this->paymentService->confirm($transaction, $confirm_params);
                 if ($response['is_success'] == 'ok') {
                     $json['code'] = 200;
@@ -240,6 +241,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
                 return $json;
             }
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
             $json['message'] = 'signature_verification_failed';
             return $json;
         }

@@ -142,6 +142,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
             && array_get($response, 'body.OrderStatus') == 2
         )) {
             $this->logWarning('payment api confirm failed.', $response);
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
             return [
                 'status' => 'fail',
                 'orderid' => array_get($transaction, 't_transaction_id'),
@@ -158,7 +159,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
             'transaction_id' => $transaction['t_transaction_id'],
             'gateway_transaction_id' => $payment_order_id,
         ]);
-
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
         return array_merge($res, ['payment_data' => [
             'now' => Carbon::now()->format('Y-m-d H:i'),
             'response_code' => array_get($response, 'body.params.respCode_desc'),

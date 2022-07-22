@@ -151,7 +151,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
         $this->paymentService->saveTransactionLog($transaction['t_transaction_id'], $response, $this->getPaymentGatewayName());
         if (array_get($response, 'status') != 200) {
             $this->logWarning('Switch return failed.');
-            $this->paymentService->PaymentTransationLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
             return [
                 'status' => 'error',
                 'message' => 'Transaction ERROR: payment failed.'
@@ -160,7 +160,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
 
         $result_code = array_get($response, 'body.result.code');
         if($result_code == '000.000.000' || $result_code == '000.100.110' ){
-            $this->paymentService->PaymentTransationLog($this->getPaymentGatewayName(),$transaction, $response,'success');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
             if ($transaction['t_status'] == 'pending') {
                 // confirm the elements of the payment
                 $confirm_params = [
@@ -196,7 +196,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
                 ];
             }
         }elseif($result_code == '000.200.000'){
-            $this->paymentService->PaymentTransationLog($this->getPaymentGatewayName(),$transaction, $response,'success');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
             return [
                 'is_success' => 'ok',
                 'orderid'    => $transaction['t_transaction_id'],
@@ -204,7 +204,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
                 'href'       => $transaction['t_onerror_url']
             ];
         }else{
-            $this->paymentService->PaymentTransationLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
             return [
                 'is_success' => 'fail',
                 'orderid'    => $transaction['t_transaction_id'],

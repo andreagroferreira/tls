@@ -188,11 +188,13 @@ class BingaPaymentGateway implements PaymentGatewayInterface
             $amount_matched = (str_replace(',', '', $expected_amount) == str_replace(',', '', $amount));
             if (!$amount_matched) {
                 Log::warning("Binga notify: data check amount failed : ($expected_amount == $amount)");
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
                 return '000;' . $nowDate;
             }
             $t_gateway_transaction_id = $transaction['t_gateway_transaction_id'];
             if ($code != $t_gateway_transaction_id) {
                 Log::warning("Binga notify: data check code failed : ($t_gateway_transaction_id == $code)");
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
                 return '000;' . $nowDate;
             }
             if ($transaction['t_status'] == 'pending') {
@@ -211,10 +213,12 @@ class BingaPaymentGateway implements PaymentGatewayInterface
                 } else {
                     Log::info('binga notify payment succeed, failed to update status！');
                 }
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
                 return '100;' . $nowDate;
             }
         } else {
             Log::warning("binga notify: digital orderCheckSum failed : " . json_encode($notify_params, JSON_UNESCAPED_UNICODE));
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
             return '000;' . $nowDate;
         }
     }

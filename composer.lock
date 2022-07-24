@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f01277236418dc619761bac568361c5",
+    "content-hash": "4400429721ed8047083c3a0de1d01df2",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -48,11 +48,11 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.231.10",
+            "version": "3.231.12",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/aws/aws-sdk-php/3.231.10/aws-aws-sdk-php-3.231.10.zip",
-                "reference": "e46b7c5fcb70fadf38079755982cc1d3f0583c41",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/aws/aws-sdk-php/3.231.12/aws-aws-sdk-php-3.231.12.zip",
+                "reference": "8f8742caa42b260950320c98ddc5da4926e2373d",
                 "shasum": ""
             },
             "require": {
@@ -125,7 +125,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2022-07-20T18:17:18+00:00"
+            "time": "2022-07-22T18:19:47+00:00"
         },
         {
             "name": "brick/math",
@@ -2379,10 +2379,10 @@
         },
         {
             "name": "league/flysystem-aws-s3-v3",
-            "version": "1.0.30",
+            "version": "dev-master",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/league/flysystem-aws-s3-v3/1.0.30/league-flysystem-aws-s3-v3-1.0.30.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/league/flysystem-aws-s3-v3/dev-master/league-flysystem-aws-s3-v3-dev-master.zip",
                 "reference": "af286f291ebab6877bac0c359c6c2cb017eb061d",
                 "shasum": ""
             },
@@ -7258,7 +7258,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "league/flysystem-aws-s3-v3": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
-class PaymentTransationLogJob implements ShouldQueue
+class PaymentEauditorLogJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
@@ -34,6 +34,8 @@ class PaymentTransationLogJob implements ShouldQueue
         $logService = app()->make('App\Services\PaymentService');
         if ($this->params['queue_type'] ?? '' === 'create_payment_order') {
             $logService->sendCreatePaymentOrderLogs($this->params);
+        } else if ($this->params['queue_type'] ?? '' === 'profile_process_log') {
+            $logService->sendEAuditorProfileLogs($this->params);
         } else {
             $logService->sendPaymentTransationLogs($this->params);
         }

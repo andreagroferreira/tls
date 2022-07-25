@@ -5,7 +5,7 @@ namespace App\Http\Controllers\V1;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Queue;
-use App\Jobs\PaymentProfileProcessLogJob;
+use App\Jobs\PaymentEauditorLogJob;
 use App\Services\ProfileService;
 
 class ProfileController extends BaseController
@@ -89,7 +89,8 @@ class ProfileController extends BaseController
             try {
                 $this->profileService->upload($profiles_content);
                 $log_content['type'] = 'Sucess';
-                dispatch(new PaymentProfileProcessLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+                $log_content['queue_type'] = 'profile_process_log';
+                dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
                 return $this->sendResponse([
                     'status' => 'success',
                     'message' => 'Upload successful!'
@@ -97,7 +98,8 @@ class ProfileController extends BaseController
             } catch (\Exception $e) {
                 $log_content['type']         = 'Error';
                 $log_content['errorComment'] = $e->getMessage();
-                dispatch(new PaymentProfileProcessLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+                $log_content['queue_type'] = 'profile_process_log';
+                dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
                 return $this->sendError('unknown_error', $e->getMessage());
             }
         } else {

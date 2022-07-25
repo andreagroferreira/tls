@@ -3,7 +3,7 @@
 
 namespace App\Services;
 
-use App\Jobs\PaymentTransationLogJob;
+use App\Jobs\PaymentEauditorLogJob;
 use App\Jobs\TransactionSyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -174,7 +174,7 @@ class PaymentService
     public function PaymentTransationBeforeLog($service, $data)
     {
         $data['comment'] = 'Transfered to ' . $service;
-        dispatch(new PaymentTransationLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+        dispatch(new PaymentEauditorLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
     }
 
     public function PaymentTransactionCallbackLog($service, $data, $response, $comment)
@@ -185,7 +185,7 @@ class PaymentService
         $comments = $comment == 'success' ? "Payment done on {$service}" : "Payment failed on {$service}";
         $data['comment'] = $comments;
 
-        dispatch(new PaymentTransationLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+        dispatch(new PaymentEauditorLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
     }
 
     public function sendPaymentTransationLogs($data): bool

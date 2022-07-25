@@ -156,11 +156,11 @@ class PaymentService
         $result['domain']       = 'emetrics';
         $result['project']      = 'TLSpay';
         $result['service']      = 'Profiling';
-        $result['user.login']   = '{user.id}';
+        $result['user.login']   = $data['user_name'];
         $result['action'] = array();
         $result['action']['name']       = $data['action_name'];
         $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
-        $result['action']['result']     = $data['rc_file_name'];
+        $result['action']['result']     = $data['rc_file_name'] ?? 'No filename provided';
         $result['action']['comment']    = $data['errorComment'] ?? 'Rule engine uploaded successful';
         $result['action']['type']       = $data['type'] ?? '';
         $result['client'] = array();

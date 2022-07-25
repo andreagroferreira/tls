@@ -85,10 +85,14 @@ class ProfileController extends BaseController
                 }
             }
 
-            $log_content['action_name'] = $this->profileActionName;
+            $log_content = [
+                'action_name' => $this->profileActionName,
+                'user_name' => 'tlsinsight'
+            ];
+
             try {
                 $this->profileService->upload($profiles_content);
-                $log_content['type'] = 'Sucess';
+                $log_content['type'] = 'Success';
                 dispatch(new PaymentProfileProcessLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
                 return $this->sendResponse([
                     'status' => 'success',

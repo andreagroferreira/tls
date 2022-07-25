@@ -155,7 +155,8 @@ class PaymentService
         $result['tags']         = 'tech';
         $result['domain']       = 'emetrics';
         $result['project']      = 'TLSpay';
-        $result['service']      = '';
+        $result['service']      = 'Profiling';
+        $result['user.login']   = '{user.id}';
         $result['action'] = array();
         $result['action']['name']       = $data['action_name'];
         $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
@@ -165,7 +166,7 @@ class PaymentService
         $result['client'] = array();
         $result['client']['code'] = $this->apiService->getProjectId();
         $result['message'] = array();
-        $result['message']['type'] = 'profilling';
+        $result['message']['type'] = 'profiling';
 
         return $result;
     }

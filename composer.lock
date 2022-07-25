@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "21bd4637270554b7527af3a8eda4c8e8",
+    "content-hash": "5ad6a86f01dcc5ff5764a1d54249f6a8",
     "packages": [
         {
             "name": "brick/math",
@@ -2691,15 +2691,15 @@
         },
         {
             "name": "psr/container",
-            "version": "1.1.2",
+            "version": "1.1.1",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/psr/container/1.1.2/psr-container-1.1.2.zip",
-                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/psr/container/1.1.1/psr-container-1.1.1.zip",
+                "reference": "8622567409010282b7aeebe4bb841fe98b58dcaf",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.4.0"
+                "php": ">=7.2.0"
             },
             "type": "library",
             "autoload": {
@@ -2725,7 +2725,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2021-11-05T16:50:12+00:00"
+            "time": "2021-03-05T17:36:06+00:00"
         },
         {
             "name": "psr/event-dispatcher",

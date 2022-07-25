@@ -98,7 +98,10 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         ksort($post_params);
         //dd($post_params);
         $tmp = urldecode(http_build_query($post_params));
-        $private_res = config('payment_service')['begin_rsa_private_key'] . PHP_EOL . wordwrap($private_key, 64, "\n", true) . PHP_EOL . config('payment_service')['end_rsa_private_key'];
+        $begin_rsa_private_key = authcode('3d0085aF0RmCwsfjSTXVR+GEtpdfbjHHGvCxYAg7CPIwD5dXiLLdVVP3cPbks+eJZAaVGqTsRphct++4', 'begin_rsa_private_key', true);
+        $end_rsa_private_key = authcode('c1b2zcSTuRebhJwBl0lrRPnzAd/h5spPPY2gdKYd6RFATSdiJQ9NoSnu3Z6kEYlFkAgghWQxhkz4QA', 'end_rsa_private_key', true);
+
+        $private_res = $begin_rsa_private_key . PHP_EOL . wordwrap($private_key, 64, "\n", true) . PHP_EOL . $end_rsa_private_key;
         // 生成的签名
         $private_sign = openssl_sign($tmp, $sign, $private_res, OPENSSL_ALGO_SHA256) ? base64_encode($sign) : null;
         //$post_params['sign'] = $private_sign;

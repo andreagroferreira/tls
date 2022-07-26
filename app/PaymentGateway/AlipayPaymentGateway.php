@@ -94,14 +94,20 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
             'notify_url'  => get_callback_url($payfort_config['common']['notify_url']),
             'biz_content' => json_encode($default_params, JSON_UNESCAPED_UNICODE),
         ];
+        $search = [
+            "-----BEGIN RSA PRIVATE KEY-----",
+            "-----END RSA PRIVATE KEY-----",
+            "-----BEGIN PUBLIC KEY-----",
+            "-----END PUBLIC KEY-----",
+            "\n",
+            "\r",
+            "\r\n"
+        ];
         unset($post_params['sign']);
         ksort($post_params);
         //dd($post_params);
         $tmp = urldecode(http_build_query($post_params));
-        $begin_rsa_private_key = authcode('3d0085aF0RmCwsfjSTXVR+GEtpdfbjHHGvCxYAg7CPIwD5dXiLLdVVP3cPbks+eJZAaVGqTsRphct++4', 'begin_rsa_private_key', true);
-        $end_rsa_private_key = authcode('c1b2zcSTuRebhJwBl0lrRPnzAd/h5spPPY2gdKYd6RFATSdiJQ9NoSnu3Z6kEYlFkAgghWQxhkz4QA', 'end_rsa_private_key', true);
-
-        $private_res = $begin_rsa_private_key . PHP_EOL . wordwrap($private_key, 64, "\n", true) . PHP_EOL . $end_rsa_private_key;
+        $private_res = $search[0] . PHP_EOL . wordwrap($private_key, 64, "\n", true) . PHP_EOL . $search[1];
         // 生成的签名
         $private_sign = openssl_sign($tmp, $sign, $private_res, OPENSSL_ALGO_SHA256) ? base64_encode($sign) : null;
         //$post_params['sign'] = $private_sign;

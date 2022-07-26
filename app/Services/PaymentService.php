@@ -179,12 +179,10 @@ class PaymentService
 
     public function PaymentTransactionCallbackLog($service, $data, $response, $comment)
     {
-        $items = $data['t_items'][0]['skus'];
-        $message = ['json'=>['products'=>$items],'text'=>$response];
+        $message = ['json'=>['products'=>$data['t_items']],'text'=>json_encode($response)];
         $data['t_items'] = $message;
         $comments = $comment == 'success' ? "Payment done on {$service}" : "Payment failed on {$service}";
         $data['comment'] = $comments;
-
         dispatch(new PaymentEauditorLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
     }
 

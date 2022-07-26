@@ -947,18 +947,18 @@ return [
                     'oauthHost'     => env("ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST"),
                     'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST"),
                 ],
-                /*'prod'    => [
+                'prod'    => [
                     'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_DEtzDAR2de_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY"),
-                    'clientID'      => env("ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID"),
-                    'clientSecret'  => env("ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET"),
-                    'oauthHost'     => env("ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST"),'',
-                    'queryStatusHost'=> env("ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST"),
-                ]*/
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_ACCESS_KEY"),
+                    'clientID'      => env("ENVPAY_TINGG_COMMON_CLIENT_ID"),
+                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_CLIENT_SECRET"),
+                    'oauthHost'     => env("ENVPAY_TINGG_COMMON_OAUTH_HOST"),'',
+                    'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST"),
+                ]
             ],
             'pay_later' => [
                 'label' => "Pay later",
@@ -986,18 +986,18 @@ return [
                     'oauthHost'     => env("ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST"),
                     'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST"),
                 ],
-                /*'prod'    => [
+                'prod'    => [
                     'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_DEtzDAR2de_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY"),
-                    'clientID'      => env("ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID"),
-                    'clientSecret'  => env("ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET"),
-                    'oauthHost'     => env("ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST"),'',
-                    'queryStatusHost'=> env("ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST"),
-                ]*/
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_ACCESS_KEY"),
+                    'clientID'      => env("ENVPAY_TINGG_COMMON_CLIENT_ID"),
+                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_CLIENT_SECRET"),
+                    'oauthHost'     => env("ENVPAY_TINGG_COMMON_OAUTH_HOST"),'',
+                    'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST"),
+                ]
             ],
         ],
         'keNBO2de' => [

@@ -112,18 +112,25 @@ class RecommendationConfigController extends BaseController
             }
 
         }
+        $uploaded_by = $params['rc_uploaded_by'];
         $params_create = [
             'rc_file_name' => $fileName,
-            'rc_uploaded_by' => $params['rc_uploaded_by'],
+            'rc_uploaded_by' => $uploaded_by,
             'rc_content' => $fileContent,
             'rc_file_size' => $fileSize,
             'rc_comment' => $params['rc_comment']
         ];
-        $log_content['action_name'] = $this->recommendationActionName;
+
+        $log_content = [
+            'action_name'   => $this->recommendationActionName,
+            'user_name'     => $uploaded_by,
+            'rc_file_name'  => $fileName,
+            'queue_type'    => 'profile_process_log'
+        ];
+
         try {
             $this->recommendationConfigService->create($params_create);
             $log_content['type'] = 'Success';
-            $log_content['queue_type'] = 'profile_process_log';
             dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
 	    return $this->sendResponse([
                 'status' => 'success',
@@ -132,7 +139,6 @@ class RecommendationConfigController extends BaseController
         } catch (\Exception $e) {
             $log_content['type']         = 'Error';
             $log_content['errorComment'] = $e->getMessage();
-            $log_content['queue_type'] = 'profile_process_log';
             dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
 	    return $this->sendError('unknown_error', $e->getMessage());
         }

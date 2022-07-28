@@ -85,11 +85,15 @@ class ProfileController extends BaseController
                 }
             }
 
-            $log_content['action_name'] = $this->profileActionName;
+            $log_content = [
+                'action_name' => $this->profileActionName,
+                'user_name' => 'tlsinsight',
+                'queue_type' => 'profile_process_log'
+            ];
+
             try {
                 $this->profileService->upload($profiles_content);
-                $log_content['type'] = 'Sucess';
-                $log_content['queue_type'] = 'profile_process_log';
+                $log_content['type'] = 'Success';
                 dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
                 return $this->sendResponse([
                     'status' => 'success',
@@ -98,7 +102,6 @@ class ProfileController extends BaseController
             } catch (\Exception $e) {
                 $log_content['type']         = 'Error';
                 $log_content['errorComment'] = $e->getMessage();
-                $log_content['queue_type'] = 'profile_process_log';
                 dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
                 return $this->sendError('unknown_error', $e->getMessage());
             }

@@ -36,6 +36,12 @@ class ProfileService
     {
         $insert_data = [];
         foreach ($data as $datum) {
+            $datum['Profile'] = trim($datum['Profile']);
+
+            if (in_array($datum['Profile'], ['-', 'n/a'])) {
+                $datum['Profile'] = '';
+            }
+
             $attributes = [
                 'p_xref_f_id' => $datum['TLS ID Number'],
                 'p_profile' => $datum['Profile'],

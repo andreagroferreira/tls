@@ -69,7 +69,7 @@ class ProfileController extends BaseController
                 return $this->sendError('file error', 'Please upload the correct file');
             }
 
-            $header = ['TLS ID Number', 'age', 'gender', 'travel_purpose', 'visa_type', 'country', 'city', 'Profile'];
+            $header = ['TLS ID Number', 'Profile'];
             foreach ($header as $v) {
                 if (!array_key_exists($v, $profiles_content[0])) {
                     return $this->sendError('File structure error', 'File is missing ' . $v . ' column.');
@@ -79,9 +79,6 @@ class ProfileController extends BaseController
             foreach ($profiles_content as $k=>$v){
                 if(empty($v['TLS ID Number'])) {
                     return $this->sendError('File structure error', 'line '.($k+2).':TLS ID Number column format error, TLS ID Number should not be empty.');
-                }
-                if(empty($v['Profile'])) {
-                    return $this->sendError('File structure error', 'line '.($k+2).':Profile column format error, Profile should not be empty.');
                 }
             }
 

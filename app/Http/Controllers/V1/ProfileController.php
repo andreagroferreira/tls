@@ -69,7 +69,7 @@ class ProfileController extends BaseController
                 return $this->sendError('file error', 'Please upload the correct file');
             }
 
-            $header = ['TLS ID Number', 'age', 'gender', 'travel_purpose', 'visa_type', 'country', 'city', 'Profile'];
+            $header = ['TLS ID Number', 'Profile'];
             foreach ($header as $v) {
                 if (!array_key_exists($v, $profiles_content[0])) {
                     return $this->sendError('File structure error', 'File is missing ' . $v . ' column.');
@@ -80,16 +80,17 @@ class ProfileController extends BaseController
                 if(empty($v['TLS ID Number'])) {
                     return $this->sendError('File structure error', 'line '.($k+2).':TLS ID Number column format error, TLS ID Number should not be empty.');
                 }
-                if(empty($v['Profile'])) {
-                    return $this->sendError('File structure error', 'line '.($k+2).':Profile column format error, Profile should not be empty.');
-                }
             }
 
-            $log_content['action_name'] = $this->profileActionName;
+            $log_content = [
+                'action_name' => $this->profileActionName,
+                'user_name' => 'tlsinsight',
+                'queue_type' => 'profile_process_log'
+            ];
+
             try {
                 $this->profileService->upload($profiles_content);
-                $log_content['type'] = 'Sucess';
-                $log_content['queue_type'] = 'profile_process_log';
+                $log_content['type'] = 'Success';
                 dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
                 return $this->sendResponse([
                     'status' => 'success',
@@ -98,7 +99,6 @@ class ProfileController extends BaseController
             } catch (\Exception $e) {
                 $log_content['type']         = 'Error';
                 $log_content['errorComment'] = $e->getMessage();
-                $log_content['queue_type'] = 'profile_process_log';
                 dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
                 return $this->sendError('unknown_error', $e->getMessage());
             }

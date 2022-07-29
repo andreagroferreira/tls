@@ -228,7 +228,7 @@ class PaymentService
         $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
         $result['policy']       = 'audit';
         $result['tags']         = 'tech';
-        $result['domain']       = 'TLSpay';
+        $result['domain']       = 'emetrics';
         $result['project']      = 'TLSpay';
         $result['service']      = 'TLSpayServiceApp';
         $result['city']         = substr($translations['t_issuer'], 2, 3);

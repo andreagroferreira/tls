@@ -84,7 +84,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
                 'message' => 'APPROVED'
             ];
         }
-
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         $response = $this->paymentService->confirm($transaction, $confirm_params);
         if ($response['is_success'] != 'ok') {
             return [
@@ -96,6 +96,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         if (($params['Response'] == 'Approved') && ($params['ProcReturnCode'] == '00')) {
             return "ACTION=POSTAUTH";
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             Log::warning("ONLINE PAYMENT, CMI: Payment authorization check failed : " . json_encode($_POST, JSON_UNESCAPED_UNICODE));
             return [
                 'status'  => 'error',

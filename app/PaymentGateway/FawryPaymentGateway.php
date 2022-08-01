@@ -321,6 +321,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                         'transaction_id' => $transaction['t_transaction_id'],
                         'gateway_transaction_id' => '',
                     ];
+                    $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
                     $response = $this->paymentService->confirm($transaction, $confirm_params);
                     if ($response['is_success'] == 'ok') {
                         return [
@@ -334,6 +335,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return [
                 'is_success' => 'fail',
                 'orderid'    => '400',
@@ -381,6 +383,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'transaction_id' => $transaction['t_transaction_id'],
                 'gateway_transaction_id' => '',
             ];
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
             $response = $this->paymentService->confirm($transaction, $confirm_params);
             if ($response['is_success'] == 'ok') {
                 return [

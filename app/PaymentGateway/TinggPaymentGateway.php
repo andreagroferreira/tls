@@ -193,8 +193,10 @@ class TinggPaymentGateway implements PaymentGatewayInterface
                 'transaction_id' => $transaction_id,
                 'gateway_transaction_id' => current($payment['payments'])['payerTransactionID'] ?? '',
             ];
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
             return $this->paymentService->confirm($transaction, $confirm_params);
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
             return [
                 'status' => 'error',
                 'message' => 'transaction_id_not_exists'

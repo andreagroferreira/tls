@@ -14,9 +14,10 @@ class CreatePaymentConfigurationsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('payment_pgsql')->create('payment_configurations', function (Blueprint $table) {
+        Schema::connection('deploy_payment_pgsql')->create('payment_configurations', function (Blueprint $table) {
             $table->bigIncrements('pc_id');
             $table->string('pc_xref_pa_id')->index('payment_configurations_pc_xref_pa_id')->comment('the referenced pa_id')->nullable();
+            $table->string('pc_project');
             $table->string('pc_country');
             $table->string('pc_city');
             $table->string('pc_service')->comment('for gov service or tls service')->default('tls');
@@ -24,7 +25,7 @@ class CreatePaymentConfigurationsTable extends Migration
             $table->timestamp('pc_tech_creation')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('pc_tech_modification')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
-        DB::connection('payment_pgsql')->statement("ALTER TABLE payment_configurations OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE payment_configurations OWNER TO common;");
     }
 
     /**

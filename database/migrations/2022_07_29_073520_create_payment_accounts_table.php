@@ -14,7 +14,7 @@ class CreatePaymentAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('payment_pgsql')->create('payment_accounts', function (Blueprint $table) {
+        Schema::connection('deploy_payment_pgsql')->create('payment_accounts', function (Blueprint $table) {
             $table->bigIncrements('pa_id');
             $table->integer('pa_xref_psp_id')->index('payment_accounts_pa_xref_psp_id')->comment('the referenced psp_id');
             $table->string('pa_type');
@@ -29,7 +29,7 @@ class CreatePaymentAccountsTable extends Migration
                     ON payment_accounts(pa_name)
                     WHERE pa_tech_deleted is false"
         );
-        DB::connection('payment_pgsql')->statement("ALTER TABLE payment_accounts OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE payment_accounts OWNER TO common;");
     }
 
     /**

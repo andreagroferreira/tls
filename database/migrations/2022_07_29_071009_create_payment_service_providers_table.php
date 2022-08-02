@@ -14,7 +14,7 @@ class CreatePaymentServiceProvidersTable extends Migration
      */
     public function up()
     {
-        Schema::connection('payment_pgsql')->create('payment_service_providers', function (Blueprint $table) {
+        Schema::connection('deploy_payment_pgsql')->create('payment_service_providers', function (Blueprint $table) {
             $table->bigIncrements('psp_id');
             $table->string('psp_code');
             $table->string('psp_name');
@@ -23,7 +23,7 @@ class CreatePaymentServiceProvidersTable extends Migration
             $table->timestamp('psp_tech_modification')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
 
-        DB::connection('payment_pgsql')->statement("ALTER TABLE payment_service_providers OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE payment_service_providers OWNER TO common;");
     }
 
     /**

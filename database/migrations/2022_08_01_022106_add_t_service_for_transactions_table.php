@@ -13,7 +13,7 @@ class AddTServiceForTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('payment_pgsql')->table('transactions', function (Blueprint $table) {
+        Schema::connection('deploy_payment_pgsql')->table('transactions', function (Blueprint $table) {
             $table->string('t_service')->default('tls');
         });
     }
@@ -25,7 +25,7 @@ class AddTServiceForTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('payment_pgsql')->table('transactions', function($table)
+        Schema::connection('deploy_payment_pgsql')->table('transactions', function($table)
         {
             $table->dropColumn('t_service');
         });

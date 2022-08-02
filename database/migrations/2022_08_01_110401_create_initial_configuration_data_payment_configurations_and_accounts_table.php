@@ -67,16 +67,9 @@ class CreateInitialConfigurationDataPaymentConfigurationsAndAccountsTable extend
         }
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-
-    }
-
+    /*
+     * Add initial configuration
+     * */
     private function createPayment($accounts_data, $configurations) {
         // create accounts
         DB::table('payment_accounts')->insert($accounts_data);
@@ -86,5 +79,15 @@ class CreateInitialConfigurationDataPaymentConfigurationsAndAccountsTable extend
         // create configurations
         $configurations['pc_xref_pa_id'] = $account->pa_id;
         return DB::table('payment_configurations')->insert($configurations);
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+
     }
 }

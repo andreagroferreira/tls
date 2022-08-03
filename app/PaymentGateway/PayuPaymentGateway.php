@@ -100,6 +100,9 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         }
         $payment_page_url = $charges_payments['redirection']['url'];
         $payUReference    = $charges_payments['provider_data']['transaction_id'];
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
+
         return [
             'form_method' => 'get',
             'form_action' => $payment_page_url,
@@ -116,6 +119,7 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         if (empty($transaction)) {
             Log::warning("ONLINE PAYMENT, PAYU : No transaction found in the database for " . $charge_id . "\n" .
                 json_encode($_POST, JSON_UNESCAPED_UNICODE));
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'fail');
             return [
                 'status'  => 'fail',
                 'message' => 'Transaction ERROR: transaction not found'
@@ -134,8 +138,10 @@ class PayuPaymentGateway implements PaymentGatewayInterface
                 'transaction_id'         => $transaction['t_transaction_id'],
                 'gateway_transaction_id' => $charge_id,
             ];
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $charges_payments,'success');
             return $this->paymentService->confirm($transaction, $confirm_params);
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $charges_payments,'fail');
             return array(
                 'is_success' => 'error',
                 'orderid'    => $transaction['t_transaction_id'],

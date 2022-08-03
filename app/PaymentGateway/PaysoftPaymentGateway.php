@@ -74,6 +74,8 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         $form_fields['LMI_FAIL_URL'] = $return_url;
         $form_fields['LMI_HASH'] = $this->generateSignature($paysoft_config, [$form_fields['LMI_MERCHANT_ID'], $order_id, $form_fields['LMI_PAYMENT_AMOUNT']]);
 
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => array_get($paysoft_config, 'current.host'),
@@ -93,11 +95,13 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         if (strtolower(array_get($transaction, 't_status')) != 'pending') {
             $this->logWarning('notify data check failed, incorrect order status.', $params);
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return false;
         }
 
         if (bccomp($this->amountFormat($transaction['t_amount']), array_get($params, 'LMI_PAYMENT_AMOUNT'), $this->amount_decimals) !== 0) {
             $this->logWarning('notify data check failed, payment amount incorrect.', $params);
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return false;
         }
 
@@ -105,12 +109,14 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
 
         if (!$this->validateSignature($config, $params)) {
             $this->logWarning('notify data check failed, signature verification failed.', $params);
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return false;
         }
 
         $can_confirm = (filled(array_get($params, 'LMI_SYS_PAYMENT_ID')) && filled(array_get($params, 'LMI_SYS_PAYMENT_DATE')));
         if (!$can_confirm) {
             $this->logWarning('notify data check failed. ', $params);
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return false;
         }
 
@@ -121,6 +127,7 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
             'transaction_id' => $transaction['t_transaction_id'],
             'gateway_transaction_id' => array_get($params, 'LMI_SYS_PAYMENT_ID'),
         ];
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         $response = $this->paymentService->confirm($transaction, $confirm_params);
 
         return array_get($response, 'is_success') == 'ok' ? true : false;

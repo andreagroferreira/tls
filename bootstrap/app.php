@@ -68,6 +68,8 @@ $app->configure('app');
 $app->configure('filesystems');
 
 $app->configure('currency_code');
+$app->configure('list_city');
+$app->configure('list_countries');
 $app->configure('payment_gateway');
 $app->configure('translation');
 $app->configure('swagger-lume');

@@ -117,7 +117,9 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         //$post_params['biz_content'] = $default_params;
         ksort($post_params);
         //$parms = http_build_query($post_params);
-        //var_dump($parms);exit;
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => $gatewayURL,
@@ -215,6 +217,7 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
                         'transaction_id'         => $transaction['t_transaction_id'],
                         'gateway_transaction_id' => $return_params['out_trade_no'],
                     ];
+                    $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'success');
                     $response = $this->paymentService->confirm($transaction, $confirm_params);
                     Log::info('alipay return $response:'.json_encode($response));
                     if ($response['is_success'] == 'ok') {
@@ -241,6 +244,7 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
                     ];
                 }
             } else { ##signature verification fail
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'fail');
                 return [
                     'is_success' => 'fail',
                     'orderid'    => $order_id,
@@ -351,13 +355,16 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         if ($expected_sign) {
             //$transaction_error = true;
             Log::warning("alipay notify: digital signature check failed : ". print_r($notify_params, 'error'));
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
             $msg = 'failure';
             return $msg;
         }
 
         if ($transaction_error) {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
             return "failure";
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
             return "success";
         }
     }

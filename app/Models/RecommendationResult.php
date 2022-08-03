@@ -22,5 +22,10 @@ class RecommendationResult extends Model
         'rr_sku',
         'rr_result',
         'rr_comment',
+        'rr_profile',
+        'rr_issuer',
+        'rr_price',
+        'rr_currency',
+        'rr_service_script'
     ];
 }

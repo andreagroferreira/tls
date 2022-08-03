@@ -128,3 +128,46 @@ Each payment gateway has own Controller, this controller call the service in `Pa
 | payu| ngABV2be,ngLGV2be,keNBO2be,keNBO2de                                                                                                               | USD                                                                                                                                                                                | |  | ![Payment flow diagram](https://devguide.payu.in/wordpress/index.php/wp-json/getobject?keyname=uploads/2021/05/word-image-4.png)                                                                             | support                            | online                           |                         |                                                                      |                                            | https://developers.paymentsos.com/docs/apis/payments/1.3.0/#operation/suspend-a-network-token                    | https://payu.in/payment-gateway                | card number: 4000015372250142(visa) or 5100018609086541(MasterCard)  Expiry: 12/22  Cvv: 123 | https://help.payu.in/                                      | clement.lin@tlscontact.com |
 | switch | iqBGW2be                                                                                                                                          | IQD                                                                                                                                                                                | en | |                                                                                                                                                                                                              | support                            | online                           |                         | support                                                              |                                            | https://hyperpay.docs.oppwa.com/                                                                                 |                                                | 5285 7800 1058 5166 07/24 736 test                                                           |                                                            | clement.lin@tlscontact.com |
 | tingg| snDKR2be,ugKLA2be,tzDAR2de,ugKLA2de                                                                                                               | Currency supported                                                                                                                                                                 | en |  |                                                                                                                                                                                                              | support                            | online                           |                         |                                                                      |                                            | https://dev-portal.tingg.africa/                                                                                 | https://www.cellulant.io/                      | https://cellulant.gitbook.io/checkout/appendix/test-details                                  | support@tingg.com.ng/+234(0)-18883432                      | clement.lin@tlscontact.com |
+
+## Data model for payment gateway configuration
+```sql
+alter table transactions add column t_service varchar default 'tls';
+
+-- all the payment gateways, globalpay, payu, paypal, etc...
+create table payment_service_providers(
+   psp_id int primary key not null ,
+   psp_code varchar not null,
+   psp_name varchar not null,
+   psp_tech_deleted boolean not null default false,
+   psp_tech_creation timestamp with time zone not null default now(),
+   psp_tech_modification timestamp with time zone not null default now()
+);
+
+-- accounts for each payment providers, for example globalpay HBP, globalpay EUR, etc...
+create table payment_accounts(
+    pa_id int primary key not null,
+    pa_xref_psp_id int not null references payment_service_providers(psp_id),
+    pa_type varchar not null, --sandbox/prod
+    pa_name varchar not null, -- name of this account, globalpay HBP, etc...
+    pa_info json not null, -- account secrets for this payment
+    pa_tech_deleted boolean not null default false,
+    pa_tech_creation timestamp with time zone not null default now(),
+    pa_tech_modification timestamp with time zone not null default now()
+);
+create index payment_accounts_pa_xref_psp_id on payment_accounts(pa_xref_psp_id);
+create unique index payment_accounts_unique_name on payment_accounts(pa_name) where pa_tech_deleted is false;
+
+-- configuration for each issuer of this client. 
+create table payment_configurations (
+    pc_id int primary key not null,
+    pc_country varchar not null, -- 'all' for client level configuration, 'fr' for French configuration
+    pc_city varchar not null, -- 'all' for all the cities for the country
+    pc_service varchar not null default 'tls', -- for gov service or tls service 
+    pc_xref_pa_id int not null references payment_accounts(pa_id), -- referenced account id
+    pc_tech_deleted boolean not null default false,
+    pc_tech_creation timestamp with time zone not null default now(),
+    pc_tech_modification timestamp with time zone not null default now()
+);
+create index payment_configurations_pc_xref_pa_id on payment_configurations(pc_xref_pa_id);
+```
+

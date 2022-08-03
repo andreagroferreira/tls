@@ -9,6 +9,7 @@ class AvsRecommendationService
     protected $client;
     protected $apiService;
     protected $refreshCache = false;
+    protected $profileService;
     protected $directusService;
     protected $recommendationRuleEngineService;
     protected $recommendationResultRepositories;
@@ -25,6 +26,7 @@ class AvsRecommendationService
 
     public function __construct(
         ApiService                       $apiService,
+        ProfileService                   $profileService,
         DirectusService                  $directusService,
         DbConnectionService              $dbConnectionService,
         RecommendationRuleEngineService  $recommendationRuleEngineService,
@@ -33,6 +35,7 @@ class AvsRecommendationService
     {
         $this->client                           = $apiService->getProjectId();
         $this->apiService                       = $apiService;
+        $this->profileService                   = $profileService;
         $this->directusService                  = $directusService;
         $this->recommendationRuleEngineService  = $recommendationRuleEngineService;
         $this->recommendationResultRepositories = $recommendationResultRepositories;
@@ -41,15 +44,13 @@ class AvsRecommendationService
 
     public function calcRecommendAvs($params)
     {
-        $f_id   = $params['f_id'];
-        $step   = $params['step'];
-        $limit  = $params['limit'];
+        $f_id = $params['f_id'];
         $application_response = $this->apiService->callTlsApi('GET', 'tls/v2/' . $this->client . '/application/' . $f_id);
         if ($application_response['status'] != 200 || empty($application_response['body'])) {
             return [];
         }
         $application = $application_response['body'];
-        $this->refreshCache = $params['refresh_cache'];
+        $this->refreshCache = $params['refresh_cache'] ?? false;
         $issuer_avses = $this->getIssuerAvsWithPriority($application['f_xcopy_ug_xref_i_tag']);
         $issuer_avses = array_column($issuer_avses, null, 'sku');
 
@@ -58,9 +59,14 @@ class AvsRecommendationService
         $requested_skus = array_keys($basket_avs['requested'] ?? []);
         $paid_skus = array_keys($basket_avs['paid'] ?? []);
 
+        // profile
+        $profile_data = $this->profileService->fetchProfile($f_id);
+        $profile      = $profile_data->profile ?? 'DEFAULT';
+
         //get the rule engine recommendation avs
         $basket_skus = array_merge($requested_skus, $paid_skus);
-        $rule_engine_avs = $this->getRecommendByRuleEngine($params, $application, $basket_skus);
+        $rule_engine_avs = $this->getRecommendByRuleEngine($params, $application, $basket_skus, strtoupper($profile));
+
         $removed_skus = array_keys($rule_engine_avs['remove']);
         $add_skus = array_keys($rule_engine_avs['add']);
         $conflict_skus = $rule_engine_avs['conflict'] ?? [];
@@ -79,29 +85,22 @@ class AvsRecommendationService
                 $item['rcd_id'] = $rcd_result_skus['deny'][$avs_sku]['rr_id'];
                 array_push($denied_avs, $item);
             }
-            if(in_array($avs_sku, $add_skus)) {
-                $item['recommendation_priority'] = (int) $rule_engine_avs['add'][$avs_sku]['Priority'];
-            }
+            $item['recommendation_priority'] = in_array($avs_sku, $add_skus) ? (int) $rule_engine_avs['add'][$avs_sku]['Priority'] : null;
             $item['is_display'] = !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus, $removed_skus));
             $item['avs_conflict'] = in_array($item['sku'], $conflict_skus);
             $item['not_recommended'] = in_array($item['sku'], $removed_skus);
             $item['not_recommended_display'] = $item['not_recommended'] && !in_array($item['sku'], array_merge($requested_skus, $paid_skus, $denied_skus));
             $item['_score'] = is_null($item['recommendation_priority']) ? 1000 : $item['recommendation_priority'];
             $item['_score'] += ($item['is_display'] ? 0 : 1000);
+            if(!is_null($item['recommendation_priority']) && $item['is_display']) {
+                $item['is_recommended'] = true;
+            }
             unset($item['rcd_id']);
             array_push($all_avs, $item);
         }
 
-        $count = 0;
         $all_avs = collect($all_avs)
             ->sortBy('_score')
-            ->map(function($avs) use (&$count, $limit) {
-                if(!is_null($avs['recommendation_priority']) && $avs['is_display']) {
-                    $avs['is_recommended'] = $count < $limit;
-                    $count ++;
-                }
-                return $avs;
-            })
             ->values();
 
         return [
@@ -126,7 +125,7 @@ class AvsRecommendationService
                 'eq' => 'WEBPOS'
             ],
         ];
-        $select = 'avs.sku, avs.recommendation_priority, vat,price,currency.code, recommendation_priority';
+        $select = 'avs.sku, vat, price, currency.code';
         $all_avs_infos = $this->directusService->getContent('vac_avs', $select, $filters, [], ['refreshCache' => $this->refreshCache]);
         $all_avs = [];
         foreach($all_avs_infos as $avs) {
@@ -139,8 +138,7 @@ class AvsRecommendationService
                 'avs_description' => null,
                 'sku_description' => null,
                 'avs_sale_script' => null,
-                'sku_sale_script' => null,
-                'recommendation_priority' => array_get($avs, 'recommendation_priority') ?: array_get($avs, 'avs.recommendation_priority')
+                'sku_sale_script' => null
             ];
         }
         return $all_avs;
@@ -171,12 +169,13 @@ class AvsRecommendationService
         })->toArray();
     }
 
-    private function getRecommendByRuleEngine($params, $application, $basket_skus)
+    private function getRecommendByRuleEngine($params, $application, $basket_skus, $profile)
     {
         $stages_response = $this->apiService->callTlsApi('GET', 'tls/v1/' . $this->client . '/form_stages_statues/' . $params['f_id']);
         $stage_status = array_column($stages_response['body']['stage_status'] ?? [], 'status', 'stage');
         $condition = [
             'issuer' => $application['f_xcopy_ug_xref_i_tag'],
+            'Profile' => $profile,
             'Visa Type' => $application['f_visa_type'],
             'Travel Purpose' => $application['f_trav_purpose'],
             'Age Range' => $application['f_pers_age'],

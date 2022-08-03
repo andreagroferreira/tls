@@ -3,9 +3,11 @@
 
 namespace App\Services;
 
+use App\Jobs\PaymentEauditorLogJob;
 use App\Jobs\TransactionSyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class PaymentService
 {
@@ -135,5 +137,116 @@ class PaymentService
                 'error_msg' => $e->getMessage()
             ];
         }
+    }
+
+    public function sendEAuditorProfileLogs($data): bool
+    {
+        $eauditor_log_content = $this->formatProfileData($data);
+        //send eauditor log
+        $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $eauditor_log_content);
+        return true;
+    }
+
+    private function formatProfileData($data): array
+    {
+        $result = array();
+        $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['policy']       = 'audit';
+        $result['tags']         = 'tech';
+        $result['domain']       = 'emetrics';
+        $result['project']      = 'TLSpay';
+        $result['service']      = 'Profiling';
+        $result['user.login']   = $data['user_name'];
+        $result['action'] = array();
+        $result['action']['name']       = $data['action_name'];
+        $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['action']['result']     = $data['rc_file_name'] ?? 'No filename provided';
+        $result['action']['comment']    = $data['errorComment'] ?? 'Rule engine uploaded successful';
+        $result['action']['type']       = $data['type'] ?? '';
+        $result['client'] = array();
+        $result['client']['code'] = $this->apiService->getProjectId();
+        $result['message'] = array();
+        $result['message']['type'] = 'profiling';
+
+        return $result;
+    }
+
+
+    public function PaymentTransationBeforeLog($service, $data)
+    {
+        $data['comment'] = 'Transfered to ' . $service;
+        dispatch(new PaymentEauditorLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+    }
+
+    public function PaymentTransactionCallbackLog($service, $data, $response, $comment)
+    {
+        $message = ['json'=>['products'=>$data['t_items']],'text'=>json_encode($response)];
+        $data['t_items'] = $message;
+        $comments = $comment == 'success' ? "Payment done on {$service}" : "Payment failed on {$service}";
+        $data['comment'] = $comments;
+        dispatch(new PaymentEauditorLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+    }
+
+    public function sendPaymentTransationLogs($data): bool
+    {
+        $result = array();
+        $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['policy']       = 'audit';
+        $result['tags']         = 'tech';
+        $result['domain']       = 'emetrics';
+        $result['project']      = 'TLSpay';
+        $result['service']      = 'PaymentGatewayApp';
+        $result['city']         = substr($data['t_issuer'], 2, 3);
+        $result['city_name']    = getCityName($result['city']);
+        $result['country']      = substr($data['t_issuer'], 0, 2);
+        $result['country_name'] = getCountryName($result['country']);
+        $result['message']      = $data['t_items'] ?? '';
+        $result['action'] = array();
+        $result['action']['result']     = $data['t_transaction_id'] ?? '';
+        $result['action']['comment']    = $data['comment'];
+        $result['action']['name']       = 'PaymentGatewayTrasnfer';
+        $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['client'] = array();
+        $result['client']['code'] = $data['t_client'];
+        $result['reference'] = array();
+        $result['reference']['id'] = $data['t_xref_fg_id'];
+
+        $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
+        return true;
+    }
+
+    public function sendCreatePaymentOrderLogs($data): bool
+    {
+        if (isset($data['t_id'])) {
+            $t_id = $data['t_id'];
+        } else {
+            return false;
+        }
+        $translations = $this->transactionService->getTransaction($t_id);
+
+        $result = array();
+        $result['timestamp']    = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['policy']       = 'audit';
+        $result['tags']         = 'tech';
+        $result['domain']       = 'emetrics';
+        $result['project']      = 'TLSpay';
+        $result['service']      = 'TLSpayServiceApp';
+        $result['city']         = substr($translations['t_issuer'], 2, 3);
+        $result['city_name']    = getCityName($result['city']);
+        $result['country']      = substr($translations['t_issuer'], 0, 2);
+        $result['country_name'] = getCountryName($result['country']);
+        $result['message']      = $translations['t_items'] ?? '';
+        $result['action'] = array();
+        $result['action']['result']     = $translations['t_transaction_id'] ?? '';
+        $result['action']['comment']    = 'Order created';
+        $result['action']['name']       = 'OrderCreation';
+        $result['action']['timestamp']  = Carbon::now()->setTimezone('UTC')->format('Y-m-d\TH:i:s.v\Z');
+        $result['client'] = array();
+        $result['client']['code'] = $translations['t_client'];
+        $result['reference'] = array();
+        $result['reference']['id'] = $translations['t_xref_fg_id'];
+
+        $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
+        return true;
     }
 }

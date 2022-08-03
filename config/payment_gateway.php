@@ -947,18 +947,18 @@ return [
                     'oauthHost'     => env("ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST"),
                     'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST"),
                 ],
-                /*'prod'    => [
+                'prod'    => [
                     'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_DEtzDAR2de_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY"),
-                    'clientID'      => env("ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID"),
-                    'clientSecret'  => env("ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET"),
-                    'oauthHost'     => env("ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST"),'',
-                    'queryStatusHost'=> env("ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST"),
-                ]*/
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_ACCESS_KEY"),
+                    'clientID'      => env("ENVPAY_TINGG_COMMON_CLIENT_ID"),
+                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_CLIENT_SECRET"),
+                    'oauthHost'     => env("ENVPAY_TINGG_COMMON_OAUTH_HOST"),'',
+                    'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST"),
+                ]
             ],
             'pay_later' => [
                 'label' => "Pay later",
@@ -986,18 +986,18 @@ return [
                     'oauthHost'     => env("ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST"),
                     'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST"),
                 ],
-                /*'prod'    => [
+                'prod'    => [
                     'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_DEtzDAR2de_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_DEtzDAR2de_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_DEtzDAR2de_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_DEtzDAR2de_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_DEtzDAR2de_ACCESS_KEY"),
-                    'clientID'      => env("ENVPAY_TINGG_DEtzDAR2de_CLIENT_ID"),
-                    'clientSecret'  => env("ENVPAY_TINGG_DEtzDAR2de_CLIENT_SECRET"),
-                    'oauthHost'     => env("ENVPAY_TINGG_DEtzDAR2de_OAUTH_HOST"),'',
-                    'queryStatusHost'=> env("ENVPAY_TINGG_DEtzDAR2de_QUERY_STATUS_HOST"),
-                ]*/
+                    'accountNumber' => env("ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER"),
+                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SERVICE_CODE"),
+                    'ivKey'         => env("ENVPAY_TINGG_COMMON_IVKEY"),
+                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SECRET_KEY"),
+                    'accessKey'     => env("ENVPAY_TINGG_COMMON_ACCESS_KEY"),
+                    'clientID'      => env("ENVPAY_TINGG_COMMON_CLIENT_ID"),
+                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_CLIENT_SECRET"),
+                    'oauthHost'     => env("ENVPAY_TINGG_COMMON_OAUTH_HOST"),'',
+                    'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST"),
+                ]
             ],
         ],
         'keNBO2de' => [
@@ -1748,6 +1748,59 @@ return [
                 ]
             ]
         ],
+        'dzAAE2fr'=> [
+            'bnp' => [
+                'label' => 'BNP Paribas pay',
+                'active' => true,
+                'common' => [
+                    'env' => 'live',
+                    'return_url' => '/bnp/return',
+                    "currency" => "DZD",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "min_fraction_digits" => "2",
+                    "language" => "FR",
+                ],
+                'sandbox' => [
+                    'host' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST'),
+                    'user_name' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME'),
+                    'password' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD'),
+                    'terminal_id' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID'),
+                ],
+//                'prod' => [
+//                    'host' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_HOST'),
+//                    'user_name' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME'),
+//                    'password' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD'),
+//                    'terminal_id' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID'),
+//                ]
+            ],
+        ],
+        'dzORN2fr'=> [
+            'bnp' => [
+                'label' => 'BNP Paribas pay',
+                'active' => true,
+                'common' => [
+                    'env' => 'live',
+                    'return_url' => '/bnp/return',
+                    "currency" => "DZD",
+                    "txn_fee_rate" => "0",
+                    "txn_fee_extra" => "0",
+                    "min_fraction_digits" => "2",
+                ],
+                'sandbox' => [
+                    'host' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST'),
+                    'user_name' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME'),
+                    'password' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD'),
+                    'terminal_id' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID'),
+                ],
+//                'prod' => [
+//                    'host' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_HOST'),
+//                    'user_name' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME'),
+//                    'password' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD'),
+//                    'terminal_id' => env('ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID'),
+//                ]
+            ],
+        ],
         'gbAll2fr'=> [
             'globaliris' => [
                 'label' => 'GLOBALIRIS pay',
@@ -2081,6 +2134,11 @@ return [
     ]
     ],
     'leg_be' =>[
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'zaAll2be' => [
             'paypal' => [
                 'label' => 'PAYPAL pay',

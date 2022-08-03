@@ -1,0 +1,478 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Profile API",
+        "description": "All the profile APIs for TPKS. Each upload will insert new line for the given application f_id, API will fetch the latest profile to response",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/v1/profile": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "description": "Upload profiles for applications. duplicated upload will be ignored",
+                "parameters": [
+                    {
+                        "name": "profiles",
+                        "in": "query",
+                        "description": "profiles for multiple applications",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/applicationProfiles"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "all the profile uploaded"
+                    },
+                    "400": {
+                        "description": "some error happens for ths API, all errors will be returns as an array",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/upload-profile": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "description": "Upload profiles for applications. duplicated upload will be ignored",
+                "requestBody": {
+                  "content": {
+                    "application/octet-stream": {
+                        "schema": {
+                          "type": "string",
+                            "format": "binary"
+                        }
+                    }
+                  }
+                },
+                "responses": {
+                    "200": {
+                        "description": "all the profile uploaded"
+                    },
+                    "400": {
+                        "description": "some error happens for ths API, all errors will be returns as an array",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/application_profile/{f_id}": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "description": "Get profile for one application",
+                "parameters": [
+                    {
+                        "name": "f_id",
+                        "in": "path",
+                        "description": "application f_id",
+                        "required": true,
+                        "example": 12345
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "profile found for this application",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/applicationProfile"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/application_profiles": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "description": "Get profile for multiple applications",
+                "parameters": [
+                    {
+                        "name": "f_id",
+                        "in": "path",
+                        "description": "application f_id",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/applicationIds"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "application profiles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/applicationProfiles"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/applications_with_profile/{profile}": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "description": "Get profile for one application",
+                "parameters": [
+                    {
+                        "name": "profile",
+                        "in": "path",
+                        "description": "profile name",
+                        "required": true,
+                        "example": "PREMIUM"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "all application ids for this profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/applicationIds"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/recommendation-config/{rc_id}": {
+            "get": {
+                "tags": [
+                    "Recommendation config"
+                ],
+                "description": "Download the recommendation config files by id",
+                "parameters": [
+                    {
+                        "name": "rc_id",
+                        "description": "the id for this file",
+                        "in": "path",
+                        "required": true,
+                        "example": 123
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The config files is uploaded",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/recommendationConfig"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/recommendation-config-latest": {
+            "get": {
+                "tags": [
+                    "Recommendation config"
+                ],
+                "description": "Download the last recommendation config",
+                "responses": {
+                    "200": {
+                        "description": "The config files is uploaded",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/recommendationConfig"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/recommendation-configs": {
+            "get": {
+                "tags": [
+                    "Recommendation config"
+                ],
+                "description": "Get the top10 recommendation rule files",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "description": "number of recommendataion_config, default for 1",
+                        "in": "path",
+                        "required": false,
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The rule files is uploaded",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/recommendationConfigs"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error happens for ths API",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/recommendation-config-upload": {
+            "post": {
+                "tags": [
+                    "Recommendation config"
+                ],
+                "description": "Upload the recommendation config file",
+                "parameters": [
+                    {
+                        "name": "files",
+                        "description": "the recommendation config file",
+                        "in": "path",
+                        "required": true,
+                        "example": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/octet-stream": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The config files is uploaded"
+                    },
+                    "400": {
+                        "description": "some error happens for ths API",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorApiResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "errorApiResponse": {
+                "type": "object",
+                "properties": {
+                    "statue": {
+                        "type": "string",
+                        "example": "error"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "error_type"
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "ERR001"
+                    }
+                }
+            },
+            "recommendationUpload": {
+                "type": "object",
+                "properties": {
+                    "rc_name": {
+                        "type": "string",
+                        "description": "file name",
+                        "example": "uk_rules_20220701"
+                    },
+                    "rc_content": {
+                        "type": "string",
+                        "description": "configuration content",
+                        "example": "f_id,profile\n123,PREMIUM"
+                    },
+                    "rc_size": {
+                        "type": "string",
+                        "description": "file size",
+                        "example": "180K"
+                    }
+                }
+            },
+            "recommendationConfig": {
+                "type": "object",
+                "properties": {
+                    "rc_id": {
+                        "type": "integer",
+                        "description": "the unique id for this file",
+                        "example": 123
+                    },
+                    "rc_file_name": {
+                        "type": "string",
+                        "description": "file name",
+                        "example": "uk_rules_20220701"
+                    },
+                    "rc_uploaded_by": {
+                        "type": "string",
+                        "description": "employee login id who upload this file",
+                        "example": "qw@tlscontact.com"
+                    },
+                    "rc_content": {
+                        "type": "string",
+                        "description": "configuration content",
+                        "example": "f_id,profile\n123,PREMIUM"
+                    },
+                    "rc_file_size": {
+                        "type": "string",
+                        "description": "file size",
+                        "example": "180K"
+                    },
+                    "rc_tech_creation": {
+                        "type": "string",
+                        "description": "the upload time",
+                        "example": "2022-07-01 10:00:00"
+                    }
+                }
+            },
+            "recommendationConfigs": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/recommendationConfig"
+                }
+            },
+            "applicationProfile": {
+                "type": "object",
+                "properties": {
+                    "f_id": {
+                        "type": "integer",
+                        "description": "application f_id",
+                        "example": 12345
+                    },
+                    "profile": {
+                        "type": "string",
+                        "description": "the profile name for this application",
+                        "example": "PREMIUM"
+                    }
+                },
+                "example": {
+                    "f_id": 123,
+                    "profile": "PREMIUM"
+                }
+            },
+            "applicationProfiles": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "$ref": "#/components/schemas/applicationProfile"
+                    }
+                },
+                "example": [
+                    {
+                        "f_id": 123,
+                        "profile": "PREMIUM"
+                    },
+                    {
+                        "f_id": 456,
+                        "profile": "GENERAL"
+                    }
+                ]
+            },
+            "applicationIds": {
+                "type": "array",
+                "items": {
+                    "type": "integer",
+                    "example": 123
+                },
+                "example": [
+                    123,
+                    456,
+                    789
+                ]
+            }
+        }
+    }
+}

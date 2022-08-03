@@ -84,7 +84,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
                 'message' => 'APPROVED'
             ];
         }
-
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         $response = $this->paymentService->confirm($transaction, $confirm_params);
         if ($response['is_success'] != 'ok') {
             return [
@@ -96,6 +96,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         if (($params['Response'] == 'Approved') && ($params['ProcReturnCode'] == '00')) {
             return "ACTION=POSTAUTH";
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             Log::warning("ONLINE PAYMENT, CMI: Payment authorization check failed : " . json_encode($_POST, JSON_UNESCAPED_UNICODE));
             return [
                 'status'  => 'error',
@@ -147,6 +148,9 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $params['CallbackURL'] = $params['callbackUrl'];
         unset($params['TranType']);
         unset($params['callbackUrl']);
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transaction);
+
         return [
             'form_method' => 'post',
             'form_action' => $cmi_config['host'],
@@ -182,6 +186,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $cmi_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
         $isValid    = $this->validate($cmi_config['storeKey'] ?? '', $params);
         if (!$isValid) {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return [
                 'status'  => 'error',
                 'message' => 'Request ERROR: params validate failed'
@@ -195,6 +200,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
             'transaction_id'         => $params['oid'],
             'gateway_transaction_id' => $params['TransId'],
         ];
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         return $this->paymentService->confirm($transaction, $confirm_params);
     }
 

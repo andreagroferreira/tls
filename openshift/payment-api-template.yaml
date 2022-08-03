@@ -356,6 +356,24 @@ parameters:
     required: true
   - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
     required: true
+  - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_dzALL2fr_HOST
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD
+    required: true
+  - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
+    required: true
+  - name: EMAIL_SERVICE_DOMAIN
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -389,6 +407,10 @@ parameters:
   - name: MEMORY_LIMIT
     description: Maximum memory allocated to the app container
     displayName: App container maximum memory
+    required: true
+  - name: CPU_REQUEST
+    description: CPU initially requested by the app container
+    displayName: App container requested cpu cores
     required: true
   - displayName: Custom https Route Hostname
     description: 'Custom hostname for https service route. Leave blank for default hostname,
@@ -881,6 +903,24 @@ objects:
                   value: ${ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL}
                 - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
                   value: ${ENVPAY_GLO_DEgbALL2de_ACCOUNT}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_HOST
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_HOST}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
+                - name: EMAIL_SERVICE_DOMAIN
+                  value: ${EMAIL_SERVICE_DOMAIN}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -1294,6 +1334,24 @@ objects:
                   value: ${ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL}
                 - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
                   value: ${ENVPAY_GLO_DEgbALL2de_ACCOUNT}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_PASSWORD}
+                - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID
+                  value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_TERMINAL_ID}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_HOST
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_HOST}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_USER_NAME}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD}
+                - name: ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID
+                  value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
+                - name: EMAIL_SERVICE_DOMAIN
+                  value: ${EMAIL_SERVICE_DOMAIN}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT
@@ -1354,6 +1412,7 @@ objects:
               resources:
                 requests:
                   memory: ${MEMORY_REQUEST}
+                  cpu: ${CPU_REQUEST}
                 limits:
                   memory: ${MEMORY_LIMIT}
               terminationMessagePath: /dev/termination-log
@@ -1551,3 +1610,21 @@ objects:
       podSelector:
         matchLabels:
           app: pgbouncer
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-email-service
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}
+          ports:
+            - port: 8443
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: 'tlsconnect-email-service'

@@ -83,6 +83,9 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
             'return_url'          => get_callback_url($payfort_config['common']['return_url']),
         ];
         $params['signature'] = $this->makeSignature($params, $pay_config['request_phrase']);
+
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'post',
             'form_action' => $pay_config['host'],
@@ -147,6 +150,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
                     'transaction_id'         => $transaction['t_transaction_id'],
                     'gateway_transaction_id' => $return_params['fort_id'],
                 ];
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'success');
                 $response = $this->paymentService->confirm($transaction, $confirm_params);
                 if ($response['is_success'] == 'ok') {
                     return [
@@ -172,6 +176,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
                 ];
             }
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'fail');
             return [
                 'is_success' => 'fail',
                 'orderid'    => $order_id,
@@ -223,6 +228,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
                     'transaction_id'         => $transaction['t_transaction_id'],
                     'gateway_transaction_id' => $notify_params['fort_id'],
                 ];
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
                 $response = $this->paymentService->confirm($transaction, $confirm_params);
                 if ($response['is_success'] == 'ok') {
                     $json['code'] = 200;
@@ -237,6 +243,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
                 return $json;
             }
         } else {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
             $json['message'] = 'signature_verification_failed';
             return $json;
         }

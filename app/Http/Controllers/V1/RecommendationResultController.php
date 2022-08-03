@@ -59,6 +59,34 @@ class RecommendationResultController extends BaseController
      *          required=false,
      *          @OA\Schema(type="string", example="I do not need"),
      *      ),
+     *      @OA\Parameter(
+     *          name="issuer",
+     *          in="query",
+     *          description="the recommendation result issuer",
+     *          required=true,
+     *          @OA\Schema(type="string", example="ruMOW2uk"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="price",
+     *          in="query",
+     *          description="the recommendation result price",
+     *          required=true,
+     *          @OA\Schema(type="string", example="10.00"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="currency",
+     *          in="query",
+     *          description="the recommendation result currency",
+     *          required=true,
+     *          @OA\Schema(type="string", example=""),
+     *      ),
+     *      @OA\Parameter(
+     *          name="service_script",
+     *          in="query",
+     *          description="the recommendation result service script",
+     *          required=true,
+     *          @OA\Schema(type="string", example=""),
+     *      ),
      *      @OA\Response(
      *          response="200",
      *          description="create a recommendation result record success",
@@ -77,7 +105,11 @@ class RecommendationResultController extends BaseController
             'rr_agent'     => $request->input('agent'),
             'rr_sku'       => $request->input('sku'),
             'rr_result'    => $request->input('result'),
-            'rr_comment'   => $request->input('comment')
+            'rr_comment'   => $request->input('comment'),
+            'rr_issuer'    => $request->input('issuer'),
+            'rr_price'     => $request->input('price'),
+            'rr_currency'  => $request->input('currency'),
+            'rr_service_script' => $request->input('service_script')
         ];
         $validator = validator($params, [
             'rr_xref_f_id'   => 'required|integer',
@@ -88,7 +120,11 @@ class RecommendationResultController extends BaseController
                 'string',
                 Rule::in(['accept', 'deny']),
             ],
-            'rr_comment' => 'string|nullable'
+            'rr_comment'  => 'string|nullable',
+            'rr_issuer'   => 'string|nullable',
+            'rr_price'    => 'string|nullable',
+            'rr_currency' => 'string|nullable',
+            'rr_service_script' => 'string|nullable'
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());

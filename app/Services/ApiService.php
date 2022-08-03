@@ -19,6 +19,11 @@ class ApiService
         return env('TLSCONTACT_API');
     }
 
+    private function getEAuditorDomain()
+    {
+        return env('TLSCONTACT_EAUDITOR_DOMAIN');
+    }
+
     public function getApiVersion()
     {
         return 'v2';
@@ -46,6 +51,11 @@ class ApiService
     private function getDirectusApiDomain()
     {
         return env('DIRECTUS_DOMAIN');
+    }
+
+    private function getEmailApiDomain()
+    {
+        return env('EMAIL_SERVICE_DOMAIN');
     }
 
     public function callDirectusApi($method, $url) {
@@ -140,6 +150,18 @@ class ApiService
     public function callInvoiceApi($url, $data)
     {
         return $this->postApi($url, $data);
+    }
+
+    public function callEmailApi($method, $url, $data = array(), $options = '')
+    {
+        $url = $this->getEmailApiDomain() . '/' . $url;
+        $response = ['status' => 400, 'body' => 'Method not Allowed!'];
+        if (strtolower($method) == 'post') {
+            for ($i = 1; $i < 3 && $response['status'] != 200; $i++) {
+                $response = $this->postApi($url, $data, $options);
+            }
+        }
+        return $response;
     }
 
     private function getApi($url)
@@ -244,5 +266,11 @@ class ApiService
             'body' => json_decode($response->getBody(), true)
         ];
         return $response;
+    }
+
+    public function callEAuditorApi($method, $port, $data = array())
+    {
+        $url = $this->getEAuditorDomain() . ':' . $port;
+        if (strtolower($method) == 'post')    return $this->postApi($url, $data);
     }
 }

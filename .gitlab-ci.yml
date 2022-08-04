@@ -23,13 +23,14 @@ variables:
   DIRECTUS_ROUTE: "directus"
   TLSCONNECT_API_URL: "https://tlsconnect-service-api.${PROJECT}.svc:8443"
   EMAIL_SERVICE_DOMAIN: "https://tlsconnect-email-service.${PROJECT}.svc:8443"
+  ENABLE_DAST: "true"
 
 stages:
   - build
   - test
   - analyze
   - deploy
-  - expose
+  - post
   - rollback
 
 prepare-instance:
@@ -577,3 +578,11 @@ sast:
   stage: test
   variables:
     SAST_EXCLUDED_PATHS: spec, test, tests, tmp, vendor
+
+dast:
+  stage: post
+  extends: .dast-template-api
+  variables:
+    DAST_PORT: 8443
+    DAST_API_HOST_OVERRIDE: http://localhost:${DAST_PORT}
+    DAST_API_OPENAPI: http://localhost:${DAST_PORT}/docs

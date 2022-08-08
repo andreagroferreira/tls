@@ -15,6 +15,7 @@ use App\Http\Controllers\V1\SwitchController;
 use App\Http\Controllers\V1\TinggController;
 use App\Http\Controllers\V1\AlipayController;
 use App\Http\Controllers\V1\BingaController;
+use App\Http\Controllers\V1\YookassaController;
 use App\PaymentGateway\AlipayPaymentGateway;
 use App\PaymentGateway\BingaPaymentGateway;
 use App\PaymentGateway\BnpPaymentGateway;
@@ -37,6 +38,7 @@ use App\PaymentGateway\FawryPaymentGateway;
 use App\PaymentGateway\PayPalPaymentGateway;
 use App\Http\Controllers\V1\PayfortController;
 use App\PaymentGateway\PayfortPaymentGateway;
+use App\PaymentGateway\YookassaPaymentGateway;
 use Illuminate\Support\ServiceProvider;
 
 class PaymentGatewayProvider extends ServiceProvider
@@ -139,6 +141,11 @@ class PaymentGatewayProvider extends ServiceProvider
             ->needs(PaymentGatewayInterface::class)
             ->give(function ($app) {
                 return $app->make(BnpPaymentGateway::class);
+            });
+        $this->app->when(YookassaController::class)
+            ->needs(PaymentGatewayInterface::class)
+            ->give(function ($app) {
+                return $app->make(YookassaPaymentGateway::class);
             });
     }
 

@@ -113,6 +113,9 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('bnp/return', 'BnpController@return');
     $router->post('bnp/receipt', 'BnpController@receipt');
 
+    $router->post('yookassa/redirto', 'YookassaController@redirto');
+    $router->post('yookassa/return', 'YookassaController@return');
+
     // profile
     $router->post('profile', 'ProfileController@upload');
     $router->get('application-with-profile/{profile}', 'ProfileController@fetchApplications');

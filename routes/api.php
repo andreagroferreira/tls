@@ -126,5 +126,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     // payment configurations api
     $router->put('payment-configurations/{pa_id}', 'PaymentConfigurationsController@update');
+    $router->get('payment-accounts', 'PaymentAccountsController@getPaymentAccounts');
+    $router->get('payment-exists-config', 'PaymentAccountsController@getPaymentExistsConfig');
 
 });

@@ -30,6 +30,7 @@ class PaymentAccountsRepositories
         return $this->paymentAccounts
             ->select($field)
             ->where($where)
+            ->orderByDesc('pa_id')
             ->get();
     }
 
@@ -60,5 +61,10 @@ class PaymentAccountsRepositories
             $result = $result->where($key, '=', $value);
         }
         return $result->get();
+    }
+
+    public function fetchById($id)
+    {
+        return $this->paymentAccounts->find($id);
     }
 }

@@ -21,10 +21,8 @@ class PaymentAccountsService
     }
 
     public function fetch() {
-        $select = ['pa_id', 'pa_name'];
-        $pa_type = env('APP_ENV') === 'production' ? 'prod' : 'sandbox';
-        $where = ['pa_type'=>$pa_type];
-        return $this->PaymentAccountsRepositories->fetch($where,$select);
+        $select = ['pa_id', 'pa_name', 'pa_type'];
+        return $this->PaymentAccountsRepositories->fetchSelect($select);
     }
 
     public function fetchById($id) {

@@ -30,6 +30,13 @@ class PaymentAccountsRepositories
         return $this->paymentAccounts
             ->select($field)
             ->where($where)
+            ->get();
+    }
+
+    public function fetchSelect($field = '*')
+    {
+        return $this->paymentAccounts
+            ->select($field)
             ->orderByDesc('pa_id')
             ->get();
     }

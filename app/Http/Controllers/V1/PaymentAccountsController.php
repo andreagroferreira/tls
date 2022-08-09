@@ -6,8 +6,6 @@ use App\Services\PaymentAccountsService;
 use App\Services\PaymentConfigurationsService;
 use Illuminate\Http\Request;
 
-//header('Access-Control-Allow-Origin:*');
-//header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, authorization");
 
 class PaymentAccountsController extends BaseController
 {
@@ -119,11 +117,10 @@ class PaymentAccountsController extends BaseController
 
     private function getExistsConfigs($pc_id){
         $payment_configs = $this->paymentConfigurationsService->fetch($pc_id);
-        $pa_type = env('APP_ENV') === 'production' ? 'prod' : 'sandbox';
         $paymentConfig = [];
         foreach ($payment_configs as $k=>$v){
             $res = $this->PaymentAccountsService->fetchById($v['pc_xref_pa_id']);
-            if($res['pa_type'] === $pa_type){
+            if($res['pa_id']){
                 $paymentConfig['pa_id'] = $res['pa_id'];
                 $paymentConfig['pa_name'] = $res['pa_name'];
                 $paymentConfig['is_show'] = $v['pc_tech_deleted'] ? true : false;

@@ -181,10 +181,10 @@ class RecommendationRuleEngineService
 
     private function getIssuerRules($issuer)
     {
-        $issuer_rule_cache_key = $this->getIssuerRulesCacheKey($issuer);
+        $issuer_rule_cache_key = $this->getIssuerRulesCacheKey();
         // refresh cache
-        if (Cache::tags(['recommendation_rule_engine'])->has($issuer_rule_cache_key)) {
-            return Cache::tags(['recommendation_rule_engine'])->get($issuer_rule_cache_key);
+        if (Cache::has($issuer_rule_cache_key)) {
+            return Cache::get($issuer_rule_cache_key);
         }
 
         $country = substr($issuer, 0, 2);
@@ -197,12 +197,12 @@ class RecommendationRuleEngineService
         $issuer_rules = collect($client_rules)->filter(function($rule) use ($country, $city, $dest){
             return in_array($rule['Scope'], [$country, $city, $dest]);
         })->values()->toArray();
-        Cache::tags(['recommendation_rule_engine'])->put($issuer_rule_cache_key, $issuer_rules, 15 * 60);
+        Cache::put($issuer_rule_cache_key, $issuer_rules, 15 * 60);
         return $issuer_rules;
     }
 
-    private function getIssuerRulesCacheKey($issuer): string
+    private function getIssuerRulesCacheKey()
     {
-        return 'recommendation_rule_engine_cache_' . $issuer;
+        return 'recommendation_rule_engine_payment_cache';
     }
 }

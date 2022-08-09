@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 class RecommendationConfigService
 {
     protected $recommendationConfigRepositories;
+    protected $cacheKey = "recommendation_rule_engine_payment_cache";
 
     public function __construct(
         RecommendationConfigRepositories $recommendationConfigRepositories,
@@ -19,7 +20,7 @@ class RecommendationConfigService
 
     public function create($params) {
         $result = $this->recommendationConfigRepositories->insert($params);
-        Cache::tags(['recommendation_rule_engine'])->flush();
+        Cache::pull($this->cacheKey);
         return $result;
     }
 

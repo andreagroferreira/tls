@@ -181,7 +181,7 @@ class RecommendationRuleEngineService
 
     private function getIssuerRules($issuer)
     {
-        $issuer_rule_cache_key = $this->getIssuerRulesCacheKey();
+        $issuer_rule_cache_key = getRecommendationRulesCacheKey();
         // refresh cache
         if (Cache::has($issuer_rule_cache_key)) {
             return Cache::get($issuer_rule_cache_key);
@@ -199,10 +199,5 @@ class RecommendationRuleEngineService
         })->values()->toArray();
         Cache::put($issuer_rule_cache_key, $issuer_rules, 15 * 60);
         return $issuer_rules;
-    }
-
-    private function getIssuerRulesCacheKey()
-    {
-        return 'recommendation_rule_engine_payment_cache';
     }
 }

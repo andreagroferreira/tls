@@ -60,13 +60,16 @@ class PaymentAccountsController extends BaseController
             $exist_payment_config = $this->getExistsConfigs($params['pc_id']);
             $res = array_filter($all_payment_config, function ($v, $k) use ($exist_payment_config) {
                 foreach ($exist_payment_config as $key => $val) {
-                    if ($val['pa_name'] == $v['pa_name']) {
+                    if ($val['pa_name'].$val['pa_type'] == $v['pa_name'].$v['pa_type']) {
                         return false;
                     }
                 }
                 return true;
             }, ARRAY_FILTER_USE_BOTH);
             $payment_config = array_values($res);
+            foreach ($payment_config as $k=>$v){
+                $payment_config[$k]['pa_name'] = $v['pa_name'].' ('.$v['pa_type'].')';
+            }
             return $this->sendResponse($payment_config);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
@@ -123,6 +126,7 @@ class PaymentAccountsController extends BaseController
             if($res['pa_id']){
                 $paymentConfig['pa_id'] = $res['pa_id'];
                 $paymentConfig['pa_name'] = $res['pa_name'];
+                $paymentConfig['pa_type'] = $res['pa_type'];
                 $paymentConfig['is_show'] = $v['pc_tech_deleted'] ? true : false;
                 $payConfig[] = $paymentConfig;
             }

@@ -1900,6 +1900,13 @@ return [
             ]
         ],
     ],
+    'it' =>[
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
+    ],
     'hmpo_uk' => [
         'allAll2all'=> [
             'globaliris' => [

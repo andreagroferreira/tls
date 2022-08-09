@@ -2188,6 +2188,24 @@ return [
             ]
         ],
         'ruMOW2be' => [
+            'yookassa' => [
+                'label' => 'Yookassa pay',
+                'common' => [
+                    'env' => 'live',
+                    "activated" => true,
+                    "currency" => "RUB",
+                    "host" => "https://api.yookassa.ru/v3/payments",
+                    "return_url" => "/yookassa/return"
+                ],
+                'sandbox' => [
+                    "shop_id" => env("ENVPAY_YOOKASSA_COMMON_SANDBOX_SHOP_ID"),
+                    "secret_key" => env("ENVPAY_YOOKASSA_COMMON_SANDBOX_SECRET"),
+                ],
+                'prod' => [
+                    "shop_id" => env("ENVPAY_YOOKASSA_COMMON_SHOP_ID"),
+                    "secret_key" => env("ENVPAY_YOOKASSA_COMMON_SECRET"),
+                ]
+            ],
             'paypal' => [
                 'label' => 'PAYPAL pay',
                 'common' => [

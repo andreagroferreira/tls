@@ -183,8 +183,8 @@ class RecommendationRuleEngineService
     {
         $issuer_rule_cache_key = $this->getIssuerRulesCacheKey($issuer);
         // refresh cache
-        if (Cache::has($issuer_rule_cache_key)) {
-            return Cache::get($issuer_rule_cache_key);
+        if (Cache::tags(['recommendation_rule_engine'])->has($issuer_rule_cache_key)) {
+            return Cache::tags(['recommendation_rule_engine'])->get($issuer_rule_cache_key);
         }
 
         $country = substr($issuer, 0, 2);
@@ -197,7 +197,7 @@ class RecommendationRuleEngineService
         $issuer_rules = collect($client_rules)->filter(function($rule) use ($country, $city, $dest){
             return in_array($rule['Scope'], [$country, $city, $dest]);
         })->values()->toArray();
-        Cache::put($issuer_rule_cache_key, $issuer_rules, 15 * 60);
+        Cache::tags(['recommendation_rule_engine'])->put($issuer_rule_cache_key, $issuer_rules, 15 * 60);
         return $issuer_rules;
     }
 

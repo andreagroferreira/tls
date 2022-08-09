@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\RecommendationConfigRepositories;
+use Illuminate\Support\Facades\Cache;
 
 class RecommendationConfigService
 {
@@ -17,7 +18,9 @@ class RecommendationConfigService
     }
 
     public function create($params) {
-        return $this->recommendationConfigRepositories->insert($params);
+        $result = $this->recommendationConfigRepositories->insert($params);
+        Cache::tags(['recommendation_rule_engine'])->flush();
+        return $result;
     }
 
     public function fetch($limit) {

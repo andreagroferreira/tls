@@ -77,11 +77,11 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
 
         $payment = $this->apiService->yookassaCreatePayment($yookassa_params, $yookassa_config, $transaction['t_transaction_id']);
         // If the first time to generate orders, will return the orderId, otherwise return an error message, go to the database to find the orderId
-        if (!empty($payment['body']['id'])) {
+        if ($payment['status'] == 200) {
             $this->transactionService->updateById($transaction['t_id'], ['t_gateway_transaction_id' => $payment['body']['confirmation']['confirmation_url']]);
             $confirmation_url = $payment['body']['confirmation']['confirmation_url'];
             $orderId = $payment['body']['id'];
-        } elseif (!empty($payment['status']) == 400 && $payment['body']['code'] === 'invalid_request' && !empty($transaction['t_gateway_transaction_id'])) {
+        } elseif ($payment['status'] == 400 && $payment['body']['code'] === 'invalid_request' && !empty($transaction['t_gateway_transaction_id'])) {
             $query = parse_url($transaction['t_gateway_transaction_id'])['query'];
             $confirmation_url = $transaction['t_gateway_transaction_id'];
             $orderId = convertUrlQuery($query)['orderId'];
@@ -96,7 +96,7 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         return [
             'form_method' => 'get',
             'form_action' => $confirmation_url,
-            'form_fields' => $orderId,
+            'form_fields' => ['orderId' => $orderId],
         ];
     }
 
@@ -153,7 +153,7 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
             'amount'                 => $paymentCaptureInfo['body']['amount']['value'],
             'currency'               => $paymentCaptureInfo['body']['amount']['currency'],
             'transaction_id'         => $paymentCaptureInfo['body']['description'],
-            'gateway_transaction_id' => $transaction['gateway_transaction_id'],
+            'gateway_transaction_id' => $transaction['t_gateway_transaction_id'],
         ];
         $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         return $this->paymentService->confirm($transaction, $confirm_params);

@@ -162,3 +162,22 @@ function getCityName($cityCode)
 {
     return config('list_city.'. $cityCode)['gcc_name'];
 }
+
+/**
+ * 将字符串参数变为数组
+ * id=123&type=abc
+ * @param $query
+ * @return array
+ */
+function convertUrlQuery($query): array
+{
+    $queryParts = explode('&', $query);
+    $params = array();
+    foreach ($queryParts as $param) {
+        $item = explode('=', $param);
+        $params[$item[0]] = $item[1];
+    }
+    return $params;
+
+}
+

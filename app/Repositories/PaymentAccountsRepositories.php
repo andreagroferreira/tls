@@ -30,7 +30,7 @@ class PaymentAccountsRepositories
         return $this->paymentAccounts
             ->select($field)
             ->where($where)
-            ->get();
+            ->first();
     }
 
     public function fetchSelect($field = '*')

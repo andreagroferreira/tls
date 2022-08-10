@@ -8,57 +8,60 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentConfigurationsRepositories
 {
-    protected $PaymentConfigurations;
 
-    public function __construct(PaymentConfigurations $PaymentConfigurations)
+    protected $paymentConfigurations;
+
+    public function __construct(PaymentConfigurations $paymentConfigurations)
     {
-        $this->PaymentConfigurations = $PaymentConfigurations;
+        $this->paymentConfigurations = $paymentConfigurations;
+
     }
 
     public function setConnection($connection)
     {
-        $this->PaymentConfigurations->setConnection($connection);
+        $this->paymentConfigurations->setConnection($connection);
     }
 
     public function getConnection()
     {
-        return $this->PaymentConfigurations->getConnectionName();
+        return $this->paymentConfigurations->getConnectionName();
     }
 
     public function fetch($where, $field = '*')
     {
-        return $this->PaymentConfigurations
+
+        return $this->paymentConfigurations
             ->select($field)
             ->where($where)
-            ->get();
+            ->first();
     }
 
     public function create($attributes)
     {
-        return $this->PaymentConfigurations->create($attributes);
+        return $this->paymentConfigurations->create($attributes);
     }
 
     public function update($where, $attributes)
     {
-        $PaymentConfigurations = $this->PaymentConfigurations->where($where)->first();
+        $PaymentConfigurationsInfo = $this->paymentConfigurations->where($where)->first();
         $pc_xref_pa_id = $where['pc_xref_pa_id'];
-        if (blank($PaymentConfigurations)) {
+        if (blank($PaymentConfigurationsInfo)) {
             $where['pc_xref_pa_id'] = '';
-            $PaymentConfigurations = $this->PaymentConfigurations->where($where)->first();
-            if (blank($PaymentConfigurations)) {
+            $PaymentConfigurationsInfo = $this->paymentConfigurations->where($where)->first();
+            if (blank($PaymentConfigurationsInfo)) {
                 $where['pc_xref_pa_id'] = $pc_xref_pa_id;
                 return $this->create($attributes);
             }
         }
 
         foreach ($attributes as $key => $value) {
-            $PaymentConfigurations->$key = $value;
+            $PaymentConfigurationsInfo->$key = $value;
         }
-        return $PaymentConfigurations->save();
+        return $PaymentConfigurationsInfo->save();
     }
 
     public function findBy($attributes) {
-        $result = $this->PaymentConfigurations;
+        $result = $this->paymentConfigurations;
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);
         }
@@ -70,8 +73,5 @@ class PaymentConfigurationsRepositories
         return $this->PaymentConfigurations->find($id);
     }
 
-    public function delete($attributes)
-    {
-        return $this->PaymentConfigurations->where(['pc_project'=>$attributes['pc_project'], 'pc_country'=>$attributes['pc_country'], 'pc_city'=>$attributes['pc_city'], 'pc_service'=>$attributes['pc_service']])->delete();
-    }
+
 }

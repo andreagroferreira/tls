@@ -95,6 +95,14 @@ parameters:
     required: true
   - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
     required: true
+  - name: ENVPAY_YOOKASSA_COMMON_SANDBOX_SHOP_ID
+    required: true
+  - name: ENVPAY_YOOKASSA_COMMON_SANDBOX_SECRET
+    required: true
+  - name: ENVPAY_YOOKASSA_COMMON_SHOP_ID
+    required: true
+  - name: ENVPAY_YOOKASSA_COMMON_SECRET
+    required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
     required: true
   - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE
@@ -522,6 +530,14 @@ objects:
                   value: ${ENVPAY_CMI_DEmaAll2de_MERCHANT_ID}
                 - name: ENVPAY_CMI_DEmaAll2de_STOREKEY
                   value: ${ENVPAY_CMI_DEmaAll2de_STOREKEY}
+                - name: ENVPAY_YOOKASSA_COMMON_SANDBOX_SHOP_ID
+                  value: ${ENVPAY_YOOKASSA_COMMON_SANDBOX_SHOP_ID}
+                - name: ENVPAY_YOOKASSA_COMMON_SANDBOX_SECRET
+                  value: ${ENVPAY_YOOKASSA_COMMON_SANDBOX_SECRET}
+                - name: ENVPAY_YOOKASSA_COMMON_SHOP_ID
+                  value: ${ENVPAY_YOOKASSA_COMMON_SHOP_ID}
+                - name: ENVPAY_YOOKASSA_COMMON_SECRET
+                  value: ${ENVPAY_YOOKASSA_COMMON_SECRET}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER
                   value: ${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}
                 - name: ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE

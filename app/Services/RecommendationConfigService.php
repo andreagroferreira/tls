@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\RecommendationConfigRepositories;
+use Illuminate\Support\Facades\Cache;
 
 class RecommendationConfigService
 {
@@ -17,7 +18,10 @@ class RecommendationConfigService
     }
 
     public function create($params) {
-        return $this->recommendationConfigRepositories->insert($params);
+        $result    = $this->recommendationConfigRepositories->insert($params);
+        $cache_key = getRecommendationRulesCacheKey();
+        Cache::pull($cache_key);
+        return $result;
     }
 
     public function fetch($limit) {

@@ -113,6 +113,9 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('bnp/return', 'BnpController@return');
     $router->post('bnp/receipt', 'BnpController@receipt');
 
+    $router->post('yookassa/redirto', 'YookassaController@redirto');
+    $router->post('yookassa/return', 'YookassaController@return');
+
     // profile
     $router->post('profile', 'ProfileController@upload');
     $router->get('application-with-profile/{profile}', 'ProfileController@fetchApplications');
@@ -124,7 +127,11 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('recommendation-configs', 'RecommendationConfigController@fetch');
     $router->get('recommendation-config/{rc_id}', 'RecommendationConfigController@download');
 
-    // payment configurations api
+    $router->options('payment-configurations-list', 'PaymentConfigurationsController@fetchList');
+    $router->get('payment-configurations-list', 'PaymentConfigurationsController@fetchList');
     $router->put('payment-configurations/{pa_id}', 'PaymentConfigurationsController@update');
 
+    // payment accounts api
+    $router->get('payment-gateway-field-list', 'PaymentAccountsController@getPaymentGatewayFieldList');
+    $router->put('payment-account/{pa_id}', 'PaymentAccountsController@update');
 });

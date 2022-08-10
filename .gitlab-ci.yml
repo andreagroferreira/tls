@@ -18,18 +18,17 @@ variables:
   PROJECT: "visa-be-dev"
   CLIENT: "schengen-be"
   DATABASE: $DATABASE
-  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   DIRECTUS_ROUTE: "directus"
   TLSCONNECT_API_URL: "https://tlsconnect-service-api.${PROJECT}.svc:8443"
   EMAIL_SERVICE_DOMAIN: "https://tlsconnect-email-service.${PROJECT}.svc:8443"
+  ENABLE_DAST: "true"
 
 stages:
   - build
   - test
-  - analyze
   - deploy
-  - expose
+  - post
   - rollback
 
 prepare-instance:
@@ -84,27 +83,6 @@ test-unit:
     - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: on_success
-      allow_failure: true
-
-sonarcloud-check:
-  stage: analyze
-  image:
-    name: ${DOCKER_REGISTRY_ADDRESS}/sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
-  dependencies:
-    - test-unit
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-      - .sonar/cache
-  script:
-    - sed -i -e 's/".*payment-api/"\/builds\/dev_tls\/tlspay\/payment-api/g' coverage-report.clover
-    - sed -i -e 's/".*payment-api/"\/builds\/dev_tls\/tlspay\/payment-api/g' unittest-report.xml
-    - sonar-scanner
-  rules:
-    - if: $ROLLBACK != null
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "push"
       allow_failure: true
 
 deploy-instance:
@@ -168,6 +146,10 @@ deploy-instance:
       ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY="${ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY}"
       ENVPAY_CMI_DEmaAll2de_MERCHANT_ID="${ENVPAY_CMI_DEmaAll2de_MERCHANT_ID}"
       ENVPAY_CMI_DEmaAll2de_STOREKEY="${ENVPAY_CMI_DEmaAll2de_STOREKEY}"
+      ENVPAY_YOOKASSA_COMMON_SANDBOX_SHOP_ID="${ENVPAY_YOOKASSA_COMMON_SANDBOX_SHOP_ID}"
+      ENVPAY_YOOKASSA_COMMON_SANDBOX_SECRET="${ENVPAY_YOOKASSA_COMMON_SANDBOX_SECRET}"
+      ENVPAY_YOOKASSA_COMMON_SHOP_ID="${ENVPAY_YOOKASSA_COMMON_SHOP_ID}"
+      ENVPAY_YOOKASSA_COMMON_SECRET="${ENVPAY_YOOKASSA_COMMON_SECRET}"
       ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER="${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}"
       ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE="${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}"
       ENVPAY_TINGG_COMMON_SANDBOX_IVKEY="${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}"
@@ -364,6 +346,10 @@ deploy-instance:
       ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY="${ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY}"
       ENVPAY_CMI_DEmaAll2de_MERCHANT_ID="${ENVPAY_CMI_DEmaAll2de_MERCHANT_ID}"
       ENVPAY_CMI_DEmaAll2de_STOREKEY="${ENVPAY_CMI_DEmaAll2de_STOREKEY}"
+      ENVPAY_YOOKASSA_COMMON_SANDBOX_SHOP_ID="${ENVPAY_YOOKASSA_COMMON_SANDBOX_SHOP_ID}"
+      ENVPAY_YOOKASSA_COMMON_SANDBOX_SECRET="${ENVPAY_YOOKASSA_COMMON_SANDBOX_SECRET}"
+      ENVPAY_YOOKASSA_COMMON_SHOP_ID="${ENVPAY_YOOKASSA_COMMON_SHOP_ID}"
+      ENVPAY_YOOKASSA_COMMON_SECRET="${ENVPAY_YOOKASSA_COMMON_SECRET}"
       ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER="${ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER}"
       ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE="${ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE}"
       ENVPAY_TINGG_COMMON_SANDBOX_IVKEY="${ENVPAY_TINGG_COMMON_SANDBOX_IVKEY}"
@@ -577,3 +563,11 @@ sast:
   stage: test
   variables:
     SAST_EXCLUDED_PATHS: spec, test, tests, tmp, vendor
+
+dast:
+  stage: post
+  extends: .dast-template-api
+  variables:
+    DAST_PORT: 8443
+    DAST_API_HOST_OVERRIDE: http://localhost:${DAST_PORT}
+    DAST_API_OPENAPI: http://localhost:${DAST_PORT}/docs

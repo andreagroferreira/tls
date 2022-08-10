@@ -68,7 +68,7 @@ class PaymentAccountsController extends BaseController
             }, ARRAY_FILTER_USE_BOTH);
             $payment_config = array_values($res);
             foreach ($payment_config as $k=>$v){
-                $payment_config[$k]['pa_name'] = $v['pa_name'].' ('.$v['pa_type'].')';
+                $payment_config[$k]['pa_name_type'] = $v['pa_name'].' ('.$v['pa_type'].')';
             }
             return $this->sendResponse($payment_config);
         } catch (\Exception $e) {
@@ -127,7 +127,7 @@ class PaymentAccountsController extends BaseController
                 $paymentConfig['pa_id'] = $res['pa_id'];
                 $paymentConfig['pa_name'] = $res['pa_name'];
                 $paymentConfig['pa_type'] = $res['pa_type'];
-                $paymentConfig['is_show'] = $v['pc_tech_deleted'] ? true : false;
+                $paymentConfig['is_show'] = $v['pc_tech_deleted'] ? false : true;
                 $payConfig[] = $paymentConfig;
             }
         }

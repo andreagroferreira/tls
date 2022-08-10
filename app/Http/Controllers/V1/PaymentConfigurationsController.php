@@ -94,4 +94,72 @@ class PaymentConfigurationsController extends BaseController
             ], 400);
         }
     }
+
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/add-payment-config",
+     *     tags={"Payment API"},
+     *     description="add exists payment config",
+     *      @OA\Parameter(
+     *          name="pc_id",
+     *          in="query",
+     *          description="payment_configurations id",
+     *          required=true,
+     *          @OA\Schema(type="number", example="123"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="pa_id",
+     *          in="query",
+     *          description="payment_accounts id",
+     *          required=true,
+     *          @OA\Schema(type="number", example="123"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="return upload success",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      )
+     * )
+     */
+    public function addPaymentConfig(Request $request)
+    {
+        $params = [
+            'pc_id' => $request->input('pc_id'),
+            'data' => $request->input('data'),
+        ];
+        $validator = validator($params, [
+            'pc_id'   => 'required|integer',
+            'data'  => 'required|array',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+        $pc_infos = $this->paymentConfigurations->fetchById($params['pc_id']);
+        try {
+            $data = $params['data'];
+            foreach ($data as $k=>$v){
+                $params_create = [
+                    'pc_xref_pa_id' => $v['pa_id'],
+                    'pc_project' => $pc_infos['pc_project'],
+                    'pc_country' => $pc_infos['pc_country'],
+                    'pc_city' => $pc_infos['pc_city'],
+                    'pc_service' => $pc_infos['pc_service'],
+                    'pc_tech_deleted' => !$v['is_show'],
+                ];
+                $this->paymentConfigurations->save($params_create);
+            }
+            return $this->sendResponse([
+                'status' => 'success',
+                'message' => 'Save successful!'
+            ]);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
 }

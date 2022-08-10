@@ -123,12 +123,14 @@ class PaymentAccountsController extends BaseController
         $paymentConfig = [];
         foreach ($payment_configs as $k=>$v){
             $res = $this->PaymentAccountsService->fetchById($v['pc_xref_pa_id']);
-            if($res['pa_id']){
-                $paymentConfig['pa_id'] = $res['pa_id'];
-                $paymentConfig['pa_name'] = $res['pa_name'];
-                $paymentConfig['pa_type'] = $res['pa_type'];
-                $paymentConfig['is_show'] = $v['pc_tech_deleted'] ? false : true;
-                $payConfig[] = $paymentConfig;
+            if($res){
+                if($res['pa_id']){
+                    $paymentConfig['pa_id'] = $res['pa_id'];
+                    $paymentConfig['pa_name'] = $res['pa_name'];
+                    $paymentConfig['pa_type'] = $res['pa_type'];
+                    $paymentConfig['is_show'] = $v['pc_tech_deleted'] ? false : true;
+                    $payConfig[] = $paymentConfig;
+                }
             }
         }
         return $payConfig;

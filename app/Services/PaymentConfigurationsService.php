@@ -42,7 +42,7 @@ class PaymentConfigurationsService
         $pc_city = $res['pc_city'];
         $pc_service = $res['pc_service'];
         $where = ['pc_project'=>$pc_project, 'pc_country'=>$pc_country, 'pc_city'=>$pc_city, 'pc_service'=>$pc_service];
-        return $this->paymentConfigurationsRepositories->fetch($where);
+        return $this->paymentConfigurationsRepositories->fetchAll($where);
     }
 
     public function fetchById($id) {

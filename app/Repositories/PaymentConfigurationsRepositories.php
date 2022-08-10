@@ -36,6 +36,15 @@ class PaymentConfigurationsRepositories
             ->first();
     }
 
+    public function fetchAll($where, $field = '*')
+    {
+
+        return $this->paymentConfigurations
+            ->select($field)
+            ->where($where)
+            ->get();
+    }
+
     public function create($attributes)
     {
         return $this->paymentConfigurations->create($attributes);
@@ -70,7 +79,7 @@ class PaymentConfigurationsRepositories
 
     public function fetchById($id)
     {
-        return $this->PaymentConfigurations->find($id);
+        return $this->paymentConfigurations->find($id);
     }
 
 

@@ -14,8 +14,8 @@ class RemoveProfilesTableUniqueIndex extends Migration
     public function up()
     {
 
-        Schema::table('deploy_payment_pgsql', function ($table) {
-            $table->dropUnique(['f_id_profile_unique_index']);
+        Schema::connection('deploy_payment_pgsql')->table('profiles', function ($table) {
+            $table->dropUnique('f_id_profile_unique_index');
         });
     }
 
@@ -26,7 +26,7 @@ class RemoveProfilesTableUniqueIndex extends Migration
      */
     public function down()
     {
-        Schema::table('deploy_payment_pgsql', function ($table) {
+        Schema::connection('deploy_payment_pgsql')->table('profiles', function ($table) {
             $table->unique(['p_xref_f_id', 'p_profile'], 'f_id_profile_unique_index');
         });
     }

@@ -273,4 +273,65 @@ class ApiService
         $url = $this->getEAuditorDomain() . ':' . $port;
         if (strtolower($method) == 'post')    return $this->postApi($url, $data);
     }
+
+    public function yookassaCreatePayment($params, $yookassa_config, $Idempotence_Key): array
+    {
+        $response = $this->guzzleClient->request('post', $yookassa_config['host'], [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => 'application/json',
+            'headers' => [
+                'Idempotence-Key' => $Idempotence_Key,
+                'Authorization' => 'Basic ' . base64_encode("{$yookassa_config['shop_id']}:{$yookassa_config['secret_key']}"),
+                'Content-Type' => 'application/json'
+            ],
+            'json' => $params,
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        return $response;
+    }
+
+    public function yookassaCapturePayment($payment_id, $yookassa_config, $Idempotence_Key): array
+    {
+        $response = $this->guzzleClient->request('post', $yookassa_config['host'] . "/$payment_id/capture", [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => 'application/json',
+            'headers' => [
+                'Idempotence-Key' => $Idempotence_Key,
+                'Authorization' => 'Basic ' . base64_encode("{$yookassa_config['shop_id']}:{$yookassa_config['secret_key']}"),
+                'Content-Type' => 'application/json'
+            ],
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        return $response;
+    }
+
+    public function getYookassaPayment($payment_id, $yookassa_config, $Idempotence_Key): array
+    {
+        $response = $this->guzzleClient->request('get', $yookassa_config['host'] . "/$payment_id", [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => 'application/json',
+            'headers' => [
+                'Idempotence-Key' => $Idempotence_Key,
+                'Authorization' => 'Basic ' . base64_encode("{$yookassa_config['shop_id']}:{$yookassa_config['secret_key']}"),
+                'Content-Type' => 'application/json'
+            ],
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        return $response;
+    }
 }

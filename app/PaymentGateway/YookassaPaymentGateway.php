@@ -9,7 +9,7 @@ use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Log;
-use YooKassa\Client;
+use function Ramsey\Uuid\v4;
 
 class YookassaPaymentGateway implements PaymentGatewayInterface
 {
@@ -58,14 +58,9 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
-        $client      = $transaction['t_client'];
-        $issuer      = $transaction['t_issuer'];
-        $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
-        $yookassa_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
+        $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer']);
 
-        $yookassa = new Client();
-        $yookassa->setAuth($yookassa_config['shop_id'], $yookassa_config['secret_key']);
-        $payment  = $yookassa->createPayment([
+        $yookassa_params = [
             'amount' => [
                 'value' => $transaction['t_amount'],
                 'currency' => $transaction['t_currency'],
@@ -74,18 +69,34 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
                 'type' => 'bank_card',
             ],
             'confirmation' => [
-                'type' => "redirect",
-                'return_url'=> get_callback_url($yookassa_config['return_url']),
+                'type' => 'redirect',
+                'return_url'=> get_callback_url($yookassa_config['return_url']) . '?t_id=' . $transaction['t_id'],
             ],
             'description' => $transaction['t_transaction_id'],
-        ], $transaction['t_transaction_id']);
+        ];
 
+        $payment = $this->apiService->yookassaCreatePayment($yookassa_params, $yookassa_config, $transaction['t_transaction_id']);
+        // If the first time to generate orders, will return the orderId, otherwise return an error message, go to the database to find the orderId
+        if (!empty($payment['body']['id'])) {
+            $this->transactionService->updateById($transaction['t_id'], ['t_gateway_transaction_id' => $payment['body']['confirmation']['confirmation_url']]);
+            $confirmation_url = $payment['body']['confirmation']['confirmation_url'];
+            $orderId = $payment['body']['id'];
+        } elseif (!empty($payment['status']) == 400 && $payment['body']['code'] === 'invalid_request' && !empty($transaction['t_gateway_transaction_id'])) {
+            $query = parse_url($transaction['t_gateway_transaction_id'])['query'];
+            $confirmation_url = $transaction['t_gateway_transaction_id'];
+            $orderId = convertUrlQuery($query)['orderId'];
+        } else {
+            return [
+                'status'  => 'error',
+                'message' => $payment['body']['description']
+            ];
+        }
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transaction);
 
         return [
             'form_method' => 'get',
-            'form_action' => $payment['confirmation']['confirmation_url'],
-            'form_fields' => ['orderId' => $payment['id']],
+            'form_action' => $confirmation_url,
+            'form_fields' => $orderId,
         ];
     }
 
@@ -96,11 +107,8 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
 
     public function return($params)
     {
-        info($params);
-        $transaction_id = $params['id'] ?? '';
-        $this->paymentService->saveTransactionLog($transaction_id, $params, $this->getPaymentGatewayName());
-
-        $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $transaction_id]);
+        $transaction_id = $params['t_id'] ?? '';
+        $transaction = $this->transactionService->getTransaction($transaction_id);
         if (empty($transaction)) {
             Log::warning("ONLINE PAYMENT, Yookassa : No transaction found in the database for " . $transaction_id . "\n" .
                 json_encode($_POST, JSON_UNESCAPED_UNICODE));
@@ -109,17 +117,28 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
-        if (isset($params['status']) && $params['status'] == 'waiting_for_capture') {
+
+        $query = parse_url($transaction['t_gateway_transaction_id'])['query'];
+        $orderId = convertUrlQuery($query)['orderId'];
+
+        $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer']);
+
+        $paymentInfo = $this->apiService->getYookassaPayment($orderId, $yookassa_config, v4());
+
+        if ($paymentInfo['body']['status'] === 'waiting_for_capture') {
+            $paymentCaptureInfo = $this->apiService->yookassaCapturePayment($orderId, $yookassa_config, v4());
+        } else {
             return [
-                'is_success' => 'waiting_for_capture',
+                'is_success' => 'failure',
                 'description' => $transaction['t_transaction_id'],
                 'issuer' => $transaction['t_issuer'],
                 'amount' => $transaction['t_amount'],
-                'message' => $params['status'],
+                'message' => 'failure',
                 'href' => $transaction['t_redirect_url']
             ];
         }
-        $isValid = $params['status'] === 'succeeded';
+
+        $isValid = $paymentCaptureInfo['body']['status'] === 'succeeded';
         if (!$isValid) {
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
             return [
@@ -127,15 +146,23 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Request ERROR: params validate failed'
             ];
         }
+        $this->paymentService->saveTransactionLog($transaction_id, $paymentCaptureInfo, $this->getPaymentGatewayName());
 
         $confirm_params = [
             'gateway'                => $this->getPaymentGatewayName(),
-            'amount'                 => $params['amount']['value'],
-            'currency'               => $params['amount']['currency'],
-            'transaction_id'         => $params['description'],
-            'gateway_transaction_id' => $params['description'],
+            'amount'                 => $paymentCaptureInfo['body']['amount']['value'],
+            'currency'               => $paymentCaptureInfo['body']['amount']['currency'],
+            'transaction_id'         => $paymentCaptureInfo['body']['description'],
+            'gateway_transaction_id' => $transaction['gateway_transaction_id'],
         ];
         $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         return $this->paymentService->confirm($transaction, $confirm_params);
+    }
+
+    public function getYookassaConfig($client, $issuer): array
+    {
+        $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $yookassa_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
+        return $yookassa_config;
     }
 }

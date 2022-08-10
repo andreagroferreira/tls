@@ -8,13 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentConfigurationsRepositories
 {
-
     protected $paymentConfigurations;
 
     public function __construct(PaymentConfigurations $paymentConfigurations)
     {
         $this->paymentConfigurations = $paymentConfigurations;
-
     }
 
     public function setConnection($connection)
@@ -29,7 +27,6 @@ class PaymentConfigurationsRepositories
 
     public function fetch($where, $field = '*')
     {
-
         return $this->paymentConfigurations
             ->select($field)
             ->where($where)
@@ -38,7 +35,6 @@ class PaymentConfigurationsRepositories
 
     public function fetchAll($where, $field = '*')
     {
-
         return $this->paymentConfigurations
             ->select($field)
             ->where($where)

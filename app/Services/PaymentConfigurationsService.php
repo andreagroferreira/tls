@@ -61,15 +61,18 @@ class PaymentConfigurationsService
             $city    = $payment_config['pc_city'];
             $res_key = $country . '-' . $city;
             $account = $this->paymentAccountsRepositories->fetch(['pa_id' => $payment_config['pc_xref_pa_id']]);
-            if (isset($result[$res_key])) {
-                $result[$res_key]['service'] = $result[$res_key]['service'] . ', ' . $account->pa_name;
-            } else {
-                $payment = [
-                    'country' => $country,
-                    'city'    => $city,
-                    'service' => $account->pa_name
-                ];
-                $result[$res_key] = $payment;
+            if($account){
+                if (isset($result[$res_key])) {
+                    $result[$res_key]['service'] = $result[$res_key]['service'] . ', ' . $account->pa_name;
+                } else {
+                    $payment = [
+                        'pc_id' => $payment_config['pc_id'],
+                        'country' => $country,
+                        'city'    => $city,
+                        'service' => $account->pa_name
+                    ];
+                    $result[$res_key] = $payment;
+                }
             }
         }
         return $result;

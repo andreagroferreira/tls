@@ -41,8 +41,60 @@ class PaymentAccountsController extends BaseController
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/v1/payment-account/{pa_id}",
+     *     tags={"Payment API"},
+     *     description="get the payment_accounts details according to pa_id",
+     *      @OA\Parameter(
+     *          name="pa_id",
+     *          in="path",
+     *          description="the payment_accounts pa_id",
+     *          required=true,
+     *          @OA\Schema(type="integer", example="10000"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the payment_accounts information",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="payment_accounts not found"
+     *      ),
+     * )
+     */
+    public function fetch(Request $request)
+    {
+        $params = [
+            'pa_id' => $request->route('pa_id')
+        ];
+        $validator = validator($params, [
+            'pa_id' => 'required|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $result = $this->paymentAccounts->fetch($validator->validated());
+            if ($result) {
+                return $this->sendResponse($result);
+            } else {
+                return $this->sendEmptyResponse(204);
+            }
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
+    /**
      * @OA\PUT(
-     *     path="/api/v1/payment-configurations",
+     *     path="/api/v1/payment-account",
      *     tags={"Payment API"},
      *     description="update a payment_accounts",
      *      @OA\Parameter(
@@ -89,13 +141,11 @@ class PaymentAccountsController extends BaseController
         $pa_info = is_array($request->input('pa_info')) ? json_encode($request->input('pa_info')) : $request->input('pa_info');
         $params = [
             'pa_id' => $request->route('pa_id'),
-            'pa_type' => $request->input('pa_type'),
             'pa_name' => $request->input('pa_name'),
             'pa_info' => $pa_info,
         ];
         $validator = validator($params, [
             'pa_id' => 'required|integer',
-            'pa_type' => Rule::in(['sandbox', 'prod']),
             'pa_name' => 'required|string',
             'pa_info' => [
                 'required',

@@ -25,11 +25,6 @@ class PaymentConfigurationsService
         $this->paymentConfigurationsRepositories->setConnection($dbConnectionService->getConnection());
     }
 
-    public function update($params): object
-    {
-        return $this->paymentAccountsRepositories->update(['pa_id' => $params['pa_id']], $params);
-    }
-
     public function fetchList($params)
     {
         $result = [];

@@ -29,4 +29,9 @@ class PaymentAccountsService
         return $this->PaymentAccountsRepositories->fetchById($id);
     }
 
+    public function update($params): object
+    {
+        return $this->PaymentAccountsRepositories->update(['pa_id' => $params['pa_id']], $params);
+    }
+
 }

@@ -3,137 +3,99 @@
 namespace App\Http\Controllers\V1;
 
 use App\Services\PaymentAccountsService;
-use App\Services\PaymentConfigurationsService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 
 class PaymentAccountsController extends BaseController
 {
-    private $PaymentAccountsService;
-    private $paymentConfigurationsService;
+    private $paymentAccountsService;
 
     public function __construct(
-        PaymentAccountsService $PaymentAccountsService,
-        PaymentConfigurationsService $paymentConfigurationsService
+        PaymentAccountsService $paymentAccountsService
     )
     {
-        $this->PaymentAccountsService = $PaymentAccountsService;
-        $this->paymentConfigurationsService = $paymentConfigurationsService;
+        $this->paymentAccountsService = $paymentAccountsService;
     }
 
     /**
-     * @OA\Get(
-     *     path="/api/v1/payment-accounts",
+     * @OA\PUT(
+     *     path="/api/v1/payment-configurations",
      *     tags={"Payment API"},
-     *     description="Get the paymentgateway list",
-     *     @OA\Parameter(
-     *          name="pc_id",
+     *     description="update a payment_accounts",
+     *      @OA\Parameter(
+     *          name="psp_id",
      *          in="query",
-     *          description="payment_configurations",
-     *          required=false,
-     *          @OA\Schema(type="integer", example="10"),
+     *          description="payment_accounts pa_xref_psp_id",
+     *          required=true,
+     *          @OA\Schema(type="integer", example="10000"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="pa_name",
+     *          in="query",
+     *          description="payment_accounts pa_name",
+     *          required=true,
+     *          @OA\Schema(type="string", example="cmi"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="pa_type",
+     *          in="query",
+     *          description="payment_accounts pa_type",
+     *          required=true,
+     *          @OA\Schema(type="string", example="[sandbox, prod]"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="pa_info",
+     *          in="query",
+     *          description="payment_accounts pa_info.",
+     *          required=true,
+     *          @OA\Schema(type="json", example=""),
      *      ),
      *      @OA\Response(
      *          response="200",
-     *          description="get the paymentgateway result list",
+     *          description="payment_accounts update success",
      *          @OA\JsonContent(),
      *      ),
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
-     *      )
+     *      ),
      * )
      */
-    public function getPaymentAccounts(Request $request)
+    public function update(Request $request)
     {
-        try {
-            $params = [
-                'pc_id' => $request->get('pc_id' ),
-            ];
-            $validator = validator($params, [
-                'pc_id' => 'integer'
-            ]);
-            if($validator->fails()) {
-                return $this->sendError('params error', $validator->errors()->first());
-            }
-            $all_payment_config = $this->PaymentAccountsService->fetch()->toArray();
-            $exist_payment_config = $this->getExistsConfigs($params['pc_id']);
-            $res = array_filter($all_payment_config, function ($v, $k) use ($exist_payment_config) {
-                foreach ($exist_payment_config as $key => $val) {
-                    if ($val['pa_name'].$val['pa_type'] == $v['pa_name'].$v['pa_type']) {
-                        return false;
-                    }
-                }
-                return true;
-            }, ARRAY_FILTER_USE_BOTH);
-            $payment_config = array_values($res);
-            foreach ($payment_config as $k=>$v){
-                $payment_config[$k]['pa_name_type'] = $v['pa_name'].' ('.$v['pa_type'].')';
-            }
-            return $this->sendResponse($payment_config);
-        } catch (\Exception $e) {
-            return $this->sendError('unknown_error', $e->getMessage());
-        }
-    }
+        $pa_info = is_array($request->input('pa_info')) ? json_encode($request->input('pa_info')) : $request->input('pa_info');
+        $params = [
+            'pa_id' => $request->route('pa_id'),
+            'pa_type' => $request->input('pa_type'),
+            'pa_name' => $request->input('pa_name'),
+            'pa_info' => $pa_info,
+        ];
+        $validator = validator($params, [
+            'pa_id' => 'required|integer',
+            'pa_type' => Rule::in(['sandbox', 'prod']),
+            'pa_name' => 'required|string',
+            'pa_info' => [
+                'required',
+                'bail',
+                'json',
+            ],
+        ]);
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/payment-exists-config",
-     *     tags={"Payment API"},
-     *     description="Get the issuer exists payment-config",
-     *     @OA\Parameter(
-     *          name="pc_id",
-     *          in="query",
-     *          description="payment_configurations",
-     *          required=false,
-     *          @OA\Schema(type="integer", example="10"),
-     *      ),
-     *      @OA\Response(
-     *          response="200",
-     *          description="get the paymentgateway result list",
-     *          @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response="400",
-     *          description="Error: bad request"
-     *      )
-     * )
-     */
-    public function getPaymentExistsConfig(Request $request)
-    {
-        try {
-            $params = [
-                'pc_id' => $request->get('pc_id' ),
-            ];
-            $validator = validator($params, [
-                'pc_id' => 'integer'
-            ]);
-            if($validator->fails()) {
-                return $this->sendError('params error', $validator->errors()->first());
-            }
-            $res = $this->getExistsConfigs($params['pc_id']);
-            return $this->sendResponse($res);
-        } catch (\Exception $e) {
-            return $this->sendError('unknown_error', $e->getMessage());
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
         }
-    }
 
-    private function getExistsConfigs($pc_id){
-        $payment_configs = $this->paymentConfigurationsService->fetch($pc_id);
-        $paymentConfig = [];
-        foreach ($payment_configs as $k=>$v){
-            $res = $this->PaymentAccountsService->fetchById($v['pc_xref_pa_id']);
-            if($res){
-                if($res['pa_id']){
-                    $paymentConfig['pa_id'] = $res['pa_id'];
-                    $paymentConfig['pa_name'] = $res['pa_name'];
-                    $paymentConfig['pa_type'] = $res['pa_type'];
-                    $paymentConfig['is_show'] = $v['pc_tech_deleted'] ? false : true;
-                    $payConfig[] = $paymentConfig;
-                }
-            }
+        try {
+            $result = $this->paymentAccountsService->update($params);
+            return response()->json($result, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'fail',
+                'error' => 'unknown_error',
+                'message' => $e->getMessage(),
+            ], 400);
         }
-        return $payConfig;
     }
 
 }

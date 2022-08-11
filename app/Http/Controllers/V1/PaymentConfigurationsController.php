@@ -4,13 +4,14 @@ namespace App\Http\Controllers\V1;
 
 use App\Services\PaymentConfigurationsService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class PaymentConfigurationsController extends BaseController
 {
     protected $paymentConfigurations;
 
-    public function __construct(PaymentConfigurationsService $paymentConfigurations)
+    public function __construct(
+        PaymentConfigurationsService $paymentConfigurations
+    )
     {
         $this->paymentConfigurations = $paymentConfigurations;
     }
@@ -66,84 +67,89 @@ class PaymentConfigurationsController extends BaseController
     }
 
     /**
-     * @OA\PUT(
-     *     path="/api/v1/payment-configurations",
+     * @OA\Get(
+     *     path="/api/v1/payment-accounts",
      *     tags={"Payment API"},
-     *     description="update a payment_accounts",
-     *      @OA\Parameter(
-     *          name="psp_id",
-     *          in="query",
-     *          description="payment_accounts pa_xref_psp_id",
-     *          required=true,
-     *          @OA\Schema(type="integer", example="10000"),
-     *      ),
-     *      @OA\Parameter(
-     *          name="pa_name",
-     *          in="query",
-     *          description="payment_accounts pa_name",
-     *          required=true,
-     *          @OA\Schema(type="string", example="cmi"),
-     *      ),
+     *     description="Get the paymentgateway list",
      *     @OA\Parameter(
-     *          name="pa_type",
+     *          name="pc_id",
      *          in="query",
-     *          description="payment_accounts pa_type",
-     *          required=true,
-     *          @OA\Schema(type="string", example="[sandbox, prod]"),
-     *      ),
-     *     @OA\Parameter(
-     *          name="pa_info",
-     *          in="query",
-     *          description="payment_accounts pa_info.",
-     *          required=true,
-     *          @OA\Schema(type="json", example=""),
+     *          description="payment_configurations",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="10"),
      *      ),
      *      @OA\Response(
      *          response="200",
-     *          description="payment_accounts update success",
+     *          description="get the paymentgateway result list",
      *          @OA\JsonContent(),
      *      ),
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
-     *      ),
+     *      )
      * )
      */
-    public function update(Request $request)
+    public function getPaymentAccounts(Request $request)
     {
-        $pa_info = is_array($request->input('pa_info')) ? json_encode($request->input('pa_info')) : $request->input('pa_info');
-        $params = [
-            'pa_id' => $request->route('pa_id'),
-            'pa_type' => $request->input('pa_type'),
-            'pa_name' => $request->input('pa_name'),
-            'pa_info' => $pa_info,
-        ];
-        $validator = validator($params, [
-            'pa_id' => 'required|integer',
-            'pa_type' => Rule::in(['sandbox', 'prod']),
-            'pa_name' => 'required|string',
-            'pa_info' => [
-                'required',
-                'bail',
-                'json',
-            ],
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('params error', $validator->errors()->first());
-        }
-
         try {
-            $result = $this->paymentConfigurations->update($params);
-            return response()->json($result, 200);
+            $params = [
+                'pc_id' => $request->get('pc_id' ),
+            ];
+            $validator = validator($params, [
+                'pc_id' => 'integer'
+            ]);
+            if($validator->fails()) {
+                return $this->sendError('params error', $validator->errors()->first());
+            }
+            $res = $this->paymentConfigurations->paymentAccount($params);
+            return $this->sendResponse($res);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'fail',
-                'error' => 'unknown_error',
-                'message' => $e->getMessage(),
-            ], 400);
+            return $this->sendError('unknown_error', $e->getMessage());
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/location-config",
+     *     tags={"Payment API"},
+     *     description="Get the issuer exists payment-config",
+     *     @OA\Parameter(
+     *          name="pc_id",
+     *          in="query",
+     *          description="payment_configurations",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="10"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the paymentgateway result list",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      )
+     * )
+     */
+    public function getPaymentExistsConfig(Request $request)
+    {
+        try {
+            $params = [
+                'pc_id' => $request->get('pc_id' ),
+            ];
+            $validator = validator($params, [
+                'pc_id' => 'integer'
+            ]);
+            if($validator->fails()) {
+                return $this->sendError('params error', $validator->errors()->first());
+            }
+            $res = $this->paymentConfigurations->getExistsConfigs($params['pc_id']);
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
 
     /**
      * @OA\Post(

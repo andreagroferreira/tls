@@ -69,7 +69,7 @@ class PaymentConfigurationsController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/v1/payment-accounts",
+     *     path="/api/v1/location-available-accounts",
      *     tags={"Payment API"},
      *     description="Get the paymentgateway list",
      *     @OA\Parameter(
@@ -154,7 +154,7 @@ class PaymentConfigurationsController extends BaseController
 
     /**
      * @OA\Post(
-     *     path="/api/v1/add-payment-config",
+     *     path="/api/v1/payment-config",
      *     tags={"Payment API"},
      *     description="add exists payment config",
      *      @OA\Parameter(

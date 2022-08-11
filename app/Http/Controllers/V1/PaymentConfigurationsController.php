@@ -46,20 +46,21 @@ class PaymentConfigurationsController extends BaseController
      *      ),
      * )
      */
-    public function fetchList(Request $request) {
-        $params    = [
+    public function fetchList(Request $request)
+    {
+        $params = [
             'client' => $request->input('client'),
-            'type'   => $request->input('type')
+            'type' => $request->input('type')
         ];
         $validator = validator($params, [
             'client' => 'required|string',
-            'type'   => 'required|string'
+            'type' => 'required|string'
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
         }
-        try{
+        try {
             return $this->sendResponse($this->paymentConfigurations->fetchList($params));
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
@@ -93,12 +94,12 @@ class PaymentConfigurationsController extends BaseController
     {
         try {
             $params = [
-                'pc_id' => $request->get('pc_id' ),
+                'pc_id' => $request->get('pc_id'),
             ];
             $validator = validator($params, [
                 'pc_id' => 'integer'
             ]);
-            if($validator->fails()) {
+            if ($validator->fails()) {
                 return $this->sendError('params error', $validator->errors()->first());
             }
             $res = $this->paymentConfigurations->paymentAccount($params);
@@ -135,12 +136,12 @@ class PaymentConfigurationsController extends BaseController
     {
         try {
             $params = [
-                'pc_id' => $request->get('pc_id' ),
+                'pc_id' => $request->get('pc_id'),
             ];
             $validator = validator($params, [
                 'pc_id' => 'integer'
             ]);
-            if($validator->fails()) {
+            if ($validator->fails()) {
                 return $this->sendError('params error', $validator->errors()->first());
             }
             $res = $this->paymentConfigurations->getExistsConfigs($params['pc_id']);
@@ -188,8 +189,8 @@ class PaymentConfigurationsController extends BaseController
             'data' => $request->input('data'),
         ];
         $validator = validator($params, [
-            'pc_id'   => 'required|integer',
-            'data'  => 'required|array',
+            'pc_id' => 'required|integer',
+            'data' => 'required|array',
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
@@ -197,14 +198,14 @@ class PaymentConfigurationsController extends BaseController
         $pc_infos = $this->paymentConfigurations->fetchById($params['pc_id']);
         try {
             $data = $params['data'];
-            foreach ($data as $k=>$v){
+            foreach ($data as $k => $v) {
                 $params_create = [
                     'pc_xref_pa_id' => $v['pa_id'],
                     'pc_project' => $pc_infos['pc_project'],
                     'pc_country' => $pc_infos['pc_country'],
                     'pc_city' => $pc_infos['pc_city'],
                     'pc_service' => $pc_infos['pc_service'],
-                    'pc_tech_deleted' => !$v['is_show'],
+                    'pc_is_actived' => $v['is_show'],
                 ];
                 $this->paymentConfigurations->save($params_create);
             }

@@ -62,7 +62,8 @@ class PaymentAccountsRepositories
         return $this->paymentAccounts->find($paymentAccounts->pa_id);
     }
 
-    public function findBy($attributes) {
+    public function findBy($attributes)
+    {
         $result = $this->paymentAccounts;
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);

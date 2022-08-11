@@ -14,9 +14,9 @@ class PaymentConfigurationsService
     protected $dbConnectionService;
 
     public function __construct(
-        PaymentAccountsRepositories $paymentAccountsRepositories,
+        PaymentAccountsRepositories       $paymentAccountsRepositories,
         PaymentConfigurationsRepositories $paymentConfigurationsRepositories,
-        DbConnectionService $dbConnectionService
+        DbConnectionService               $dbConnectionService
     )
     {
         $this->paymentAccountsRepositories = $paymentAccountsRepositories;
@@ -25,22 +25,25 @@ class PaymentConfigurationsService
         $this->paymentConfigurationsRepositories->setConnection($dbConnectionService->getConnection());
     }
 
-    public function save($params) {
-        $where = ['pc_xref_pa_id'=>$params['pc_xref_pa_id'], 'pc_project'=>$params['pc_project'], 'pc_country'=>$params['pc_country'], 'pc_city'=>$params['pc_city'], 'pc_service'=>$params['pc_service']];
+    public function save($params)
+    {
+        $where = ['pc_xref_pa_id' => $params['pc_xref_pa_id'], 'pc_project' => $params['pc_project'], 'pc_country' => $params['pc_country'], 'pc_city' => $params['pc_city'], 'pc_service' => $params['pc_service']];
         return $this->paymentConfigurationsRepositories->update($where, $params);
     }
 
-    public function fetch($id) {
+    public function fetch($id)
+    {
         $res = $this->fetchById($id);
         $pc_project = $res['pc_project'];
         $pc_country = $res['pc_country'];
         $pc_city = $res['pc_city'];
         $pc_service = $res['pc_service'];
-        $where = ['pc_project'=>$pc_project, 'pc_country'=>$pc_country, 'pc_city'=>$pc_city, 'pc_service'=>$pc_service];
+        $where = ['pc_project' => $pc_project, 'pc_country' => $pc_country, 'pc_city' => $pc_city, 'pc_service' => $pc_service];
         return $this->paymentConfigurationsRepositories->fetchSelect($where);
     }
 
-    public function fetchById($id) {
+    public function fetchById($id)
+    {
         return $this->paymentConfigurationsRepositories->fetchById($id);
     }
 
@@ -53,17 +56,17 @@ class PaymentConfigurationsService
         ]);
         foreach ($payment_configurations->toArray() as $payment_config) {
             $country = $payment_config['pc_country'];
-            $city    = $payment_config['pc_city'];
+            $city = $payment_config['pc_city'];
             $res_key = $country . '-' . $city;
             $account = $this->paymentAccountsRepositories->fetch(['pa_id' => $payment_config['pc_xref_pa_id']]);
-            if($account){
+            if ($account) {
                 if (isset($result[$res_key])) {
                     $result[$res_key]['service'] = $result[$res_key]['service'] . ', ' . $account->pa_name;
                 } else {
                     $payment = [
                         'pc_id' => $payment_config['pc_id'],
                         'country' => $country,
-                        'city'    => $city,
+                        'city' => $city,
                         'service' => $account->pa_name
                     ];
                     $result[$res_key] = $payment;
@@ -73,34 +76,36 @@ class PaymentConfigurationsService
         return $result;
     }
 
-    public function paymentAccount($params){
+    public function paymentAccount($params)
+    {
         $all_payment_config = $this->paymentAccountsRepositories->fetchSelect()->toArray();
         $exist_payment_config = $this->getExistsConfigs($params['pc_id']);
         $res = array_filter($all_payment_config, function ($v, $k) use ($exist_payment_config) {
             foreach ($exist_payment_config as $key => $val) {
-                if ($val['pa_name'].$val['pa_type'] == $v['pa_name'].$v['pa_type']) {
+                if ($val['pa_name'] . $val['pa_type'] == $v['pa_name'] . $v['pa_type']) {
                     return false;
                 }
             }
             return true;
         }, ARRAY_FILTER_USE_BOTH);
         $payment_config = array_values($res);
-        foreach ($payment_config as $k=>$v){
-            $payment_config[$k]['pa_name_type'] = $v['pa_name'].' ('.$v['pa_type'].')';
+        foreach ($payment_config as $k => $v) {
+            $payment_config[$k]['pa_name_type'] = $v['pa_name'] . ' (' . $v['pa_type'] . ')';
         }
         return $payment_config;
     }
 
-    public function getExistsConfigs($pc_id){
+    public function getExistsConfigs($pc_id)
+    {
         $payment_configs = $this->fetch($pc_id);
         $paymentConfig = [];
-        foreach ($payment_configs as $k=>$v){
+        foreach ($payment_configs as $k => $v) {
             $res = $this->paymentAccountsRepositories->fetchById($v['pc_xref_pa_id']);
-            if($res['pa_id']){
+            if ($res['pa_id']) {
                 $paymentConfig['pa_id'] = $res['pa_id'];
                 $paymentConfig['pa_name'] = $res['pa_name'];
                 $paymentConfig['pa_type'] = $res['pa_type'];
-                $paymentConfig['is_show'] = $v['pc_tech_deleted'] ? false : true;
+                $paymentConfig['is_show'] = $v['pc_is_actived'];
                 $payConfig[] = $paymentConfig;
             }
         }

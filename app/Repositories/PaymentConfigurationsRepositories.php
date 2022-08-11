@@ -52,10 +52,10 @@ class PaymentConfigurationsRepositories
     {
         $PaymentConfigurationsInfo = $this->paymentConfigurations->where($where)->first();
         $pc_xref_pa_id = $where['pc_xref_pa_id'];
-        if (blank($PaymentConfigurationsInfo)) {
+        if (!$PaymentConfigurationsInfo) {
             $where['pc_xref_pa_id'] = '';
             $PaymentConfigurationsInfo = $this->paymentConfigurations->where($where)->first();
-            if (blank($PaymentConfigurationsInfo)) {
+            if (!$PaymentConfigurationsInfo) {
                 $where['pc_xref_pa_id'] = $pc_xref_pa_id;
                 return $this->create($attributes);
             }
@@ -66,7 +66,8 @@ class PaymentConfigurationsRepositories
         return $PaymentConfigurationsInfo->save();
     }
 
-    public function findBy($attributes) {
+    public function findBy($attributes)
+    {
         $result = $this->paymentConfigurations;
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);

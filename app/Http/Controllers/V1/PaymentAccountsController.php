@@ -15,6 +15,26 @@ class PaymentAccountsController extends BaseController
         $this->paymentAccounts = $paymentAccounts;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/payment-gateway-field-list",
+     *     tags={"Payment API"},
+     *     description="Get field details for all payment accounts.",
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the payment_accounts information",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="payment_accounts not found"
+     *      ),
+     * )
+     */
     public function getPaymentGatewayFieldList()
     {
         $fieldList = [];

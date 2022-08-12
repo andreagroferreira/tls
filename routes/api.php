@@ -135,4 +135,11 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('payment-gateway-field-list', 'PaymentAccountsController@getPaymentGatewayFieldList');
     $router->get('payment-account/{pa_id}', 'PaymentAccountsController@fetch');
     $router->put('payment-account/{pa_id}', 'PaymentAccountsController@update');
+
+    // payment configurations api
+    $router->get('payment-configurations-list', 'PaymentConfigurationsController@fetchList');
+    $router->put('update-payment-account/{pa_id}', 'PaymentAccountsController@update');
+    $router->get('location-available-accounts', 'PaymentConfigurationsController@getPaymentAccounts');
+    $router->get('location-config', 'PaymentConfigurationsController@getPaymentExistsConfig');
+    $router->post('payment-config', 'PaymentConfigurationsController@addPaymentConfig');
 });

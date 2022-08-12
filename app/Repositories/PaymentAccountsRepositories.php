@@ -33,6 +33,14 @@ class PaymentAccountsRepositories
             ->first();
     }
 
+    public function fetchSelect($field = '*')
+    {
+        return $this->paymentAccounts
+            ->select($field)
+            ->orderByDesc('pa_id')
+            ->get();
+    }
+
     public function create($attributes)
     {
         return $this->paymentAccounts->create($attributes);
@@ -54,11 +62,17 @@ class PaymentAccountsRepositories
         return $this->paymentAccounts->find($paymentAccounts->pa_id);
     }
 
-    public function findBy($attributes) {
+    public function findBy($attributes)
+    {
         $result = $this->paymentAccounts;
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);
         }
         return $result->get();
+    }
+
+    public function fetchById($id)
+    {
+        return $this->paymentAccounts->find($id);
     }
 }

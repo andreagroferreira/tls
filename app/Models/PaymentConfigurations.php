@@ -21,5 +21,6 @@ class PaymentConfigurations extends Model
         'pc_city',
         'pc_service',
         'pc_tech_deleted',
+        'pc_is_actived',
     ];
 }

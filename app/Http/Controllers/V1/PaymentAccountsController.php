@@ -98,4 +98,46 @@ class PaymentAccountsController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/location-available-accounts",
+     *     tags={"Payment API"},
+     *     description="Get the paymentgateway list",
+     *     @OA\Parameter(
+     *          name="pc_id",
+     *          in="query",
+     *          description="payment_configurations",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="10"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the paymentgateway result list",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      )
+     * )
+     */
+    public function getPaymentAccounts(Request $request)
+    {
+        $params = [
+            'pc_id' => $request->get('pc_id'),
+        ];
+        $validator = validator($params, [
+            'pc_id' => 'integer'
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+        try {
+            $res = $this->paymentAccountsService->paymentAccount($params);
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
 }

@@ -12,7 +12,7 @@ class PaymentAccountsController extends BaseController
 
     public function __construct(PaymentAccountsService $paymentAccounts)
     {
-        $this->paymentAccounts = $paymentAccounts;
+        $this->paymentAccountsService = $paymentAccounts;
     }
 
     /**
@@ -101,7 +101,7 @@ class PaymentAccountsController extends BaseController
         }
 
         try {
-            $result = $this->paymentAccounts->fetch($validator->validated());
+            $result = $this->paymentAccountsService->fetch($validator->validated());
             if ($result) {
                 return $this->sendResponse($result);
             } else {
@@ -179,7 +179,7 @@ class PaymentAccountsController extends BaseController
         }
 
         try {
-            $result = $this->paymentAccounts->update($params);
+            $result = $this->paymentAccountsService->update($params);
             return response()->json($result, 200);
         } catch (\Exception $e) {
             return response()->json([

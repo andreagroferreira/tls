@@ -127,6 +127,11 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('recommendation-configs', 'RecommendationConfigController@fetch');
     $router->get('recommendation-config/{rc_id}', 'RecommendationConfigController@download');
 
+    // payment accounts api
+    $router->get('payment-gateway-field-list', 'PaymentAccountsController@getPaymentGatewayFieldList');
+    $router->get('payment-account/{pa_id}', 'PaymentAccountsController@fetch');
+    $router->put('payment-account/{pa_id}', 'PaymentAccountsController@update');
+
     // payment configurations api
     $router->get('payment-configurations-list', 'PaymentConfigurationsController@fetchList');
     $router->get('location-config', 'PaymentConfigurationsController@getPaymentExistsConfig');
@@ -138,4 +143,3 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('location-available-accounts', 'PaymentAccountsController@getPaymentAccounts');
 
 });
-

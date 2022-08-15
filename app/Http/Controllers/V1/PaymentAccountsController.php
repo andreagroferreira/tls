@@ -6,21 +6,115 @@ use App\Services\PaymentAccountsService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-
 class PaymentAccountsController extends BaseController
 {
-    private $paymentAccountsService;
+    protected $paymentAccounts;
 
-    public function __construct(
-        PaymentAccountsService $paymentAccountsService
-    )
+    public function __construct(PaymentAccountsService $paymentAccounts)
     {
-        $this->paymentAccountsService = $paymentAccountsService;
+        $this->paymentAccounts = $paymentAccounts;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/payment-gateway-field-list",
+     *     tags={"Payment API"},
+     *     description="Get field details for all payment accounts.",
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the payment_accounts information",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="payment_accounts not found"
+     *      ),
+     * )
+     */
+    public function getPaymentGatewayFieldList()
+    {
+        $fieldList = [];
+        foreach (config('payment_gateway_accounts') as $key => $value) {
+            $fieldList[$key]['label'] = $value['label'];
+            foreach ($value as $env => $field) {
+                if (is_array($field) && $env === 'sandbox') {
+                    $fieldList[$key]['sandbox'] = array_filter($field, function ($v){
+                        return $v === null;
+                    });
+                } elseif($env === 'prod') {
+                    $fieldList[$key]['prod']    = array_filter($field, function ($v){
+                        return $v === null;
+                    });
+                }
+            }
+        }
+
+        try{
+            return $this->sendResponse($fieldList);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/payment-account/{pa_id}",
+     *     tags={"Payment API"},
+     *     description="get the payment_accounts details according to pa_id",
+     *      @OA\Parameter(
+     *          name="pa_id",
+     *          in="path",
+     *          description="the payment_accounts pa_id",
+     *          required=true,
+     *          @OA\Schema(type="integer", example="10000"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the payment_accounts information",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="payment_accounts not found"
+     *      ),
+     * )
+     */
+    public function fetch(Request $request)
+    {
+        $params = [
+            'pa_id' => $request->route('pa_id')
+        ];
+        $validator = validator($params, [
+            'pa_id' => 'required|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $result = $this->paymentAccounts->fetch($validator->validated());
+            if ($result) {
+                return $this->sendResponse($result);
+            } else {
+                return $this->sendEmptyResponse(204);
+            }
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
     }
 
     /**
      * @OA\PUT(
-     *     path="/api/v1/payment-configurations",
+     *     path="/api/v1/payment-account",
      *     tags={"Payment API"},
      *     description="update a payment_accounts",
      *      @OA\Parameter(
@@ -67,13 +161,11 @@ class PaymentAccountsController extends BaseController
         $pa_info = is_array($request->input('pa_info')) ? json_encode($request->input('pa_info')) : $request->input('pa_info');
         $params = [
             'pa_id' => $request->route('pa_id'),
-            'pa_type' => $request->input('pa_type'),
             'pa_name' => $request->input('pa_name'),
             'pa_info' => $pa_info,
         ];
         $validator = validator($params, [
             'pa_id' => 'required|integer',
-            'pa_type' => Rule::in(['sandbox', 'prod']),
             'pa_name' => 'required|string',
             'pa_info' => [
                 'required',
@@ -87,7 +179,7 @@ class PaymentAccountsController extends BaseController
         }
 
         try {
-            $result = $this->paymentAccountsService->update($params);
+            $result = $this->paymentAccounts->update($params);
             return response()->json($result, 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -97,47 +189,4 @@ class PaymentAccountsController extends BaseController
             ], 400);
         }
     }
-
-    /**
-     * @OA\Get(
-     *     path="/api/v1/location-available-accounts",
-     *     tags={"Payment API"},
-     *     description="Get the paymentgateway list",
-     *     @OA\Parameter(
-     *          name="pc_id",
-     *          in="query",
-     *          description="payment_configurations",
-     *          required=false,
-     *          @OA\Schema(type="integer", example="10"),
-     *      ),
-     *      @OA\Response(
-     *          response="200",
-     *          description="get the paymentgateway result list",
-     *          @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response="400",
-     *          description="Error: bad request"
-     *      )
-     * )
-     */
-    public function getPaymentAccounts(Request $request)
-    {
-        $params = [
-            'pc_id' => $request->get('pc_id'),
-        ];
-        $validator = validator($params, [
-            'pc_id' => 'integer'
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError('params error', $validator->errors()->first());
-        }
-        try {
-            $res = $this->paymentAccountsService->paymentAccount($params);
-            return $this->sendResponse($res);
-        } catch (\Exception $e) {
-            return $this->sendError('unknown_error', $e->getMessage());
-        }
-    }
-
 }

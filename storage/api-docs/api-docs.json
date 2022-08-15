@@ -130,16 +130,6 @@
                             "type": "string",
                             "example": "false"
                         }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "description": "number of recommended services, default for 6",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": "6"
-                        }
                     }
                 ],
                 "responses": {
@@ -1288,6 +1278,151 @@
                 }
             }
         },
+        "/api/v1/payment-account/{pa_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get the payment_accounts details according to pa_id",
+                "operationId": "bf05cb389e0defec96b7e4747d9b5792",
+                "parameters": [
+                    {
+                        "name": "pa_id",
+                        "in": "path",
+                        "description": "the payment_accounts pa_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the payment_accounts information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    },
+                    "404": {
+                        "description": "payment_accounts not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-account": {
+            "put": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "update a payment_accounts",
+                "operationId": "1d50a84183435a6d0ac79a3a9291d8f6",
+                "parameters": [
+                    {
+                        "name": "psp_id",
+                        "in": "query",
+                        "description": "payment_accounts pa_xref_psp_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    },
+                    {
+                        "name": "pa_name",
+                        "in": "query",
+                        "description": "payment_accounts pa_name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "cmi"
+                        }
+                    },
+                    {
+                        "name": "pa_type",
+                        "in": "query",
+                        "description": "payment_accounts pa_type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "[sandbox, prod]"
+                        }
+                    },
+                    {
+                        "name": "pa_info",
+                        "in": "query",
+                        "description": "payment_accounts pa_info.",
+                        "required": true,
+                        "schema": {
+                            "type": "json",
+                            "example": ""
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "payment_accounts update success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-configurations-list": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get a payment_configurations",
+                "operationId": "ccbd970bdf8fc42bb6c9e0212e21e285",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "query",
+                        "description": "define which client you want to fetch",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "de"
+                        }
+                    },
+                    {
+                        "name": "service_type",
+                        "in": "query",
+                        "description": "payment_configurations pc_service",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "tls"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "payment_accounts update success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/paysoft/redirto": {
             "post": {
                 "tags": [
@@ -1622,6 +1757,128 @@
                     },
                     "400": {
                         "description": "Error: bad request, get volume failed"
+                    }
+                }
+            }
+        },
+        "/api/v1/recommendation-config-upload": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "upload csv file to table recommendataion_config",
+                "operationId": "955fb9f69169335389f3b82c3516bb2f",
+                "parameters": [
+                    {
+                        "name": "files",
+                        "in": "query",
+                        "description": "upload the file name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "recommendataion_config.csv"
+                        }
+                    },
+                    {
+                        "name": "uploaded_by",
+                        "in": "query",
+                        "description": "log on user",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "hua"
+                        }
+                    },
+                    {
+                        "name": "comment",
+                        "in": "query",
+                        "description": "user comments",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "hua"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "return upload success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/recommendation-configs": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get the top10 recommendation rule files",
+                "operationId": "dc36b1442f8c948eb454849a839700c9",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "number of recommendataion_config, default for 10",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the recommendation result list",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/recommendation-config/{rc_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Download the recommendation config files by id",
+                "operationId": "615591101845121c67f16aa7b9a70249",
+                "parameters": [
+                    {
+                        "name": "rc_id",
+                        "in": "path",
+                        "description": "the id for this file",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Download the recommendation config",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
                     }
                 }
             }
@@ -2384,6 +2641,83 @@
                 "responses": {
                     "200": {
                         "description": "get the transaction",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/yookassa/redirto": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from globaliris",
+                "operationId": "b21f7ee80bc871070a1a82891b19f046",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/yookassa/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paygate",
+                "operationId": "3e5fe19706581337859bf4bdda72ef34",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/yookassa/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from paysoft",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
                         "content": {
                             "application/json": {
                                 "schema": {}

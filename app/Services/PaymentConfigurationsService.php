@@ -93,6 +93,8 @@ class PaymentConfigurationsService
                 $payConfig[] = $paymentConfig;
             }
         }
+        $ids = array_column($payConfig, 'pa_name');
+        array_multisort($ids, SORT_ASC, $payConfig);
         return $payConfig;
     }
 

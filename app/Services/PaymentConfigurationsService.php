@@ -24,6 +24,10 @@ class PaymentConfigurationsService
         $this->paymentConfigurationsRepositories->setConnection($dbConnectionService->getConnection());
     }
 
+    public function create($params) {
+        return $this->paymentConfigurationsRepositories->create($params);
+    }
+
     public function save($params)
     {
         $where = ['pc_xref_pa_id' => $params['pc_xref_pa_id'], 'pc_project' => $params['pc_project'], 'pc_country' => $params['pc_country'], 'pc_city' => $params['pc_city'], 'pc_service' => $params['pc_service']];
@@ -73,25 +77,6 @@ class PaymentConfigurationsService
             }
         }
         return $result;
-    }
-
-    public function paymentAccount($params)
-    {
-        $all_payment_config = $this->paymentAccountsRepositories->fetchSelect()->toArray();
-        $exist_payment_config = $this->getExistsConfigs($params['pc_id']);
-        $res = array_filter($all_payment_config, function ($v, $k) use ($exist_payment_config) {
-            foreach ($exist_payment_config as $key => $val) {
-                if ($val['pa_name'] . $val['pa_type'] == $v['pa_name'] . $v['pa_type']) {
-                    return false;
-                }
-            }
-            return true;
-        }, ARRAY_FILTER_USE_BOTH);
-        $payment_config = array_values($res);
-        foreach ($payment_config as $k => $v) {
-            $payment_config[$k]['pa_name_type'] = $v['pa_name'] . ' (' . $v['pa_type'] . ')';
-        }
-        return $payment_config;
     }
 
     public function getExistsConfigs($pc_id)

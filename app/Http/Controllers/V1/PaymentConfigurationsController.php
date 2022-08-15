@@ -37,7 +37,7 @@ class PaymentConfigurationsController extends BaseController
      *      ),
      *      @OA\Response(
      *          response="200",
-     *          description="payment_accounts update success",
+     *          description="payment_configurations update success",
      *          @OA\JsonContent(),
      *      ),
      *      @OA\Response(
@@ -62,48 +62,6 @@ class PaymentConfigurationsController extends BaseController
         }
         try {
             return $this->sendResponse($this->paymentConfigurations->fetchList($params));
-        } catch (\Exception $e) {
-            return $this->sendError('unknown_error', $e->getMessage());
-        }
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/api/v1/location-available-accounts",
-     *     tags={"Payment API"},
-     *     description="Get the paymentgateway list",
-     *     @OA\Parameter(
-     *          name="pc_id",
-     *          in="query",
-     *          description="payment_configurations",
-     *          required=false,
-     *          @OA\Schema(type="integer", example="10"),
-     *      ),
-     *      @OA\Response(
-     *          response="200",
-     *          description="get the paymentgateway result list",
-     *          @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response="400",
-     *          description="Error: bad request"
-     *      )
-     * )
-     */
-    public function getPaymentAccounts(Request $request)
-    {
-        try {
-            $params = [
-                'pc_id' => $request->get('pc_id'),
-            ];
-            $validator = validator($params, [
-                'pc_id' => 'integer'
-            ]);
-            if ($validator->fails()) {
-                return $this->sendError('params error', $validator->errors()->first());
-            }
-            $res = $this->paymentConfigurations->paymentAccount($params);
-            return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
@@ -213,6 +171,73 @@ class PaymentConfigurationsController extends BaseController
                 'status' => 'success',
                 'message' => 'Save successful!'
             ]);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+
+    /**
+     * @OA\POST (
+     *     path="/api/v1/payment-configurations",
+     *     tags={"Payment API"},
+     *     description="create a payment_configurations",
+     *     @OA\Parameter(
+     *          name="client",
+     *          in="query",
+     *          description="define which client you want to fetch",
+     *          required=true,
+     *          @OA\Schema(type="string", example="de"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="country",
+     *          in="query",
+     *          description="define which country you want to fetch",
+     *          required=true,
+     *          @OA\Schema(type="string", example="eg"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="city",
+     *          in="query",
+     *          description="define which city you want to fetch",
+     *          required=true,
+     *          @OA\Schema(type="string", example="CAI"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="service",
+     *          in="query",
+     *          description="payment_configurations pc_service",
+     *          required=true,
+     *          @OA\Schema(type="string", example="tls"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="payment_configurations create success",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function create(Request $request) {
+        $params    = [
+            'pc_project' => $request->input('client'),
+            'pc_country' => $request->input('country'),
+            'pc_city'    => $request->input('city'),
+            'pc_service' => $request->input('service')
+        ];
+        $validator = validator($params, [
+            'pc_project' => 'required|string',
+            'pc_country' => 'required|string',
+            'pc_city'    => 'required|string',
+            'pc_service' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+        try {
+            return $this->sendResponse($this->paymentConfigurations->create($params));
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }

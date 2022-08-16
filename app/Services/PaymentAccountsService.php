@@ -19,8 +19,9 @@ class PaymentAccountsService
     )
     {
         $this->paymentAccountsRepositories = $paymentAccountsRepositories;
-        $this->paymentServiceProvidersRepositories = $paymentServiceProvidersRepositories;
         $this->paymentAccountsRepositories->setConnection($dbConnectionService->getConnection());
+        $this->paymentServiceProvidersRepositories = $paymentServiceProvidersRepositories;
+        $this->paymentServiceProvidersRepositories->setConnection($dbConnectionService->getConnection());
     }
 
     public function update($params): object

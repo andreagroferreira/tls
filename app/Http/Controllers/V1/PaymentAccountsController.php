@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 class PaymentAccountsController extends BaseController
 {
-    protected $paymentAccounts;
+    protected $paymentAccountsService;
 
     public function __construct(PaymentAccountsService $paymentAccounts)
     {
@@ -158,11 +158,10 @@ class PaymentAccountsController extends BaseController
      */
     public function update(Request $request)
     {
-        $pa_info = is_array($request->input('pa_info')) ? json_encode($request->input('pa_info')) : $request->input('pa_info');
         $params = [
             'pa_id' => $request->route('pa_id'),
             'pa_name' => $request->input('pa_name'),
-            'pa_info' => $pa_info,
+            'pa_info' => json_encode($request->input('pa_info')),
         ];
         $validator = validator($params, [
             'pa_id' => 'required|integer',

@@ -24,13 +24,13 @@ class RecommendationConfigController extends BaseController
      * @OA\Post(
      *     path="/api/v1/recommendation-config-upload",
      *     tags={"Payment API"},
-     *     description="upload csv file to table recommendataion_config",
+     *     description="upload csv file to table recommendation_config",
      *      @OA\Parameter(
      *          name="files",
      *          in="query",
      *          description="upload the file name",
      *          required=true,
-     *          @OA\Schema(type="string", example="recommendataion_config.csv"),
+     *          @OA\Schema(type="string", example="recommendation_config.csv"),
      *      ),
      *     @OA\Parameter(
      *          name="uploaded_by",
@@ -152,7 +152,7 @@ class RecommendationConfigController extends BaseController
      *     @OA\Parameter(
      *          name="limit",
      *          in="query",
-     *          description="number of recommendataion_config, default for 10",
+     *          description="number of recommendation_config, default for 10",
      *          required=false,
      *          @OA\Schema(type="integer", example="10"),
      *      ),

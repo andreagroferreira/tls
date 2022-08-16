@@ -72,14 +72,21 @@ class PaymentConfigurationsService
                 $result[$res_key] = $payment;
             } else {
                 if (isset($result[$res_key])) {
-                    $result[$res_key]['service'][$account->pa_id] = $account->pa_name;;
+                    $result[$res_key]['service'][] = $this->getPaymentData($account);
                 } else {
-                    $payment['service'][$account->pa_id] = $account->pa_name;
+                    $payment['service'][] = $this->getPaymentData($account);
                     $result[$res_key] = $payment;
                 }
             }
         }
         return $result;
+    }
+
+    private function getPaymentData($account) {
+        return [
+            'pa_id'   => $account->pa_id,
+            'pa_name' => $account->pa_name
+        ];
     }
 
     public function getExistsConfigs($pc_id)

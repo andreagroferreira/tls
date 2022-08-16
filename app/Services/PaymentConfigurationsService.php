@@ -59,24 +59,34 @@ class PaymentConfigurationsService
         ]);
         foreach ($payment_configurations->toArray() as $payment_config) {
             $country = $payment_config['pc_country'];
-            $city = $payment_config['pc_city'];
+            $city    = $payment_config['pc_city'];
             $res_key = $country . '-' . $city;
             $account = $this->paymentAccountsRepositories->fetch(['pa_id' => $payment_config['pc_xref_pa_id']]);
-            if ($account) {
+            $payment = [
+                'pc_id'   => $payment_config['pc_id'],
+                'country' => $country,
+                'city'    => $city,
+                'service' => []
+            ];
+            if (empty($account)) {
+                $result[$res_key] = $payment;
+            } else {
                 if (isset($result[$res_key])) {
-                    $result[$res_key]['service'] = $result[$res_key]['service'] . ', ' . $account->pa_name;
+                    $result[$res_key]['service'][] = $this->getPaymentData($account);
                 } else {
-                    $payment = [
-                        'pc_id' => $payment_config['pc_id'],
-                        'country' => $country,
-                        'city' => $city,
-                        'service' => $account->pa_name
-                    ];
+                    $payment['service'][] = $this->getPaymentData($account);
                     $result[$res_key] = $payment;
                 }
             }
         }
         return $result;
+    }
+
+    private function getPaymentData($account) {
+        return [
+            'pa_id'   => $account->pa_id,
+            'pa_name' => $account->pa_name
+        ];
     }
 
     public function getExistsConfigs($pc_id)

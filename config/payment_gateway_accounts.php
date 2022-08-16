@@ -5,8 +5,8 @@ return [
         'common'  => [
             'env' => 'live',
             'activated' => true,
-            'product_code' => env('ALIPAY_PRODUCT_CODE'),
-            'method' => env('ALIPAY_METHOD'),
+            'product_code' => 'FAST_INSTANT_TRADE_PAY',
+            'method' => 'alipay.trade.page.pay',
             'return_url'  => '/alipay/return',
             'notify_url'  => '/alipay/notify',
         ],
@@ -57,16 +57,17 @@ return [
             'txn_fee_rate' => '0',
             'txn_fee_extra' => '0',
             'min_fraction_digits' => '2',
+            'language' => 'FR',
         ],
         'sandbox' => [
-//            'host' => env('ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST'),
-            'host' => env('BUNDLE_DB_HOSTNAME'),
+            'host' => 'https://test.satim.dz',
             'user_name' => null,
             'password' => null,
             'terminal_id' => null,
         ],
         'prod' => [
-            'host' => null,
+            // TODO: To be completed
+            'host' => 'test', // env('ENVPAY_BNP_PARIBAS_dzALL2fr_HOST')
             'user_name' => null,
             'password' => null,
             'terminal_id' => null,
@@ -271,13 +272,14 @@ return [
             'return_url' => '/paysoft/return',
         ],
         'sandbox' => [
-            'host' => env('ENVPAY_PAYSOFT_COMMON_SANDBOX_HOST'),
+            'host' => 'https://lmi.paysoft.solutions',
             'merchant_id' => null,
             'signature_algorithm' => null,
             'signature_secret_key' => null,
         ],
         'prod' => [
-            'host' => env('ENVPAY_PAYSOFT_uaKBP2pl_HOST'),
+            // TODO: To be completed
+            'host' => 'test', //env('ENVPAY_PAYSOFT_uaKBP2pl_HOST')
             'merchant_id' => null,
             'signature_algorithm' => null,
             'signature_secret_key' => null,
@@ -315,12 +317,13 @@ return [
             'return_url' => '/switch/return',
         ],
         'sandbox' => [
-            'host' => env('ENVPAY_SWITCH_COMMON_SANDBOX_HOST'),
+            'host' => 'https://test.oppwa.com',
             'entity_id' => null,
             'access_token' => null
         ],
         'prod' => [
-            'host' => env('ENVPAY_SWITCH_iqAll2be_HOST'),
+            // TODO: To be completed
+            'host' => 'test', // env('ENVPAY_SWITCH_iqAll2be_HOST')
             'entity_id' => null,
             'access_token' => null
         ]
@@ -343,8 +346,8 @@ return [
             'accessKey'     => null,
             'clientID'      => null,
             'clientSecret'  => null,
-            'oauthHost'     => env("ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST"),
-            'queryStatusHost'=> env('ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST'),
+            'oauthHost'     => 'https://developer.tingg.africa/checkout/v2/custom/oauth/token',
+            'queryStatusHost'=> 'https://developer.tingg.africa/checkout/v2/custom/requests/query-status',
         ],
         'prod'    => [
             'host'          => 'https://online.tingg.africa/v2/express/',
@@ -355,8 +358,8 @@ return [
             'accessKey'     => null,
             'clientID'      => null,
             'clientSecret'  => null,
-            'oauthHost'     => env('ENVPAY_TINGG_COMMON_OAUTH_HOST'),'',
-            'queryStatusHost'=> env('ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST'),
+            'oauthHost'     => 'https://online.tingg.africa/v2/custom/oauth/token',
+            'queryStatusHost'=> 'https://online.tingg.africa/v2/custom/requests/query-status',
         ]
     ],
 

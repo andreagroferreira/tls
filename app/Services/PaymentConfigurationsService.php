@@ -94,17 +94,21 @@ class PaymentConfigurationsService
         $payment_configs = $this->fetch($pc_id);
         $paymentConfig = [];
         foreach ($payment_configs as $k => $v) {
-            $res = $this->paymentAccountsRepositories->fetchById($v['pc_xref_pa_id']);
-            if ($res['pa_id']) {
-                $paymentConfig['pa_id'] = $res['pa_id'];
-                $paymentConfig['pa_name'] = $res['pa_name'];
-                $paymentConfig['pa_type'] = $res['pa_type'];
-                $paymentConfig['is_show'] = $v['pc_is_actived'];
-                $payConfig[] = $paymentConfig;
+            if($v['pc_xref_pa_id']){
+                $res = $this->paymentAccountsRepositories->fetchById($v['pc_xref_pa_id']);
+                if ($res['pa_id']) {
+                    $paymentConfig['pa_id'] = $res['pa_id'];
+                    $paymentConfig['pa_name'] = $res['pa_name'];
+                    $paymentConfig['pa_type'] = $res['pa_type'];
+                    $paymentConfig['is_show'] = $v['pc_is_actived'];
+                    $payConfig[] = $paymentConfig;
+                }
             }
         }
-        $pa_name = array_column($payConfig, 'pa_name');
-        array_multisort($pa_name, SORT_ASC, $payConfig);
+        if($payConfig){
+            $pa_name = array_column($payConfig, 'pa_name');
+            array_multisort($pa_name, SORT_ASC, $payConfig);
+        }
         return $payConfig;
     }
 

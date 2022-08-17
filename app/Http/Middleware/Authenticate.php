@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\KeycloakService;
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 
@@ -22,10 +21,9 @@ class Authenticate
      * @param  \Illuminate\Contracts\Auth\Factory  $auth
      * @return void
      */
-    public function __construct(Auth $auth, KeycloakService $keycloakService)
+    public function __construct(Auth $auth)
     {
         $this->auth = $auth;
-        $this->keycloakService = $keycloakService;
     }
 
     /**

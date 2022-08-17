@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\KeycloakService;
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 
@@ -13,6 +14,7 @@ class Authenticate
      * @var \Illuminate\Contracts\Auth\Factory
      */
     protected $auth;
+    private $ignoreIssuerAuth = [];
 
     /**
      * Create a new middleware instance.
@@ -20,9 +22,10 @@ class Authenticate
      * @param  \Illuminate\Contracts\Auth\Factory  $auth
      * @return void
      */
-    public function __construct(Auth $auth)
+    public function __construct(Auth $auth, KeycloakService $keycloakService)
     {
         $this->auth = $auth;
+        $this->keycloakService = $keycloakService;
     }
 
     /**
@@ -30,13 +33,34 @@ class Authenticate
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string|null  $guard
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle($request, Closure $next, ...$role)
     {
+        if (env("APP_ENV") == 'testing') {
+            return $next($request);
+        }
+
+        /*
         if ($this->auth->guard($guard)->guest()) {
             return response('Unauthorized.', 401);
+        }
+        */
+
+        if (!is_object($this->auth->user())) {
+            return response('Unauthorized.', 401);
+        }
+        if ($this->auth->user()->token_expired) {
+            return response('Unauthorized.', 401);
+        }
+
+        /* for client project, not need issuer params */
+        if ($request->method() == 'GET' && in_array($request->path(), $this->ignoreIssuerAuth)) {
+            return $next($request);
+        }
+        $check = baseCheck($role, $this->auth->user()->groups);
+        if (!$check) {
+            return response('Unauthorized.', 403);
         }
 
         return $next($request);

@@ -270,7 +270,7 @@
                 "parameters": [
                     {
                         "name": "limit",
-                        "description": "number of recommendataion_config, default for 1",
+                        "description": "number of recommendation_config, default for 1",
                         "in": "path",
                         "required": false,
                         "example": 1

@@ -48,7 +48,6 @@ class AuthServiceProvider extends ServiceProvider
                     $user->login = current(explode('@', $decodedToken->email));
                     $user->resource_access = $decodedToken->resource_access;
                     $user->groups = $decodedToken->groups;
-//                    $user->groups = array_map('trim', $decodedToken->groups, ['/']);
                     $user->token_expired = false;
                 } catch (ExpiredException $e) {
                     $user->token_expired = true;

@@ -128,14 +128,14 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('recommendation-config/{rc_id}', 'RecommendationConfigController@download');
 
     // payment accounts api
-    $router->get('payment-gateway-field-list', ['uses' => 'PaymentAccountsController@getPaymentGatewayFieldList', 'middleware' => 'auth:dev']);
-    $router->get('payment-account/{pa_id}', ['uses' => 'PaymentAccountsController@fetch', 'middleware' => 'auth:dev']);
-    $router->put('payment-account/{pa_id}', ['uses' => 'PaymentAccountsController@update', 'middleware' => 'auth:dev']);
+    $router->get('payment-gateway-field-list', ['uses' => 'PaymentAccountsController@getPaymentGatewayFieldList', 'middleware' => 'auth:dev,manager']);
+    $router->get('payment-account/{pa_id}', ['uses' => 'PaymentAccountsController@fetch', 'middleware' => 'auth:dev,manager']);
+    $router->put('payment-account/{pa_id}', ['uses' => 'PaymentAccountsController@update', 'middleware' => 'auth:dev,manager']);
 
     // payment configurations api
-    $router->get('payment-configurations-list', ['uses' => 'PaymentConfigurationsController@fetchList', 'middleware' => 'auth:dev']);
-    $router->get('location-config', ['uses' => 'PaymentConfigurationsController@getPaymentExistsConfig', 'middleware' => 'auth:dev']);
-    $router->post('payment-config', ['uses' => 'PaymentConfigurationsController@addPaymentConfig', 'middleware' => 'auth:dev']);
-    $router->post('payment-configurations', ['uses' => 'PaymentConfigurationsController@create', 'middleware' => 'auth:dev']);
-    $router->get('location-available-accounts', ['uses' => 'PaymentConfigurationsController@getPaymentAccounts', 'middleware' => 'auth:dev']);
+    $router->get('payment-configurations-list', ['uses' => 'PaymentConfigurationsController@fetchList', 'middleware' => 'auth:dev,manager']);
+    $router->get('location-config', ['uses' => 'PaymentConfigurationsController@getPaymentExistsConfig', 'middleware' => 'auth:dev,manager']);
+    $router->post('payment-config', ['uses' => 'PaymentConfigurationsController@addPaymentConfig', 'middleware' => 'auth:dev,manager']);
+    $router->post('payment-configurations', ['uses' => 'PaymentConfigurationsController@create', 'middleware' => 'auth:dev,manager']);
+    $router->get('location-available-accounts', ['uses' => 'PaymentConfigurationsController@getPaymentAccounts', 'middleware' => 'auth:dev,manager']);
 });

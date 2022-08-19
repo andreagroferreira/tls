@@ -33,6 +33,14 @@ class PaymentServiceProvidersRepositories
             ->first();
     }
 
+    public function fetchAll($field = '*')
+    {
+        return $this->paymentServiceProviders
+            ->select($field)
+            ->where(['psp_tech_deleted' => false])
+            ->get();
+    }
+
     public function create($attributes)
     {
         return $this->paymentServiceProviders->create($attributes);

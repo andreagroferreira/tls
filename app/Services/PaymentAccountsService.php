@@ -45,4 +45,15 @@ class PaymentAccountsService
         return array_merge($paymentAccountsInfo, $paymentServiceProviders->toArray());
     }
 
+    public function fetchPaymentServiceProvidersList(): array
+    {
+        $paymentServiceProviders = $this->paymentServiceProvidersRepositories->fetchAll(['psp_id', 'psp_code', 'psp_name']);
+        return $paymentServiceProviders->toArray();
+    }
+
+    public function create($params): object
+    {
+        return $this->paymentAccountsRepositories->create($params);
+    }
+
 }

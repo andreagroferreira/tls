@@ -188,4 +188,117 @@ class PaymentAccountsController extends BaseController
             ], 400);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/payment-account",
+     *     tags={"Payment API"},
+     *     description="add exists payment account",
+     *      @OA\Parameter(
+     *          name="pa_xref_psp_id",
+     *          in="query",
+     *          description="payment_service_providers id",
+     *          required=true,
+     *          @OA\Schema(type="number", example="2"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="pa_name",
+     *          in="query",
+     *          description="payment_accounts name",
+     *          required=true,
+     *          @OA\Schema(type="string", example="alipay cnBSJ2be prod"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="pa_type",
+     *          in="query",
+     *          description="payment_type option",
+     *          required=true,
+     *          @OA\Schema(type="string", example="prod, sandbox"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="pa_info",
+     *          in="query",
+     *          description="payment_accounts pa_info.",
+     *          required=true,
+     *          @OA\Schema(type="json", example=""),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="return upload success",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      )
+     * )
+     */
+    public function create(Request $request)
+    {
+        $params = [
+            'pa_xref_psp_id' => $request->input('pa_xref_psp_id'),
+            'pa_name' => $request->input('pa_name'),
+            'pa_type' => $request->input('pa_type'),
+            'pa_info' => json_encode($request->input('pa_info')),
+        ];
+        $validator = validator($params, [
+            'pa_xref_psp_id' => 'required|integer',
+            'pa_name' => 'required|string',
+            'pa_type' => 'required|string|in:prod,sandbox',
+            'pa_info' => [
+                'required',
+                'bail',
+                'json',
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $result = $this->paymentAccountsService->create($params);
+            return response()->json($result, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'fail',
+                'error' => 'unknown_error',
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/payment-service-providers",
+     *     tags={"Payment API"},
+     *     description="get the payment_service_providers details",
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the payment_service_providers  information",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="payment_service_providers not found"
+     *      ),
+     * )
+     */
+    public function fetchServiceList(Request $request)
+    {
+        try {
+            $result = $this->paymentAccountsService->fetchPaymentServiceProvidersList();
+            if ($result) {
+                return $this->sendResponse($result);
+            } else {
+                return $this->sendEmptyResponse(204);
+            }
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
 }

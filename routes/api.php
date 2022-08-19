@@ -129,8 +129,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     // payment accounts api
     $router->get('payment-gateway-field-list', 'PaymentAccountsController@getPaymentGatewayFieldList');
-    $router->get('payment-account/{pa_id}', 'PaymentAccountsController@fetch');
-    $router->put('payment-account/{pa_id}', 'PaymentAccountsController@update');
+    $router->get('payment-account/{pa_id}', ['uses' => 'PaymentAccountsController@fetch', 'middleware' => 'auth:dev']);
+    $router->post('payment-account', ['uses' => 'PaymentAccountsController@create', 'middleware' => 'auth:dev']);
+    $router->put('payment-account/{pa_id}', ['uses' => 'PaymentAccountsController@update', 'middleware' => 'auth:dev']);
+    $router->get('payment-service-providers', ['uses' => 'PaymentAccountsController@fetchServiceList', 'middleware' => 'auth:dev']);
 
     // payment configurations api
     $router->get('payment-configurations-list', 'PaymentConfigurationsController@fetchList');

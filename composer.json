@@ -29,6 +29,7 @@
         },
         "files": [
             "app/Helpers/BasicFunctions.php",
+            "app/Helpers/Callers.php",
             "app/Helpers/Cache.php"
         ]
     },

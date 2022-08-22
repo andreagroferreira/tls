@@ -1,8 +1,42 @@
 <?php
+use Illuminate\Support\Facades\Cache;
 
 function get_callback_url(string $uri): string
 {
     return getenv('PAYMENT_SERVICE_DOMAIN') . $uri;
+}
+
+function baseCheck($permission, $groupRole)
+{
+    $resource = [];
+    if (!$permission) {
+        return false;
+    }
+    foreach ($permission as $item) {
+        $resource[] = '/TLSconnect/ww/' . $item;
+    }
+    $response = array_intersect($resource, $groupRole);
+    if (!$response) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function getPublicKey()
+{
+    $cache_key = 'keycloak_public_key';
+    return Cache::remember($cache_key, 60*60*24, function() {
+        $keycloakRealm = app()->make(App\Services\ApiService::class)->callKeycloakApi('get', 'auth/realms/atlas-private-azure');
+        if ($keycloakRealm['status'] == 200) {
+            $public_key_string = wordwrap($keycloakRealm['body']['public_key'], 65, "\n", true);
+            return <<<EOD
+-----BEGIN PUBLIC KEY-----
+$public_key_string
+-----END PUBLIC KEY-----
+EOD;
+        }
+    });
 }
 
 function csv_to_array($filename = '', $delimiter = "\t")

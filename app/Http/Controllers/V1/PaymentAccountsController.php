@@ -236,12 +236,20 @@ class PaymentAccountsController extends BaseController
     public function create(Request $request)
     {
         $params = [
+            'pc_project' => $request->input('pc_project'),
+            'pc_city' => $request->input('pc_city'),
+            'pc_country' => $request->input('pc_country'),
+            'pc_service' => $request->input('pc_service'),
             'pa_xref_psp_id' => $request->input('pa_xref_psp_id'),
             'pa_name' => $request->input('pa_name'),
             'pa_type' => $request->input('pa_type'),
             'pa_info' => json_encode($request->input('pa_info')),
         ];
         $validator = validator($params, [
+            'pc_project' => 'required|string',
+            'pc_city' => 'required|string',
+            'pc_country' => 'required|string',
+            'pc_service' => 'required|string',
             'pa_xref_psp_id' => 'required|integer',
             'pa_name' => 'required|string',
             'pa_type' => 'required|string|in:prod,sandbox',

@@ -66,10 +66,12 @@ class PaymentConfigurationsService
             $result[$res_key]['city']    = $city;
             if (!empty($payment_config['pc_xref_pa_id'])) {
                 $account = $this->paymentAccountsRepositories->fetch(['pa_id' => $payment_config['pc_xref_pa_id']]);
-                $accountData = [
-                    'pa_id'   => $account->pa_id,
-                    'pa_name' => $account->pa_name
-                ];
+                if($account){
+                    $accountData = [
+                        'pa_id'   => $account->pa_id,
+                        'pa_name' => $account->pa_name
+                    ];
+                }
                 if ($payment_config['pc_is_actived']) {
                     $result[$res_key]['service'][] = $accountData;
                 }
@@ -86,6 +88,7 @@ class PaymentConfigurationsService
     {
         $payment_configs = $this->fetch($pc_id);
         $paymentConfig = [];
+        $payConfig = [];
         foreach ($payment_configs as $k => $v) {
             if($v['pc_xref_pa_id']){
                 $res = $this->paymentAccountsRepositories->fetchById($v['pc_xref_pa_id']);

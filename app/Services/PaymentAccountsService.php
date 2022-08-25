@@ -36,7 +36,7 @@ class PaymentAccountsService
             ['pa_id', 'pa_xref_psp_id', 'pa_type', 'pa_name', 'pa_info']
         );
         $paymentAccountsInfo = $paymentAccounts->toArray();
-        $paymentAccountsInfo['pa_info'] = get_object_vars(json_decode($paymentAccounts->toArray()['pa_info']));
+        $paymentAccountsInfo['pa_info'] = empty($paymentAccountsInfo['pa_info']) ? [] : get_object_vars(json_decode($paymentAccountsInfo['pa_info']));
         $paymentServiceProviders = $this->paymentServiceProvidersRepositories->fetch(
             ['psp_id' => $paymentAccounts['pa_xref_psp_id']],
             ['psp_code', 'psp_name']

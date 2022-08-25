@@ -1,5 +1,9 @@
 <?php
 return [
+    'pay_later' => [
+        'label'   => 'pay_later',
+        'return_url' => '/pay_later/return',
+    ],
     'alipay' => [
         'label'   => 'Alipay pay',
         'common'  => [

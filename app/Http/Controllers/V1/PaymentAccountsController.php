@@ -161,16 +161,11 @@ class PaymentAccountsController extends BaseController
         $params = [
             'pa_id' => $request->route('pa_id'),
             'pa_name' => $request->input('pa_name'),
-            'pa_info' => json_encode($request->input('pa_info')),
+            'pa_info' => $request->input('pa_info') ? json_encode($request->input('pa_info')) : '',
         ];
         $validator = validator($params, [
             'pa_id' => 'required|integer',
             'pa_name' => 'required|string',
-            'pa_info' => [
-                'required',
-                'bail',
-                'json',
-            ],
         ]);
 
         if ($validator->fails()) {
@@ -239,18 +234,26 @@ class PaymentAccountsController extends BaseController
             'pa_xref_psp_id' => $request->input('pa_xref_psp_id'),
             'pa_name' => $request->input('pa_name'),
             'pa_type' => $request->input('pa_type'),
-            'pa_info' => json_encode($request->input('pa_info')),
+            'pa_info' => $request->input('pa_info') ? json_encode($request->input('pa_info')) : '',
         ];
-        $validator = validator($params, [
-            'pa_xref_psp_id' => 'required|integer',
-            'pa_name' => 'required|string',
-            'pa_type' => 'required|string|in:prod,sandbox',
-            'pa_info' => [
-                'required',
-                'bail',
-                'json',
-            ],
-        ]);
+        if ($params['pa_type'] === 'pay_later') {
+            $validator = validator($params, [
+                'pa_xref_psp_id' => 'required|integer',
+                'pa_name' => 'required|string',
+                'pa_type' => 'required|string|in:prod,sandbox,pay_later',
+            ]);
+        } else {
+            $validator = validator($params, [
+                'pa_xref_psp_id' => 'required|integer',
+                'pa_name' => 'required|string',
+                'pa_type' => 'required|string|in:prod,sandbox',
+                'pa_info' => [
+                    'required',
+                    'bail',
+                    'json',
+                ],
+            ]);
+        }
 
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());

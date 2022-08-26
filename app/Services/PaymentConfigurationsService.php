@@ -25,7 +25,19 @@ class PaymentConfigurationsService
     }
 
     public function create($params) {
-        return $this->paymentConfigurationsRepositories->create($params);
+        $payment_config = $this->paymentConfigurationsRepositories->fetch($params);
+        if (empty($payment_config)) {
+            $response = $this->paymentConfigurationsRepositories->create($params);
+            $status   = 'success';
+            $message  = $response;
+        } else {
+            $status  = 'error';
+            $message = 'The current data already exists in the database.';
+        }
+        return [
+            'status'  => $status,
+            'message' => $message
+        ];
     }
 
     public function save($params)

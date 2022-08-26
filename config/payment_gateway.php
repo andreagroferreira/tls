@@ -1879,6 +1879,31 @@ return [
                 ]
             ]
         ],
+        'mgTNR2fr'=> [
+            'cybersource' => [
+                'label' => 'Cybersource pay',
+                'common' => [
+                    'env' => 'live',
+                    "currency" => "MGA",
+                    "return_url" => "/cybersource/return",
+                    "notify_url" => "/cybersource/notify"
+                ],
+                'sandbox' => [
+                    "host" => " https://testsecureacceptance.cybersource.com/pay",
+                    "access_key" => env('ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY'),
+                    "profile_id" => env('ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID'),
+                    "transaction_type" => env('ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE'),
+                    "secret_key" => env('ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY')
+                ],
+                'prod' => [
+                    "host" => "https://secureacceptance.cybersource.com/pay",
+                    "access_key" => env('ENVPAY_CYBERSOURCE_ACCESS_KEY'),
+                    "profile_id" => env('ENVPAY_CYBERSOURCE_PROFILE_ID'),
+                    "transaction_type" => env('ENVPAY_CYBERSOURCE_TRANSACTION_TYPE'),
+                    "secret_key" => env('ENVPAY_CYBERSOURCE_SECRET_KEY')
+                ]
+            ],
+        ],
         'tnAll2fr'=> [
             'clictopay' => [
                 'label'   => 'clictopay pay',

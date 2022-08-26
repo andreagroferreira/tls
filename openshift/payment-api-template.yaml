@@ -317,6 +317,22 @@ parameters:
     required: true
   - name: CLICTOPAY_PASSWORD
     required: true
+  - name: ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE
+    required: true
+  - name: ENVPAY_CYBERSOURCE_ACCESS_KEY
+    required: true
+  - name: ENVPAY_CYBERSOURCE_PROFILE_ID
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SECRET_KEY
+    required: true
+  - name: ENVPAY_CYBERSOURCE_TRANSACTION_TYPE
+    required: true
   - name: BANK_PAYMENT_SECRET
     required: true
   - name: PAYMENT_SERVICE_DOMAIN
@@ -873,6 +889,22 @@ objects:
                   value: ${CLICTOPAY_USER_NAME}
                 - name: CLICTOPAY_PASSWORD
                   value: ${CLICTOPAY_PASSWORD}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE}
+                - name: ENVPAY_CYBERSOURCE_ACCESS_KEY
+                  value: ${ENVPAY_CYBERSOURCE_ACCESS_KEY}
+                - name: ENVPAY_CYBERSOURCE_PROFILE_ID
+                  value: ${ENVPAY_CYBERSOURCE_PROFILE_ID}
+                - name: ENVPAY_CYBERSOURCE_SECRET_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SECRET_KEY}
+                - name: ENVPAY_CYBERSOURCE_TRANSACTION_TYPE
+                  value: ${ENVPAY_CYBERSOURCE_TRANSACTION_TYPE}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: SANDBOX_PAYFORT_MERCHANT_ID
@@ -1310,6 +1342,22 @@ objects:
                   value: ${CLICTOPAY_USER_NAME}
                 - name: CLICTOPAY_PASSWORD
                   value: ${CLICTOPAY_PASSWORD}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE}
+                - name: ENVPAY_CYBERSOURCE_ACCESS_KEY
+                  value: ${ENVPAY_CYBERSOURCE_ACCESS_KEY}
+                - name: ENVPAY_CYBERSOURCE_PROFILE_ID
+                  value: ${ENVPAY_CYBERSOURCE_PROFILE_ID}
+                - name: ENVPAY_CYBERSOURCE_SECRET_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SECRET_KEY}
+                - name: ENVPAY_CYBERSOURCE_TRANSACTION_TYPE
+                  value: ${ENVPAY_CYBERSOURCE_TRANSACTION_TYPE}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: PAYMENT_SERVICE_DOMAIN

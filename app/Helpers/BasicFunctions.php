@@ -13,7 +13,7 @@ function baseCheck($permission, $groupRole)
         return false;
     }
     foreach ($permission as $item) {
-        $resource[] = '/TLSconnect/ww/' . $item;
+        $resource[] = '/TLSagent/ww/' . $item;
     }
     $response = array_intersect($resource, $groupRole);
     if (!$response) {

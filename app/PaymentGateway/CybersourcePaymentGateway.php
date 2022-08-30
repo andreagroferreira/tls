@@ -12,7 +12,6 @@ use App\Services\TransactionItemsService;
 use App\Services\ApiService;
 use Illuminate\Support\Facades\Log;
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
-use Illuminate\Support\Facades\Cache;
 
 class CybersourcePaymentGateway implements PaymentGatewayInterface
 {
@@ -68,7 +67,6 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
         $amount   = $translations_data['t_amount'];
         $client   = $translations_data['t_client'];
         $issuer   = $translations_data['t_issuer'];
-        $cacheKey = $this->getCacheKey($orderid, $issuer);
         $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
         $currency           = $translations_data['t_currency'] ?? $cybersource_config['common']['currency'];
         $is_live            = $cybersource_config['common']['env'] == 'live' ? true : false;
@@ -108,7 +106,6 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
         }
         $form_fields['signature'] = base64_encode(hash_hmac('sha256', implode(',', $dataToSign), $secretKey, true));
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
-        Cache::put($cacheKey, $orderid, 5 * 60);
         return [
             'form_method' => 'post',
             'form_action' => $init_hosturl,

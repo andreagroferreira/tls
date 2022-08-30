@@ -132,7 +132,7 @@ class AvsRecommendationService
             $all_avs[] = [
                 'service_name' => null,
                 'sku' => array_get($avs, 'avs.sku'),
-                'vat' => number_format(array_get($avs, 'vat'), 2),
+                'vat' => number_format(array_get($avs, 'vat'), 3),
                 'price' => number_format(array_get($avs, 'price'), 2),
                 'currency' => array_get($avs, 'currency.code'),
                 'avs_description' => null,

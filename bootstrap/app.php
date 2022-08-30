@@ -73,6 +73,9 @@ $app->configure('list_countries');
 $app->configure('payment_gateway');
 $app->configure('translation');
 $app->configure('swagger-lume');
+$app->configure('payment_gateway_accounts');
+$app->configure('keycloak');
+$app->configure('services');
 
 /*
 |--------------------------------------------------------------------------
@@ -85,13 +88,13 @@ $app->configure('swagger-lume');
 |
 */
 
-// $app->middleware([
-//     App\Http\Middleware\ExampleMiddleware::class
-// ]);
+ $app->middleware([
+     App\Http\Middleware\CorsMiddleware::class
+ ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +113,8 @@ $app->configure('swagger-lume');
 
 $app->register(\Illuminate\Redis\RedisServiceProvider::class);
 $app->register(SwaggerLume\ServiceProvider::class);
+$app->register(App\Providers\AuthServiceProvider::class);
+
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

@@ -6,6 +6,7 @@ use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Http\Controllers\V1\BnpController;
 use App\Http\Controllers\V1\ClictopayController;
 use App\Http\Controllers\V1\CmiController;
+use App\Http\Controllers\V1\CybersourceController;
 use App\Http\Controllers\V1\KBankController;
 use App\Http\Controllers\V1\PayBankController;
 use App\Http\Controllers\V1\PayLaterController;
@@ -15,11 +16,13 @@ use App\Http\Controllers\V1\SwitchController;
 use App\Http\Controllers\V1\TinggController;
 use App\Http\Controllers\V1\AlipayController;
 use App\Http\Controllers\V1\BingaController;
+use App\Http\Controllers\V1\YookassaController;
 use App\PaymentGateway\AlipayPaymentGateway;
 use App\PaymentGateway\BingaPaymentGateway;
 use App\PaymentGateway\BnpPaymentGateway;
 use App\PaymentGateway\ClictopayPaymentGateway;
 use App\PaymentGateway\CmiPaymentGateway;
+use App\PaymentGateway\CybersourcePaymentGateway;
 use App\PaymentGateway\KBankPaymentGateway;
 use App\PaymentGateway\PayBankGateway;
 use App\PaymentGateway\PayLaterGateway;
@@ -37,6 +40,7 @@ use App\PaymentGateway\FawryPaymentGateway;
 use App\PaymentGateway\PayPalPaymentGateway;
 use App\Http\Controllers\V1\PayfortController;
 use App\PaymentGateway\PayfortPaymentGateway;
+use App\PaymentGateway\YookassaPaymentGateway;
 use Illuminate\Support\ServiceProvider;
 
 class PaymentGatewayProvider extends ServiceProvider
@@ -139,6 +143,17 @@ class PaymentGatewayProvider extends ServiceProvider
             ->needs(PaymentGatewayInterface::class)
             ->give(function ($app) {
                 return $app->make(BnpPaymentGateway::class);
+            });
+        $this->app->when(YookassaController::class)
+            ->needs(PaymentGatewayInterface::class)
+            ->give(function ($app) {
+                return $app->make(YookassaPaymentGateway::class);
+            });
+
+        $this->app->when(CybersourceController::class)
+            ->needs(PaymentGatewayInterface::class)
+            ->give(function ($app) {
+                return $app->make(CybersourcePaymentGateway::class);
             });
     }
 

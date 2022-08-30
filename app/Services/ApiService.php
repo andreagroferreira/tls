@@ -48,6 +48,11 @@ class ApiService
         }
     }
 
+    private function getKeycloakDomain()
+    {
+        return config('services.keycloak_web.base_url');
+    }
+
     private function getDirectusApiDomain()
     {
         return env('DIRECTUS_DOMAIN');
@@ -84,6 +89,30 @@ class ApiService
         if ($response['status'] != 200) {
             Log::error(sprintf("Request api fail: %s [GET] | Api Return: %s", $url, json_encode($response, 256)));
         }
+        return $response;
+    }
+
+    public function callKeycloakApi($method, $url, $data = [])
+    {
+        $url = $this->getKeycloakDomain() . '/' . $url;
+        if (strtolower($method) == 'get') {return $this->getApi($url);}
+        if (strtolower($method) == 'post-form') {return $this->postFormApi($url, $data);}
+        if (strtolower($method) == 'post') {return $this->postApi($url, $data, );}
+    }
+
+    private function postFormApi($url, $data)
+    {
+        $response = $this->guzzleClient->request('post', $url, [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'form_params' => $data,
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        if ($response['status'] != 200) Log::error(sprintf("Request api fail: %s [POST] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), json_encode($response, 256)));
         return $response;
     }
 
@@ -272,5 +301,66 @@ class ApiService
     {
         $url = $this->getEAuditorDomain() . ':' . $port;
         if (strtolower($method) == 'post')    return $this->postApi($url, $data);
+    }
+
+    public function yookassaCreatePayment($params, $yookassa_config, $Idempotence_Key): array
+    {
+        $response = $this->guzzleClient->request('post', $yookassa_config['host'], [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => 'application/json',
+            'headers' => [
+                'Idempotence-Key' => $Idempotence_Key,
+                'Authorization' => 'Basic ' . base64_encode("{$yookassa_config['shop_id']}:{$yookassa_config['secret_key']}"),
+                'Content-Type' => 'application/json'
+            ],
+            'json' => $params,
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        return $response;
+    }
+
+    public function yookassaCapturePayment($payment_id, $yookassa_config, $Idempotence_Key): array
+    {
+        $response = $this->guzzleClient->request('post', $yookassa_config['host'] . "/$payment_id/capture", [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => 'application/json',
+            'headers' => [
+                'Idempotence-Key' => $Idempotence_Key,
+                'Authorization' => 'Basic ' . base64_encode("{$yookassa_config['shop_id']}:{$yookassa_config['secret_key']}"),
+                'Content-Type' => 'application/json'
+            ],
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        return $response;
+    }
+
+    public function getYookassaPayment($payment_id, $yookassa_config, $Idempotence_Key): array
+    {
+        $response = $this->guzzleClient->request('get', $yookassa_config['host'] . "/$payment_id", [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => 'application/json',
+            'headers' => [
+                'Idempotence-Key' => $Idempotence_Key,
+                'Authorization' => 'Basic ' . base64_encode("{$yookassa_config['shop_id']}:{$yookassa_config['secret_key']}"),
+                'Content-Type' => 'application/json'
+            ],
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        return $response;
     }
 }

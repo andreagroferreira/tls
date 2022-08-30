@@ -11,7 +11,7 @@ class RecommendationConfig extends Model
 {
     use HasFactory;
 
-    protected $table = 'recommendataion_config';
+    protected $table = 'recommendation_config';
     protected $primaryKey = 'rc_id';
     public $timestamps = false;
 

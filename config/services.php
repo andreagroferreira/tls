@@ -40,4 +40,11 @@ return [
         ],
     ],
 
+    'keycloak_web' => [
+        'client_id' => env('KEYCLOAK_CLIENT_ID'),
+        'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),
+        'base_url' => env('KEYCLOAK_BASE_URL'),
+        'realms' => env('KEYCLOAK_REALM')
+    ]
+
 ];

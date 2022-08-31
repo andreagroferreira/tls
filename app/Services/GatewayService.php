@@ -1,19 +1,29 @@
 <?php
 
-
 namespace App\Services;
 
 
 class GatewayService
 {
+    protected $paymentGatewayService;
+
+    public function __construct(PaymentGatewayService $paymentGatewayService)
+    {
+        $this->paymentGatewayService = $paymentGatewayService;
+    }
+
     public function getGateways($client, $issuer)
     {
         $config = $this->getConfig($client, $issuer);
         return $config ?? [];
     }
 
-    public function getGateway($client, $issuer, $gateway) {
-        return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+    public function getGateway($client, $issuer, $gateway, $service) {
+        if (env('USE_UI_CONFIGURATION')) {
+            return $this->paymentGatewayService->getPaymentAccountConfig($client, $issuer, $gateway, $service);
+        } else {
+            return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+        }
     }
 
     public function getConfig($client, $issuer)
@@ -37,8 +47,8 @@ class GatewayService
 
     public function getKbankConfig($client, $issuer, $gateway) {
         $kbank_config   = $this->getGateway($client, $issuer, $gateway);
-        $app_env        = env('APP_ENV') === 'production' ? false : true;
-        $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
+        $app_env        = !(env('APP_ENV') === 'production');
+        $is_live        = $kbank_config['common']['env'] == 'live';
         if ($is_live && !$app_env) {
             $config_data = [
                 'redirect_host' => $kbank_config['prod']['redirect_host'],

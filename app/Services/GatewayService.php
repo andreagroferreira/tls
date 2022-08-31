@@ -12,9 +12,13 @@ class GatewayService
         $this->paymentGatewayService = $paymentGatewayService;
     }
 
-    public function getGateways($client, $issuer)
+    public function getGateways($client, $issuer, $service)
     {
-        $config = $this->getConfig($client, $issuer);
+        if (env('USE_UI_CONFIGURATION')) {
+            $config = $this->paymentGatewayService->getConfig($client, $issuer, $service);
+        } else {
+            $config = $this->getConfig($client, $issuer);
+        }
         return $config ?? [];
     }
 

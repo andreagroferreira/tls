@@ -95,7 +95,8 @@ class CheckoutController extends BaseController
 
             $client = $transaction['t_client'];
             $issuer = $transaction['t_issuer'];
-            $payment_gateways = $this->gatewayService->getGateways($client, $issuer);
+            $service = $transaction['t_service'];
+            $payment_gateways = $this->gatewayService->getGateways($client, $issuer, $service);
             $is_postal = $transaction['t_workflow'] == 'postal';
             if ($is_postal && empty($payment_gateways)) {
                 // Payment gateway not found for postal
@@ -131,7 +132,6 @@ class CheckoutController extends BaseController
                     }
                 }
             }
-
             $left_time = $expiration_time - $now_time;
             $data = [
                 'transaction' => $transaction,

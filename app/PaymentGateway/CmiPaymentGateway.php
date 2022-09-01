@@ -74,7 +74,8 @@ class CmiPaymentGateway implements PaymentGatewayInterface
             ];
         }
 
-        $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service  = $transaction['t_service'] ?? 'tls';
+        $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $cmi_config = array_merge($config['common'], $this->isSandBox() ? $config['sandbox'] : $config['prod']);
         $isValid    = $this->validate($cmi_config['storeKey'] ?? [], $params);
 
@@ -118,7 +119,8 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         $client      = $transaction['t_client'];
         $issuer      = $transaction['t_issuer'];
         $fg_id       = $transaction['t_xref_fg_id'];
-        $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service   = $transaction['t_service'] ?? 'tls';
+        $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $cmi_config  = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
         $application = $this->formGroupService->fetch($fg_id, $client);
         $form_list   = $this->formGroupService->fetchFomrs($fg_id, $client);
@@ -182,7 +184,8 @@ class CmiPaymentGateway implements PaymentGatewayInterface
                 'href' => $transaction['t_redirect_url']
             ];
         }
-        $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service  = $transaction['t_service'] ?? 'tls';
+        $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $cmi_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
         $isValid    = $this->validate($cmi_config['storeKey'] ?? '', $params);
         if (!$isValid) {

@@ -207,7 +207,8 @@ class TinggPaymentGateway implements PaymentGatewayInterface
     private function getTinggConfig($transaction) {
         $client       = $transaction['t_client'];
         $issuer       = $transaction['t_issuer'];
-        $config       = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service    = $transaction['t_service'];
+        $config       = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         return array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
     }
 

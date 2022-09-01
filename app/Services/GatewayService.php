@@ -18,7 +18,7 @@ class GatewayService
         return $config ?? [];
     }
 
-    public function getGateway($client, $issuer, $gateway, $service) {
+    public function getGateway($client, $issuer, $gateway, $service = 'tls') {
         if (env('USE_UI_CONFIGURATION')) {
             return $this->paymentGatewayService->getPaymentAccountConfig($client, $issuer, $gateway, $service);
         } else {

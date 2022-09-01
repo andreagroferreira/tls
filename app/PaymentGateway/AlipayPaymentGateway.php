@@ -69,7 +69,8 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         $client  = $translations_data['t_client'];
         $issuer  = $translations_data['t_issuer'];
         $fg_id   = $translations_data['t_xref_fg_id'];
-        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service      = $translations_data['t_service'] ?? 'tls';
+        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $pay_config     = $this->getPaySecret($payfort_config, $app_env);
         $application    = $this->formGroupService->fetch($fg_id, $client);
         $cai = $application['f_cai'] ?? 'alipay';
@@ -165,7 +166,8 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
                 'href'       => $transaction['t_onerror_url']
             ];
         }
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service      = $transaction['t_service'] ?? 'tls';
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $pay_config     = $this->getPaySecret($payfort_config, $app_env);
         ##signature verification start
         $sign_params = [];
@@ -285,7 +287,8 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
             $msg = 'transaction_cancelled';
             return $msg;
         }
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service      = $transaction['t_service'] ?? 'tls';
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $pay_config     = $this->getPaySecret($payfort_config, $app_env);
         ##signature verifired start
         $sign_params = [];

@@ -53,7 +53,8 @@ class PayBankGateway implements PaymentGatewayInterface
         }
         $client  = $transaction['t_client'];
         $issuer  = $transaction['t_issuer'];
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service = $transaction['t_service'] ?? 'tls';
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $pay_bank_config = $config['common'];
         $return_url = get_callback_url($pay_bank_config['return_url']) ?? '';
         $params = [
@@ -170,7 +171,8 @@ class PayBankGateway implements PaymentGatewayInterface
             ];
             $client  = $transaction['t_client'];
             $issuer  = $transaction['t_issuer'];
-            $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+            $t_service = $transaction['t_service'] ?? 'tls';
+            $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
             if(!empty($config['common']['expiration_minutes'])) {
                 $now_time = (new DbConnectionService())->getDbNowTime();
                 $gateway_expiration = Carbon::parse($now_time)->addMinutes($config['common']['expiration_minutes']);

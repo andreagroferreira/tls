@@ -68,7 +68,8 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
         $client  = $translationsData['t_client'];
         $issuer  = $translationsData['t_issuer'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
-        $clictopay_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service = $translationsData['t_service'] ?? 'tls';
+        $clictopay_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $is_live        = $clictopay_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live account
@@ -128,7 +129,8 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
-        $clictopay_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service = $transaction['t_service'] ?? 'tls';
+        $clictopay_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $is_live          = $clictopay_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live account

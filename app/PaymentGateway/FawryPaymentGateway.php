@@ -120,7 +120,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 }
                 $tmp['price'] = $price;
                 $tmp['quantity'] = 1;
-                $quantity .= $tmp['itemId'] . $tmp['quantity'] . $price;
+                $quantity .= $tmp['itemId'] . $tmp['quantity'] . number_format($price, 2, '.', '');
                 array_push($charge_items, $tmp);
             }
         } else {

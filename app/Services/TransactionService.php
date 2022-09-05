@@ -174,9 +174,12 @@ class TransactionService
             't_currency' => $attributes['currency'],
             't_workflow' => $attributes['workflow'],
             't_expiration' => Carbon::parse($this->dbConnectionService->getDbNowTime())->addMinutes(config('payment_gateway.expiration_minutes')),
-            't_basket_type' => $attributes['basket_type'] ?? 'tls',
         ];
         if (isset($attributes['payment_method'])) {
+            $transaction_data['t_payment_method'] = $attributes['payment_method'];
+        }
+
+        if (isset($attributes['basket_type']) && $attributes['basket_type'] == 'government') {
             $transaction_data['t_payment_method'] = $attributes['payment_method'];
         }
         $transaction_data['t_transaction_id'] = $this->generateTransactionId($transaction_data['t_id'], $transaction_data['t_issuer']);

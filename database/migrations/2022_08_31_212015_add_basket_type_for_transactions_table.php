@@ -14,7 +14,7 @@ class AddBasketTypeForTransactionsTable extends Migration
     public function up()
     {
         Schema::connection('deploy_payment_pgsql')->table('transactions', function (Blueprint $table) {
-            $table->string('t_basket_type')->nullable();
+            $table->string('t_basket_type')->default('tls');
         });
     }
 

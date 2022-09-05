@@ -68,7 +68,6 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             'currency' => $translations_data['t_currency'],
             'paymentType' => 'DB'
         ];
-
         $response = $this->apiService->callGeneralApi('POST', $host . '/v1/checkouts', $post_data, $this->getHeaders($switch_config));
         Log::info('Switch redirto $response:'.json_encode($response));
         $this->paymentService->saveTransactionLog($translations_data['t_transaction_id'], $response, $this->getPaymentGatewayName());
@@ -77,7 +76,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             $this->logWarning('Create checkout failed.', $post_data);
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: payment failed.'
+                'message' => 'Transaction ERROR: payment failed,Please check whether the currency type is correct, such as USD'
             ];
         }
 

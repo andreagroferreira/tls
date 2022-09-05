@@ -120,8 +120,11 @@ class PaymentGatewayService
             $payment_gateway[$key]['psp_code'] = $this->paymentServiceProvidersRepositories->fetch(['psp_id' => $values['pa_xref_psp_id']], 'psp_code')['psp_code'];
         }
         foreach ($payment_gateway as $k => $v) {
-            $payment_gateway_config[$v['psp_code']][$v['pa_type']] = json_decode($v['pa_info'], true);
-            $payment_gateway_config[$v['psp_code']]['sort'] = ($v['psp_code'] == 'pay_later' ? 2 : 1);
+            $gateway = $v['psp_code'];
+            $payment_gateway_config[$gateway]['label'] = config("payment_gateway_accounts.$gateway.label");
+            $payment_gateway_config[$gateway]['common'] = config("payment_gateway_accounts.$gateway.common");
+            $payment_gateway_config[$gateway][$v['pa_type']] = json_decode($v['pa_info'], true);
+            $payment_gateway_config[$gateway]['sort'] = ($gateway == 'pay_later' ? 2 : 1);
         }
         $sort_payment_gateway_config = collect($payment_gateway_config);
         $payment_gateway_config = $sort_payment_gateway_config->sortBy('sort')->toArray();

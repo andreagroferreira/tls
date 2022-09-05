@@ -900,6 +900,11 @@ return [
         ],
     ],
     'de' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'cnBJS2de' => [
             'alipay' => [
                 'label'   => 'Alipay pay',
@@ -1359,14 +1364,14 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_SECRET_KEY',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]*/
+                    'merchant_id' => 'ENVPAY_FAW_DEegCAI2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegCAI2de_SECRET_KEY',
+                ]
             ],
         ],
         'egALY2de' => [
@@ -1389,14 +1394,14 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_SECRET_KEY',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]*/
+                    'merchant_id' => 'ENVPAY_FAW_DEegALY2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegALY2de_SECRET_KEY',
+                ]
             ]
         ],
         'egHRG2de' => [
@@ -1419,14 +1424,14 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_SECRET_KEY',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]*/
+                    'merchant_id' => 'ENVPAY_FAW_DEegHRG2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegHRG2de_SECRET_KEY',
+                ]
             ]
         ]
     ],
@@ -1525,13 +1530,13 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'FAW_COMMON_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'FAW_COMMON_SANDBOX_SECRET_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_SECRET_KEY',
                 ],
                 'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'FAW_FRegAll2fr_MERCHANT_ID',
-                    'secret_key' => 'FAW_FRegAll2fr_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_FRegAll2fr_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_FRegAll2fr_SECURITY_KEY',
                 ]
             ]
         ],
@@ -1555,13 +1560,13 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'FAW_egCAI2fr_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'FAW_egCAI2fr_SANDBOX_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_SECRET_KEY',
                 ],
                 'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'FAW_egCAI2fr_MERCHANT_ID',
-                    'secret_key' => 'FAW_egCAI2fr_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_egCAI2fr_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egCAI2fr_SECURITY_KEY',
                 ]
             ]
         ],
@@ -1585,13 +1590,13 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'FAW_egALY2fr_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'FAW_egALY2fr_SANDBOX_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_SECRET_KEY',
                 ],
                 'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'FAW_egALY2fr_MERCHANT_ID',
-                    'secret_key' => 'FAW_egALY2fr_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_egALY2fr_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egALY2fr_SECURITY_KEY',
                 ]
             ]
         ],

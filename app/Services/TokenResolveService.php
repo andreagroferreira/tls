@@ -34,6 +34,7 @@ class TokenResolveService
     // will resolved the template based on collection and application tokens
     public function resolveTemplate($template, $issuer){
         $data = [];
+        $resolvedtokens = [];
         if(count($template)){
             $country = substr($issuer, 0, 2);
             $city = substr($issuer, 2, 3);
@@ -63,16 +64,20 @@ class TokenResolveService
             if(isset($email_content[0]) and $email_content[0] != ''){
                 $emailtitle = $email_title[0];
                 $emailcontent = $email_content[0];
-                $invoicecontent = $email_content[0];
+                $invoicecontent = $invoice_content[0];
             } elseif (isset($email_content[1]) and $email_content[1] != '') {
                 $emailtitle = $email_title[1];
                 $emailcontent = $email_content[1];
-                $invoicecontent = $email_content[1];
+                $invoicecontent = $invoice_content[1];
             } elseif (isset($email_content[2]) and $email_content[2] != '') {
                 $emailtitle = $email_title[2];
                 $emailcontent = $email_content[2];
-                $invoicecontent = $email_content[2];
+                $invoicecontent = $invoice_content[2];
             }
+
+            $data['email_title'] =  $emailtitle;
+            $data['email_content'] =  $emailcontent;
+            $data['invoice_content'] =  $invoicecontent;
            
             $pattern = "~({{\w+:\w+:\w+}}|{{\w+:\w+}})~";
             preg_match_all($pattern, $emailcontent, $email_tokens);
@@ -132,21 +137,21 @@ class TokenResolveService
                     }
                 }
             }
-            
-            foreach ($resolvedtokens as $r => $res) {
-                if(isset($res[0]) and $res[0] != ''){
-                     $resolved_tokens[$r] = $res[0];
-                } elseif(isset($res[1]) and $res[1] != ''){
-                     $resolved_tokens[$r] = $res[1];
-                } elseif(isset($res[2]) and $res[2] != ''){
-                     $resolved_tokens[$r] = $res[2];
-                }
+            if(count($resolvedtokens)){
+                foreach ($resolvedtokens as $r => $res) {
+                    if(isset($res[0]) and $res[0] != ''){
+                         $resolved_tokens[$r] = $res[0];
+                    } elseif(isset($res[1]) and $res[1] != ''){
+                         $resolved_tokens[$r] = $res[1];
+                    } elseif(isset($res[2]) and $res[2] != ''){
+                         $resolved_tokens[$r] = $res[2];
+                    }
 
+                }
             }
 
             if(count($resolved_tokens)){
                 ksort($resolved_tokens);
-                $data['email_title'] =  $emailtitle;
                 foreach ($resolved_tokens as $key => $value) {
                    $data['email_content'] = str_replace($final_tokens[$key], $value, $emailcontent);
                    $data['invoice_content'] = str_replace($final_tokens[$key], $value, $invoicecontent);

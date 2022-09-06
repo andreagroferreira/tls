@@ -179,8 +179,8 @@ class TransactionService
             $transaction_data['t_payment_method'] = $attributes['payment_method'];
         }
 
-        if (isset($attributes['basket_type']) && $attributes['basket_type'] == 'government') {
-            $transaction_data['t_payment_method'] = $attributes['payment_method'];
+        if (isset($attributes['service']) && in_array($attributes['service'], ['gov', 'government'])) {
+            $transaction_data['t_service'] = $attributes['t_service'];
         }
         $transaction_data['t_transaction_id'] = $this->generateTransactionId($transaction_data['t_id'], $transaction_data['t_issuer']);
 

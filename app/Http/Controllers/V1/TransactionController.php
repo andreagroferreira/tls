@@ -255,7 +255,7 @@ class TransactionController extends BaseController
             'callback_url' => 'required|string',
             'workflow' => 'required|string',
             'payment_method' => 'nullable',
-            'basket_type' => 'nullable',
+            'service' => 'nullable',
             'items' => [
                 'bail',
                 'required',

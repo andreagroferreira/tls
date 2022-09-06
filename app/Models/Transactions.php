@@ -31,6 +31,6 @@ class Transactions extends Model
         't_gateway_expiration',
         't_workflow',
         't_payment_method',
-        't_basket_type'
+        't_service'
     ];
 }

@@ -56,8 +56,8 @@ class AvsRecommendationService
 
         //get the basket requested and paid avs from tlsconnect
         $basket_avs = $this->getBasketAvs($f_id);
-        $requested_skus = array_keys($basket_avs['requested'] ?? []);
-        $paid_skus = array_keys($basket_avs['paid'] ?? []);
+        $requested_skus = array_column($basket_avs['requested'] ?? [], 's_sku');
+        $paid_skus = array_column($basket_avs['paid'] ?? [], 's_sku');
 
         // profile
         $profile_data = $this->profileService->fetchProfile($f_id);
@@ -164,8 +164,6 @@ class AvsRecommendationService
             } else {
                 return 'requested';
             }
-        })->map(function ($item) {
-            return $item->keyBy('s_sku');
         })->toArray();
     }
 

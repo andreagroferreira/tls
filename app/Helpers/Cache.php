@@ -5,6 +5,11 @@ function get_application_action_history_cache_key($f_id): string
     return 'application_action_history_cache_' . app()->make(App\Services\ApiService::class)->getProjectId() . '_' . $f_id;
 }
 
+function get_applicant_cache_key($f_id): string
+{
+    return 'applicant_info_cache_' . app()->make(App\Services\ApiService::class)->getProjectId() . '_' . $f_id;
+}
+
 function get_form_stage_status_cache_key($f_id): string
 {
     return 'form_stage_status_cache_' . app()->make(App\Services\ApiService::class)->getProjectId() . '_' . $f_id;

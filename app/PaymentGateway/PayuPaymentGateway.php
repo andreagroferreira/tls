@@ -68,7 +68,7 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         $issuer  = $translationsData['t_issuer'];
         $fg_id   = $translationsData['t_xref_fg_id'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
-        $payu_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $payu_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $translationsData['t_service']);
         $paymentsos_host = $payu_config['common']['paymentsos_host'];
         $payment_method  = $payu_config['common']['payment_method'];
         $header = $this->getHeader($payu_config, $app_env);
@@ -125,7 +125,7 @@ class PayuPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
-        $payu_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $payu_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_service']);
         $charges_host = $payu_config['common']['paymentsos_host'] . '/' . $payment_id . '/charges/' . $charge_id;
         $charges_payments = $this->paymentInitiateService->paymentInitiate('get', $charges_host, '', false, $this->getHeader($payu_config, $app_env));
         if (strpos($charges_payments,'error') !== false) {return ['status' => 'fail', 'message' => $charges_payments]; }

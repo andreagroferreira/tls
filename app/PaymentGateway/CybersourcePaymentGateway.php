@@ -67,7 +67,8 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
         $amount   = $translations_data['t_amount'];
         $client   = $translations_data['t_client'];
         $issuer   = $translations_data['t_issuer'];
-        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service = $translations_data['t_service'] ?? 'tls';
+        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $currency           = $translations_data['t_currency'] ?? $cybersource_config['common']['currency'];
         $is_live            = $cybersource_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
@@ -135,7 +136,8 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
         $transaction        = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         $client             = $transaction['t_client'];
         $issuer             = $transaction['t_issuer'];
-        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service          = $transaction['t_service'] ?? 'tls';
+        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $is_live            = $cybersource_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live account

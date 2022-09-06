@@ -64,7 +64,8 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         }
 
         $order_id = $translations_data['t_transaction_id'];
-        $bnp_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer']);
+        $t_service   = $translations_data['t_service'] ?? 'tls';
+        $bnp_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer'], $t_service);
 
         $get_data = [
             'userName' => array_get($bnp_config, 'current.user_name'),
@@ -125,7 +126,8 @@ class BnpPaymentGateway implements PaymentGatewayInterface
 
         $this->paymentService->saveTransactionLog($transaction['t_transaction_id'], $params, $this->getPaymentGatewayName());
 
-        $bnp_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer']);
+        $t_service   = $transaction['t_service'] ?? 'tls';
+        $bnp_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $t_service);
         $get_data = [
             'userName' => array_get($bnp_config, 'current.user_name'),
             'password' => array_get($bnp_config, 'current.password'),
@@ -170,10 +172,10 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         ]]);
     }
 
-    protected function getConfig($client, $issuer)
+    protected function getConfig($client, $issuer, $t_service)
     {
         $app_env = $this->isSandBox();
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $is_live = $config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live account

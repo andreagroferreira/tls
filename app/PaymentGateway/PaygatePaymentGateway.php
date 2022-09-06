@@ -68,7 +68,8 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         $return_checksum    = $return_params['CHECKSUM'] ?? '';
         $transaction_status = $return_params['TRANSACTION_STATUS'] ?? '';
         $transaction        = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $pay_request_id, 't_tech_deleted' => false]);
-        $paygate_config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service          = $transaction['t_service'] ?? 'tls';
+        $paygate_config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $is_live            = $paygate_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live account
@@ -132,7 +133,8 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $application = $this->formGroupService->fetch($fg_id, $client);
         $u_email     = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
-        $paygate_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service      = $translationsData['t_service'] ?? 'tls';
+        $paygate_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $is_live        = $paygate_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live account

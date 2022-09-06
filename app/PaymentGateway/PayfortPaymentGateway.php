@@ -67,7 +67,8 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         $client  = $translations_data['t_client'];
         $issuer  = $translations_data['t_issuer'];
         $fg_id   = $translations_data['t_xref_fg_id'];
-        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service = $translations_data['t_service'] ?? 'tls';
+        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $pay_config     = $this->getPaySecret($payfort_config, $app_env);
         $application    = $this->formGroupService->fetch($fg_id, $client);
         $u_email        = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
@@ -129,7 +130,8 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
                 'href'       => $transaction['t_onerror_url']
             ];
         }
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service      = $transaction['t_service'] ?? 'tls';
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $pay_config     = $this->getPaySecret($payfort_config, $app_env);
         $validate       = $this->validateSignature($return_params, $pay_config['response_phrase']);
         if ($validate) {
@@ -210,7 +212,8 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
             $json['message'] = 'transaction_cancelled';
             return $json;
         }
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service      = $transaction['t_service'] ?? 'tls';
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $pay_config     = $this->getPaySecret($payfort_config, $app_env);
         $validate       = $this->validateSignature($notify_params, $pay_config['response_phrase']);
         if ($validate) {

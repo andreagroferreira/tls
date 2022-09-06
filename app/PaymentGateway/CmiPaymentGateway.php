@@ -86,15 +86,15 @@ class CmiPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
-        $response = $this->paymentService->confirm($transaction, $confirm_params);
-        if ($response['is_success'] != 'ok') {
-            return [
-                'status'  => 'error',
-                'message' => $response['message']
-            ];
-        }
 
         if (($params['Response'] == 'Approved') && ($params['ProcReturnCode'] == '00')) {
+            $response = $this->paymentService->confirm($transaction, $confirm_params);
+            if ($response['is_success'] != 'ok') {
+                return [
+                    'status'  => 'error',
+                    'message' => $response['message']
+                ];
+            }
             return "ACTION=POSTAUTH";
         } else {
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');

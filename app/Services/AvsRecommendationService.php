@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\RecommendationResultRepositories;
+use Illuminate\Support\Facades\Cache;
 
 class AvsRecommendationService
 {
@@ -45,12 +46,8 @@ class AvsRecommendationService
     public function calcRecommendAvs($params)
     {
         $f_id = $params['f_id'];
-        $application_response = $this->apiService->callTlsApi('GET', 'tls/v2/' . $this->client . '/application/' . $f_id);
-        if ($application_response['status'] != 200 || empty($application_response['body'])) {
-            return [];
-        }
-        $application = $application_response['body'];
         $this->refreshCache = $params['refresh_cache'] ?? false;
+        $application = $this->getApplication($f_id);
         $issuer_avses = $this->getIssuerAvsWithPriority($application['f_xcopy_ug_xref_i_tag']);
         $issuer_avses = array_column($issuer_avses, null, 'sku');
 
@@ -109,6 +106,20 @@ class AvsRecommendationService
             'paid_avs' => $paid_avs,
             'denied_avs' => $denied_avs
         ];
+    }
+
+    private function getApplication($f_id) {
+        $application_cache_key = get_applicant_cache_key($f_id);
+        if (!$this->refreshCache && Cache::has($application_cache_key)) {
+            return Cache::get($application_cache_key);
+        }
+        $application_response = $this->apiService->callTlsApi('GET', 'tls/v2/' . $this->client . '/application/' . $f_id);
+        if ($application_response['status'] != 200 || empty($application_response['body'])) {
+            return [];
+        }
+        $application = $application_response['body'];
+        Cache::put($application_cache_key, $application, get_cache_ttl('applicant'));
+        return $application;
     }
 
     //if no local avs recommendation priority, we use global avs recommendation priority
@@ -171,8 +182,8 @@ class AvsRecommendationService
 
     private function getRecommendByRuleEngine($params, $application, $basket_skus, $profile)
     {
-        $stages_response = $this->apiService->callTlsApi('GET', 'tls/v1/' . $this->client . '/form_stages_statues/' . $params['f_id']);
-        $stage_status = array_column($stages_response['body']['stage_status'] ?? [], 'status', 'stage');
+        $stages_response = $this->formStageStatus($params['f_id']);
+        $stage_status = array_column($stages_response['stage_status'] ?? [], 'status', 'stage');
         $condition = [
             'issuer' => $application['f_xcopy_ug_xref_i_tag'],
             'Profile' => $profile,
@@ -187,6 +198,19 @@ class AvsRecommendationService
             'City of residence' => null
         ];
         return $this->recommendationRuleEngineService->fetchRules($condition, $stage_status, $basket_skus);
+    }
+
+    private function formStageStatus($f_id) {
+        $cache_key = get_form_stage_status_cache_key($f_id);
+        if (!$this->refreshCache && Cache::has($cache_key)) {
+            return Cache::get($cache_key);
+        }
+        $response = $this->apiService->callTlsApi('GET', 'tls/v1/' . $this->client . '/form_stages_statues/' . $f_id);
+        if (isset($response['status']) && $response['status'] == 200) {
+            Cache::put($cache_key, $response['body'], get_cache_ttl('applicant'));
+            return $response['body'];
+        }
+        return [];
     }
 
     private function getShowingAvs($avses, $issuer_avses) {

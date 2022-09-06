@@ -2,7 +2,6 @@
 
 namespace Tests\Controllers\API\V1;
 
-use App\Models\Transactions;
 use Illuminate\Support\Carbon;
 
 class TransactionControllerTest extends TestCase
@@ -31,8 +30,8 @@ class TransactionControllerTest extends TestCase
         $this->get($base_url . '/' . $transaction->t_xref_fg_id);
         $response_array = $this->response->decodeResponseJson();
         $this->response->assertStatus(200);
-        $this->assertNotEmpty($response_array);
-        $this->assertEquals($transaction->t_id, array_get($response_array, '0.t_id'));
+        $this->assertEquals(1, count($response_array));
+        $this->assertEquals(1, array_get($response_array, '0.t_id'));
         $this->assertEquals($transaction->t_transaction_id, array_get($response_array, '0.transaction_id'));
         $this->assertEquals('pending', array_get($response_array, '0.status'));
         $this->assertEquals(1, count(array_get($response_array, '0.items')));
@@ -190,22 +189,41 @@ class TransactionControllerTest extends TestCase
         $this->post($base_url, $post_data);
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
-        $this->assertArrayHasKey('t_id', $response_array);
+        $this->assertEquals(1, array_get($response_array, 't_id'));
         $this->assertTrue(Carbon::parse($this->getDbNowTime())->lt(array_get($response_array, 'expire')));
         $this->get($base_url . '/' . $post_data['fg_id']);
         $response_array = $this->response->decodeResponseJson();
-        $this->assertNotEmpty($response_array);
+        $this->assertEquals(1, count($response_array));
+        $this->assertEquals(1, array_get($response_array, '0.t_id'));
+        $this->assertEquals('pending', array_get($response_array, '0.status'));
+
+        // Duplicate creation
+        $this->post($base_url, $post_data);
+        $this->response->assertStatus(200)
+            ->assertJson(['t_id' => 1]);
+
+        $items = json_encode([
+            ['f_id' => 10001, 'skus' => [['sku' => 2, 'price' => 1, 'vat' => 1]]]
+        ]);
+        $post_data = ['fg_id' => 10000, 'client' => 'be', 'issuer' => 'dzALG2fr', 'currency' => 'MAD', 'redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr', 'onerror_url' => 'onError_tlsweb_url?lang=fr-fr', 'reminder_url' => 'callback_to_send_reminder?lang=fr-fr', 'callback_url' => 'receipt_url/{fg_id}?lang=fr-fr', 'workflow' => 'vac', 'items' => $items];
+        $this->post($base_url, $post_data);
+        $this->response->assertStatus(200)
+            ->assertJson(['t_id' => 2]);
+        $this->get($base_url . '/' . $post_data['fg_id']);
+        $response_array = $this->response->decodeResponseJson();
+        $this->assertEquals(1, count($response_array));
+        $this->assertEquals(2, array_get($response_array, '0.t_id'));
         $this->assertEquals('pending', array_get($response_array, '0.status'));
 
         config(['payment_gateway.expiration_minutes' => -20]);
         $items = json_encode([
             ['f_id' => 10001, 'skus' => [['sku' => 3, 'price' => 1, 'vat' => 1]]]
         ]);
-        $post_data = ['fg_id' => 11000, 'client' => 'be', 'issuer' => 'dzALG2fr', 'currency' => 'MAD', 'redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr', 'onerror_url' => 'onError_tlsweb_url?lang=fr-fr', 'reminder_url' => 'callback_to_send_reminder?lang=fr-fr', 'callback_url' => 'receipt_url/{fg_id}?lang=fr-fr', 'workflow' => 'vac', 'items' => $items];
+        $post_data = ['fg_id' => 10000, 'client' => 'be', 'issuer' => 'dzALG2fr', 'currency' => 'MAD', 'redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr', 'onerror_url' => 'onError_tlsweb_url?lang=fr-fr', 'reminder_url' => 'callback_to_send_reminder?lang=fr-fr', 'callback_url' => 'receipt_url/{fg_id}?lang=fr-fr', 'workflow' => 'vac', 'items' => $items];
         $this->post($base_url, $post_data);
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
-        $this->assertArrayHasKey('t_id', $response_array);
+        $this->assertEquals(3, array_get($response_array, 't_id'));
         $this->assertEquals(Carbon::parse($this->getDbNowTime())->subMinutes(config('payment_gateway.expiration_minutes'))->toDateString(), Carbon::parse(array_get($response_array, 'expire'))->toDateString());
         $this->get($base_url . '/' . $post_data['fg_id']);
         $this->response->assertStatus(204);
@@ -213,7 +231,7 @@ class TransactionControllerTest extends TestCase
         $this->post($base_url, $post_data);
         $this->response->assertStatus(200);
         $response_array = $this->response->decodeResponseJson();
-        $this->assertArrayHasKey('t_id', $response_array);
+        $this->assertEquals(4, array_get($response_array, 't_id'));
         $this->assertEquals(Carbon::parse($this->getDbNowTime())->subMinutes(config('payment_gateway.expiration_minutes'))->toDateString(), Carbon::parse(array_get($response_array, 'expire'))->toDateString());
         $this->get($base_url . '/' . $post_data['fg_id']);
         $this->response->assertStatus(204);

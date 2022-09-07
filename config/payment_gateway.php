@@ -23,6 +23,11 @@ return [
         ]
     ],
     'be' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'gbEDI2be' => [
             'globaliris' => [
                 'label' => 'GLOBALIRIS pay',
@@ -688,6 +693,11 @@ return [
         ],
     ],
     'ch' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'zaPRY2ch' => [
             'paypal' => [
                 'label' => 'PAYPAL pay',
@@ -1436,6 +1446,11 @@ return [
         ]
     ],
     'pl' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'uaKBP2pl' => [
             'paysoft' => [
                 'label' => 'Paysoft pay',
@@ -1460,6 +1475,11 @@ return [
         ],
     ],
     'fr' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'azBAK2fr'=> [
             'paypal' => [
                 'label' => 'PAYPAL pay',
@@ -2251,6 +2271,11 @@ return [
         ],
     ],
     'leg_de' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'egCAI2de' => [
             'fawry' => [
                 'label' => 'Fawry pay',

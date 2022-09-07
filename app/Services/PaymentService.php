@@ -91,12 +91,13 @@ class PaymentService
 
         $issuer = $transaction['t_issuer'];
         $content = $this->getInvoiceContent('tlspay_email_invoice', $issuer);
-        if (!empty($content)) {
+        $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer);
+        if (!empty($resolved_content)) {
             //Generate PDF to place in Filelibrary
             //Code will be added by Aditya
-                
+            
             //Send email
-            $this->sendInvoice($transaction, $content, 'tlspay_invoice_queue');
+            $this->sendInvoice($transaction, $resolved_content, 'tlspay_invoice_queue');
         }
 
         if(!empty($error_msg)) {
@@ -136,24 +137,21 @@ class PaymentService
         return $content;
     }
 
-    private function sendInvoice($transaction, $content, $queue_name) {
+    private function sendInvoice($transaction, $resolved_content, $queue_name) {
         $fg_id = $transaction['t_xref_fg_id'];
         $client = $transaction['t_client'];
-        $issuer = $transaction['t_issuer'];
 
         $form_group = $this->formGroupService->fetch($fg_id, $client);
         $form_user_email = $form_group['u_email'] ?? '';
         if (!empty($form_user_email)) {
-            $response = $this->tokenResolveService->resolveTemplate($content, $issuer);
-
-            if (!empty($response['email_content']) && !empty($response['invoice_content'])) {
+            if (!empty($resolved_content['email_content']) && !empty($resolved_content['invoice_content'])) {
                 //Prepare email content
                 $email_body = [
                     'to' => $form_user_email,
-                    'subject' => $response['email_title'],
-                    'body' => $response['email_content'],
+                    'subject' => $resolved_content['email_title'],
+                    'body' => $resolved_content['email_content'],
                     'html2pdf' => [
-                        'invoice' => $response['invoice_content']
+                        'invoice' => $resolved_content['invoice_content']
                     ]
                 ];
 

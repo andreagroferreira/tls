@@ -78,4 +78,7 @@ class QueueService
         }
     }
 
+    public function sendMail($email_body) {
+        $this->apiService->callEmailApi('POST', 'send_email', $email_body);
+    }
 }

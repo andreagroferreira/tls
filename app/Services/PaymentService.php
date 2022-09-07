@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Jobs\PaymentEauditorLogJob;
 use App\Jobs\TransactionSyncJob;
+use App\Jobs\TlspayInvoiceMailJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -16,6 +17,8 @@ class PaymentService
     protected $formGroupService;
     protected $invoiceService;
     protected $apiService;
+    protected $directusService;
+    protected $tokenResolveService;
     protected $agent_name = '';
     protected $force_pay_for_not_online_payment_avs = 'no';//支持支付 s_online_avs=no 的avs
 
@@ -24,7 +27,9 @@ class PaymentService
         TransactionLogsService $transactionLogsService,
         FormGroupService $formGroupService,
         InvoiceService $invoiceService,
-        ApiService $apiService
+        ApiService $apiService,
+        DirectusService $directusService,
+        TokenResolveService $tokenResolveService
     )
     {
         $this->transactionService   = $transactionService;
@@ -32,6 +37,8 @@ class PaymentService
         $this->formGroupService     = $formGroupService;
         $this->invoiceService       = $invoiceService;
         $this->apiService  = $apiService;
+        $this->directusService = $directusService;
+        $this->tokenResolveService = $tokenResolveService;
     }
 
     public function saveTransactionLog($transaction_id, $params, $payment_gateway) {
@@ -82,6 +89,16 @@ class PaymentService
         }
         $this->invoiceService->generate($transaction);
 
+        $issuer = $transaction['t_issuer'];
+        $content = $this->getInvoiceContent('tlspay_email_invoice', $issuer);
+        if (!empty($content)) {
+            //Generate PDF to place in Filelibrary
+            //Code will be added by Aditya
+                
+            //Send email
+            $this->sendInvoice($transaction, $content, 'tlspay_invoice_queue');
+        }
+
         if(!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . json_encode($error_msg, 256));
             $show_error_msg = 'Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed';
@@ -97,6 +114,53 @@ class PaymentService
 
         $this->transactionLogsService->create(['tl_xref_transaction_id' => $transaction['t_transaction_id'], 'tl_content' =>json_encode($result)]);
         return $result;
+    }
+
+    private function getInvoiceContent($collection_name, $issuer) {
+        $content = [];
+
+        $country = substr($issuer, 0, 2);
+        $city = substr($issuer, 2, 3);
+
+        $select_filters = [
+            'status' => [
+                'eq' => 'published'
+            ],
+            'code' => [
+                'in' => [$city, $country, 'ww']
+            ],
+        ];
+        $select_fields = '*.*';
+        $content = $this->directusService->getContent($collection_name, $select_fields, $select_filters, $options = ['lang'=> 'en-us']);
+
+        return $content;
+    }
+
+    private function sendInvoice($transaction, $content, $queue_name) {
+        $fg_id = $transaction['t_xref_fg_id'];
+        $client = $transaction['t_client'];
+        $issuer = $transaction['t_issuer'];
+
+        $form_group = $this->formGroupService->fetch($fg_id, $client);
+        $form_user_email = $form_group['u_email'] ?? '';
+        if (!empty($form_user_email)) {
+            $response = $this->tokenResolveService->resolveTemplate($content, $issuer);
+
+            if (!empty($response['email_content']) && !empty($response['invoice_content'])) {
+                //Prepare email content
+                $email_body = [
+                    'to' => $form_user_email,
+                    'subject' => $response['email_title'],
+                    'body' => $response['email_content'],
+                    'html2pdf' => [
+                        'invoice' => $response['invoice_content']
+                    ]
+                ];
+
+                //Add email job to queue
+                dispatch(new TlspayInvoiceMailJob($email_body))->onConnection($queue_name)->onQueue($queue_name);
+            }
+        }
     }
 
     private function syncAction($transaction, $gateway)

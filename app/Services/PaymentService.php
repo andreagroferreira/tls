@@ -250,7 +250,7 @@ class PaymentService
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
         return true;
     }
-    private function convertInvoiceContentToPdf($transaction, $response)
+    public function convertInvoiceContentToPdf($transaction, $response)
     {
         $scope = $transaction['t_xref_fg_id'];
         $country = substr($transaction['t_issuer'], 0, 2);

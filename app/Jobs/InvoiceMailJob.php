@@ -54,7 +54,7 @@ class InvoiceMailJob implements ShouldQueue
     public function handle()
     {
         $service = app()->make('App\Services\QueueService');
-        $response = $service->storePDF($this->transaction, $this->invoiceContent);
+        $service->storePDF($this->transaction, $this->invoiceContent);
         $service->sendMail($this->emailContent);
     }
 }

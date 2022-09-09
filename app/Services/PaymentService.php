@@ -7,6 +7,7 @@ use App\Jobs\PaymentEauditorLogJob;
 use App\Jobs\TransactionSyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class PaymentService
@@ -80,7 +81,7 @@ class PaymentService
         foreach ($update_fields as $field_key => $field_val) {
             $transaction[$field_key] = $field_val;
         }
-        $this->invoiceService->generate($transaction);
+        $this->invoiceService->generate($transaction);        
 
         if(!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . json_encode($error_msg, 256));
@@ -248,5 +249,21 @@ class PaymentService
 
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
         return true;
+    }
+    private function convertInvoiceContentToPdf($transaction, $response)
+    {
+        $scope = $transaction['t_xref_fg_id'];
+        $country = substr($transaction['t_issuer'], 0, 2);
+        $city = substr($transaction['t_issuer'], 2, 3) . "/" . $scope;
+        $fileName = $transaction['t_transaction_id'] . ".pdf";
+        $userName = "";
+        $queryParams = "country=" . $country . "&city=" . $city . "&fileName=" . $fileName . "&userName=" . $userName;
+        $pdf = Pdf::loadHTML($response['invoice_content']);
+        $pdfstream = $pdf->download($fileName);
+        $response = $this->apiService->invoiceContentPdfUploadApi($queryParams, $pdfstream);
+        if ($response['status'] != 200) {
+            Log::warning('Transaction Error: receipt Upload failed');
+            return false;
+        }
     }
 }

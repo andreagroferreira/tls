@@ -363,4 +363,28 @@ class ApiService
         ];
         return $response;
     }
+    private function uploadPdfApi($url, $data)
+    {
+        $response = $this->guzzleClient->request('post', $url, [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => $this->accept,
+            'headers' => ['log-uuid' => request()->get('log-uuid'), 'Content-Type' => 'application/pdf'],
+            'body' => $data,
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        if ($response['status'] != 200) {
+            Log::error(sprintf("Request api fail: %s [POST] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), json_encode($response, 256)));
+        }
+        return $response;
+    }
+    public function invoiceContentPdfUploadApi($queryParams, $pdffile)
+    {
+        $url = $this->getFileLibraryApiDomain().'/api/'.$this->getFileLibraryApiVersion().'/file-library/upload/reporting?'.$queryParams;
+        return $this->uploadPdfApi($url, $pdffile);
+    }
 }

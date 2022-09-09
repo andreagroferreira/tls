@@ -5,7 +5,7 @@ namespace App\Services;
 
 use App\Jobs\PaymentEauditorLogJob;
 use App\Jobs\TransactionSyncJob;
-use App\Jobs\TlspayInvoiceMailJob;
+use App\Jobs\InvoiceMailJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -93,10 +93,6 @@ class PaymentService
         $content = $this->getInvoiceContent('tlspay_email_invoice', $issuer);
         $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer);
         if (!empty($resolved_content)) {
-            //Generate PDF to place in Filelibrary
-            //Code will be added by Aditya
-            
-            //Send email
             $this->sendInvoice($transaction, $resolved_content, 'tlspay_invoice_queue');
         }
 
@@ -145,8 +141,7 @@ class PaymentService
         $form_user_email = $form_group['u_email'] ?? '';
         if (!empty($form_user_email)) {
             if (!empty($resolved_content['email_content']) && !empty($resolved_content['invoice_content'])) {
-                //Prepare email content
-                $email_body = [
+                $email_content = [
                     'to' => $form_user_email,
                     'subject' => $resolved_content['email_title'],
                     'body' => $resolved_content['email_content'],
@@ -155,8 +150,7 @@ class PaymentService
                     ]
                 ];
 
-                //Add email job to queue
-                dispatch(new TlspayInvoiceMailJob($email_body))->onConnection($queue_name)->onQueue($queue_name);
+                dispatch(new InvoiceMailJob($transaction, $resolved_content['invoice_content'], $email_content))->onConnection($queue_name)->onQueue($queue_name);
             }
         }
     }

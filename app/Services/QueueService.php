@@ -21,7 +21,8 @@ class QueueService
         JobRepository       $JobRepository,
         FailedJobRepository $failedJobRepository,
         ApiService $apiService,
-        ActionRepository $actionRepository
+        ActionRepository $actionRepository,
+        PaymentService $paymentService
     )
     {
         $this->dbConnectionService = $dbConnectionService;
@@ -31,6 +32,7 @@ class QueueService
         $this->failedJobRepository->setConnection($this->dbConnectionService->getConnection());
         $this->apiService  = $apiService;
         $this->actionRepository = $actionRepository;
+        $this->paymentService = $paymentService;
     }
 
 
@@ -78,7 +80,11 @@ class QueueService
         }
     }
 
-    public function sendMail($email_body) {
-        $this->apiService->callEmailApi('POST', 'send_email', $email_body);
+    public function storePDF($transaction, $invoice_content) {
+        $this->paymentService->convertInvoiceContentToPdf($transaction, $invoice_content);
+    }
+
+    public function sendMail($email_content) {
+        $this->apiService->callEmailApi('POST', 'send_email', $email_content);
     }
 }

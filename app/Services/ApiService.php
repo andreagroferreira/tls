@@ -363,7 +363,8 @@ class ApiService
         ];
         return $response;
     }
-    private function uploadPdfApi($url, $data)
+
+    private function callFileLibraryApi($url, $data)
     {
         $response = $this->guzzleClient->request('post', $url, [
             'verify' => false,
@@ -382,9 +383,10 @@ class ApiService
         }
         return $response;
     }
+
     public function invoiceContentPdfUploadApi($queryParams, $pdffile)
     {
         $url = $this->getFileLibraryApiDomain().'/api/'.$this->getFileLibraryApiVersion().'/file-library/upload/reporting?'.$queryParams;
-        return $this->uploadPdfApi($url, $pdffile);
+        return $this->callFileLibraryApi($url, $pdffile);
     }
 }

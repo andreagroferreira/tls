@@ -81,9 +81,8 @@ class PaymentService
         foreach ($update_fields as $field_key => $field_val) {
             $transaction[$field_key] = $field_val;
         }
-        $this->invoiceService->generate($transaction);        
-
-        if(!empty($error_msg)) {
+        $this->invoiceService->generate($transaction);
+        if (!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . json_encode($error_msg, 256));
             $show_error_msg = 'Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed';
         }
@@ -250,6 +249,7 @@ class PaymentService
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
         return true;
     }
+
     public function convertInvoiceContentToPdf($transaction, $response)
     {
         $scope = $transaction['t_xref_fg_id'];

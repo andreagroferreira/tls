@@ -256,7 +256,7 @@ class PaymentService
         $country = substr($transaction['t_issuer'], 0, 2);
         $city = substr($transaction['t_issuer'], 2, 3) . "/" . $scope;
         $fileName = $transaction['t_transaction_id'] . ".pdf";
-        $userName = "";
+        $userName = "tlspay";
         $queryParams = "country=" . $country . "&city=" . $city . "&fileName=" . $fileName . "&userName=" . $userName;
         $pdf = Pdf::loadHTML($response['invoice_content']);
         $pdfstream = $pdf->download($fileName);

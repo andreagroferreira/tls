@@ -69,7 +69,7 @@ class TokenResolveService
     }
 
     //returns the list of tokens after preg_match with given pattern
-    public function pregMatchTemplate($content, $pattern){
+    private function pregMatchTemplate($content, $pattern){
         preg_match_all($pattern, $content['email_content'], $email_tokens);
         preg_match_all($pattern, $content['invoice_content'], $invoice_tokens);
         if(count($email_tokens)){
@@ -85,7 +85,7 @@ class TokenResolveService
     }
 
     //returns the list of resolved tokens 
-    public function getResolvedTokens($tokens,$issuer){
+    private function getResolvedTokens($tokens,$issuer){
         $resolvedtokens = [];
         $resolved_tokens = [];
         $country = substr($issuer, 0, 2);
@@ -130,7 +130,7 @@ class TokenResolveService
     }
 
     // get best matched collection item based on city,country & ww
-    public function getEmailInvoiceContent($template,$issuer){
+    private function getEmailInvoiceContent($template,$issuer){
         $contentdata = [];
         $country = substr($issuer, 0, 2);
         $city = substr($issuer, 2, 3);
@@ -182,7 +182,7 @@ class TokenResolveService
     }
 
     //calls directus collection to get translation of Token
-    public function getTokenTranslationFromDirectus($arr,$filters,$country,$city){
+    private function getTokenTranslationFromDirectus($arr,$filters,$country,$city){
         $collection = $arr[1];
         $field = 'translation.'.$arr[2];
         $options['lang'] = 'en-us';

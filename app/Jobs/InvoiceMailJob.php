@@ -37,6 +37,7 @@ class InvoiceMailJob implements ShouldQueue
      * @param array $transaction
      * @param array $invoiceContent
      * @param array $emailContent
+     * 
      * @return void
      */
     public function __construct($transaction, $invoiceContent, $emailContent)

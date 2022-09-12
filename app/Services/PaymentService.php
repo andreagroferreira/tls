@@ -90,8 +90,19 @@ class PaymentService
         $this->invoiceService->generate($transaction);
 
         $issuer = $transaction['t_issuer'];
-        $content = $this->getInvoiceContent('tlspay_email_invoice', $issuer);
-        $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer);
+        $fg_id = $transaction['t_xref_fg_id'];
+        $callback_url = $transaction['t_callback_url'];
+        $lang = 'en-us';
+        if ($callback_url) {
+            $url_query_string = parse_url($callback_url, PHP_URL_QUERY);
+            parse_str($url_query_string, $url_query_string_to_array);
+
+            if (!empty($url_query_string_to_array['lang'])) {
+                $lang =  $url_query_string_to_array['lang'];
+            }
+        }
+        $content = $this->getInvoiceContent('tlspay_email_invoice', $issuer, $lang);
+        $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer, $lang, $fg_id);
         if (!empty($resolved_content)) {
             $this->sendInvoice($transaction, $resolved_content, 'tlspay_invoice_queue');
         }
@@ -113,7 +124,7 @@ class PaymentService
         return $result;
     }
 
-    private function getInvoiceContent($collection_name, $issuer) {
+    private function getInvoiceContent($collection_name, $issuer, $lang) {
         $content = [];
 
         $country = substr($issuer, 0, 2);
@@ -128,7 +139,7 @@ class PaymentService
             ],
         ];
         $select_fields = '*.*';
-        $content = $this->directusService->getContent($collection_name, $select_fields, $select_filters, $options = ['lang'=> 'en-us']);
+        $content = $this->directusService->getContent($collection_name, $select_fields, $select_filters, $options = ['lang'=> $lang]);
 
         return $content;
     }
@@ -142,14 +153,14 @@ class PaymentService
         if (!empty($form_user_email)) {
             if (!empty($resolved_content['email_content']) && !empty($resolved_content['invoice_content'])) {
                 $email_content = [
-                    'to' => $form_user_email,
+                    'to' => 'preethi.jogin.ext@tlscontact.com', //$form_user_email,
                     'subject' => $resolved_content['email_title'],
                     'body' => $resolved_content['email_content'],
                     'html2pdf' => [
                         'invoice' => $resolved_content['invoice_content']
                     ]
                 ];
-
+                                
                 dispatch(new InvoiceMailJob($transaction, $resolved_content['invoice_content'], $email_content))->onConnection($queue_name)->onQueue($queue_name);
             }
         }

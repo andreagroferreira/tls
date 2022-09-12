@@ -80,10 +80,21 @@ class QueueService
         }
     }
 
+    /**
+     * Generate PDF and store in Filelibrary
+     *
+     * @param array $transaction
+     * @param array $invoice_content
+     */
     public function storePDF($transaction, $invoice_content) {
         $this->paymentService->convertInvoiceContentToPdf($transaction, $invoice_content);
     }
 
+    /**
+     * Send Email
+     *
+     * @param array $email_content
+     */
     public function sendMail($email_content) {
         $this->apiService->callEmailApi('POST', 'send_email', $email_content);
     }

@@ -260,7 +260,7 @@ class PaymentService
         $queryParams = "country=" . $country . "&city=" . $city . "&fileName=" . $fileName . "&userName=" . $userName;
         $pdf = Pdf::loadHTML($response['invoice_content']);
         $pdfstream = $pdf->download($fileName);
-        $response = $this->apiService->invoiceContentPdfUploadApi($queryParams, $pdfstream);
+        $response = $this->apiService->callFileLibraryApi($queryParams, $pdfstream);
         if ($response['status'] != 200) {
             Log::warning('Transaction Error: receipt Upload failed');
             return false;

@@ -79,6 +79,7 @@ class TransactionService
                     'gateway_transaction_id' => $transaction->t_gateway_transaction_id,
                     'currency' => $transaction->t_currency,
                     'status' => 'done',
+                    'service' => $transaction->t_service,
                     'tech_creation' => $transaction->t_tech_creation,
                     'tech_modification' => $transaction->t_tech_modification,
                     'items' => array($items)
@@ -101,6 +102,9 @@ class TransactionService
         ])
             ->when(array_key_exists('status', $attributes), function ($collect) use ($attributes) {
                 return $collect->push(['t_status', '=', $attributes['status']]);
+            })
+            ->when(array_key_exists('service', $attributes), function ($collect) use ($attributes) {
+                return $collect->push(['t_service', '=', $attributes['service']]);
             })
             ->toArray();
 

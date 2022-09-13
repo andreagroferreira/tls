@@ -77,5 +77,4 @@ class QueueService
             Log::info('QueueService sync to tls success');
         }
     }
-
 }

@@ -161,13 +161,29 @@ parameters:
     required: true
   - name: FAW_COMMON_SANDBOX_SECRET_KEY
     required: true
+  - name: FAW_DEegAll2de_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_DEegAll2de_SANDBOX_SECRET_KEY
+    required: true
+  - name: FAW_DEegCAI2de_MERCHANT_ID
+    required: true
+  - name: FAW_DEegCAI2de_SECRET_KEY
+    required: true
+  - name: FAW_DEegALY2de_MERCHANT_ID
+    required: true
+  - name: FAW_DEegALY2de_SECRET_KEY
+    required: true
+  - name: FAW_DEegHRG2de_MERCHANT_ID
+    required: true
+  - name: FAW_DEegHRG2de_SECRET_KEY
+    required: true
+  - name: FAW_FRegAll2fr_SANDBOX_MERCHANT_ID
+    required: true
+  - name: FAW_FRegAll2fr_SANDBOX_SECRET_KEY
+    required: true
   - name: FAW_egAll2be_MERCHANT_ID
     required: true
   - name: FAW_egAll2be_SECURITY_KEY
-    required: true
-  - name: FAW_egAll2de_MERCHANT_ID
-    required: true
-  - name: FAW_egAll2de_SECURITY_KEY
     required: true
   - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
     required: true
@@ -306,6 +322,22 @@ parameters:
   - name: CLICTOPAY_USER_NAME
     required: true
   - name: CLICTOPAY_PASSWORD
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE
+    required: true
+  - name: ENVPAY_CYBERSOURCE_ACCESS_KEY
+    required: true
+  - name: ENVPAY_CYBERSOURCE_PROFILE_ID
+    required: true
+  - name: ENVPAY_CYBERSOURCE_SECRET_KEY
+    required: true
+  - name: ENVPAY_CYBERSOURCE_TRANSACTION_TYPE
     required: true
   - name: BANK_PAYMENT_SECRET
     required: true
@@ -596,14 +628,30 @@ objects:
                   value: ${FAW_COMMON_SANDBOX_MERCHANT_ID}
                 - name: FAW_COMMON_SANDBOX_SECRET_KEY
                   value: ${FAW_COMMON_SANDBOX_SECRET_KEY}
+                - name: FAW_DEegAll2de_SANDBOX_MERCHANT_ID
+                  value: ${FAW_DEegAll2de_SANDBOX_MERCHANT_ID}
+                - name: FAW_DEegAll2de_SANDBOX_SECRET_KEY
+                  value: ${FAW_DEegAll2de_SANDBOX_SECRET_KEY}
+                - name: FAW_DEegCAI2de_MERCHANT_ID
+                  value: ${FAW_DEegCAI2de_MERCHANT_ID}
+                - name: FAW_DEegCAI2de_SECRET_KEY
+                  value: ${FAW_DEegCAI2de_SECRET_KEY}
+                - name: FAW_DEegALY2de_MERCHANT_ID
+                  value: ${FAW_DEegALY2de_MERCHANT_ID}
+                - name: FAW_DEegALY2de_SECRET_KEY
+                  value: ${FAW_DEegALY2de_SECRET_KEY}
+                - name: FAW_DEegHRG2de_MERCHANT_ID
+                  value: ${FAW_DEegHRG2de_MERCHANT_ID}
+                - name: FAW_DEegHRG2de_SECRET_KEY
+                  value: ${FAW_DEegHRG2de_SECRET_KEY}
+                - name: FAW_FRegAll2fr_SANDBOX_MERCHANT_ID
+                  value: ${FAW_FRegAll2fr_SANDBOX_MERCHANT_ID}
+                - name: FAW_FRegAll2fr_SANDBOX_SECRET_KEY
+                  value: ${FAW_FRegAll2fr_SANDBOX_SECRET_KEY}
                 - name: FAW_egAll2be_MERCHANT_ID
                   value: ${FAW_egAll2be_MERCHANT_ID}
                 - name: FAW_egAll2be_SECURITY_KEY
                   value: ${FAW_egAll2be_SECURITY_KEY}
-                - name: FAW_egAll2de_MERCHANT_ID
-                  value: ${FAW_egAll2de_MERCHANT_ID}
-                - name: FAW_egAll2de_SECURITY_KEY
-                  value: ${FAW_egAll2de_SECURITY_KEY}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID
                   value: ${ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID}
                 - name: ENVPAY_GLO_COMMON_SANDBOX_SECRET
@@ -742,6 +790,22 @@ objects:
                   value: ${CLICTOPAY_USER_NAME}
                 - name: CLICTOPAY_PASSWORD
                   value: ${CLICTOPAY_PASSWORD}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY}
+                - name: ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE
+                  value: ${ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE}
+                - name: ENVPAY_CYBERSOURCE_ACCESS_KEY
+                  value: ${ENVPAY_CYBERSOURCE_ACCESS_KEY}
+                - name: ENVPAY_CYBERSOURCE_PROFILE_ID
+                  value: ${ENVPAY_CYBERSOURCE_PROFILE_ID}
+                - name: ENVPAY_CYBERSOURCE_SECRET_KEY
+                  value: ${ENVPAY_CYBERSOURCE_SECRET_KEY}
+                - name: ENVPAY_CYBERSOURCE_TRANSACTION_TYPE
+                  value: ${ENVPAY_CYBERSOURCE_TRANSACTION_TYPE}
                 - name: BANK_PAYMENT_SECRET
                   value: ${BANK_PAYMENT_SECRET}
                 - name: PAYMENT_SERVICE_DOMAIN

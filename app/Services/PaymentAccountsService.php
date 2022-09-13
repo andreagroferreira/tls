@@ -3,32 +3,25 @@
 namespace App\Services;
 
 use App\Repositories\PaymentAccountsRepositories;
-use App\Repositories\PaymentConfigurationsRepositories;
 use App\Repositories\PaymentServiceProvidersRepositories;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PaymentAccountsService
 {
     protected $paymentAccountsRepositories;
     protected $paymentServiceProvidersRepositories;
-    protected $paymentConfigurationsRepositories;
     protected $dbConnectionService;
 
     public function __construct(
         PaymentAccountsRepositories $paymentAccountsRepositories,
         PaymentServiceProvidersRepositories $paymentServiceProvidersRepositories,
-        PaymentConfigurationsRepositories $paymentConfigurationsRepositories,
         DbConnectionService $dbConnectionService
     )
     {
-        $this->dbConnectionService = $dbConnectionService;
         $this->paymentAccountsRepositories = $paymentAccountsRepositories;
         $this->paymentAccountsRepositories->setConnection($dbConnectionService->getConnection());
         $this->paymentServiceProvidersRepositories = $paymentServiceProvidersRepositories;
         $this->paymentServiceProvidersRepositories->setConnection($dbConnectionService->getConnection());
-        $this->paymentConfigurationsRepositories = $paymentConfigurationsRepositories;
-        $this->paymentConfigurationsRepositories->setConnection($dbConnectionService->getConnection());
     }
 
     public function update($params): object
@@ -43,7 +36,7 @@ class PaymentAccountsService
             ['pa_id', 'pa_xref_psp_id', 'pa_type', 'pa_name', 'pa_info']
         );
         $paymentAccountsInfo = $paymentAccounts->toArray();
-        $paymentAccountsInfo['pa_info'] = get_object_vars(json_decode($paymentAccounts->toArray()['pa_info']));
+        $paymentAccountsInfo['pa_info'] = empty($paymentAccountsInfo['pa_info']) ? [] : get_object_vars(json_decode($paymentAccountsInfo['pa_info']));
         $paymentServiceProviders = $this->paymentServiceProvidersRepositories->fetch(
             ['psp_id' => $paymentAccounts['pa_xref_psp_id']],
             ['psp_code', 'psp_name']
@@ -58,32 +51,9 @@ class PaymentAccountsService
         return $paymentServiceProviders->toArray();
     }
 
-    public function create($params)
+    public function create($params): object
     {
-        $db_connection = DB::connection($this->dbConnectionService->getConnection());
-        $db_connection->beginTransaction();
-        try{
-            $accountData = [
-                'pa_xref_psp_id' => $params['pa_xref_psp_id'],
-                'pa_name' => $params['pa_name'],
-                'pa_type' => $params['pa_type'],
-                'pa_info' => $params['pa_info'],
-            ];
-            $accountInfo = $this->paymentAccountsRepositories->create($accountData)->toArray();
-            $configurationsData = [
-                'pc_xref_pa_id' => $accountInfo['pa_id'],
-                'pc_project'    => $params['pc_project'],
-                'pc_city'       => $params['pc_city'],
-                'pc_country'    => $params['pc_country'],
-                'pc_service'    => $params['pc_service'],
-            ];
-            $configurationsInfo = $this->paymentConfigurationsRepositories->create($configurationsData)->toArray();
-            $db_connection->commit();
-            return array_merge($accountInfo, $configurationsInfo);
-        } catch (\Exception $e) {
-            $db_connection->rollBack();
-            return $e->getMessage();
-        }
+        return $this->paymentAccountsRepositories->create($params);
     }
 
 }

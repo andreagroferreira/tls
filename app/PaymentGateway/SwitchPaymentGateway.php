@@ -59,7 +59,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             ];
         }
 
-        $switch_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer']);
+        $switch_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer'], $translations_data['t_service']);
         $return_url = get_callback_url(array_get($switch_config, 'common.return_url'));
         $host = array_get($switch_config, 'current.host');
         $post_data = [
@@ -68,7 +68,6 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             'currency' => $translations_data['t_currency'],
             'paymentType' => 'DB'
         ];
-
         $response = $this->apiService->callGeneralApi('POST', $host . '/v1/checkouts', $post_data, $this->getHeaders($switch_config));
         Log::info('Switch redirto $response:'.json_encode($response));
         $this->paymentService->saveTransactionLog($translations_data['t_transaction_id'], $response, $this->getPaymentGatewayName());
@@ -77,7 +76,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             $this->logWarning('Create checkout failed.', $post_data);
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: payment failed.'
+                'message' => 'Transaction ERROR: payment failed,Please check whether the currency type is correct, such as USD'
             ];
         }
 
@@ -143,7 +142,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
                 'href'       => $transaction['t_onerror_url']
             ];
         }
-        $switch_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer']);
+        $switch_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_service']);
         $host = array_get($switch_config, 'current.host');
         $entity_id = array_get($switch_config, 'current.entity_id');
         $response = $this->apiService->callGeneralApi('GET', $host . $resourcePath.'?entityId='.$entity_id, '', $this->getHeaders($switch_config));
@@ -216,10 +215,10 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
 
     }
 
-    protected function getConfig($client, $issuer)
+    protected function getConfig($client, $issuer, $t_service)
     {
         $app_env = $this->isSandBox();
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
 
         $is_live = $config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {

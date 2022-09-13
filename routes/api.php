@@ -116,6 +116,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('yookassa/redirto', 'YookassaController@redirto');
     $router->post('yookassa/return', 'YookassaController@return');
 
+    $router->post('cybersource/redirto', 'CybersourceController@redirto');
+    $router->post('cybersource/notify', 'CybersourceController@notify');
+    $router->post('cybersource/return', 'CybersourceController@return');
+
     // profile
     $router->post('profile', 'ProfileController@upload');
     $router->get('application-with-profile/{profile}', 'ProfileController@fetchApplications');

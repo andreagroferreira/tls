@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Jobs\PaymentEauditorLogJob;
 use App\Jobs\TransactionSyncJob;
+use App\Jobs\InvoiceMailJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -16,6 +17,7 @@ class PaymentService
     protected $formGroupService;
     protected $invoiceService;
     protected $apiService;
+    protected $tokenResolveService;
     protected $agent_name = '';
     protected $force_pay_for_not_online_payment_avs = 'no';//支持支付 s_online_avs=no 的avs
 
@@ -24,14 +26,16 @@ class PaymentService
         TransactionLogsService $transactionLogsService,
         FormGroupService $formGroupService,
         InvoiceService $invoiceService,
-        ApiService $apiService
+        ApiService $apiService,
+        TokenResolveService $tokenResolveService
     )
     {
         $this->transactionService   = $transactionService;
         $this->transactionLogsService   = $transactionLogsService;
         $this->formGroupService     = $formGroupService;
         $this->invoiceService       = $invoiceService;
-        $this->apiService  = $apiService;
+        $this->apiService           = $apiService;
+        $this->tokenResolveService  = $tokenResolveService;
     }
 
     public function saveTransactionLog($transaction_id, $params, $payment_gateway) {
@@ -81,6 +85,8 @@ class PaymentService
             $transaction[$field_key] = $field_val;
         }
         $this->invoiceService->generate($transaction);
+
+        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
 
         if(!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . json_encode($error_msg, 256));
@@ -248,5 +254,42 @@ class PaymentService
 
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
         return true;
+    }
+
+     /**
+     * @param array $transaction
+     * @param string $collection_name
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function sendInvoice(array $transaction, string $collection_name)
+    {
+        $issuer = $transaction['t_issuer'];
+        $fg_id = $transaction['t_xref_fg_id'];
+        $client = $transaction['t_client'];
+        $callback_url = $transaction['t_callback_url'];
+        $lang = 'en-us';
+        if ($callback_url) {
+            $url_query_string = parse_url($callback_url, PHP_URL_QUERY);
+            parse_str($url_query_string, $url_query_string_to_array);
+
+            if (!empty($url_query_string_to_array['lang'])) {
+                $lang =  $url_query_string_to_array['lang'];
+            }
+        }
+
+        $content = $this->invoiceService->getInvoiceContent($collection_name, $issuer, $lang);
+        if (!empty($content)) {
+            $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer, $lang, $fg_id);
+            if (!empty($resolved_content)) {
+                $response = $this->convertInvoiceContentToPdf($transaction, $resolved_content['invoice_content']);
+                if (!$response) {
+                    throw new \Exception("Error Processing Request");
+                }
+                $this->invoiceService->sendInvoice($fg_id, $client, $resolved_content);
+            }
+        }
     }
 }

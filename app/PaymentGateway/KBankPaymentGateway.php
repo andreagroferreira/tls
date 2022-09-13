@@ -63,7 +63,8 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $status             = $return_params['status'];
         $transaction_state  = $return_params['transaction_state'];
         $transaction        = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $charge_id, 't_tech_deleted' => false]);
-        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service          = $transaction['t_service'] ?? 'tls';
+        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             $host       = $kbank_config['prod']['host'];
@@ -117,7 +118,8 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $client  = $translationsData['t_client'];
         $issuer  = $translationsData['t_issuer'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
-        $kbank_config   = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $t_service = $translationsData['t_service'] ?? 'tls';
+        $kbank_config   = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             $host       = $kbank_config['prod']['host'];
@@ -173,7 +175,8 @@ class KBankPaymentGateway implements PaymentGatewayInterface
                 'message'    => 'transaction_id_not_exists'
             ];
         }
-        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service = $transaction['t_service'] ?? 'tls';
+        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             $host       = $kbank_config['prod']['host'];

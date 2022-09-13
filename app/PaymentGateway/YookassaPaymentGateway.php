@@ -58,7 +58,7 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
-        $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer']);
+        $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_service']);
 
         $yookassa_params = [
             'amount' => [
@@ -159,9 +159,9 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         return $this->paymentService->confirm($transaction, $confirm_params);
     }
 
-    public function getYookassaConfig($client, $issuer): array
+    public function getYookassaConfig($client, $issuer, $t_service): array
     {
-        $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $yookassa_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
         return $yookassa_config;
     }

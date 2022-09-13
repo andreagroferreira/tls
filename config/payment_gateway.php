@@ -23,6 +23,11 @@ return [
         ]
     ],
     'be' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'gbEDI2be' => [
             'globaliris' => [
                 'label' => 'GLOBALIRIS pay',
@@ -688,6 +693,11 @@ return [
         ],
     ],
     'ch' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'zaPRY2ch' => [
             'paypal' => [
                 'label' => 'PAYPAL pay',
@@ -900,6 +910,11 @@ return [
         ],
     ],
     'de' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'cnBJS2de' => [
             'alipay' => [
                 'label'   => 'Alipay pay',
@@ -1279,12 +1294,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],*/
+                ],
             ],
         ],
         'gbEDI2de' => [
@@ -1305,12 +1320,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],*/
+                ],
             ],
         ],
         'gbMNC2de' => [
@@ -1331,12 +1346,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],*/
+                ],
             ],
         ],
         'egCAI2de' => [
@@ -1359,14 +1374,14 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_SECRET_KEY',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]*/
+                    'merchant_id' => 'ENVPAY_FAW_DEegCAI2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegCAI2de_SECRET_KEY',
+                ]
             ],
         ],
         'egALY2de' => [
@@ -1389,14 +1404,14 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_SECRET_KEY',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]*/
+                    'merchant_id' => 'ENVPAY_FAW_DEegALY2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegALY2de_SECRET_KEY',
+                ]
             ]
         ],
         'egHRG2de' => [
@@ -1419,18 +1434,23 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'ENVPAY_FAW_COMMON_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_COMMON_SANDBOX_SECRET_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegAll2de_SANDBOX_SECRET_KEY',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'ENVPAY_FAW_egAll2de_MERCHANT_ID',
-                    'secret_key' => 'ENVPAY_FAW_egAll2de_SECURITY_KEY',
-                ]*/
+                    'merchant_id' => 'ENVPAY_FAW_DEegHRG2de_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_DEegHRG2de_SECRET_KEY',
+                ]
             ]
         ]
     ],
     'pl' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'uaKBP2pl' => [
             'paysoft' => [
                 'label' => 'Paysoft pay',
@@ -1455,6 +1475,11 @@ return [
         ],
     ],
     'fr' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'azBAK2fr'=> [
             'paypal' => [
                 'label' => 'PAYPAL pay',
@@ -1525,13 +1550,13 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'FAW_COMMON_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'FAW_COMMON_SANDBOX_SECRET_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_SECRET_KEY',
                 ],
                 'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'FAW_FRegAll2fr_MERCHANT_ID',
-                    'secret_key' => 'FAW_FRegAll2fr_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_FRegAll2fr_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_FRegAll2fr_SECURITY_KEY',
                 ]
             ]
         ],
@@ -1555,13 +1580,13 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'FAW_egCAI2fr_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'FAW_egCAI2fr_SANDBOX_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_SECRET_KEY',
                 ],
                 'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'FAW_egCAI2fr_MERCHANT_ID',
-                    'secret_key' => 'FAW_egCAI2fr_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_egCAI2fr_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egCAI2fr_SECURITY_KEY',
                 ]
             ]
         ],
@@ -1585,13 +1610,13 @@ return [
                 ],
                 'sandbox' => [
                     'host' => 'https://atfawry.fawrystaging.com',
-                    'merchant_id' => 'FAW_egALY2fr_SANDBOX_MERCHANT_ID',
-                    'secret_key' => 'FAW_egALY2fr_SANDBOX_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_FRegAll2fr_SANDBOX_SECRET_KEY',
                 ],
                 'prod' => [
                     'host' => 'https://www.atfawry.com',
-                    'merchant_id' => 'FAW_egALY2fr_MERCHANT_ID',
-                    'secret_key' => 'FAW_egALY2fr_SECURITY_KEY',
+                    'merchant_id' => 'ENVPAY_FAW_egALY2fr_MERCHANT_ID',
+                    'secret_key' => 'ENVPAY_FAW_egALY2fr_SECURITY_KEY',
                 ]
             ]
         ],
@@ -1878,6 +1903,31 @@ return [
                     'storeKey' => env("ENVPAY_CMI_FRmaAll2fr_STOREKEY")
                 ]
             ]
+        ],
+        'mgTNR2fr'=> [
+            'cybersource' => [
+                'label' => 'Cybersource pay',
+                'common' => [
+                    'env' => 'live',
+                    "currency" => "MGA",
+                    "return_url" => "/cybersource/return",
+                    "notify_url" => "/cybersource/notify"
+                ],
+                'sandbox' => [
+                    "host" => " https://testsecureacceptance.cybersource.com/pay",
+                    "access_key" => env('ENVPAY_CYBERSOURCE_SANDBOX_ACCESS_KEY'),
+                    "profile_id" => env('ENVPAY_CYBERSOURCE_SANDBOX_PROFILE_ID'),
+                    "transaction_type" => env('ENVPAY_CYBERSOURCE_SANDBOX_TRANSACTION_TYPE'),
+                    "secret_key" => env('ENVPAY_CYBERSOURCE_SANDBOX_SECRET_KEY')
+                ],
+                'prod' => [
+                    "host" => "https://secureacceptance.cybersource.com/pay",
+                    "access_key" => env('ENVPAY_CYBERSOURCE_ACCESS_KEY'),
+                    "profile_id" => env('ENVPAY_CYBERSOURCE_PROFILE_ID'),
+                    "transaction_type" => env('ENVPAY_CYBERSOURCE_TRANSACTION_TYPE'),
+                    "secret_key" => env('ENVPAY_CYBERSOURCE_SECRET_KEY')
+                ]
+            ],
         ],
         'tnAll2fr'=> [
             'clictopay' => [
@@ -2221,6 +2271,11 @@ return [
         ],
     ],
     'leg_de' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'egCAI2de' => [
             'fawry' => [
                 'label' => 'Fawry pay',

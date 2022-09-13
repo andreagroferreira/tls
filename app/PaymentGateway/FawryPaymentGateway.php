@@ -77,9 +77,10 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $issuer         = $translations_data['t_issuer'];
         $fg_id          = $translations_data['t_xref_fg_id'];
         $order_id       = $translations_data['t_transaction_id'] ?? '';
+        $t_service      = $translations_data['t_service'] ?? 'tls';
         $application    = $this->formGroupService->fetch($fg_id, $client);
         $u_email        = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
-        $payment_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $payment_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $is_live        = $payment_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live account
@@ -120,7 +121,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 }
                 $tmp['price'] = $price;
                 $tmp['quantity'] = 1;
-                $quantity .= $tmp['itemId'] . $tmp['quantity'] . $price;
+                $quantity .= $tmp['itemId'] . $tmp['quantity'] . number_format($price, 2, '.', '');
                 array_push($charge_items, $tmp);
             }
         } else {
@@ -260,8 +261,9 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'href'       => $transaction['t_redirect_url']
             ];
         }
-        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
-        $is_live = $payment_config['common']['env'] == 'live' ? true : false;
+        $t_service      = $transaction['t_service'] ?? 'tls';
+        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
+        $is_live = $payment_config['common']['env'] == 'live';
         $app_env = $this->isSandBox();
         if ($is_live && !$app_env) {
             // Live account
@@ -437,7 +439,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         }
 
         //get trade information
-        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $t_service      = $transaction['t_service'] ?? 'tls';
+        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
         $app_env = $this->isSandBox();
         $is_live = $payment_config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {

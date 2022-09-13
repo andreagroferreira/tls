@@ -67,7 +67,7 @@ class QueueService
         Log::info('QueueService syncTransaction:' . $client .'---'. json_encode($data));
         $response = $this->apiService->callTlsApi('POST', '/tls/v1/' . $client . '/sync_payment_action', $data);
         Log::info('QueueService syncTransaction $response:'. json_encode($response));
-        if ($response['status'] != 200) {
+        if ($response['status'] != 200 || ($response['body']['status'] ?? '') == 'fatal') {
             Log::error('QueueService sync to tls fail');
             throw new \Exception("sync to tls fail");
         } else {
@@ -77,5 +77,4 @@ class QueueService
             Log::info('QueueService sync to tls success');
         }
     }
-
 }

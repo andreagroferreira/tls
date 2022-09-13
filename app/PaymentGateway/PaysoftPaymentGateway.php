@@ -62,7 +62,8 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         $application_group = $this->formGroupService->fetch($fg_id, $client);
         $u_email = array_get($application_group, 'u_relative_email') ?? array_get($application_group, 'u_email') ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
 
-        $paysoft_config = $this->getConfig($client, $translations_data['t_issuer']);
+        $t_service      = $translations_data['t_service'] ?? 'tls';
+        $paysoft_config = $this->getConfig($client, $translations_data['t_issuer'], $t_service);
         $return_url = get_callback_url(array_get($paysoft_config, 'common.return_url'));
 
         $form_fields['LMI_MERCHANT_ID'] = array_get($paysoft_config, 'current.merchant_id');
@@ -105,7 +106,8 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
             return false;
         }
 
-        $config = $this->getConfig($transaction['t_client'], $transaction['t_issuer']);
+        $t_service = $transaction['t_service'] ?? 'tls';
+        $config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $t_service);
 
         if (!$this->validateSignature($config, $params)) {
             $this->logWarning('notify data check failed, signature verification failed.', $params);
@@ -142,7 +144,8 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
             return false;
         }
 
-        $paysoft_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer']);
+        $t_service = $transaction['t_service'] ?? 'tls';
+        $paysoft_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $t_service);
 
         if ($transaction['t_status'] != 'pending') {
             $this->logWarning('initial notify data check failed, incorrect order status.', $params);
@@ -186,10 +189,10 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         ];
     }
 
-    protected function getConfig($client, $issuer)
+    protected function getConfig($client, $issuer, $t_service)
     {
         $app_env = $this->isSandBox();
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $is_live = $config['common']['env'] == 'live' ? true : false;
         if ($is_live && !$app_env) {
             // Live account

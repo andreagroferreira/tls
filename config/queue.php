@@ -89,6 +89,14 @@ return [
             'queue' => 'payment_api_eauditor_log_queue',
             'retry_after' => 90,
         ],
+
+        'tlspay_invoice_queue' => [
+            'driver' => 'database',
+            'connection' => 'payment_pgsql',
+            'table' => 'jobs',
+            'queue' => 'tlspay_invoice_queue',
+            'retry_after' => 90,
+        ],
     ],
 
     /*

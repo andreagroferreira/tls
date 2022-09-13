@@ -55,6 +55,7 @@ class TransactionRepository
                 't_gateway_transaction_id AS gateway_transaction_id',
                 't_currency AS currency',
                 't_status AS status',
+                't_service AS service',
                 't_tech_creation AS tech_creation',
                 't_tech_modification AS tech_modification',
             ])

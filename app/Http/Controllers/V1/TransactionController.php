@@ -255,6 +255,7 @@ class TransactionController extends BaseController
             'callback_url' => 'required|string',
             'workflow' => 'required|string',
             'payment_method' => 'nullable',
+            'service' => 'nullable',
             'items' => [
                 'bail',
                 'required',
@@ -381,7 +382,7 @@ class TransactionController extends BaseController
             $params['issuer'] = explode(',', trim($request->input('issuer'), ','));
         }
 
-        $validator = validator(array_merge($params, $request->only(['status'])), [
+        $validator = validator(array_merge($params, $request->only(['status', 'service'])), [
             'page' => 'required|integer',
             'limit' => 'required|integer',
             'start_date' => 'required|date',
@@ -391,6 +392,11 @@ class TransactionController extends BaseController
                 'sometimes',
                 'required',
                 Rule::in(['pending', 'waiting', 'close', 'done'])
+            ],
+            'service' => [
+                'sometimes',
+                'required',
+                Rule::in(['tls', 'gov'])
             ]
         ], [
             'issuer.*.regex' => 'The issuer format is invalid.'

@@ -21,8 +21,7 @@ class QueueService
         JobRepository       $JobRepository,
         FailedJobRepository $failedJobRepository,
         ApiService $apiService,
-        ActionRepository $actionRepository,
-        PaymentService $paymentService
+        ActionRepository $actionRepository
     )
     {
         $this->dbConnectionService = $dbConnectionService;
@@ -32,7 +31,6 @@ class QueueService
         $this->failedJobRepository->setConnection($this->dbConnectionService->getConnection());
         $this->apiService  = $apiService;
         $this->actionRepository = $actionRepository;
-        $this->paymentService = $paymentService;
     }
 
 
@@ -78,24 +76,5 @@ class QueueService
             }
             Log::info('QueueService sync to tls success');
         }
-    }
-
-    /**
-     * Generate PDF and store in Filelibrary
-     *
-     * @param array $transaction
-     * @param array $invoice_content
-     */
-    public function storePDF($transaction, $invoice_content) {
-        $this->paymentService->convertInvoiceContentToPdf($transaction, $invoice_content);
-    }
-
-    /**
-     * Send Email
-     *
-     * @param array $email_content
-     */
-    public function sendMail($email_content) {
-        $this->apiService->callEmailApi('POST', 'send_email', $email_content);
     }
 }

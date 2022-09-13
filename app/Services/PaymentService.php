@@ -17,7 +17,6 @@ class PaymentService
     protected $formGroupService;
     protected $invoiceService;
     protected $apiService;
-    protected $directusService;
     protected $tokenResolveService;
     protected $agent_name = '';
     protected $force_pay_for_not_online_payment_avs = 'no';//支持支付 s_online_avs=no 的avs
@@ -28,7 +27,6 @@ class PaymentService
         FormGroupService $formGroupService,
         InvoiceService $invoiceService,
         ApiService $apiService,
-        DirectusService $directusService,
         TokenResolveService $tokenResolveService
     )
     {
@@ -36,9 +34,8 @@ class PaymentService
         $this->transactionLogsService   = $transactionLogsService;
         $this->formGroupService     = $formGroupService;
         $this->invoiceService       = $invoiceService;
-        $this->apiService  = $apiService;
-        $this->directusService = $directusService;
-        $this->tokenResolveService = $tokenResolveService;
+        $this->apiService           = $apiService;
+        $this->tokenResolveService  = $tokenResolveService;
     }
 
     public function saveTransactionLog($transaction_id, $params, $payment_gateway) {
@@ -89,23 +86,7 @@ class PaymentService
         }
         $this->invoiceService->generate($transaction);
 
-        $issuer = $transaction['t_issuer'];
-        $fg_id = $transaction['t_xref_fg_id'];
-        $callback_url = $transaction['t_callback_url'];
-        $lang = 'en-us';
-        if ($callback_url) {
-            $url_query_string = parse_url($callback_url, PHP_URL_QUERY);
-            parse_str($url_query_string, $url_query_string_to_array);
-
-            if (!empty($url_query_string_to_array['lang'])) {
-                $lang =  $url_query_string_to_array['lang'];
-            }
-        }
-        $content = $this->getInvoiceContent('tlspay_email_invoice', $issuer, $lang);
-        $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer, $lang, $fg_id);
-        if (!empty($resolved_content)) {
-            $this->sendInvoice($transaction, $resolved_content, 'tlspay_invoice_queue');
-        }
+        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
 
         if(!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . json_encode($error_msg, 256));
@@ -122,48 +103,6 @@ class PaymentService
 
         $this->transactionLogsService->create(['tl_xref_transaction_id' => $transaction['t_transaction_id'], 'tl_content' =>json_encode($result)]);
         return $result;
-    }
-
-    private function getInvoiceContent($collection_name, $issuer, $lang) {
-        $content = [];
-
-        $country = substr($issuer, 0, 2);
-        $city = substr($issuer, 2, 3);
-
-        $select_filters = [
-            'status' => [
-                'eq' => 'published'
-            ],
-            'code' => [
-                'in' => [$city, $country, 'ww']
-            ],
-        ];
-        $select_fields = '*.*';
-        $content = $this->directusService->getContent($collection_name, $select_fields, $select_filters, $options = ['lang'=> $lang]);
-
-        return $content;
-    }
-
-    private function sendInvoice($transaction, $resolved_content, $queue_name) {
-        $fg_id = $transaction['t_xref_fg_id'];
-        $client = $transaction['t_client'];
-
-        $form_group = $this->formGroupService->fetch($fg_id, $client);
-        $form_user_email = $form_group['u_email'] ?? '';
-        if (!empty($form_user_email)) {
-            if (!empty($resolved_content['email_content']) && !empty($resolved_content['invoice_content'])) {
-                $email_content = [
-                    'to' => 'preethi.jogin.ext@tlscontact.com', //$form_user_email,
-                    'subject' => $resolved_content['email_title'],
-                    'body' => $resolved_content['email_content'],
-                    'html2pdf' => [
-                        'invoice' => $resolved_content['invoice_content']
-                    ]
-                ];
-                                
-                dispatch(new InvoiceMailJob($transaction, $resolved_content['invoice_content'], $email_content))->onConnection($queue_name)->onQueue($queue_name);
-            }
-        }
     }
 
     private function syncAction($transaction, $gateway)
@@ -315,5 +254,42 @@ class PaymentService
 
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $result);
         return true;
+    }
+
+     /**
+     * @param array $transaction
+     * @param string $collection_name
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function sendInvoice(array $transaction, string $collection_name)
+    {
+        $issuer = $transaction['t_issuer'];
+        $fg_id = $transaction['t_xref_fg_id'];
+        $client = $transaction['t_client'];
+        $callback_url = $transaction['t_callback_url'];
+        $lang = 'en-us';
+        if ($callback_url) {
+            $url_query_string = parse_url($callback_url, PHP_URL_QUERY);
+            parse_str($url_query_string, $url_query_string_to_array);
+
+            if (!empty($url_query_string_to_array['lang'])) {
+                $lang =  $url_query_string_to_array['lang'];
+            }
+        }
+
+        $content = $this->invoiceService->getInvoiceContent($collection_name, $issuer, $lang);
+        if (!empty($content)) {
+            $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer, $lang, $fg_id);
+            if (!empty($resolved_content)) {
+                $response = $this->convertInvoiceContentToPdf($transaction, $resolved_content['invoice_content']);
+                if (!$response) {
+                    throw new \Exception("Error Processing Request");
+                }
+                $this->invoiceService->sendInvoice($fg_id, $client, $resolved_content);
+            }
+        }
     }
 }

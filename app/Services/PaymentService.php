@@ -266,6 +266,7 @@ class PaymentService
             Log::warning('Transaction Error: receipt pdf upload failed');
             return false;
         } else {
+            unlink($pdfstream);
             return true;
         }
     }

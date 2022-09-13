@@ -42,44 +42,6 @@ class TokenResolveService
     }
 
     /**
-     * Get Directus template for test purspose
-     *
-     * @param string $collection
-     * @param string $lang
-     * @param string $issuer
-     * @param string $fg_id
-     * @return array
-     * @throws \Exception
-     */
-    public function getTemplateData(string $collection, string $issuer, string $lang, string $fg_id): array
-    {
-        $this->issuer = $issuer;
-        $this->country = substr($this->issuer, 0,2);
-        $this->city = substr($this->issuer, 2,3);
-        $filters = [
-            'code'=>[
-                'in' => [
-                    $this->city,
-                    $this->country,
-                    'ww'
-                ]
-            ],
-            'status' => [
-                'eq' => 'published'
-            ]
-        ];
-        $select = 'code, translation.email_title, translation.email_content, translation.invoice_content, translation.activation';
-        $options['lang'] = $lang;
-        $getTemplate = $this->directusService->getContent(
-            $collection,
-            $select,
-            $filters,
-            $options
-        );
-        return $this->resolveTemplate($getTemplate,$issuer, $lang, $fg_id);
-    }
-
-    /**
      * @param array $template
      * @param string $issuer
      * @param string $lang
@@ -87,7 +49,6 @@ class TokenResolveService
      * @return array
      * @throws \Exception
      */
-
     public function resolveTemplate(array $template,  string $issuer, string $lang, string $fg_id): array
     {
         $data = [];
@@ -125,7 +86,6 @@ class TokenResolveService
     }
 
     /**
-     * returns the list of tokens after preg_match with given pattern
      *
      * @param array $content
      *
@@ -149,7 +109,6 @@ class TokenResolveService
     }
 
     /**
-     * returns the list of resolved tokens
      *
      * @param array $tokens
      *
@@ -184,7 +143,6 @@ class TokenResolveService
     }
 
     /**
-     *  get best matched collection item based on city,country & ww
      *
      * @param array $collections
      *
@@ -249,7 +207,6 @@ class TokenResolveService
     }
 
     /**
-     * calls directus collection to get translation of Token
      *
      * @param array $token_details
      * @param array $issuer_filter

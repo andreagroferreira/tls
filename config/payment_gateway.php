@@ -1294,12 +1294,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],*/
+                ],
             ],
         ],
         'gbEDI2de' => [
@@ -1320,12 +1320,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],*/
+                ],
             ],
         ],
         'gbMNC2de' => [
@@ -1346,12 +1346,12 @@ return [
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
                 ],
-                /*'prod' => [
+                'prod' => [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',
-                ],*/
+                ],
             ],
         ],
         'egCAI2de' => [

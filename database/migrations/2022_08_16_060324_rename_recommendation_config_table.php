@@ -26,5 +26,9 @@ class RenameRecommendationConfigTable extends Migration
      */
     public function down()
     {
+        Schema::connection('deploy_payment_pgsql')->rename('recommendation_config', 'recommendataion_config');
+        Schema::connection('deploy_payment_pgsql')->table('recommendataion_config', function (Blueprint $table) {
+            $table->renameIndex('recommendation_config_pkey', 'recommendataion_config_pkey');
+        });
     }
 }

@@ -24,7 +24,7 @@ class CreatePaymentAccountsTable extends Migration
             $table->timestamp('pa_tech_creation')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('pa_tech_modification')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
-        DB::statement(
+        DB::connection('deploy_payment_pgsql')->statement(
             "CREATE UNIQUE INDEX payment_accounts_unique_name
                     ON payment_accounts(pa_name)
                     WHERE pa_tech_deleted is false"

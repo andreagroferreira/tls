@@ -1,16 +1,19 @@
 <?php
 
-
 namespace App\Services;
 
 class TokenResolveService
 {
     /**
      * @var DirectusService
-     * @var ApiService
      */
     protected DirectusService $directusService;
+
+    /**
+     * @var ApiService
+     */
     protected ApiService $apiService;
+
     /**
      * @var string
      */
@@ -33,7 +36,7 @@ class TokenResolveService
 
     /**
      * @param DirectusService $directusService
-     * @param ApiService $apiService
+     * @param ApiService      $apiService
      */
     public function __construct(DirectusService $directusService, ApiService $apiService)
     {
@@ -42,15 +45,21 @@ class TokenResolveService
     }
 
     /**
-     * @param array $template
+     * @param array  $template
      * @param string $issuer
      * @param string $lang
      * @param string $fg_id
-     * @return array
+     *
      * @throws \Exception
+     *
+     * @return array
      */
-    public function resolveTemplate(array $template,  string $issuer, string $lang, string $fg_id): array
-    {
+    public function resolveTemplate(
+        array $template,
+        string $issuer,
+        string $lang,
+        string $fg_id
+    ): array {
         $data = [];
         $this->issuer = $issuer;
         $this->country = substr($this->issuer, 0, 2);
@@ -61,7 +70,7 @@ class TokenResolveService
         }
         $data = $this->getCorrectCollectionTranslation($template);
 
-        if(empty($data['email_content']) && empty($data['invoice_content'])) {
+        if (empty($data['email_content']) && empty($data['invoice_content'])) {
             return $data;
         }
 
@@ -71,7 +80,11 @@ class TokenResolveService
             return $data;
         }
 
-        $resolvedTokens = $this->getResolvedTokens($listOfToken, $lang, $fg_id);
+        $resolvedTokens = $this->getResolvedTokens(
+            $listOfToken,
+            $lang,
+            $fg_id
+        );
 
         if (empty($resolvedTokens)) {
             throw new \Exception('Token were not resolved');
@@ -86,38 +99,40 @@ class TokenResolveService
     }
 
     /**
-     *
      * @param array $content
      *
      * @return array
      */
     private function pregMatchTemplate(array $content): array
     {
-        $pattern = "~({{\w+:\w+:\w+}}|{{\w+:\w+}})~";
+        $pattern = '~({{\\w+:\\w+:\\w+}}|{{\\w+:\\w+}})~';
 
         preg_match_all($pattern, $content['email_content'], $email_tokens);
         preg_match_all($pattern, $content['invoice_content'], $invoice_tokens);
-        if(count($email_tokens)) {
+        if (count($email_tokens)) {
             $tokens[] = array_unique($email_tokens, SORT_REGULAR)[0];
         }
-        if(count($invoice_tokens)) {
+        if (count($invoice_tokens)) {
             $tokens[] = array_unique($invoice_tokens, SORT_REGULAR)[0];
-
         }
         // will hold all tokens from email and invoice content
         return array_unique($tokens, SORT_REGULAR)[0];
     }
 
     /**
-     *
-     * @param array $tokens
-     *
-     * @return array
+     * @param array  $tokens
+     * @param string $lang
+     * @param string $fg_id
      *
      * @throws \Exception
+     *
+     * @return array
      */
-    private function getResolvedTokens(array $tokens, string $lang, string $fg_id): array
-    {
+    private function getResolvedTokens(
+        array $tokens,
+        string $lang,
+        string $fg_id
+    ): array {
         $resolved_tokens = [];
 
         foreach ($tokens as $token) {
@@ -126,16 +141,12 @@ class TokenResolveService
              * {{collection : collection_name : field_name}}
              * {{application : field_name}}
              */
-            $token_details = explode(':', str_replace(array('{{','}}'), '', $token));
+            $token_details = explode(':', str_replace(['{{', '}}'], '', $token));
 
-            if($token_details[0] == 'c') {  /* if collection token - directus */
-                $resolved_tokens[$token] = $this->getTokenTranslationFromDirectus(
-                    $token_details,
-                    $lang
-                );
-            }
-            else if($token_details[0] == 'a') { /* if application token - api call */
-                $resolved_tokens[$token] = $this->getTokenTranslationFromApplication($token_details,$fg_id);
+            if ('c' == $token_details[0]) {  // if collection token - directus
+                $resolved_tokens[$token] = $this->getTokenTranslationFromDirectus($token_details, $lang);
+            } elseif ('a' == $token_details[0]) { // if application token - api call
+                $resolved_tokens[$token] = $this->getTokenTranslationFromApplication($token_details, $fg_id);
             }
         }
 
@@ -143,38 +154,37 @@ class TokenResolveService
     }
 
     /**
-     *
      * @param array $collections
      *
-     * @return array
-     *
      * @throws \Exception
+     *
+     * @return array
      */
-    private function getCorrectCollectionTranslation(
-        array $collections
-    ): array
+    private function getCorrectCollectionTranslation(array $collections): array
     {
         $numberOfCollections = count($collections);
-        $globalOnly = $numberOfCollections === 1;
+        $globalOnly = 1 === $numberOfCollections;
         $hasCity = $numberOfCollections > 2;
 
         $collectionIndex = null;
         foreach ($collections as $i => $collection) {
             $code = $collection['code'];
-            if($code == $this->city) {
+            if ($code == $this->city) {
                 $collectionIndex = $i;
+
                 break;
             }
-            else if(!$hasCity && $code == $this->country) {
+            if (!$hasCity && $code == $this->country) {
                 $collectionIndex = $i;
+
                 break;
             }
-            else if($globalOnly && $code == 'ww') {
+            if ($globalOnly && 'ww' == $code) {
                 $collectionIndex = $i;
             }
         }
 
-        if ($collectionIndex === null) {
+        if (null === $collectionIndex) {
             throw new \Exception('Correct collection index not found');
         }
 
@@ -207,38 +217,34 @@ class TokenResolveService
     }
 
     /**
-     *
-     * @param array $token_details
-     * @param array $issuer_filter
-     *
-     * @return string
+     * @param array  $token_details
+     * @param string $lang
      *
      * @throws \Exception
+     *
+     * @return string
      */
-    private function getTokenTranslationFromDirectus(
-        array $token_details,
-        string $lang
-    ): string
+    private function getTokenTranslationFromDirectus(array $token_details, string $lang): string
     {
         $collection = $token_details[1];
         $field = 'translation.'.$token_details[2];
         $options['lang'] = $lang;
-        $select = "code," . $field;
+        $select = 'code,'.$field;
         $issuer_filter = [
             $this->city,
-            $this->country ,
-            'ww'
+            $this->country,
+            'ww',
         ];
 
-        if($token_details[1] == 'application_centers') {
+        if ('application_centers' == $token_details[1]) {
             $issuer_filter = [$this->issuer, 'ww'];
         }
         $filters = [
-            'code'=>[
-                'in' =>  $issuer_filter
+            'code' => [
+                'in' => $issuer_filter,
             ],
             'status' => [
-                'eq' => 'published'
+                'eq' => 'published',
             ],
         ];
 
@@ -250,7 +256,7 @@ class TokenResolveService
         );
 
         if (empty($tokenCollections)) {
-            throw new \Exception('No collections returned for token: ' . $collection . '.' . $field);
+            throw new \Exception('No collections returned for token: '.$collection.'.'.$field);
         }
 
         if (count($tokenCollections) > 1) {
@@ -263,28 +269,27 @@ class TokenResolveService
     }
 
     /**
-     * @param array $token_details
+     * @param array  $token_details
      * @param string $fg_id
-     * @return string
+     *
      * @throws \Exception
+     *
+     * @return string
      */
-    private function getTokenTranslationFromApplication(
-        array $token_details,
-        string $fg_id
-    ): string
+    private function getTokenTranslationFromApplication(array $token_details, string $fg_id): string
     {
         $translations = [];
-        $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/'.$this->client.'/forms_in_group/' . $fg_id);
-        if($applicationsResponse['status'] != 200){
+        $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/'.$this->client.'/forms_in_group/'.$fg_id);
+        if (200 != $applicationsResponse['status']) {
             throw new \Exception('No applicant details returned for token: '.$token_details[1]);
         }
-        foreach ($applicationsResponse['body'] as $applicant){
+        foreach ($applicationsResponse['body'] as $applicant) {
             $translations[] = $applicant[$token_details[1]];
         }
-        if(empty($translations)){
+        if (empty($translations)) {
             return '';
         }
-        return implode(', ', array_unique($translations,SORT_REGULAR));
-    }
 
+        return implode(', ', array_unique($translations, SORT_REGULAR));
+    }
 }

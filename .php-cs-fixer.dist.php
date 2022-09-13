@@ -12,6 +12,5 @@ return $config->setRules([
     'strict_param' => true,
     'no_superfluous_phpdoc_tags' => false,
     'phpdoc_no_empty_return' => false,
-    'phpdoc_line_span' => ['property' => 'single'],
     'array_syntax' => ['syntax' => 'short'],
 ])->setFinder($finder);

@@ -14,7 +14,8 @@ class GatewayService
 
     public function getGateways($client, $issuer, $service = 'tls')
     {
-        if (env('USE_UI_CONFIGURATION')) {
+        $getClientUseUi = $this->getClientUseUi();
+        if ($getClientUseUi) {
             $config = $this->paymentGatewayService->getConfig($client, $issuer, $service);
         } else {
             $config = $this->getConfig($client, $issuer);
@@ -22,11 +23,24 @@ class GatewayService
         return $config ?? [];
     }
 
-    public function getGateway($client, $issuer, $gateway, $service = 'tls') {
-        if (env('USE_UI_CONFIGURATION')) {
+    public function getGateway($client, $issuer, $gateway, $service = 'tls')
+    {
+        $getClientUseUi = $this->getClientUseUi();
+        if ($getClientUseUi) {
             return $this->paymentGatewayService->getPaymentAccountConfig($client, $issuer, $gateway, $service);
         } else {
             return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+        }
+    }
+
+    public function getClientUseUi()
+    {
+        $current_client = env('CLIENT');
+        $clients = explode(',', env('USE_UI_CONFIGURATION'));
+        if (in_array($current_client, $clients)) {
+            return true;
+        } else {
+            return false;
         }
     }
 

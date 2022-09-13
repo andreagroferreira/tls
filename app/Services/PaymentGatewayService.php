@@ -121,11 +121,21 @@ class PaymentGatewayService
         }
         foreach ($payment_gateway as $k => $v) {
             $gateway = $v['psp_code'];
-            $payment_gateway_config[$gateway]['label'] = config("payment_gateway_accounts.$gateway.label");
-            $payment_gateway_config[$gateway]['common'] = config("payment_gateway_accounts.$gateway.common");
-            $payment_gateway_config[$gateway][$v['pa_type']] = json_decode($v['pa_info'], true);
-            $payment_gateway_config[$gateway]['sort'] = ($gateway == 'pay_later' ? 2 : 1);
+            if ($v['psp_code'] != 'pay_later') {
+                $gateway_type = $v['psp_code'] . '_' . $v['pa_type'];
+            } else {
+                $gateway_type = $v['psp_code'];
+            }
+            $payment_gateway_config[$gateway_type]['pa_id'] = $v['pa_id'];
+            $payment_gateway_config[$gateway_type]['psp_code'] = $gateway;
+            $payment_gateway_config[$gateway_type]['label'] = config("payment_gateway_accounts.$gateway.label");
+            $payment_gateway_config[$gateway_type]['type'] = $v['pa_type'];
+            $payment_gateway_config[$gateway_type]['common'] = config("payment_gateway_accounts.$gateway.common");
+            $payment_gateway_config[$gateway_type][$v['pa_type']] = json_decode($v['pa_info'], true);
+            $payment_gateway_config[$gateway_type]['sort'] = ($gateway == 'pay_later' ? 2 : 1);
         }
+        $pa_name = array_column($payment_gateway_config, 'psp_code');
+        array_multisort($pa_name, SORT_ASC, $payment_gateway_config);
         $sort_payment_gateway_config = collect($payment_gateway_config);
         $payment_gateway_config = $sort_payment_gateway_config->sortBy('sort')->toArray();
         return $payment_gateway_config ?? [];

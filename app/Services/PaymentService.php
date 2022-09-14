@@ -257,7 +257,7 @@ class PaymentService
         return true;
     }
 
-    public function convertInvoiceContentToPdf($transaction, $response)
+    public function convertInvoiceContentToPdf($transaction, $invoice_content)
     {
         $scope = $transaction['t_xref_fg_id'];
         $country = substr($transaction['t_issuer'], 0, 2);
@@ -265,7 +265,7 @@ class PaymentService
         $fileName = $transaction['t_transaction_id'] . ".pdf";
         $userName = "tlspay";
         $queryParams = "country=" . $country . "&city=" . $city . "&fileName=" . $fileName . "&userName=" . $userName;
-        $pdf = Pdf::loadHTML($response['invoice_content']);
+        $pdf = Pdf::loadHTML($invoice_content);
         $pdfstream = $pdf->download($fileName);
         $response = $this->apiService->callFileLibraryApi($queryParams, $pdfstream);
         if ($response['status'] != 200) {

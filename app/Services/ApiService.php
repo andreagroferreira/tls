@@ -384,4 +384,14 @@ class ApiService
         }
         return $response;
     }
+    
+    private function getFileLibraryApiDomain(): string
+    {
+        return env('FILE_LIBRARY_API_DOMAIN');
+    }
+
+    private function getFileLibraryApiVersion(): string
+    {
+        return 'v1';
+    }
 }

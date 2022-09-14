@@ -414,6 +414,8 @@ parameters:
     required: true
   - name: EMAIL_SERVICE_DOMAIN
     required: true
+  - name: FILE_LIBRARY_API_DOMAIN
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -1001,6 +1003,8 @@ objects:
                   value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
                 - name: EMAIL_SERVICE_DOMAIN
                   value: ${EMAIL_SERVICE_DOMAIN}
+                - name: FILE_LIBRARY_API_DOMAIN
+                  value: ${FILE_LIBRARY_API_DOMAIN}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -1472,6 +1476,8 @@ objects:
                   value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
                 - name: EMAIL_SERVICE_DOMAIN
                   value: ${EMAIL_SERVICE_DOMAIN}
+                - name: FILE_LIBRARY_API_DOMAIN
+                  value: ${FILE_LIBRARY_API_DOMAIN}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT
@@ -1748,3 +1754,19 @@ objects:
       podSelector:
         matchLabels:
           app: 'tlsconnect-email-service'
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-file-library-api
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: "${APPLICATION_NAME}"
+          ports:
+            - port: 8443
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: file-library-api

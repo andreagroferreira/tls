@@ -104,11 +104,7 @@ deploy-instance:
         echo "PAYMENT_SERVICE_URL is not defined!"
         exit 1
       fi
-    - |
-      if ! DIRECTUS_HOST=$(oc get route ${DIRECTUS_ROUTE} -o jsonpath='{.spec.host}'); then
-        echo "DIRECTUS_HOST is not defined!"
-        exit 1
-      fi
+    - export DIRECTUS_HOST="directus-cms:8080"
     - |
       if REDIS_HOST=$(oc get svc ${PROJECT}-redis-cluster-aws -o json); then
         export REDIS_HOST=$(echo "${REDIS_HOST}" | jq -r .spec.externalName)
@@ -129,7 +125,7 @@ deploy-instance:
       POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://${PAYMENT_SERVICE_URL}"
-      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       REDIS_HOST="tls://${REDIS_HOST}"
       CLIENT="${CLIENT}"
@@ -346,7 +342,7 @@ deploy-instance:
       POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://${PAYMENT_SERVICE_URL}"
-      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       CLIENT="${CLIENT}"
@@ -550,7 +546,7 @@ deploy-instance:
       MEMORY_REQUEST="${MEMORY_REQUEST}"
       MEMORY_LIMIT="${MEMORY_LIMIT}"
       CPU_REQUEST="${CPU_REQUEST}"
-      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       CLIENT="${CLIENT}"
@@ -570,7 +566,7 @@ deploy-instance:
       MEMORY_REQUEST="${MEMORY_REQUEST}"
       MEMORY_LIMIT="${MEMORY_LIMIT}"
       CPU_REQUEST="${CPU_REQUEST}"
-      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       CLIENT="${CLIENT}"

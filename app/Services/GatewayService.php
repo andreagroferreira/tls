@@ -7,7 +7,7 @@ class GatewayService
     /**
      * @var PaymentGatewayService
      */
-    protected PaymentGatewayService $paymentGatewayService;
+    protected $paymentGatewayService;
 
     /**
      * @param PaymentGatewayService $paymentGatewayService

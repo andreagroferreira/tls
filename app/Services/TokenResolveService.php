@@ -7,32 +7,32 @@ class TokenResolveService
     /**
      * @var DirectusService
      */
-    protected DirectusService $directusService;
+    protected $directusService;
 
     /**
      * @var ApiService
      */
-    protected ApiService $apiService;
+    protected $apiService;
 
     /**
      * @var string
      */
-    private string $issuer;
+    private $issuer;
 
     /**
      * @var string
      */
-    private string $country;
+    private $country;
 
     /**
      * @var string
      */
-    private string $city;
+    private $city;
 
     /**
      * @var string
      */
-    private string $client;
+    private $client;
 
     /**
      * @param DirectusService $directusService

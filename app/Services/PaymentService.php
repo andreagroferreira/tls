@@ -284,10 +284,10 @@ class PaymentService
         if (!empty($content)) {
             $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer, $lang, $fg_id);
             if (!empty($resolved_content)) {
-                $response = $this->convertInvoiceContentToPdf($transaction, $resolved_content['invoice_content']);
+                /*$response = $this->convertInvoiceContentToPdf($transaction, $resolved_content['invoice_content']);
                 if (!$response) {
                     throw new \Exception("Error Processing Request");
-                }
+                }*/
                 $this->invoiceService->sendInvoice($fg_id, $client, $resolved_content);
             }
         }

@@ -215,9 +215,21 @@ class ApiService
         return $response;
     }
 
-    private function getStreamApi($url, $data)
-    {
-        $response = $this->guzzleClient->request('post', $url, [
+    /**
+     * @param string $url
+     * @param array $data
+     * @param string $method
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    private function getStreamApi(
+        string $url,
+        array $data,
+        string $method = 'post'
+    ): array {
+        $response = $this->guzzleClient->request($method, $url, [
             'verify' => false,
             'http_errors' => false,
             'idn_conversion' => false,
@@ -225,13 +237,16 @@ class ApiService
             'headers' => ['log-uuid' => request()->get('log-uuid')],
             'json' => $data,
         ]);
+
         $response = [
             'status' => $response->getStatusCode(),
             'body' => $response->getBody()
         ];
+
         if ($response['status'] != 200) {
             Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), $response));
         }
+
         return $response;
     }
 
@@ -375,7 +390,7 @@ class ApiService
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function callFileLibraryApi(string $queryParams, Response $data): array
+    public function callFileLibraryUploadApi(string $queryParams, Response $data): array
     {
         $url = $this->getFileLibraryApiDomain() . '/api/' . $this->getFileLibraryApiVersion() . '/file-library/upload/reporting?' . $queryParams;
         $response = $this->guzzleClient->request('post', $url, [
@@ -404,5 +419,20 @@ class ApiService
     private function getFileLibraryApiVersion(): string
     {
         return 'v1';
+    }
+
+    /**
+     * @param $queryParams
+     *
+     * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callFileLibraryDownloadApi($queryParams): array
+    {
+        $url = $this->getFileLibraryApiDomain().'/api/'.$this->getFileLibraryApiVersion().'/file-library/download?'.$queryParams;
+        return $this->getStreamApi($url, [], 'get');
     }
 }

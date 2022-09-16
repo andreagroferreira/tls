@@ -85,7 +85,9 @@ class PaymentService
             't_status' => 'done',
             't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
             't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,
+            't_invoice_storage' => $confirm_params['t_invoice_storage'] ?? 'file-library',
         ];
+
         $this->transactionService->updateById($transaction['t_id'], $update_fields);
         foreach ($update_fields as $field_key => $field_val) {
             $transaction[$field_key] = $field_val;
@@ -183,7 +185,6 @@ class PaymentService
         return $result;
     }
 
-
     public function PaymentTransationBeforeLog($service, $data)
     {
         $data['comment'] = 'Transfered to ' . $service;
@@ -279,7 +280,7 @@ class PaymentService
 
         $pdf = Pdf::loadHTML($invoice_content);
         $pdfstream = $pdf->download($fileName);
-        $response = $this->apiService->callFileLibraryApi($queryParams, $pdfstream);
+        $response = $this->apiService->callFileLibraryUploadApi($queryParams, $pdfstream);
         unset($pdfstream);
 
         if ($response['status'] != 200) {

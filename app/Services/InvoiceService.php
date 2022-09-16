@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Models\Transactions;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,33 +30,99 @@ class InvoiceService
         $this->directusService = $directusService;
     }
 
-    public function getInvoiceFileContent($transaction_id)
+    /**
+     * @param $transaction_id
+     *
+     * @return string|null
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function getInvoiceFileContent($transaction_id): ?string
     {
-        if (!array_has(config('filesystems.disks', []), $this->invoiceDisk)) {
-            return false;
-        }
-
+        /** @var Transactions $transaction */
         $transaction = $this->transactionService
-            ->fetchByWhere(['t_transaction_id' => $transaction_id, 't_status' => 'done', 't_tech_deleted' => false])
+            ->fetchByWhere([
+                't_transaction_id' => $transaction_id,
+                't_status' => 'done',
+                't_tech_deleted' => false
+            ])
             ->first();
 
         if (blank($transaction)) {
-            return false;
+            return null;
+        }
+
+        if ($transaction->t_invoice_storage === 's3') {
+            return $this->getS3InvoiceFileContent($transaction);
+        }
+
+        return $this->getFileLibraryInvoiceFileContent($transaction);
+    }
+
+    /**
+     * @param Transactions $transaction
+     *
+     * @return string|null
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function getS3InvoiceFileContent(Transactions $transaction): ?string
+    {
+        if (!array_has(config('filesystems.disks', []), $this->invoiceDisk)) {
+            return null;
         }
 
         $storage = Storage::disk($this->invoiceDisk);
-        $file = $this->getFilePath($transaction->toArray());
+        $file = $this->getFilePath($transaction->toArray(), 's3');
 
         if (!$storage->exists($file)) {
-            return false;
+            return null;
         }
 
         return $storage->get($file);
     }
 
-    protected function getFilePath(array $transaction)
+    /**
+     * @param Transactions $transaction
+     *
+     * @return string|null
+     */
+    public function getFileLibraryInvoiceFileContent(Transactions $transaction): ?string
     {
-        return array_get($transaction, 't_client') . '/' . array_get($transaction, 't_xref_fg_id') . '/' . array_get($transaction, 't_transaction_id') . '.pdf';
+        $file = $this->getFilePath($transaction->toArray());
+
+        $queryParams = 'path='.$file;
+
+        try{
+            $response = $this->apiService->callFileLibraryDownloadApi($queryParams);
+        } catch (\Exception $e) {
+            Log::warning('Transaction Error: error file-library api "' . $e->getMessage() . '"');
+            return null;
+        }
+
+        if ($response['status'] != 200) {
+            Log::warning('Transaction Error: receipt download failed');
+            return null;
+        }
+        return $response['body'];
+    }
+
+    /**
+     * @param array $transaction
+     * @param string $storageService
+     *
+     * @return string
+     */
+    protected function getFilePath(array $transaction, string $storageService = 'file-library'): string
+    {
+        if ($storageService === "s3") {
+            return array_get($transaction, 't_client') . '/' . array_get($transaction, 't_xref_fg_id') . '/' . array_get($transaction, 't_transaction_id') . '.pdf';
+        }
+
+        $country = substr($transaction['t_issuer'],0,2);
+        $city = substr($transaction['t_issuer'],2,3);
+
+        return 'reporting/WW/' . $country . '/' . $city . '/' . array_get($transaction, 't_xref_fg_id') . '/' . array_get($transaction, 't_transaction_id') . '.pdf';
     }
 
     /**

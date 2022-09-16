@@ -219,7 +219,9 @@ class ApiService
      * @param string $url
      * @param array $data
      * @param string $method
+     *
      * @return array
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -244,7 +246,12 @@ class ApiService
         ];
 
         if ($response['status'] != 200) {
-            Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), $response));
+            Log::error(sprintf(
+                "Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s",
+                $url,
+                json_encode($data, 256),
+                json_encode($response, 256)
+            ));
         }
 
         return $response;

@@ -114,6 +114,7 @@ $app->routeMiddleware([
 $app->register(\Illuminate\Redis\RedisServiceProvider::class);
 $app->register(SwaggerLume\ServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
+$app->register(\Barryvdh\DomPDF\ServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

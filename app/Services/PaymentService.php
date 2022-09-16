@@ -264,12 +264,16 @@ class PaymentService
     }
 
     /**
-     * @param string $transaction
+     * @param array $transaction
      * @param string $invoice_content
      *
      * @return bool
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function convertInvoiceContentToPdf(string $transaction, string $invoice_content): bool
+    public function convertInvoiceContentToPdf(array $transaction, string $invoice_content): bool
     {
         $scope = $transaction['t_xref_fg_id'];
         $country = substr($transaction['t_issuer'], 0, 2);
@@ -291,13 +295,15 @@ class PaymentService
         return true;
     }
 
-     /**
+    /**
      * @param array $transaction
      * @param string $collection_name
      *
      * @return void
      *
-     * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function sendInvoice(array $transaction, string $collection_name): void
     {
@@ -315,16 +321,37 @@ class PaymentService
             }
         }
 
-        $content = $this->invoiceService->getInvoiceContent($collection_name, $issuer, $lang);
-        if (!empty($content)) {
-            $resolved_content = $this->tokenResolveService->resolveTemplate($content, $issuer, $lang, $fg_id);
-            if (!empty($resolved_content)) {
-                /*$response = $this->convertInvoiceContentToPdf($transaction, $resolved_content['invoice_content']);
-                if (!$response) {
-                    throw new \Exception("Error Processing Request");
-                }*/
-                $this->invoiceService->sendInvoice($fg_id, $client, $resolved_content);
-            }
+        $content = $this->invoiceService->getInvoiceContent(
+            $collection_name,
+            $issuer,
+            $lang
+        );
+
+        if (empty($content)) {
+            throw new \Exception("Error Fetching Invoice Content");
         }
+
+        $resolved_content = $this->tokenResolveService->resolveTemplate(
+            $content,
+            $issuer,
+            $lang,
+            $fg_id
+        );
+
+        if (empty($resolved_content)) {
+            throw new \Exception("Error Resolving Invoice Content");
+        }
+
+        $response = $this->convertInvoiceContentToPdf($transaction, $resolved_content['invoice_content']);
+
+        if (!$response) {
+            throw new \Exception("Error Processing Invoice Upload Request");
+        }
+
+        $this->invoiceService->sendInvoice(
+            $fg_id,
+            $client,
+            $resolved_content
+        );
     }
 }

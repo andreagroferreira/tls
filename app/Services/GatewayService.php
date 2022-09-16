@@ -3,7 +3,6 @@
 
 namespace App\Services;
 
-
 class GatewayService
 {
     public function getGateways($client, $issuer)
@@ -18,27 +17,22 @@ class GatewayService
 
     public function getConfig($client, $issuer)
     {
+        $config = [];
         $country = substr($issuer, 0, 2);
-        $payment_client = substr($issuer, -2);
-        $country_level_config = $country . 'All2' . $payment_client;
-        $client_payment_gateway = config('payment_gateway')[$client];
-        if (!empty($client_payment_gateway[$issuer])) {
-            $config = $client_payment_gateway[$issuer];
-        } elseif (!empty($client_payment_gateway[$country_level_config])) {
-            $config = $client_payment_gateway[$country_level_config];
-        } else {
-            $config = [];
+        $paymentClient = substr($issuer, -2);
+        $defaultClientConfiguration = 'allAll2all';
+        $countryLevelConfiguration = $country.'All2'.$paymentClient;
+
+        $clientPaymentGateways = config('payment_gateway')[$client];
+
+        if (!empty($clientPaymentGateways[$issuer])) {
+            $config = $clientPaymentGateways[$issuer];
+        } elseif (!empty($clientPaymentGateways[$countryLevelConfiguration])) {
+            $config = $clientPaymentGateways[$countryLevelConfiguration];
+        } elseif (!empty($clientPaymentGateways[$defaultClientConfiguration])) {
+            $config = $clientPaymentGateways[$defaultClientConfiguration];
         }
-        // allAll2all
-        $all_issuer = 'allAll2all';
-        if (isset($client_payment_gateway[$all_issuer]) && !empty($client_payment_gateway[$all_issuer])) {
-            $all_config = $client_payment_gateway[$all_issuer];
-            foreach (array_keys($all_config) as $key) {
-                if (!in_array($key, array_keys($config))) {
-                    $config = array_merge($config, $all_config);
-                }
-            }
-        }
+
         return $config;
     }
 

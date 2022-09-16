@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiService
 {
@@ -361,6 +362,37 @@ class ApiService
             'status' => $response->getStatusCode(),
             'body' => json_decode($response->getBody(), true)
         ];
+        return $response;
+    }
+
+    /**
+     * @param string $queryParams
+     * @param Response $data
+     *
+     * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callFileLibraryApi(string $queryParams, Response $data): array
+    {
+        $url = $this->getFileLibraryApiDomain() . '/api/' . $this->getFileLibraryApiVersion() . '/file-library/upload/reporting?' . $queryParams;
+        $response = $this->guzzleClient->request('post', $url, [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => $this->accept,
+            'headers' => ['log-uuid' => request()->get('log-uuid'), 'Content-Type' => 'application/pdf'],
+            'body' => $data,
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        if ($response['status'] != 200) {
+            Log::error(sprintf("Request api fail: %s [POST] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), json_encode($response, 256)));
+        }
         return $response;
     }
 

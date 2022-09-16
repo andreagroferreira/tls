@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiService
 {
@@ -364,7 +365,17 @@ class ApiService
         return $response;
     }
 
-    public function callFileLibraryApi($queryParams, $data)
+    /**
+     * @param string $queryParams
+     * @param Response $data
+     *
+     * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callFileLibraryApi(string $queryParams, Response $data): array
     {
         $url = $this->getFileLibraryApiDomain() . '/api/' . $this->getFileLibraryApiVersion() . '/file-library/upload/reporting?' . $queryParams;
         $response = $this->guzzleClient->request('post', $url, [
@@ -384,7 +395,7 @@ class ApiService
         }
         return $response;
     }
-    
+
     private function getFileLibraryApiDomain(): string
     {
         return env('FILE_LIBRARY_API_DOMAIN');

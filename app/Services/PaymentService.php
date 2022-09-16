@@ -49,7 +49,12 @@ class PaymentService
         }
     }
 
-    public function confirm($transaction, $confirm_params)
+    /**
+     * @param array $transaction
+     * @param array $confirm_params
+     * @return array
+     */
+    public function confirm(array $transaction, array $confirm_params): array
     {
         $payment_gateway  = $confirm_params['gateway'];
         $amount_matched   = (strval($transaction['t_amount']) == strval($confirm_params['amount']));
@@ -85,9 +90,9 @@ class PaymentService
         foreach ($update_fields as $field_key => $field_val) {
             $transaction[$field_key] = $field_val;
         }
-        $this->invoiceService->generate($transaction);
 
-        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
+            ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
 
         if(!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . json_encode($error_msg, 256));
@@ -257,7 +262,13 @@ class PaymentService
         return true;
     }
 
-    public function convertInvoiceContentToPdf($transaction, $invoice_content)
+    /**
+     * @param string $transaction
+     * @param string $invoice_content
+     *
+     * @return bool
+     */
+    public function convertInvoiceContentToPdf(string $transaction, string $invoice_content): bool
     {
         $scope = $transaction['t_xref_fg_id'];
         $country = substr($transaction['t_issuer'], 0, 2);
@@ -265,16 +276,18 @@ class PaymentService
         $fileName = $transaction['t_transaction_id'] . ".pdf";
         $userName = "tlspay";
         $queryParams = "country=" . $country . "&city=" . $city . "&fileName=" . $fileName . "&userName=" . $userName;
+
         $pdf = Pdf::loadHTML($invoice_content);
         $pdfstream = $pdf->download($fileName);
         $response = $this->apiService->callFileLibraryApi($queryParams, $pdfstream);
+        unset($pdfstream);
+
         if ($response['status'] != 200) {
             Log::warning('Transaction Error: receipt pdf upload failed');
             return false;
-        } else {
-            unset($pdfstream);
-            return true;
         }
+
+        return true;
     }
 
      /**
@@ -285,7 +298,7 @@ class PaymentService
      *
      * @throws \Exception
      */
-    public function sendInvoice(array $transaction, string $collection_name)
+    public function sendInvoice(array $transaction, string $collection_name): void
     {
         $issuer = $transaction['t_issuer'];
         $fg_id = $transaction['t_xref_fg_id'];

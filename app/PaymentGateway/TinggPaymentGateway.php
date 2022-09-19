@@ -71,7 +71,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
                 'message' => 'transaction_id_not_exists'
             ];
         }
-        $tingg_config = $this->getTinggConfig($transaction);
+        $tingg_config = $this->getTinggConfig($transaction, $transaction['t_xref_pa_id']);
         $bearer_token = $this->apiService->getTinggAuthorization($tingg_config);
         $response = $this->apiService->getTinggQueryStatus($params, $bearer_token, $tingg_config);
         if(!empty($response['status']) && $response['status'] == 200) {
@@ -107,19 +107,23 @@ class TinggPaymentGateway implements PaymentGatewayInterface
         }
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $transaction = $this->transactionService->getTransaction($t_id);
-        if (empty($transaction)) {
+        if (blank($transaction)) {
             return [
                 'status' => 'error',
-                'message' => 'transaction_id_not_exists',
+                'message' => 'Transaction ERROR: transaction not found'
             ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
         $client       = $transaction['t_client'];
         $issuer       = $transaction['t_issuer'];
         $fg_id        = $transaction['t_xref_fg_id'];
-        $tingg_config = $this->getTinggConfig($transaction);
+        $tingg_config = $this->getTinggConfig($transaction, $pa_id);
         $application  = $this->formGroupService->fetch($fg_id, $client);
         $u_surname    = $application['u_surname'] ?? '';
         $u_givenname  = $application['u_givenname'] ?? '';
@@ -179,7 +183,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
                 'message' => 'transaction_id_not_exists'
             ];
         }
-        $tingg_config = $this->getTinggConfig($transaction);
+        $tingg_config = $this->getTinggConfig($transaction, $transaction['t_xref_pa_id']);
         $bearer_token = $this->apiService->getTinggAuthorization($tingg_config);
         Log::info('return:$bearer_token:'.json_encode($bearer_token));
         $response = $this->apiService->getTinggQueryStatus($params, $bearer_token, $tingg_config);
@@ -204,12 +208,22 @@ class TinggPaymentGateway implements PaymentGatewayInterface
         }
     }
 
-    private function getTinggConfig($transaction) {
+    private function getTinggConfig($transaction, $pa_id) {
         $client       = $transaction['t_client'];
         $issuer       = $transaction['t_issuer'];
-        $t_service    = $transaction['t_service'];
-        $config       = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
-        return array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
+        $config       = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        return array_merge($config['common'], $this->getPaySecret($config));
+    }
+
+    private function getPaySecret($pay_config) {
+        if ($this->gatewayService->getClientUseFile()) {
+            $key = 'config';
+        } else {
+            $app_env = $this->isSandBox();
+            $is_live = ($pay_config['common']['env'] == 'live');
+            $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+        }
+        return $pay_config[$key];
     }
 
     private function encrypt($ivKey, $secretKey, $payload = [])

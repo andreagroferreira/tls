@@ -32,9 +32,9 @@ class PayPalController extends BaseController
      * )
      */
     public function redirto(Request $request) {
-        $orderId = $request->post('t_id');
+        $params = $request->post();
         try {
-            $result = $this->paymentGateway->redirto($orderId);
+            $result = $this->paymentGateway->redirto($params);
             return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

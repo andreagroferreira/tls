@@ -40,9 +40,9 @@ class CmiController extends BaseController
      * )
      */
     public function redirto(Request $request) {
-        $t_id = $request->input('t_id');
+        $params = $request->post();
         try {
-            $body = $this->paymentGateway->redirto($t_id);
+            $body = $this->paymentGateway->redirto($params);
             if (isset($body['status']) && $body['status'] == 'error') {
                 return $this->sendError('P0006', $body['message'], 400);
             }

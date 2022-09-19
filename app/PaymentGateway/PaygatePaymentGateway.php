@@ -61,17 +61,19 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
     public function notify($return_params)
     {
         $error_msg          = array();
-        $app_env            = $this->isSandBox();
         $paygate_id         = $return_params['PAYGATE_ID'] ?? '';
         $pay_request_id     = $return_params['PAY_REQUEST_ID'] ?? '';
         $reference          = $return_params['REFERENCE'] ?? '';
         $return_checksum    = $return_params['CHECKSUM'] ?? '';
         $transaction_status = $return_params['TRANSACTION_STATUS'] ?? '';
         $transaction        = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $pay_request_id, 't_tech_deleted' => false]);
-        $t_service          = $transaction['t_service'] ?? 'tls';
-        $paygate_config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
+        $paygate_config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live            = $paygate_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env            = $this->isSandBox();
+        if ($this->gatewayService->getClientUseFile()) {
+            $query_host      = $paygate_config['config']['query_host'] ?? $paygate_config['config']['sandbox_query_host'] ?? '';
+            $encryptionKey   = $paygate_config['config']['encryption_key'] ?? $paygate_config['config']['sandbox_encryption_key'] ?? '';
+        } else if ($is_live && !$app_env) {
             // Live account
             $query_host      = $paygate_config['prod']['query_host'];
             $encryptionKey   = $paygate_config['prod']['encryption_key'];
@@ -123,20 +125,34 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         }
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $translationsData = $this->transactionService->getTransaction($t_id);
-        $app_env = $this->isSandBox();
-        $client  = $translationsData['t_client'];
+        if (blank($translationsData)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }        $client  = $translationsData['t_client'];
         $issuer  = $translationsData['t_issuer'];
         $fg_id   = $translationsData['t_xref_fg_id'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $application = $this->formGroupService->fetch($fg_id, $client);
         $u_email     = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
-        $t_service      = $translationsData['t_service'] ?? 'tls';
-        $paygate_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
+        $paygate_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $is_live        = $paygate_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env = $this->isSandBox();
+        if ($this->gatewayService->getClientUseFile()) {
+            $init_hosturl        = $paygate_config['config']['initiate_host'] ?? $paygate_config['config']['sandbox_initiate_host'] ?? '';
+            $process_hosturl     = $paygate_config['config']['process_host'] ?? $paygate_config['config']['sandbox_process_host'] ?? '';
+            $paygate_id          = $paygate_config['config']['paygate_id'] ?? $paygate_config['config']['sandbox_paygate_id'] ?? '';
+            $encryptionKey       = $paygate_config['config']['encryption_key'] ?? $paygate_config['config']['sandbox_encryption_key'] ?? '';
+            $pay_method          = 'BT';
+        } else if ($is_live && !$app_env) {
             // Live account
             $init_hosturl        = $paygate_config['prod']['initiate_host'];
             $process_hosturl     = $paygate_config['prod']['process_host'];

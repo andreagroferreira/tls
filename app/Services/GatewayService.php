@@ -14,7 +14,7 @@ class GatewayService
 
     public function getGateways($client, $issuer, $service = 'tls')
     {
-        $getClientUseUi = $this->getClientUseUi();
+        $getClientUseUi = $this->getClientUseFile();
         if ($getClientUseUi) {
             $config = $this->paymentGatewayService->getConfig($client, $issuer, $service);
         } else {
@@ -23,20 +23,20 @@ class GatewayService
         return $config ?? [];
     }
 
-    public function getGateway($client, $issuer, $gateway, $service = 'tls')
+    public function getGateway($client, $issuer, $gateway, $pa_id = null)
     {
-        $getClientUseUi = $this->getClientUseUi();
+        $getClientUseUi = $this->getClientUseFile();
         if ($getClientUseUi) {
-            return $this->paymentGatewayService->getPaymentAccountConfig($client, $issuer, $gateway, $service);
+            return $this->paymentGatewayService->getPaymentAccountConfig($gateway, $pa_id);
         } else {
             return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
         }
     }
 
-    public function getClientUseUi()
+    public function getClientUseFile(): bool
     {
         $current_client = env('CLIENT');
-        $clients = explode(',', env('USE_UI_CONFIGURATION'));
+        $clients = explode(',', env('USE_FILE_CONFIGURATION'));
         if (in_array($current_client, $clients)) {
             return true;
         } else {
@@ -70,11 +70,17 @@ class GatewayService
         return $config;
     }
 
-    public function getKbankConfig($client, $issuer, $gateway) {
-        $kbank_config   = $this->getGateway($client, $issuer, $gateway);
+    public function getKbankConfig($client, $issuer, $gateway, $pa_id) {
+        $kbank_config   = $this->getGateway($client, $issuer, $gateway, $pa_id);
         $app_env        = !(env('APP_ENV') === 'production');
         $is_live        = $kbank_config['common']['env'] == 'live';
-        if ($is_live && !$app_env) {
+        if ($this->getClientUseFile()) {
+            $config_data = [
+                'redirect_host' => $kbank_config['config']['redirect_host'] ?? $kbank_config['config']['redirect_host'] ?? '',
+                'api_key'       => $kbank_config['config']['apikey'] ?? $kbank_config['config']['apikey'] ?? '',
+                'mid'           => $kbank_config['config']['mid'] ?? $kbank_config['config']['mid'] ?? ''
+            ];
+        } else if ($is_live && !$app_env) {
             $config_data = [
                 'redirect_host' => $kbank_config['prod']['redirect_host'],
                 'api_key'       => $kbank_config['prod']['apikey'],

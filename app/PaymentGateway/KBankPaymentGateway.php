@@ -57,16 +57,18 @@ class KBankPaymentGateway implements PaymentGatewayInterface
 
     public function notify($return_params)
     {
-        $app_env            = $this->isSandBox();
         $charge_id          = $return_params['id'];
         $checksum           = $return_params['checksum'];
         $status             = $return_params['status'];
         $transaction_state  = $return_params['transaction_state'];
         $transaction        = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $charge_id, 't_tech_deleted' => false]);
-        $t_service          = $transaction['t_service'] ?? 'tls';
-        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
+        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env        = $this->isSandBox();
+        if ($this->gatewayService->getClientUseFile()) {
+            $host       = $kbank_config['prod']['host'] ?? $kbank_config['prod']['sandbox_host'] ?? '';
+            $secret     = $kbank_config['prod']['secret'] ?? $kbank_config['prod']['sandbox_secret'] ?? '';
+        } else if ($is_live && !$app_env) {
             $host       = $kbank_config['prod']['host'];
             $secret     = $kbank_config['prod']['secret'];
         } else {
@@ -113,15 +115,27 @@ class KBankPaymentGateway implements PaymentGatewayInterface
     {
         $t_id = $params['t_id'];
         $token = $params['token'];
+        $pa_id = $params['pa_id'] ?? null;
         $translationsData = $this->transactionService->getTransaction($t_id);
-        $app_env = $this->isSandBox();
+        if (blank($translationsData)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $client  = $translationsData['t_client'];
         $issuer  = $translationsData['t_issuer'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
-        $t_service = $translationsData['t_service'] ?? 'tls';
-        $kbank_config   = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
+        $kbank_config   = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env = $this->isSandBox();
+        if ($this->gatewayService->getClientUseFile()) {
+            $host       = $kbank_config['config']['host'] ?? $kbank_config['config']['sandbox_host'] ?? '';
+            $secret     = $kbank_config['config']['secret'] ?? $kbank_config['config']['sandbox_secret'] ?? '';
+            $mid        = $kbank_config['config']['mid'] ?? $kbank_config['config']['sandbox_mid'] ?? '';
+        } else if ($is_live && !$app_env) {
             $host       = $kbank_config['prod']['host'];
             $secret     = $kbank_config['prod']['secret'];
             $mid        = $kbank_config['prod']['mid'];
@@ -165,7 +179,6 @@ class KBankPaymentGateway implements PaymentGatewayInterface
 
     public function return($return_params)
     {
-        $app_env    = $this->isSandBox();
         $charge_id  = $return_params['objectId'];
         $transaction = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $charge_id, 't_tech_deleted' => false]);
         if (empty($transaction)) {
@@ -175,10 +188,13 @@ class KBankPaymentGateway implements PaymentGatewayInterface
                 'message'    => 'transaction_id_not_exists'
             ];
         }
-        $t_service = $transaction['t_service'] ?? 'tls';
-        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
+        $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env    = $this->isSandBox();
+        if ($this->gatewayService->getClientUseFile()) {
+            $host       = $kbank_config['prod']['host'] ?? $kbank_config['prod']['sandbox_host'] ?? '';
+            $secret     = $kbank_config['prod']['secret'] ?? $kbank_config['prod']['sandbox_secret'] ?? '';
+        } else if ($is_live && !$app_env) {
             $host       = $kbank_config['prod']['host'];
             $secret     = $kbank_config['prod']['secret'];
         } else {

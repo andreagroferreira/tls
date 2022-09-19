@@ -70,19 +70,31 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     public function redirto($params)
     {
         $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $lang = $params['lang'] ?? 'en-gb';
         $translations_data = $this->transactionService->getTransaction($t_id);
-        $app_env        = $this->isSandBox();
+        if (blank($translations_data)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $client         = $translations_data['t_client'];
         $issuer         = $translations_data['t_issuer'];
         $fg_id          = $translations_data['t_xref_fg_id'];
         $order_id       = $translations_data['t_transaction_id'] ?? '';
-        $t_service      = $translations_data['t_service'] ?? 'tls';
         $application    = $this->formGroupService->fetch($fg_id, $client);
         $u_email        = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
-        $payment_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
+        $payment_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $is_live        = $payment_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env        = $this->isSandBox();
+        if ($this->gatewayService->getClientUseFile()) {
+            $host_url    = $payment_config['config']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);
+        } else if ($is_live && !$app_env) {
             // Live account
             $host_url    = $payment_config['prod']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
@@ -261,11 +273,14 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'href'       => $transaction['t_redirect_url']
             ];
         }
-        $t_service      = $transaction['t_service'] ?? 'tls';
-        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
+        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live = $payment_config['common']['env'] == 'live';
         $app_env = $this->isSandBox();
-        if ($is_live && !$app_env) {
+        if ($this->gatewayService->getClientUseFile()) {
+            $host_url    = $payment_config['config']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);
+        } else if ($is_live && !$app_env) {
             // Live account
             $host_url    = $payment_config['prod']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
@@ -439,11 +454,14 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         }
 
         //get trade information
-        $t_service      = $transaction['t_service'] ?? 'tls';
-        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
+        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $app_env = $this->isSandBox();
         $is_live = $payment_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        if ($this->gatewayService->getClientUseFile()) {
+            $host_url    = $payment_config['config']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);
+        } else if ($is_live && !$app_env) {
             // Live config
             $host_url    = $payment_config['prod']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);

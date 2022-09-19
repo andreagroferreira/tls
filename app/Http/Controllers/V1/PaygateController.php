@@ -37,9 +37,9 @@ class PaygateController extends BaseController
      * )
      */
     public function redirto(Request $request) {
-        $t_id = $request->post('t_id');
+        $params = $request->post();
         try {
-            $result = $this->paymentGateway->redirto($t_id);
+            $result = $this->paymentGateway->redirto($params);
             return $this->sendResponse($result, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

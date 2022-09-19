@@ -39,9 +39,9 @@ class YookassaController extends BaseController
      * )
      */
     public function redirto(Request $request) {
-        $t_id = $request->post('t_id');
+        $params = $request->post();
         try {
-            $body = $this->paymentGateway->redirto($t_id);
+            $body = $this->paymentGateway->redirto($params);
             return $this->sendResponse($body, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

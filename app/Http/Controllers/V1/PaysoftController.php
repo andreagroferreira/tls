@@ -39,9 +39,9 @@ class PaysoftController extends BaseController
      */
     public function redirto(Request $request)
     {
-        $t_id = $request->post('t_id');
+        $params = $request->post();
         try {
-            $result = $this->paymentGateway->redirto($t_id);
+            $result = $this->paymentGateway->redirto($params);
             if (array_get($result, 'status') == 'error') {
                 return $this->sendError('P0001', array_get($result, 'message'));
             }

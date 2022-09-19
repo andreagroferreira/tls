@@ -229,6 +229,8 @@ class AvsRecommendationService
                     'service_name' => $sku,
                     'sku' => $sku
                 ]);
+                $item['price'] = $avs['s_price'];
+                $item['currency'] = $avs['e_currency'];
             }
             if ($avs['paid']) {
                 $item['paid_price'] = $avs['paid_price'];

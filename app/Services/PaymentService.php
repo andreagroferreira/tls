@@ -335,7 +335,8 @@ class PaymentService
             $content,
             $issuer,
             $lang,
-            $fg_id
+            $fg_id,
+            $transaction
         );
 
         if (empty($resolved_content)) {

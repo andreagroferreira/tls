@@ -58,7 +58,8 @@ class TokenResolveService
         array $template,
         string $issuer,
         string $lang,
-        string $fg_id
+        string $fg_id,
+        array $transaction
     ): array {
         $data = [];
         $this->issuer = $issuer;
@@ -83,7 +84,8 @@ class TokenResolveService
         $resolvedTokens = $this->getResolvedTokens(
             $listOfToken,
             $lang,
-            $fg_id
+            $fg_id,
+            $transaction
         );
 
         if (empty($resolvedTokens)) {
@@ -131,7 +133,8 @@ class TokenResolveService
     private function getResolvedTokens(
         array $tokens,
         string $lang,
-        string $fg_id
+        string $fg_id,
+        array $transaction
     ): array {
         $resolved_tokens = [];
 
@@ -140,6 +143,7 @@ class TokenResolveService
              * Token structure
              * {{collection : collection_name : field_name}}
              * {{application : field_name}}
+             * {{basket : services}}
              */
             $token_details = explode(':', str_replace(['{{', '}}'], '', $token));
 
@@ -147,6 +151,10 @@ class TokenResolveService
                 $resolved_tokens[$token] = $this->getTokenTranslationFromDirectus($token_details, $lang);
             } elseif ('a' == $token_details[0]) { // if application token - api call
                 $resolved_tokens[$token] = $this->getTokenTranslationFromApplication($token_details, $fg_id);
+            } elseif ('basket' == $token_details[0]) {
+                if (!empty($transaction)) {
+                    $resolved_tokens[$token] = $this->getTokenTranslationForPurchasedServices($transaction);
+                }
             }
         }
 
@@ -291,5 +299,127 @@ class TokenResolveService
         }
 
         return implode(', ', array_unique($translations, SORT_REGULAR));
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @throws \Exception
+     *
+     * @return string
+     */
+    public function getTokenTranslationForPurchasedServices(array $transaction): string
+    {
+        if (empty($transaction)) {
+            throw new \Exception("No Transaction details found");
+        }
+
+        $items = $transaction['t_items'];
+        if (empty($items)) {
+            throw new \Exception("No Transaction items found");
+        }
+
+        $collection = 'basket';
+        $select_fields = 'content, meta_tokens';
+        $select_filters = [
+            'status' => [
+                'eq' => 'published'
+            ]
+        ];
+        $options = ['type' => 'Purchased services'];
+        $response = $this->directusService->getContent($collection, $select_fields, $select_filters, $options);
+        if (empty($response)) {
+            throw new \Exception('No item found for the collection - '.$collection);
+        }
+        $response = array_first($response);
+        $content = $response['content'];
+
+        $token_list = $this->getTokens($content);
+        if (empty($token_list)) {
+            throw new \Exception($collection.' - No tokens found in the item content');
+        }
+        foreach ($token_list as $token_type => $list) {
+            if ('meta' == $token_type) {
+                foreach ($list as $token => $token_name) {
+                    if (!empty($response['meta_tokens'][$token_name])) {
+                        $meta_content[$token_name] = $response['meta_tokens'][$token_name];
+                        $meta_content_token_list[$token_name] = $this->getTokens($meta_content[$token_name]);
+                    }
+                }
+            }
+        }
+
+        $line_item = [];
+        $line_total = [];
+        $line_item_row = '';
+        foreach ($items as $k => $form_items) {
+            foreach ($form_items['skus'] as $i => $skus) {
+                $sku = $skus['sku'];
+                $quantity = $skus['quantity'];
+                $price = $skus['price'];
+                $vat = $skus['vat'];
+
+                $line_item['sku'][$sku] = $sku;
+                $line_item['quantity'][$sku][] = $quantity;
+                $line_item['price'][$sku][] = $price;
+
+                $line_total['vat'][] = ($vat/100*$price);
+                $line_total['price_vat'][] = ($vat/100*$price)+$price;
+            }
+        }
+        $currency = $transaction['t_currency'];
+        $amount = $transaction['t_amount'];
+        $total_with_tax = number_format((float)array_sum($line_total['price_vat']), 2, '.', '');
+        $total_without_tax = number_format((float)$amount, 2, '.', '');
+        $tax = number_format((float)array_sum($line_total['vat']), 2, '.', '');
+
+        //Replace the tokens in the meta content
+        foreach ($line_item['sku'] as $k => $sku) {
+            $quantity = count($line_item['quantity'][$sku]);
+            $price = number_format((float)array_sum($line_item['price'][$sku]), 2, '.', '');
+
+            $meta_content_copy = $meta_content['META_service_rows'];
+            foreach ($meta_content_token_list['META_service_rows']['normal'] as $token => $token_name) {
+                $meta_content_copy = str_replace($token, ${$token_name}, $meta_content_copy);
+            }
+            $line_item_row .= $meta_content_copy;
+        }
+        $content = str_replace('{{META_service_rows}}', $line_item_row, $content);
+
+        //Replace the tokens in the table content(except for meta content)
+        foreach ($token_list['normal'] as $token => $token_name) {
+            $content = str_replace($token, ${$token_name}, $content);
+        }
+
+        return $content;
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return array
+     */
+    private function getTokens(string $content): array
+    {
+        $token_list = [];
+        $pattern = '~({{\\w+}})~';
+
+        preg_match_all($pattern, $content, $all_tokens);
+        if (count($all_tokens)) {
+            $all_tokens = array_unique($all_tokens, SORT_REGULAR)[0];
+        }
+
+        foreach ($all_tokens as $token) {
+            $check_if_meta = substr($token, 0, 7);
+            $token_name = str_replace(array('{{', '}}'), "", $token);
+
+            if ($check_if_meta == '{{META_') {
+                $token_list['meta'][$token] = $token_name;
+            } else {
+                $token_list['normal'][$token] = $token_name;
+            }
+        }
+
+        return $token_list;
     }
 }

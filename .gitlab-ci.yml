@@ -551,6 +551,9 @@ deploy-instance:
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       CLIENT="${CLIENT}"
       HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
+    - echo "Deploy cronjobs"
+    - oc process -f ./openshift/payment-api-cronjob.yml JOB_NAME=cronjob APPLICATION_NAME="${APPLICATION_NAME}"
+      SCHEDULE="* * * * *" | oc apply -f -
     - oc process -f ./openshift/payment-api-sync-transaction-queue-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"

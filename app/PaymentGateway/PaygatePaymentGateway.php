@@ -135,9 +135,10 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
                 'status' => 'error',
                 'message' => 'Transaction ERROR: transaction not found'
             ];
-        } else {
+        } else if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
-        }        $client  = $translationsData['t_client'];
+        }
+        $client  = $translationsData['t_client'];
         $issuer  = $translationsData['t_issuer'];
         $fg_id   = $translationsData['t_xref_fg_id'];
         $orderId = $translationsData['t_transaction_id'] ?? '';

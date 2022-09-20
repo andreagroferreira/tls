@@ -15,8 +15,6 @@ parameters:
     displayName: Application Name
   - name: SCHEDULE
     required: true
-  - name: DOCKER_REGISTRY_ADDRESS
-    required: true
 objects:
   - apiVersion: batch/v1beta1
     kind: CronJob
@@ -29,14 +27,17 @@ objects:
       jobTemplate:
         spec:
           template:
+            metadata:
+              annotations:
+                central-logging: "true"
             spec:
               containers:
                 - name: remote-exec
-                  image: ${DOCKER_REGISTRY_ADDRESS}/openshift/origin-cli:v3.11
+                  image: docker-registry.tlscontact.com/openshift/origin-cli:v3.11
                   command: ['/bin/bash','-c']
                   args:
                     - POD=`oc get pods -o jsonpath='{.items[0].metadata.name}' --selector deploymentconfig=${APPLICATION_NAME}`;
                       echo 'Found POD $POD';
-                      oc exec $POD -- bash -c "php ./artisan schedule:run"
+                      oc exec $POD -- bash -c "ls -la; php ./artisan schedule:run"
               serviceAccountName: php-cron-sa
               restartPolicy: Never

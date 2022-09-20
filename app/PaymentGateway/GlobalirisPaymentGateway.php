@@ -65,8 +65,12 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $issuer = $translationsData['t_issuer'];
         $fg_id = $translationsData['t_xref_fg_id'];
         $t_service = $translationsData['t_service'] ?? 'tls';
-        $config = $this->gatewayService->getGateways($client, $issuer, $t_service);
-        $onlinePayment = $config ? $config['globaliris'] : [];;
+        if ($this->gatewayService->getClientUseFile()) {
+            $onlinePayment = $this->gatewayService->getGateway($client, $issuer, $t_service, $pa_id);
+        } else {
+            $config = $this->gatewayService->getConfig($client, $issuer);
+            $onlinePayment = $config ? $config['globaliris'] : [];
+        }
         $orderId = $translationsData['t_transaction_id'] ?? '';
 
         $amount = $translationsData['t_amount'];

@@ -99,13 +99,16 @@ class PaymentGatewayService
             } else {
                 $gateway_type = $v['psp_code'];
             }
-            $payment_gateway_config['globaliris']['pa_id'] = $v['pa_id'];
-            $payment_gateway_config['globaliris']['psp_code'] = $gateway;
-            $payment_gateway_config['globaliris']['label'] = config("payment_gateway_accounts.$gateway.label");
-            $payment_gateway_config['globaliris']['type'] = $v['pa_type'];
-            $payment_gateway_config['globaliris']['common'] = config("payment_gateway_accounts.$gateway.common");
-            $payment_gateway_config['globaliris'][$v['pa_type']] = json_decode($v['pa_info'], true);
-            $payment_gateway_config['globaliris']['sort'] = ($gateway == 'pay_later' ? 2 : 1);
+            $payment_gateway_config[$gateway_type]['pa_id'] = $v['pa_id'];
+            $payment_gateway_config[$gateway_type]['psp_code'] = $gateway;
+            $payment_gateway_config[$gateway_type]['label'] = config("payment_gateway_accounts.$gateway.label");
+            $payment_gateway_config[$gateway_type]['type'] = $v['pa_type'];
+            if ($v['psp_code'] === 'globaliris') {
+                dd(config("payment_gateway_accounts.$gateway.common"));
+            }
+            $payment_gateway_config[$gateway_type]['common'] = config("payment_gateway_accounts.$gateway.common");
+            $payment_gateway_config[$gateway_type][$v['pa_type']] = json_decode($v['pa_info'], true);
+            $payment_gateway_config[$gateway_type]['sort'] = ($gateway == 'pay_later' ? 2 : 1);
         }
         $pa_name = array_column($payment_gateway_config, 'psp_code');
         array_multisort($pa_name, SORT_ASC, $payment_gateway_config);

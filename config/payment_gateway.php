@@ -2251,6 +2251,11 @@ return [
         ],
     ],
     'leg_de' => [
+        'allAll2all'=> [
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
+        ],
         'egCAI2de' => [
             'fawry' => [
                 'label' => 'Fawry pay',

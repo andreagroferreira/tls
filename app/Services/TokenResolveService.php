@@ -46,9 +46,8 @@ class TokenResolveService
 
     /**
      * @param array  $template
-     * @param string $issuer
+     * @param array  $transaction
      * @param string $lang
-     * @param string $fg_id
      *
      * @throws \Exception
      *
@@ -56,13 +55,11 @@ class TokenResolveService
      */
     public function resolveTemplate(
         array $template,
-        string $issuer,
-        string $lang,
-        string $fg_id,
-        array $transaction
+        array $transaction,
+        string $lang
     ): array {
         $data = [];
-        $this->issuer = $issuer;
+        $this->issuer = $transaction['t_issuer'];
         $this->country = substr($this->issuer, 0, 2);
         $this->city = substr($this->issuer, 2, 3);
         $this->client = substr($this->issuer, 6, 2);
@@ -83,9 +80,8 @@ class TokenResolveService
 
         $resolvedTokens = $this->getResolvedTokens(
             $listOfToken,
-            $lang,
-            $fg_id,
-            $transaction
+            $transaction,
+            $lang
         );
 
         if (empty($resolvedTokens)) {
@@ -98,6 +94,176 @@ class TokenResolveService
         }
 
         return $data;
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @throws \Exception
+     *
+     * @return string
+     */
+    private function getTokenTranslationForPurchasedServices(array $transaction): string
+    {
+        $transactionItems = $transaction['t_items'];
+
+        if (empty($transactionItems)) {
+            throw new \Exception('No Transaction items found');
+        }
+
+        $collection = 'basket';
+        $selectFields = 'content, meta_tokens';
+        $selectFilters = [
+            'status' => [
+                'eq' => 'published',
+            ],
+        ];
+        $options = ['type' => 'Purchased services'];
+        $response = $this->directusService->getContent(
+            $collection,
+            $selectFields,
+            $selectFilters,
+            $options
+        );
+
+        if (empty($response)) {
+            throw new \Exception('No item found for the collection - '.$collection);
+        }
+
+        $response = array_first($response);
+        $basketContent = $response['content'];
+        $basketTokens = $this->getBasketTokens($basketContent);
+
+        if (empty($basketTokens)) {
+            return $basketContent;
+        }
+
+        $transactionCurrency = $transaction['t_currency'];
+        $basketServiceValues = $this->getBasketServiceValues($transactionItems, $transactionCurrency);
+        $basketValues = [
+            'currency' => $transactionCurrency,
+            'amount' => $transaction['t_amount'],
+            'total_with_tax' => $this->formatDecimalNumber((float) $basketServiceValues['price_vat']),
+            'total_without_tax' => $this->formatDecimalNumber((float) $transaction['t_amount']),
+            'tax' => $this->formatDecimalNumber((float) $basketServiceValues['vat']),
+        ];
+
+        $metaContents = $this->getResolvedMetaTokensContents($response['meta_tokens'], $basketServiceValues['services']);
+
+        return $this->resolveBasketContent(
+            $basketContent,
+            $basketTokens,
+            $basketValues,
+            $metaContents
+        );
+    }
+
+    private function getBasketServiceValues(array $transactionItems, string $transactionCurrency): array
+    {
+        $basketValues = [
+            'services' => [],
+            'vat' => 0,
+            'price_vat' => 0,
+        ];
+        foreach ($transactionItems as $item) {
+            foreach ($item['skus'] as $service) {
+                $price = $service['price'];
+                $vat = ($service['vat'] / 100 * $price);
+
+                $basketValues['services'][] = [
+                    'sku' => $service['sku'],
+                    'quantity' => $service['quantity'],
+                    'price' => $price,
+                    'currency' => $transactionCurrency,
+                ];
+
+                $basketValues['vat'] += $vat;
+                $basketValues['price_vat'] += ($vat + $price);
+            }
+        }
+
+        return $basketValues;
+    }
+
+    /**
+     * @param string $basketContent
+     * @param array  $basketTokens
+     * @param array  $basketValues
+     * @param array  $metaContents
+     *
+     * @return string
+     */
+    private function resolveBasketContent(
+        string $basketContent,
+        array $basketTokens,
+        array $basketValues,
+        array $metaContents
+    ): string {
+        foreach ($basketTokens['meta'] as $token => $tokenName) {
+            $basketContent = str_replace($token, $metaContents[$token], $basketContent);
+        }
+
+        foreach ($basketTokens['normal'] as $token => $tokenName) {
+            if (!isset($basketValues[$tokenName])) {
+                continue;
+            }
+            $basketContent = str_replace($token, $basketValues[$tokenName], $basketContent);
+        }
+
+        return $basketContent;
+    }
+
+    /**
+     * @param array $basketServiceTokensContents
+     * @param array $basketServices
+     *
+     * @return array
+     */
+    private function getResolvedMetaTokensContents(array $basketServiceTokensContents, array $basketServices): array
+    {
+        $servicesTableItems = [];
+        foreach ($basketServiceTokensContents as $metaToken => $metaContent) {
+            $contentTokens = $this->getBasketTokens($metaContent);
+            if ('META_service_rows' === $metaToken) {
+                $servicesTableItems[$metaToken] = $this->getResolvedBasketServiceTokens($metaContent, $contentTokens['normal'], $basketServices);
+            }
+        }
+
+        return $servicesTableItems;
+    }
+
+    /**
+     * @param string $content
+     * @param array  $tokens
+     * @param array  $basketServices
+     *
+     * @return string
+     */
+    private function getResolvedBasketServiceTokens(
+        string $content,
+        array $tokens,
+        array $basketServices
+    ): string {
+        $basketServicesContent = '';
+        foreach ($basketServices as $service) {
+            $serviceContent = $content;
+            foreach ($tokens as $token => $tokenName) {
+                $serviceContent = str_replace($token, $service[$tokenName], $serviceContent);
+            }
+            $basketServicesContent .= $serviceContent;
+        }
+
+        return $basketServicesContent;
+    }
+
+    /**
+     * @param float $amount
+     *
+     * @return string
+     */
+    private function formatDecimalNumber(float $amount): string
+    {
+        return number_format($amount, 2, '.', '');
     }
 
     /**
@@ -123,8 +289,8 @@ class TokenResolveService
 
     /**
      * @param array  $tokens
+     * @param array  $transaction
      * @param string $lang
-     * @param string $fg_id
      *
      * @throws \Exception
      *
@@ -132,11 +298,10 @@ class TokenResolveService
      */
     private function getResolvedTokens(
         array $tokens,
-        string $lang,
-        string $fg_id,
-        array $transaction
+        array $transaction,
+        string $lang
     ): array {
-        $resolved_tokens = [];
+        $resolvedTokens = [];
 
         foreach ($tokens as $token) {
             /*
@@ -145,20 +310,19 @@ class TokenResolveService
              * {{application : field_name}}
              * {{basket : services}}
              */
-            $token_details = explode(':', str_replace(['{{', '}}'], '', $token));
+            $tokenDetails = explode(':', str_replace(['{{', '}}'], '', $token));
 
-            if ('c' == $token_details[0]) {  // if collection token - directus
-                $resolved_tokens[$token] = $this->getTokenTranslationFromDirectus($token_details, $lang);
-            } elseif ('a' == $token_details[0]) { // if application token - api call
-                $resolved_tokens[$token] = $this->getTokenTranslationFromApplication($token_details, $fg_id);
-            } elseif ('basket' == $token_details[0]) {
-                if (!empty($transaction)) {
-                    $resolved_tokens[$token] = $this->getTokenTranslationForPurchasedServices($transaction);
-                }
+            $tokenPrefixRule = $tokenDetails[0];
+            if ('c' === $tokenPrefixRule) {
+                $resolvedTokens[$token] = $this->getTokenTranslationFromDirectus($tokenDetails, $lang);
+            } elseif ('a' === $tokenPrefixRule) {
+                $resolvedTokens[$token] = $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+            } elseif ('basket' === $tokenPrefixRule) {
+                $resolvedTokens[$token] = $this->getTokenTranslationForPurchasedServices($transaction);
             }
         }
 
-        return $resolved_tokens;
+        return $resolvedTokens;
     }
 
     /**
@@ -225,17 +389,17 @@ class TokenResolveService
     }
 
     /**
-     * @param array  $token_details
+     * @param array  $tokenDetails
      * @param string $lang
      *
      * @throws \Exception
      *
      * @return string
      */
-    private function getTokenTranslationFromDirectus(array $token_details, string $lang): string
+    private function getTokenTranslationFromDirectus(array $tokenDetails, string $lang): string
     {
-        $collection = $token_details[1];
-        $field = 'translation.'.$token_details[2];
+        $collection = $tokenDetails[1];
+        $field = 'translation.'.$tokenDetails[2];
         $options['lang'] = $lang;
         $select = 'code,'.$field;
         $issuer_filter = [
@@ -244,7 +408,7 @@ class TokenResolveService
             'ww',
         ];
 
-        if ('application_centers' == $token_details[1]) {
+        if ('application_centers' == $tokenDetails[1]) {
             $issuer_filter = [$this->issuer, 'ww'];
         }
         $filters = [
@@ -277,22 +441,22 @@ class TokenResolveService
     }
 
     /**
-     * @param array  $token_details
+     * @param array  $tokenDetails
      * @param string $fg_id
      *
      * @throws \Exception
      *
      * @return string
      */
-    private function getTokenTranslationFromApplication(array $token_details, string $fg_id): string
+    private function getTokenTranslationFromApplication(array $tokenDetails, string $fg_id): string
     {
         $translations = [];
         $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/'.$this->client.'/forms_in_group/'.$fg_id);
         if (200 != $applicationsResponse['status']) {
-            throw new \Exception('No applicant details returned for token: '.$token_details[1]);
+            throw new \Exception('No applicant details returned for token: '.$tokenDetails[1]);
         }
         foreach ($applicationsResponse['body'] as $applicant) {
-            $translations[] = $applicant[$token_details[1]];
+            $translations[] = $applicant[$tokenDetails[1]];
         }
         if (empty($translations)) {
             return '';
@@ -302,106 +466,13 @@ class TokenResolveService
     }
 
     /**
-     * @param array $transaction
-     *
-     * @throws \Exception
-     *
-     * @return string
-     */
-    public function getTokenTranslationForPurchasedServices(array $transaction): string
-    {
-        if (empty($transaction)) {
-            throw new \Exception("No Transaction details found");
-        }
-
-        $items = $transaction['t_items'];
-        if (empty($items)) {
-            throw new \Exception("No Transaction items found");
-        }
-
-        $collection = 'basket';
-        $select_fields = 'content, meta_tokens';
-        $select_filters = [
-            'status' => [
-                'eq' => 'published'
-            ]
-        ];
-        $options = ['type' => 'Purchased services'];
-        $response = $this->directusService->getContent($collection, $select_fields, $select_filters, $options);
-        if (empty($response)) {
-            throw new \Exception('No item found for the collection - '.$collection);
-        }
-        $response = array_first($response);
-        $content = $response['content'];
-
-        $token_list = $this->getTokens($content);
-        if (empty($token_list)) {
-            throw new \Exception($collection.' - No tokens found in the item content');
-        }
-        foreach ($token_list as $token_type => $list) {
-            if ('meta' == $token_type) {
-                foreach ($list as $token => $token_name) {
-                    if (!empty($response['meta_tokens'][$token_name])) {
-                        $meta_content[$token_name] = $response['meta_tokens'][$token_name];
-                        $meta_content_token_list[$token_name] = $this->getTokens($meta_content[$token_name]);
-                    }
-                }
-            }
-        }
-
-        $line_item = [];
-        $line_total = [];
-        $line_item_row = '';
-        foreach ($items as $k => $form_items) {
-            foreach ($form_items['skus'] as $i => $skus) {
-                $sku = $skus['sku'];
-                $quantity = $skus['quantity'];
-                $price = $skus['price'];
-                $vat = $skus['vat'];
-
-                $line_item['sku'][$sku] = $sku;
-                $line_item['quantity'][$sku][] = $quantity;
-                $line_item['price'][$sku][] = $price;
-
-                $line_total['vat'][] = ($vat/100*$price);
-                $line_total['price_vat'][] = ($vat/100*$price)+$price;
-            }
-        }
-        $currency = $transaction['t_currency'];
-        $amount = $transaction['t_amount'];
-        $total_with_tax = number_format((float)array_sum($line_total['price_vat']), 2, '.', '');
-        $total_without_tax = number_format((float)$amount, 2, '.', '');
-        $tax = number_format((float)array_sum($line_total['vat']), 2, '.', '');
-
-        //Replace the tokens in the meta content
-        foreach ($line_item['sku'] as $k => $sku) {
-            $quantity = count($line_item['quantity'][$sku]);
-            $price = number_format((float)array_sum($line_item['price'][$sku]), 2, '.', '');
-
-            $meta_content_copy = $meta_content['META_service_rows'];
-            foreach ($meta_content_token_list['META_service_rows']['normal'] as $token => $token_name) {
-                $meta_content_copy = str_replace($token, ${$token_name}, $meta_content_copy);
-            }
-            $line_item_row .= $meta_content_copy;
-        }
-        $content = str_replace('{{META_service_rows}}', $line_item_row, $content);
-
-        //Replace the tokens in the table content(except for meta content)
-        foreach ($token_list['normal'] as $token => $token_name) {
-            $content = str_replace($token, ${$token_name}, $content);
-        }
-
-        return $content;
-    }
-
-    /**
      * @param string $content
      *
      * @return array
      */
-    private function getTokens(string $content): array
+    private function getBasketTokens(string $content): array
     {
-        $token_list = [];
+        $tokenList = [];
         $pattern = '~({{\\w+}})~';
 
         preg_match_all($pattern, $content, $all_tokens);
@@ -411,15 +482,15 @@ class TokenResolveService
 
         foreach ($all_tokens as $token) {
             $check_if_meta = substr($token, 0, 7);
-            $token_name = str_replace(array('{{', '}}'), "", $token);
+            $token_name = str_replace(['{{', '}}'], '', $token);
 
-            if ($check_if_meta == '{{META_') {
+            if ('{{META_' == $check_if_meta) {
                 $token_list['meta'][$token] = $token_name;
             } else {
                 $token_list['normal'][$token] = $token_name;
             }
         }
 
-        return $token_list;
+        return $tokenList;
     }
 }

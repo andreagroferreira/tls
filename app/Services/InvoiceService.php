@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services;
 
 use App\Models\Transactions;
@@ -15,14 +14,12 @@ class InvoiceService
     protected $directusService;
     protected $formGroupService;
 
-
     public function __construct(
         TransactionService $transactionService,
         ApiService $apiService,
         FormGroupService $formGroupService,
         DirectusService $directusService
-    )
-    {
+    ) {
         $this->invoiceDisk = config('payment_gateway.invoice_disk');
         $this->transactionService = $transactionService;
         $this->apiService = $apiService;
@@ -31,20 +28,23 @@ class InvoiceService
     }
 
     /**
-     * @param $transaction_id
+     * @param string $transaction_id
      *
-     * @return string|null
-     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return null|object|string
      */
-    public function getInvoiceFileContent($transaction_id): ?string
+    public function getInvoiceFileContent(string $transaction_id)
     {
         /** @var Transactions $transaction */
         $transaction = $this->transactionService
             ->fetchByWhere([
                 't_transaction_id' => $transaction_id,
                 't_status' => 'done',
-                't_tech_deleted' => false
+                't_tech_deleted' => false,
             ])
             ->first();
 
@@ -62,9 +62,9 @@ class InvoiceService
     /**
      * @param Transactions $transaction
      *
-     * @return string|null
-     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     *
+     * @return null|string
      */
     public function getS3InvoiceFileContent(Transactions $transaction): ?string
     {
@@ -85,44 +85,33 @@ class InvoiceService
     /**
      * @param Transactions $transaction
      *
-     * @return string|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return null|object
      */
-    public function getFileLibraryInvoiceFileContent(Transactions $transaction): ?string
+    public function getFileLibraryInvoiceFileContent(Transactions $transaction): ?object
     {
         $file = $this->getFilePath($transaction->toArray());
 
         $queryParams = 'path='.$file;
 
-        try{
+        try {
             $response = $this->apiService->callFileLibraryDownloadApi($queryParams);
         } catch (\Exception $e) {
-            Log::warning('Transaction Error: error file-library api "' . $e->getMessage() . '"');
+            Log::warning('Transaction Error: error file-library api "'.$e->getMessage().'"');
+
             return null;
         }
 
         if ($response['status'] != 200) {
             Log::warning('Transaction Error: receipt download failed');
+
             return null;
         }
+
         return $response['body'];
-    }
-
-    /**
-     * @param array $transaction
-     * @param string $storageService
-     *
-     * @return string
-     */
-    protected function getFilePath(array $transaction, string $storageService = 'file-library'): string
-    {
-        if ($storageService === "s3") {
-            return array_get($transaction, 't_client') . '/' . array_get($transaction, 't_xref_fg_id') . '/' . array_get($transaction, 't_transaction_id') . '.pdf';
-        }
-
-        $country = substr($transaction['t_issuer'],0,2);
-        $city = substr($transaction['t_issuer'],2,3);
-
-        return 'reporting/WW/' . $country . '/' . $city . '/' . array_get($transaction, 't_xref_fg_id') . '/' . array_get($transaction, 't_transaction_id') . '.pdf';
     }
 
     /**
@@ -132,51 +121,79 @@ class InvoiceService
      *
      * @return array
      */
-    public function getInvoiceContent(string $collection_name, string $issuer, string $lang): array
-    {
-        $content = [];
-
+    public function getInvoiceContent(
+        string $collection_name,
+        string $issuer,
+        string $lang
+    ): array {
         $country = substr($issuer, 0, 2);
         $city = substr($issuer, 2, 3);
 
         $select_filters = [
             'status' => [
-                'eq' => 'published'
+                'eq' => 'published',
             ],
             'code' => [
-                'in' => [$city, $country, 'ww']
+                'in' => [$city, $country, 'ww'],
             ],
         ];
         $select_fields = '*.*';
-        $content = $this->directusService->getContent($collection_name, $select_fields, $select_filters, $options = ['lang'=> $lang]);
 
-        return $content;
+        return $this->directusService->getContent(
+            $collection_name,
+            $select_fields,
+            $select_filters, ['lang' => $lang]
+        );
     }
 
     /**
-     * @param int $fg_id
+     * @param int    $fg_id
      * @param string $client
-     * @param array $resolved_content
+     * @param array  $resolved_content
      *
      * @return void
      */
-    public function sendInvoice(int $fg_id, string $client, array $resolved_content)
-    {
+    public function sendInvoice(
+        int $fg_id,
+        string $client,
+        array $resolved_content
+    ): void {
         $form_group = $this->formGroupService->fetch($fg_id, $client);
         $form_user_email = $form_group['u_email'] ?? '';
-        if (!empty($form_user_email)) {
-            if (!empty($resolved_content['email_content']) && !empty($resolved_content['invoice_content'])) {
-                $email_content = [
-                    'to' => $form_user_email,
-                    'subject' => $resolved_content['email_title'],
-                    'body' => $resolved_content['email_content'],
-                    'html2pdf' => [
-                        'invoice' => $resolved_content['invoice_content']
-                    ]
-                ];
 
-                $this->apiService->callEmailApi('POST', 'send_email', $email_content);
-            }
+        if (empty($form_user_email)) {
+            return;
         }
+
+        if (!empty($resolved_content['email_content']) && !empty($resolved_content['invoice_content'])) {
+            $email_content = [
+                'to' => $form_user_email,
+                'subject' => $resolved_content['email_title'],
+                'body' => $resolved_content['email_content'],
+                'html2pdf' => [
+                    'invoice' => $resolved_content['invoice_content'],
+                ],
+            ];
+
+            $this->apiService->callEmailApi('POST', 'send_email', $email_content);
+        }
+    }
+
+    /**
+     * @param array  $transaction
+     * @param string $storageService
+     *
+     * @return string
+     */
+    protected function getFilePath(array $transaction, string $storageService = 'file-library'): string
+    {
+        if ($storageService === 's3') {
+            return array_get($transaction, 't_client').'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
+        }
+
+        $country = substr($transaction['t_issuer'], 0, 2);
+        $city = substr($transaction['t_issuer'], 2, 3);
+
+        return 'invoice/WW/'.$country.'/'.$city.'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
     }
 }

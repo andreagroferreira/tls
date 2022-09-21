@@ -419,7 +419,7 @@ class TokenResolveService
                 $token_list['normal'][$token] = $token_name;
             }
         }
-
+        
         return $token_list;
     }
 }

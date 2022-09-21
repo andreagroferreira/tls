@@ -55,7 +55,8 @@ abstract class TestCase extends \TestCase
                 't_onerror_url' => 'onError_tlsweb_url?lang=fr-fr',
                 't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
                 't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
-                't_workflow' => 'vac'
+                't_workflow' => 'vac',
+                't_invoice_storage' => 'file-library'
             ];
         }
 

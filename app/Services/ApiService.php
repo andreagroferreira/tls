@@ -399,7 +399,7 @@ class ApiService
      */
     public function callFileLibraryUploadApi(string $queryParams, Response $data): array
     {
-        $url = $this->getFileLibraryApiDomain() . '/api/' . $this->getFileLibraryApiVersion() . '/file-library/upload/reporting?' . $queryParams;
+        $url = $this->getFileLibraryApiDomain() . '/api/' . $this->getFileLibraryApiVersion() . '/file-library/upload/invoice?' . $queryParams;
         $response = $this->guzzleClient->request('post', $url, [
             'verify' => false,
             'http_errors' => false,

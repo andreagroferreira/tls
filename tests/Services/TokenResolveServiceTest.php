@@ -2,129 +2,154 @@
 
 namespace Tests\Services;
 
-use App\Services\TokenResolveService;
-use App\Services\DirectusService;
 use App\Services\ApiService;
+use App\Services\DirectusService;
+use App\Services\TokenResolveService;
+use PHPUnit\Framework\MockObject\MockObject;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class TokenResolveServiceTest extends \TestCase
 {
+    private $expectedResult = ['email_content' => 'Dear Applicant1, Applicant2, this is test address for email content : Leman building, rue du lac Leman, Berges du lac 1, 1053, Tunis, Tunisia ', 'invoice_content' => 'This is test address for invoice content : Leman building, rue du lac Leman, Berges du lac 1, 1053, Tunis, Tunisia'];
 
-    private array $template = [
-            0 => [
-                'code' => 'ww',
-                'translation' => [
-                    0 => ['email_content' => 'Dear {{a:f_pers_surnames}}, this is test address for email content : {{c:application_centers:address}} ','invoice_content'=>'This is test address for invoice content : {{c:application_centers:address}}']
-                ]
-            ]
-        ];
-
-    private array $expectedResult = ["email_content" => "Dear Applicant1, Applicant2, this is test address for email content : Leman building, rue du lac Leman, Berges du lac 1, 1053, Tunis, Tunisia ","invoice_content" => "This is test address for invoice content : Leman building, rue du lac Leman, Berges du lac 1, 1053, Tunis, Tunisia"];
-
-    private array $mockResult =  [
-            0 => [
-                'code' => 'TUN',
-                'translation' => [
-                    0 => ['address' => 'Leman building, rue du lac Leman, Berges du lac 1, 1053, Tunis, Tunisia']
-                ]
-            ]
-        ];
-
-    private array $mockApiResult = [
-            'status' => 200,
-            'body' => [
-                0 => [
-                    'f_pers_surnames' => 'Applicant1'
-                ],
-                1 => [
-                    'f_pers_surnames' => 'Applicant2'
-                ]
-            ]
-        ];
-
-    private array $filters =  [
-            'code' => [
-                'in' => ['tn','TUN','ww'],
+    private $directusServiceMockResult = [
+        0 => [
+            'code' => 'TUN',
+            'translation' => [
+                0 => ['address' => 'Leman building, rue du lac Leman, Berges du lac 1, 1053, Tunis, Tunisia'],
             ],
-            'status' => [
-                'eq' => 'published',
+        ],
+    ];
+
+    private $apiServiceMockResult = [
+        'status' => 200,
+        'body' => [
+            0 => [
+                'f_pers_surnames' => 'Applicant1',
             ],
-        ];
+            1 => [
+                'f_pers_surnames' => 'Applicant2',
+            ],
+        ],
+    ];
 
-    private string $issuer = 'tnTUN2de';
+    /**
+     * @var DirectusService|MockObject
+     */
+    private $directusServiceMock;
 
-    private array $options = ['lang' => 'en-us'];
+    /**
+     * @var ApiService|MockObject
+     */
+    private $apiServiceMock;
 
-    private string $fg_id = '13512';
-
-    private string $client = 'de';
-        
-
-    public function testTemplateIsNull()
+    public function setUp(): void
     {
-        $template = [];
-        $expectedResult = [];
-        $once = 0;
-        $mockResult = [];
-        $mockDirectusService = $this->mockDirectusService($mockResult, $this->filters, $this->options,$once);
-        $mockApiService = $this->mockApiService($this->mockApiResult, $this->fg_id);
+        $this->directusServiceMock = $this->mockDirectusService();
+        $this->apiServiceMock = $this->mockApiService();
 
-        $tokenResolveService = New TokenResolveService($mockDirectusService, $mockApiService);
-
-        $this->assertEquals($expectedResult,$tokenResolveService->resolveTemplate($template, $this->issuer, $this->options['lang'], $this->fg_id));
-
+        parent::setUp();
     }
 
-    public function testIssuerIsNull()
+    public function testTemplateIsEmpty()
     {
+        $this->directusServiceMock
+            ->expects($this->never())
+            ->method('getContent')
+            ->willReturn([]);
 
-        $mockResult = [];
+        $this->apiServiceMock
+            ->expects($this->never())
+            ->method('callTlsApi')
+            ->willReturn([]);
 
-        $issuer = '';
+        $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
+        $resolvedTemplate = $tokenResolveService->resolveTemplate(
+            [],
+            'tnTUN2de',
+            'en-us',
+            '13512'
+        );
 
-        $filters = [
-            'code' => [
-                'in' => ['ww'],
-            ],
-            'status' => [
-                'eq' => 'published',
-            ],
-        ];
+        $this->assertEmpty($resolvedTemplate);
+    }
 
-        $once = 1;
-        $mockDirectusService = $this->mockDirectusService($mockResult, $filters, $this->options, $once);
-        $mockApiService = $this->mockApiService($this->mockApiResult, $this->fg_id);
+    /**
+     * @dataProvider defaultTemplate
+     *
+     * @param array $template
+     *
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function testIssuerIsEmpty(array $template)
+    {
+        $this->directusServiceMock
+            ->expects($this->once())
+            ->method('getContent')
+            ->willReturn([]);
 
-        $tokenResolveService = New TokenResolveService($mockDirectusService,$mockApiService);
+        $this->apiServiceMock
+            ->expects($this->once())
+            ->method('callTlsApi')
+            ->willReturn($this->apiServiceMockResult);
+
+        $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
+
         $this->expectExceptionMessage('No collections returned for token: application_centers.translation.address');
-        $tokenResolveService->resolveTemplate($this->template,$issuer,$this->options['lang'],$this->fg_id);
 
+        $tokenResolveService->resolveTemplate(
+            $template,
+            '',
+            'en-us',
+            '13512'
+        );
     }
 
-     public function testLangIsNull()
+    /**
+     * @dataProvider defaultTemplate
+     *
+     * @param array $template
+     *
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function testLangIsEmpty(array $template)
     {
+        $this->directusServiceMock
+            ->expects($this->once())
+            ->method('getContent')
+            ->willReturn($this->directusServiceMockResult);
 
-        $lang = '';
+        $this->apiServiceMock
+            ->expects($this->once())
+            ->method('callTlsApi')
+            ->willReturn($this->apiServiceMockResult);
 
-        $options['lang'] = $lang;
-        $once = 1;
-        $mockDirectusService = $this->mockDirectusService($this->mockResult, $this->filters, $options, $once);
-        $mockApiService = $this->mockApiService($this->mockApiResult, $this->fg_id);
+        $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
-        $tokenResolveService = New TokenResolveService($mockDirectusService, $mockApiService);
-
-        $this->assertEquals($this->expectedResult,$tokenResolveService->resolveTemplate($this->template, $this->issuer, $lang, $this->fg_id));
+        $result = $tokenResolveService->resolveTemplate(
+            $template,
+            'tnTUN2de',
+            '',
+            '13512'
+        );
     }
 
-     public function testFormGroupIdIsNull()
+    public function testFormGroupIdIsNull()
     {
-
         $fg_id = '';
         $once = 1;
         $mockApiResult = ['status' => 404, 'message' => 'No Applicant found'];
         $mockDirectusService = $this->mockDirectusService($this->mockResult, $this->filters, $this->options, $once);
         $mockApiService = $this->mockApiService($mockApiResult, $fg_id);
 
-        $tokenResolveService = New TokenResolveService($mockDirectusService, $mockApiService);
+        $tokenResolveService = new TokenResolveService($mockDirectusService, $mockApiService);
 
         $this->expectExceptionMessage('No applicant details returned for token: f_pers_surnames');
 
@@ -133,46 +158,48 @@ class TokenResolveServiceTest extends \TestCase
 
     public function testResolveTemplate()
     {
-
         $once = 1;
         $mockDirectusService = $this->mockDirectusService($this->mockResult, $this->filters, $this->options, $once);
         $mockApiService = $this->mockApiService($this->mockApiResult, $this->fg_id);
 
-        $tokenResolveService = New TokenResolveService($mockDirectusService, $mockApiService);
+        $tokenResolveService = new TokenResolveService($mockDirectusService, $mockApiService);
 
-        $this->assertEquals($this->expectedResult,$tokenResolveService->resolveTemplate($this->template, $this->issuer, $this->options['lang'], $this->fg_id));
+        $this->assertEquals($this->expectedResult, $tokenResolveService->resolveTemplate($this->template, $this->issuer, $this->options['lang'], $this->fg_id));
     }
 
-    private function mockDirectusService($mockResult, $filters, $options, $once): object
+    public function defaultTemplate(): array
     {
-        $collection = 'tlspay_email_invoice';
-        $field = 'code,translation.address';
-        $mockDirectusService = \Mockery::mock(DirectusService::class);
-        if($once){
-            $mockDirectusService->shouldReceive('getContent')
-            ->withArgs(fn($collection, $field, $filters, $options) => true)->atLeast(1)
-            ->andReturn($mockResult);
-        }else{
-            $mockDirectusService->shouldReceive('getContent')
-            ->withArgs(fn($collection, $field, $filters, $options) => true)
-            ->andReturn($mockResult);
-        }
-
-        return $this->app->instance('App\Services\DirectusService', $mockDirectusService);
+        return [
+            [
+                [
+                    0 => [
+                        'code' => 'ww',
+                        'translation' => [
+                            0 => ['email_content' => 'Dear {{a:f_pers_surnames}}, this is test address for email content : {{c:application_centers:address}} ', 'invoice_content' => 'This is test address for invoice content : {{c:application_centers:address}}'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
-    private function mockApiService($mockResult, $fg_id): object
+    /**
+     * @return MockObject
+     */
+    private function mockDirectusService(): MockObject
     {
-        $method = 'GET';
-        $url = '/tls/v2/'.$this->client.'/forms_in_group/'.$fg_id;
-
-        $mockApiService = \Mockery::mock(ApiService::class);
-
-        $mockApiService->shouldReceive('callTlsApi')
-            ->withArgs(fn($method, $url) => true)->atLeast(1)
-            ->andReturn($mockResult);
-
-        return $this->app->instance('App\Services\ApiService', $mockApiService);
+        return $this->getMockBuilder(DirectusService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
+    /**
+     * @return MockObject
+     */
+    private function mockApiService(): MockObject
+    {
+        return $this->getMockBuilder(ApiService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
 }

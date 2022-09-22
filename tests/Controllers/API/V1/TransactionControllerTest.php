@@ -7,15 +7,25 @@ use Illuminate\Support\Carbon;
 /**
  * @internal
  *
- * @coversNothing
+ * @covers \App\Http\Controllers\V1\TransactionController
+ * @covers \App\Models\TransactionItems
+ * @covers \App\Models\Transactions
+ * @covers \App\Repositories\TransactionItemsRepository
+ * @covers \App\Repositories\TransactionRepository
+ * @covers \App\Services\TransactionItemsService
+ * @covers \App\Services\TransactionService
  */
 class TransactionControllerTest extends TestCase
 {
-    /** @var string */
-    private string $transactionApi = 'api/v1/transaction';
+    /**
+     * @var string
+     */
+    private $transactionApi = 'api/v1/transaction';
 
-    /** @var string */
-    private string $transactionsApi = 'api/v1/transactions';
+    /**
+     *  @var string
+     */
+    private $transactionsApi = 'api/v1/transactions';
 
     /**
      * @return void
@@ -36,8 +46,7 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The fg id must be an integer.',
-            ])
-        ;
+            ]);
     }
 
     /**
@@ -50,9 +59,9 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testGetSuccessfulTransactionFromDatabase(): void
     {
@@ -84,8 +93,7 @@ class TransactionControllerTest extends TestCase
                 ->assertJson([
                     'error' => 'params error',
                     'message' => 'The '.str_replace('_', ' ', $field).' field is required.',
-                ])
-            ;
+                ]);
 
             $payload[$field] = $value;
         }
@@ -121,8 +129,7 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The items.skus field is required.',
-            ])
-        ;
+            ]);
 
         // Validate missing items.skus.sku, price and vat
         $defaultPayload['items'] = [['skus' => [[]]]];
@@ -131,8 +138,7 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The items.skus.sku, price, vat field is required.',
-            ])
-        ;
+            ]);
 
         // Validate missing items.fg_id
         $defaultPayload['items'] = [['skus' => [['sku' => 1, 'price' => 1, 'vat' => 1]]]];
@@ -141,8 +147,7 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The items.f_id must be an integer.',
-            ])
-        ;
+            ]);
 
         // Validate string items.fg_id
         $defaultPayload['items'] = [['skus' => [['sku' => 1, 'price' => 1, 'vat' => 1]], 'fg_id' => 'test']];
@@ -151,8 +156,7 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The items.f_id must be an integer.',
-            ])
-        ;
+            ]);
     }
 
     /**
@@ -160,17 +164,16 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testCreateTransactionIsSuccessful(array $defaultPayload): void
     {
         // Create Transaction
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
-            ->assertJsonStructure(['t_id', 'expire'])
-        ;
+            ->assertJsonStructure(['t_id', 'expire']);
 
         $postResponse = $this->response->decodeResponseJson();
         $this->assertTrue(Carbon::parse($this->getDbNowTime())->lt(array_get($postResponse, 'expire')));
@@ -192,9 +195,9 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testCreateTransactionWithGovernmentService(array $defaultPayload): void
     {
@@ -202,8 +205,7 @@ class TransactionControllerTest extends TestCase
         $defaultPayload['service'] = 'gov';
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
-            ->assertJsonStructure(['t_id', 'expire'])
-        ;
+            ->assertJsonStructure(['t_id', 'expire']);
 
         $postResponse = $this->response->decodeResponseJson();
         $this->assertTrue(Carbon::parse($this->getDbNowTime())->lt(array_get($postResponse, 'expire')));
@@ -223,25 +225,23 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testCreateMultipleTransactionsWithSameData(array $defaultPayload): void
     {
         // Create First Transaction
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
-            ->assertJsonStructure(['t_id', 'expire'])
-        ;
+            ->assertJsonStructure(['t_id', 'expire']);
 
         $firstTransactionPost = $this->response->decodeResponseJson();
 
         // Create Second Transaction
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
-            ->assertJsonStructure(['t_id', 'expire'])
-        ;
+            ->assertJsonStructure(['t_id', 'expire']);
         $secondTransactionPost = $this->response->decodeResponseJson();
 
         // Get Created Transaction
@@ -260,17 +260,16 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testCreateMultipleTransactionsWithSameFormGroupAndDifferentItems(array $defaultPayload): void
     {
         // Create First Transaction
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
-            ->assertJsonStructure(['t_id', 'expire'])
-        ;
+            ->assertJsonStructure(['t_id', 'expire']);
 
         $firstTransactionPost = $this->response->decodeResponseJson();
 
@@ -278,8 +277,7 @@ class TransactionControllerTest extends TestCase
         $defaultPayload['items'] = [['f_id' => 10001, 'skus' => [['sku' => 2, 'price' => 2, 'vat' => 2]]]];
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
-            ->assertJsonStructure(['t_id', 'expire'])
-        ;
+            ->assertJsonStructure(['t_id', 'expire']);
         $secondTransactionPost = $this->response->decodeResponseJson();
 
         // Get Created Transaction
@@ -301,9 +299,9 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testTransactionExpired(array $defaultPayload): void
     {
@@ -312,8 +310,7 @@ class TransactionControllerTest extends TestCase
 
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
-            ->assertJsonStructure(['t_id', 'expire'])
-        ;
+            ->assertJsonStructure(['t_id', 'expire']);
 
         $transactionPost = $this->response->decodeResponseJson();
         $this->assertEquals(Carbon::parse($this->getDbNowTime())->subMinutes(config('payment_gateway.expiration_minutes'))->toDateString(), Carbon::parse(array_get($transactionPost, 'expire'))->toDateString());
@@ -341,14 +338,13 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'total' => 0,
                 'data' => [],
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithTransactionsData(): void
     {
@@ -358,17 +354,16 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,
-            ])
-        ;
+            ]);
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertEquals($transaction->t_id, array_get($transactionsList, 'data.0.t_id'));
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithPagesFilterValidation(): void
     {
@@ -377,14 +372,13 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The page must be an integer.',
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithPageOneFilter(): void
     {
@@ -394,17 +388,16 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,
-            ])
-        ;
+            ]);
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertEquals($transaction->t_id, array_get($transactionsList, 'data.0.t_id'));
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithLimitFilterValidation(): void
     {
@@ -413,14 +406,13 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The limit must be an integer.',
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithLimitFilter(): void
     {
@@ -446,17 +438,16 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 2,
-            ])
-        ;
+            ]);
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertCount(1, $transactionsList['data']);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithPageTwoFilter(): void
     {
@@ -482,17 +473,16 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 2,
-            ])
-        ;
+            ]);
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertCount(1, $transactionsList['data']);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithIssuerFilterValidation(): void
     {
@@ -501,14 +491,13 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The issuer format is invalid.',
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithIssuerFilter(): void
     {
@@ -518,17 +507,16 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,
-            ])
-        ;
+            ]);
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertEquals($transaction->t_id, array_get($transactionsList, 'data.0.t_id'));
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithStatusFilterValidation(): void
     {
@@ -537,14 +525,13 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The selected status is invalid.',
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithStatusFilter(): void
     {
@@ -554,17 +541,16 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,
-            ])
-        ;
+            ]);
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertEquals($transaction->t_id, array_get($transactionsList, 'data.0.t_id'));
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithStartDateFilterValidation(): void
     {
@@ -573,14 +559,13 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The start date is not a valid date.',
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithEndDateFilterValidation(): void
     {
@@ -589,14 +574,13 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The end date is not a valid date.',
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithDatesFilter(): void
     {
@@ -608,17 +592,16 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,
-            ])
-        ;
+            ]);
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertEquals($transaction->t_id, array_get($transactionsList, 'data.0.t_id'));
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithDatesFilterWithNoResult(): void
     {
@@ -629,14 +612,13 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 0,
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithServiceFilterValidation(): void
     {
@@ -645,14 +627,13 @@ class TransactionControllerTest extends TestCase
             ->assertJson([
                 'error' => 'params error',
                 'message' => 'The selected service is invalid.',
-            ])
-        ;
+            ]);
     }
 
     /**
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function testFetchAllWithServiceFilter(): void
     {
@@ -679,8 +660,7 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,
-            ])
-        ;
+            ]);
 
         $transactionsList = $this->response->decodeResponseJson();
 

@@ -414,6 +414,8 @@ parameters:
     required: true
   - name: EMAIL_SERVICE_DOMAIN
     required: true
+  - name: FILE_LIBRARY_API_DOMAIN
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -1001,6 +1003,8 @@ objects:
                   value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
                 - name: EMAIL_SERVICE_DOMAIN
                   value: ${EMAIL_SERVICE_DOMAIN}
+                - name: FILE_LIBRARY_API_DOMAIN
+                  value: ${FILE_LIBRARY_API_DOMAIN}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -1472,6 +1476,8 @@ objects:
                   value: ${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}
                 - name: EMAIL_SERVICE_DOMAIN
                   value: ${EMAIL_SERVICE_DOMAIN}
+                - name: FILE_LIBRARY_API_DOMAIN
+                  value: ${FILE_LIBRARY_API_DOMAIN}
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT
@@ -1627,6 +1633,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-${APPLICATION_NAME}-router
+      labels:
+        app: "${APPLICATION_NAME}"
     spec:
       ingress:
         - from:
@@ -1641,19 +1649,19 @@ objects:
               protocol: TCP
       podSelector:
         matchLabels:
-          app: ${APPLICATION_NAME}
+          app: "${APPLICATION_NAME}"
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
       name: allow-${APPLICATION_NAME}-pgbouncer
       labels:
-        app: ${APPLICATION_NAME}
+        app: "${APPLICATION_NAME}"
     spec:
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}
+                  app: "${APPLICATION_NAME}"
           ports:
             - port: 5432
               protocol: TCP
@@ -1665,13 +1673,13 @@ objects:
     metadata:
       name: allow-${APPLICATION_NAME}-pgcluster
       labels:
-        app: ${APPLICATION_NAME}
+        app: "${APPLICATION_NAME}"
     spec:
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}
+                  app: "${APPLICATION_NAME}"
           ports:
             - port: 5432
               protocol: TCP
@@ -1683,13 +1691,13 @@ objects:
     metadata:
       name: allow-${APPLICATION_NAME}-service-api
       labels:
-        app: ${APPLICATION_NAME}
+        app: "${APPLICATION_NAME}"
     spec:
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}
+                  app: "${APPLICATION_NAME}"
           ports:
             - port: 8443
               protocol: TCP
@@ -1701,13 +1709,13 @@ objects:
     metadata:
       name: allow-${APPLICATION_NAME}-customer-service
       labels:
-        app: ${APPLICATION_NAME}
+        app: "${APPLICATION_NAME}"
     spec:
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}
+                  app: "${APPLICATION_NAME}"
           ports:
             - port: 8080
               protocol: TCP
@@ -1718,6 +1726,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-pgbouncer-rds-tlspay-api
+      labels:
+        app: "${APPLICATION_NAME}"
     spec:
       ingress:
         - from:
@@ -1735,16 +1745,56 @@ objects:
     metadata:
       name: allow-${APPLICATION_NAME}-email-service
       labels:
-        app: ${APPLICATION_NAME}
+        app: "${APPLICATION_NAME}"
     spec:
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  app: ${APPLICATION_NAME}
+                  app: "${APPLICATION_NAME}"
           ports:
             - port: 8443
               protocol: TCP
       podSelector:
         matchLabels:
           app: 'tlsconnect-email-service'
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-file-library-api
+      labels:
+        app: "${APPLICATION_NAME}"
+    spec:
+      podSelector:
+        matchLabels:
+          app: file-library-api
+      policyTypes:
+        - Ingress
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: "${APPLICATION_NAME}"
+          ports:
+            - port: 8443
+              protocol: TCP
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-directus-cms
+      labels:
+        app: "${APPLICATION_NAME}"
+    spec:
+      podSelector:
+        matchLabels:
+          app: directus-cms
+      policyTypes:
+        - Ingress
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: "${APPLICATION_NAME}"
+          ports:
+            - protocol: TCP
+              port: 8080

@@ -65,7 +65,7 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
         $app_env        = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $host       = $kbank_config['prod']['host'] ?? $kbank_config['prod']['sandbox_host'] ?? '';
             $secret     = $kbank_config['prod']['secret'] ?? $kbank_config['prod']['sandbox_secret'] ?? '';
         } else if ($is_live && !$app_env) {
@@ -131,7 +131,7 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $kbank_config   = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
         $app_env = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $host       = $kbank_config['config']['host'] ?? $kbank_config['config']['sandbox_host'] ?? '';
             $secret     = $kbank_config['config']['secret'] ?? $kbank_config['config']['sandbox_secret'] ?? '';
             $mid        = $kbank_config['config']['mid'] ?? $kbank_config['config']['sandbox_mid'] ?? '';
@@ -191,7 +191,7 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $kbank_config   = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
         $app_env    = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $host       = $kbank_config['prod']['host'] ?? $kbank_config['prod']['sandbox_host'] ?? '';
             $secret     = $kbank_config['prod']['secret'] ?? $kbank_config['prod']['sandbox_secret'] ?? '';
         } else if ($is_live && !$app_env) {

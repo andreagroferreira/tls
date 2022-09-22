@@ -64,12 +64,11 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
         $fg_id = $translationsData['t_xref_fg_id'];
-        $t_service = $translationsData['t_service'] ?? 'tls';
         if ($this->gatewayService->getClientUseFile()) {
-            $onlinePayment = $this->gatewayService->getGateway($client, $issuer, $t_service, $pa_id);
-        } else {
             $config = $this->gatewayService->getConfig($client, $issuer);
             $onlinePayment = $config ? $config['globaliris'] : [];
+        } else {
+            $onlinePayment = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         }
         $orderId = $translationsData['t_transaction_id'] ?? '';
 
@@ -88,7 +87,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
 
         $cai_list_with_avs = array_column($applications, 'f_cai');
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $hosturl        = $onlinePayment['config']['host'] ?? $onlinePayment['config']['sandbox_host'] ?? '';
             $merchantid     = $onlinePayment['config']['merchant_id'] ?? $onlinePayment['config']['sandbox_merchant_id'] ?? '';
             $account        = $onlinePayment['config']['account'] ?? $onlinePayment['config']['sandbox_account'] ?? '';

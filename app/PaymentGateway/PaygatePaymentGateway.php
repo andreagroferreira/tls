@@ -70,7 +70,7 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         $paygate_config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live            = $paygate_config['common']['env'] == 'live' ? true : false;
         $app_env            = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $query_host      = $paygate_config['config']['query_host'] ?? $paygate_config['config']['sandbox_query_host'] ?? '';
             $encryptionKey   = $paygate_config['config']['encryption_key'] ?? $paygate_config['config']['sandbox_encryption_key'] ?? '';
         } else if ($is_live && !$app_env) {
@@ -147,7 +147,7 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         $paygate_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $is_live        = $paygate_config['common']['env'] == 'live' ? true : false;
         $app_env = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $init_hosturl        = $paygate_config['config']['initiate_host'] ?? $paygate_config['config']['sandbox_initiate_host'] ?? '';
             $process_hosturl     = $paygate_config['config']['process_host'] ?? $paygate_config['config']['sandbox_process_host'] ?? '';
             $paygate_id          = $paygate_config['config']['paygate_id'] ?? $paygate_config['config']['sandbox_paygate_id'] ?? '';

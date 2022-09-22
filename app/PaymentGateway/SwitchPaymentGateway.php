@@ -225,7 +225,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
         $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
 
         $is_live = $config['common']['env'] == 'live' ? true : false;
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             // get database account
             $config['current'] = $config['config'];
         } else if ($is_live && !$app_env) {

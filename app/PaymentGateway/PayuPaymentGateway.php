@@ -165,7 +165,7 @@ class PayuPaymentGateway implements PaymentGatewayInterface
     public function getHeader($payu_config) {
         $is_live = $payu_config['common']['env'] == 'live' ? true : false;
         $app_env = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $app_id          = $payu_config['config']['app_id'];
             $private_key     = $payu_config['config']['private_key'];
             $api_version     = $payu_config['config']['api_version'];

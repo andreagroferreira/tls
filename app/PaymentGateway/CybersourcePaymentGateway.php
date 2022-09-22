@@ -80,7 +80,7 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
         $currency           = $translations_data['t_currency'] ?? $cybersource_config['common']['currency'];
         $is_live            = $cybersource_config['common']['env'] == 'live' ? true : false;
         $app_env  = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $init_hosturl     = $cybersource_config['config']['host'];
             $access_key       = $cybersource_config['config']['access_key'];
             $profile_id       = $cybersource_config['config']['profile_id'];
@@ -154,7 +154,7 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
         $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live            = $cybersource_config['common']['env'] == 'live' ? true : false;
         $app_env            = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $access_key       = $cybersource_config['config']['access_key'];
             $profile_id       = $cybersource_config['config']['profile_id'];
             $transaction_type = $cybersource_config['config']['transaction_type'];

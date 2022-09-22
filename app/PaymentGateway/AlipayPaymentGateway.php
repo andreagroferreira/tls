@@ -378,14 +378,14 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
             return "success";
         }
     }
-    // t_xref_pa_id
+
     private function getPaySecret($pay_config) {
         if ($this->gatewayService->getClientUseFile()) {
-            $key = 'config';
-        } else {
             $app_env = $this->isSandBox();
             $is_live = ($pay_config['common']['env'] == 'live');
             $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+        } else {
+            $key = 'config';
         }
         return $pay_config[$key];
     }

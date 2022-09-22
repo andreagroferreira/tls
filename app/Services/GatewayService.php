@@ -16,9 +16,9 @@ class GatewayService
     {
         $getClientUseUi = $this->getClientUseFile();
         if ($getClientUseUi) {
-            $config = $this->paymentGatewayService->getConfig($client, $issuer, $service);
-        } else {
             $config = $this->getConfig($client, $issuer);
+        } else {
+            $config = $this->paymentGatewayService->getConfig($client, $issuer, $service);
         }
         return $config ?? [];
     }
@@ -27,9 +27,9 @@ class GatewayService
     {
         $getClientUseUi = $this->getClientUseFile();
         if ($getClientUseUi) {
-            return $this->paymentGatewayService->getPaymentAccountConfig($gateway, $pa_id);
+            return $this->getConfig($client, $issuer) ?? [];
         } else {
-            return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+            return $this->paymentGatewayService->getPaymentAccountConfig($gateway, $pa_id);
         }
     }
 

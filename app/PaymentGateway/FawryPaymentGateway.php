@@ -90,7 +90,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $payment_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $is_live        = $payment_config['common']['env'] == 'live' ? true : false;
         $app_env        = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $host_url    = $payment_config['config']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
             $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);
@@ -276,7 +276,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live = $payment_config['common']['env'] == 'live';
         $app_env = $this->isSandBox();
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $host_url    = $payment_config['config']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
             $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);
@@ -457,7 +457,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $app_env = $this->isSandBox();
         $is_live = $payment_config['common']['env'] == 'live' ? true : false;
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $host_url    = $payment_config['config']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
             $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);

@@ -2,11 +2,16 @@
 
 namespace App\Services;
 
-
 class GatewayService
 {
+    /**
+     * @var PaymentGatewayService
+     */
     protected $paymentGatewayService;
 
+    /**
+     * @param PaymentGatewayService $paymentGatewayService
+     */
     public function __construct(PaymentGatewayService $paymentGatewayService)
     {
         $this->paymentGatewayService = $paymentGatewayService;
@@ -20,7 +25,8 @@ class GatewayService
         } else {
             $config = $this->paymentGatewayService->getConfig($client, $issuer, $service);
         }
-        return $config ?? [];
+
+        return $this->getConfig($client, $issuer);
     }
 
     public function getGateway($client, $issuer, $gateway, $pa_id = null)
@@ -31,6 +37,8 @@ class GatewayService
         } else {
             return $this->paymentGatewayService->getPaymentAccountConfig($gateway, $pa_id);
         }
+
+        return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
     }
 
     public function getClientUseFile(): bool
@@ -46,27 +54,22 @@ class GatewayService
 
     public function getConfig($client, $issuer)
     {
+        $config = [];
         $country = substr($issuer, 0, 2);
-        $payment_client = substr($issuer, -2);
-        $country_level_config = $country . 'All2' . $payment_client;
-        $client_payment_gateway = config('payment_gateway')[$client];
-        if (!empty($client_payment_gateway[$issuer])) {
-            $config = $client_payment_gateway[$issuer];
-        } elseif (!empty($client_payment_gateway[$country_level_config])) {
-            $config = $client_payment_gateway[$country_level_config];
-        } else {
-            $config = [];
+        $paymentClient = substr($issuer, -2);
+        $defaultClientConfiguration = 'allAll2all';
+        $countryLevelConfiguration = $country.'All2'.$paymentClient;
+
+        $clientPaymentGateways = config('payment_gateway')[$client];
+
+        if (!empty($clientPaymentGateways[$issuer])) {
+            $config = $clientPaymentGateways[$issuer];
+        } elseif (!empty($clientPaymentGateways[$countryLevelConfiguration])) {
+            $config = $clientPaymentGateways[$countryLevelConfiguration];
+        } elseif (!empty($clientPaymentGateways[$defaultClientConfiguration])) {
+            $config = $clientPaymentGateways[$defaultClientConfiguration];
         }
-        // allAll2all
-        $all_issuer = 'allAll2all';
-        if (isset($client_payment_gateway[$all_issuer]) && !empty($client_payment_gateway[$all_issuer])) {
-            $all_config = $client_payment_gateway[$all_issuer];
-            foreach (array_keys($all_config) as $key) {
-                if (!in_array($key, array_keys($config))) {
-                    $config = array_merge($config, $all_config);
-                }
-            }
-        }
+
         return $config;
     }
 
@@ -93,6 +96,11 @@ class GatewayService
                 'mid'           => $kbank_config['sandbox']['sandbox_mid']
             ];
         }
-        return $config_data;
+
+        return [
+            'redirect_host' => $kbankConfig['sandbox']['sandbox_redirect_host'],
+            'api_key' => $kbankConfig['sandbox']['sandbox_apikey'],
+            'mid' => $kbankConfig['sandbox']['sandbox_mid'],
+        ];
     }
 }

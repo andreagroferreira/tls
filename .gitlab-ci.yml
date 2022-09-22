@@ -22,6 +22,7 @@ variables:
   DIRECTUS_ROUTE: "directus"
   TLSCONNECT_API_URL: "https://tlsconnect-service-api.${PROJECT}.svc:8443"
   EMAIL_SERVICE_DOMAIN: "https://tlsconnect-email-service.${PROJECT}.svc:8443"
+  FILE_LIBRARY_API_DOMAIN: "https://file-library-api.${PROJECT}.svc:8443"
   ENABLE_DAST: "true"
 
 stages:
@@ -80,7 +81,7 @@ test-unit:
       - "./"
     expire_in: 3 days
   rules:
-    - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TAG
       when: never
     - when: on_success
       allow_failure: true
@@ -103,11 +104,7 @@ deploy-instance:
         echo "PAYMENT_SERVICE_URL is not defined!"
         exit 1
       fi
-    - |
-      if ! DIRECTUS_HOST=$(oc get route ${DIRECTUS_ROUTE} -o jsonpath='{.spec.host}'); then
-        echo "DIRECTUS_HOST is not defined!"
-        exit 1
-      fi
+    - export DIRECTUS_HOST="directus-cms:8080"
     - |
       if REDIS_HOST=$(oc get svc ${PROJECT}-redis-cluster-aws -o json); then
         export REDIS_HOST=$(echo "${REDIS_HOST}" | jq -r .spec.externalName)
@@ -128,7 +125,7 @@ deploy-instance:
       POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://${PAYMENT_SERVICE_URL}"
-      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       REDIS_HOST="tls://${REDIS_HOST}"
       CLIENT="${CLIENT}"
@@ -324,6 +321,7 @@ deploy-instance:
       ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD="${ENVPAY_BNP_PARIBAS_dzALL2fr_PASSWORD}"
       ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID="${ENVPAY_BNP_PARIBAS_dzALL2fr_TERMINAL_ID}"
       EMAIL_SERVICE_DOMAIN="${EMAIL_SERVICE_DOMAIN}"
+      FILE_LIBRARY_API_DOMAIN="${FILE_LIBRARY_API_DOMAIN}"
       FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID=$FAW_egAll2de_LEGALIZATION_SANDBOX_MERCHANT_ID
       FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY=$FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY
       FAW_egAll2de_LEGALIZATION_MERCHANT_ID=$FAW_egAll2de_LEGALIZATION_MERCHANT_ID
@@ -344,7 +342,7 @@ deploy-instance:
       POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://${PAYMENT_SERVICE_URL}"
-      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       CLIENT="${CLIENT}"
@@ -548,11 +546,14 @@ deploy-instance:
       MEMORY_REQUEST="${MEMORY_REQUEST}"
       MEMORY_LIMIT="${MEMORY_LIMIT}"
       CPU_REQUEST="${CPU_REQUEST}"
-      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       CLIENT="${CLIENT}"
       HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
+    - echo "Deploy cronjobs"
+    - oc process -f ./openshift/payment-api-cronjob.yaml JOB_NAME=cronjob APPLICATION_NAME="${APPLICATION_NAME}"
+      SCHEDULE="* * * * *" | oc apply -f -
     - oc process -f ./openshift/payment-api-sync-transaction-queue-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"
@@ -568,7 +569,7 @@ deploy-instance:
       MEMORY_REQUEST="${MEMORY_REQUEST}"
       MEMORY_LIMIT="${MEMORY_LIMIT}"
       CPU_REQUEST="${CPU_REQUEST}"
-      DIRECTUS_DOMAIN="https://${DIRECTUS_HOST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       CLIENT="${CLIENT}"

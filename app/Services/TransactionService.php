@@ -164,7 +164,7 @@ class TransactionService
         return ['t_id' => $transaction->t_id, 'expire' => $transaction->t_expiration];
     }
 
-    public function create($attributes)
+    public function create(array $attributes)
     {
         $transaction_data = [
             't_id' => $this->transactionRepository->getTransactionIdSeq(),
@@ -177,6 +177,7 @@ class TransactionService
             't_callback_url' => $attributes['callback_url'],
             't_currency' => $attributes['currency'],
             't_workflow' => $attributes['workflow'],
+            't_invoice_storage' => $attributes['invoice_storage'] ?? 'file-library',
             't_expiration' => Carbon::parse($this->dbConnectionService->getDbNowTime())->addMinutes(config('payment_gateway.expiration_minutes')),
         ];
         if (isset($attributes['payment_method'])) {

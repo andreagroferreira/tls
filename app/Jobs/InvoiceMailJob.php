@@ -13,12 +13,12 @@ class InvoiceMailJob implements ShouldQueue
     /**
      * @var array
      */
-    protected array $transaction;
+    protected $transaction;
 
     /**
      * @var string
      */
-    protected string $collection;
+    protected $collection;
 
     /**
      * @param array $transaction

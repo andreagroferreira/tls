@@ -81,7 +81,7 @@ test-unit:
       - "./"
     expire_in: 3 days
   rules:
-    - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TAG
       when: never
     - when: on_success
       allow_failure: true
@@ -551,6 +551,9 @@ deploy-instance:
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       CLIENT="${CLIENT}"
       HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
+    - echo "Deploy cronjobs"
+    - oc process -f ./openshift/payment-api-cronjob.yaml JOB_NAME=cronjob APPLICATION_NAME="${APPLICATION_NAME}"
+      SCHEDULE="* * * * *" | oc apply -f -
     - oc process -f ./openshift/payment-api-sync-transaction-queue-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"

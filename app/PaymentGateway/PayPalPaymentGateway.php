@@ -63,7 +63,7 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
         $app_env = $this->isSandBox();
         $is_live = $payfort_config['common']['env'] == 'live' ? true : false;
         if (!$this->gatewayService->getClientUseFile()) {
-            $url = $payfort_config['config']['host'] ?? $payfort_config['config']['sandbox_host'] ?? '';
+            $url = $payfort_config['config']['host'] ?? '';
         } else if ($is_live  && !$app_env) {
             // Live account
             $url = $payfort_config['prod']['host'];
@@ -145,8 +145,8 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
         $app_env = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $hosturl        = $onlinePayment['config']['host'] ?? $onlinePayment['config']['sandbox_host'] ?? '';
-            $account        = $onlinePayment['config']['account'] ?? $onlinePayment['config']['sandbox_account'] ?? '';
+            $hosturl        = $onlinePayment['config']['host'] ?? '';
+            $account        = $onlinePayment['config']['account'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
             $hosturl        = $onlinePayment['prod']['host'] ?? '';

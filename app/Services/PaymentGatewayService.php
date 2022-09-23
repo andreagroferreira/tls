@@ -38,10 +38,12 @@ class PaymentGatewayService
         if (empty($paymentAccounts['pa_info'])) {
             return [];
         }
+
         $pa_type = $paymentAccounts['pa_type'];
         $paymentAccounts = json_decode($paymentAccounts['pa_info'], true);
 
         $result = [];
+        $result['pa_type']  = $pa_type;
         $result['label']    = config("payment_gateway_accounts.$gateway.label");
         $result['common']   = config("payment_gateway_accounts.$gateway.common");
         $result['config']   = $paymentAccounts;
@@ -103,12 +105,16 @@ class PaymentGatewayService
             $payment_gateway_config[$gateway_type]['psp_code'] = $gateway;
             $payment_gateway_config[$gateway_type]['label'] = config("payment_gateway_accounts.$gateway.label");
             $payment_gateway_config[$gateway_type]['type'] = $v['pa_type'];
-            if ($v['psp_code'] === 'globaliris') {
-                dd(config("payment_gateway_accounts.$gateway.common"));
-            }
             $payment_gateway_config[$gateway_type]['common'] = config("payment_gateway_accounts.$gateway.common");
             $payment_gateway_config[$gateway_type][$v['pa_type']] = json_decode($v['pa_info'], true);
             $payment_gateway_config[$gateway_type]['sort'] = ($gateway == 'pay_later' ? 2 : 1);
+
+            if ($v['psp_code'] !== 'pay_later') {
+                $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $payment_gateway_config[$gateway_type]['type']), $payment_gateway_config[$gateway_type][$v['pa_type']]);
+                foreach ($diff as $key => $value) {
+                    $payment_gateway_config[$gateway_type][$v['pa_type']][$key] = $value;
+                }
+            }
         }
         $pa_name = array_column($payment_gateway_config, 'psp_code');
         array_multisort($pa_name, SORT_ASC, $payment_gateway_config);

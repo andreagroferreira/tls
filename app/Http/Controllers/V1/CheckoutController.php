@@ -123,8 +123,8 @@ class CheckoutController extends BaseController
                     $selected_gateway => $payment_gateways[$selected_gateway]
                 ];
             }
-            $getClientUseUi = $this->gatewayService->getClientUseUi();
-            if(!$getClientUseUi){
+            $getClientUseFile = $this->gatewayService->getClientUseFile();
+            if(!$getClientUseFile){
                 $app_env = $this->isSandBox() ? 'sandbox' : 'prod';
                 foreach ($payment_gateways as $key => $value) {
                     if ($key !== 'pay_later') {

@@ -71,8 +71,8 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         $is_live            = $paygate_config['common']['env'] == 'live' ? true : false;
         $app_env            = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $query_host      = $paygate_config['config']['query_host'] ?? $paygate_config['config']['sandbox_query_host'] ?? '';
-            $encryptionKey   = $paygate_config['config']['encryption_key'] ?? $paygate_config['config']['sandbox_encryption_key'] ?? '';
+            $query_host      = $paygate_config['config']['query_host'] ?? '';
+            $encryptionKey   = $paygate_config['config']['encryption_key'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
             $query_host      = $paygate_config['prod']['query_host'];
@@ -148,10 +148,10 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
         $is_live        = $paygate_config['common']['env'] == 'live' ? true : false;
         $app_env = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $init_hosturl        = $paygate_config['config']['initiate_host'] ?? $paygate_config['config']['sandbox_initiate_host'] ?? '';
-            $process_hosturl     = $paygate_config['config']['process_host'] ?? $paygate_config['config']['sandbox_process_host'] ?? '';
-            $paygate_id          = $paygate_config['config']['paygate_id'] ?? $paygate_config['config']['sandbox_paygate_id'] ?? '';
-            $encryptionKey       = $paygate_config['config']['encryption_key'] ?? $paygate_config['config']['sandbox_encryption_key'] ?? '';
+            $init_hosturl        = $paygate_config['config']['initiate_host'] ?? '';
+            $process_hosturl     = $paygate_config['config']['process_host'] ?? '';
+            $paygate_id          = $paygate_config['config']['paygate_id'] ?? '';
+            $encryptionKey       = $paygate_config['config']['encryption_key'] ?? '';
             $pay_method          = 'BT';
         } else if ($is_live && !$app_env) {
             // Live account

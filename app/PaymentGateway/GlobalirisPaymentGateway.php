@@ -88,10 +88,10 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $cai_list_with_avs = array_column($applications, 'f_cai');
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
         if (!$this->gatewayService->getClientUseFile()) {
-            $hosturl        = $onlinePayment['config']['host'] ?? $onlinePayment['config']['sandbox_host'] ?? '';
-            $merchantid     = $onlinePayment['config']['merchant_id'] ?? $onlinePayment['config']['sandbox_merchant_id'] ?? '';
-            $account        = $onlinePayment['config']['account'] ?? $onlinePayment['config']['sandbox_account'] ?? '';
-            $secret         = $onlinePayment['config']['secret'] ?? $onlinePayment['config']['sandbox_secret'] ?? '';
+            $hosturl        = $onlinePayment['config']['host'] ?? '';
+            $merchantid     = $onlinePayment['config']['merchant_id'] ?? '';
+            $account        = $onlinePayment['config']['account'] ?? '';
+            $secret         = $onlinePayment['config']['secret'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
             $hosturl        = $onlinePayment['prod']['host'] ?? '';
@@ -166,13 +166,32 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $received_amount   = $params['AMOUNT'] ?? '';
-        $t_service = $translationsData['t_service'] ?? 'tls';
-        $config = $this->gatewayService->getGateways($client, $issuer, $t_service);
-        $onlinePayment = $config ? $config['globaliris'] : [];
+        if ($this->gatewayService->getClientUseFile()) {
+            $config = $this->gatewayService->getConfig($client, $issuer);
+            $onlinePayment = $config ? $config['globaliris'] : [];
+        } else {
+            $onlinePayment = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $translationsData['t_xref_pa_id']);
+        }
 
-        $merchantid     = $onlinePayment['config']['merchant_id'] ?? $onlinePayment['config']['sandbox_merchant_id'] ?? '';
-        $secret         = $onlinePayment['config']['secret'] ?? $onlinePayment['config']['sandbox_secret'] ?? '';
-        $subaccount     = $onlinePayment['config']['account'] ?? $onlinePayment['config']['sandbox_account'] ?? '';
+        $app_env = $this->isSandBox();
+        $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
+        if ($this->gatewayService->getClientUseFile()) {
+            $merchantid     = $onlinePayment['config']['merchant_id'] ?? '';
+            $secret         = $onlinePayment['config']['secret'] ?? '';
+            $subaccount     = $onlinePayment['config']['account'] ?? '';
+        } else if ($is_live && !$app_env) {
+            // Live account
+            $merchantid     = $onlinePayment['prod']['merchant_id'] ?? '';
+            $secret         = $onlinePayment['prod']['secret'] ?? '';
+            $subaccount     = $onlinePayment['prod']['account'] ?? '';
+        } else {
+            // Test account
+            $merchantid     = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
+            $secret         = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
+            $subaccount     = $onlinePayment['sandbox']['sandbox_account'] ?? '';
+        }
+
+
 
         $tmp = "$timestamp.$merchantid.$orderId.$result.$message.$pasref.$authcode";
         $sha1hash = sha1($tmp);

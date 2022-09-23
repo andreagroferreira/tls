@@ -81,9 +81,9 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
         $is_live = $clictopay_config['common']['env'] == 'live' ? true : false;
         $app_env = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $init_hosturl = $clictopay_config['config']['host'] ?? $clictopay_config['config']['sandbox_host'] ?? '';
-            $user_name    = $clictopay_config['config']['user_name'] ?? $clictopay_config['config']['sandbox_user_name'] ?? '';
-            $password     = $clictopay_config['config']['password'] ?? $clictopay_config['config']['sandbox_password'] ?? '';
+            $init_hosturl = $clictopay_config['config']['host'] ?? '';
+            $user_name    = $clictopay_config['config']['user_name'] ?? '';
+            $password     = $clictopay_config['config']['password'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
             $init_hosturl = $clictopay_config['prod']['host'];
@@ -145,9 +145,9 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
         $is_live          = $clictopay_config['common']['env'] == 'live' ? true : false;
         $app_env = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $init_hosturl = $clictopay_config['config']['host'] ?? $clictopay_config['config']['sandbox_host'] ?? '';
-            $user_name    = $clictopay_config['config']['user_name'] ?? $clictopay_config['config']['sandbox_user_name'] ?? '';
-            $password     = $clictopay_config['config']['password'] ?? $clictopay_config['config']['sandbox_password'] ?? '';
+            $init_hosturl = $clictopay_config['config']['host'] ?? '';
+            $user_name    = $clictopay_config['config']['user_name'] ?? '';
+            $password     = $clictopay_config['config']['password'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
             $init_hosturl = $clictopay_config['prod']['host'];

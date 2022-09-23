@@ -13,4 +13,5 @@ return $config->setRules([
     'no_superfluous_phpdoc_tags' => false,
     'phpdoc_no_empty_return' => false,
     'array_syntax' => ['syntax' => 'short'],
+    'yoda_style' => false,
 ])->setFinder($finder);

@@ -234,7 +234,7 @@ class TokenResolveService
         $servicesTableItems = [];
         foreach ($basketServiceTokensContents as $metaToken => $metaContent) {
             $contentTokens = $this->getBasketTokens($metaContent);
-            if ('META_service_rows' === $metaToken) {
+            if ($metaToken === 'META_service_rows') {
                 $servicesTableItems[$metaToken] = $this->getResolvedBasketServiceTokens($metaContent, $contentTokens['normal'], $basketServices);
             }
         }
@@ -323,11 +323,11 @@ class TokenResolveService
             $tokenDetails = explode(':', str_replace(['{{', '}}'], '', $token));
 
             $tokenPrefixRule = $tokenDetails[0];
-            if ('c' === $tokenPrefixRule) {
+            if ($tokenPrefixRule === 'c') {
                 $resolvedTokens[$token] = $this->getTokenTranslationFromDirectus($tokenDetails, $lang);
-            } elseif ('a' === $tokenPrefixRule) {
+            } elseif ($tokenPrefixRule === 'a') {
                 $resolvedTokens[$token] = $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
-            } elseif ('basket' === $tokenPrefixRule) {
+            } elseif ($tokenPrefixRule === 'basket') {
                 $resolvedTokens[$token] = $this->getTokenTranslationForPurchasedServices($transaction);
             }
         }
@@ -418,7 +418,7 @@ class TokenResolveService
             'ww',
         ];
 
-        if ('application_centers' == $tokenDetails[1]) {
+        if ($tokenDetails[1] === 'application_centers') {
             $issuer_filter = [$this->issuer, 'ww'];
         }
         $filters = [
@@ -494,7 +494,7 @@ class TokenResolveService
             $checkIfMeta = substr($token, 0, 7);
             $tokenName = str_replace(['{{', '}}'], '', $token);
 
-            if ('{{META_' == $checkIfMeta) {
+            if ($checkIfMeta === '{{META_') {
                 $tokenList['meta'][$token] = $tokenName;
             } else {
                 $tokenList['normal'][$token] = $tokenName;

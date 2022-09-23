@@ -62,7 +62,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     private function getEnvpayValue($env_key) {
         $suffix = 'ENVPAY_';
         if (strtoupper(substr($env_key, 0, 7)) !== $suffix) {
-            return $env_key;
+            return getenv($env_key);
         }
         return getenv(substr($env_key, 7));
     }

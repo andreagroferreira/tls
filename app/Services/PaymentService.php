@@ -316,7 +316,7 @@ class PaymentService
         if ($this->agent_name) {
             $data['agent_name'] = $this->agent_name;
         }
-        if ('yes' == $this->force_pay_for_not_online_payment_avs) {
+        if ($this->force_pay_for_not_online_payment_avs === 'yes') {
             $data['force_pay_for_not_online_payment_avs'] = $this->force_pay_for_not_online_payment_avs;
         }
         Log::info('paymentservice syncAction start');

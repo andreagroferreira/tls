@@ -138,16 +138,13 @@ class InvoiceService
             'code' => [
                 'in' => [$city, $country, 'ww'],
             ],
-            'type' => [
-                'eq' => $service,
-            ],
         ];
         $select_fields = '*.*';
 
         return $this->directusService->getContent(
             $collection_name,
             $select_fields,
-            $select_filters, ['lang' => $lang]
+            $select_filters, ['lang' => $lang, 'type' => $service]
         );
     }
 
@@ -162,8 +159,7 @@ class InvoiceService
     public function sendInvoice(
         int $fg_id,
         string $client,
-        array $resolved_content,
-        string $invoice_file_name
+        array $resolved_content
     ): void {
         $form_group = $this->formGroupService->fetch($fg_id, $client);
         $form_user_email = $form_group['u_email'] ?? '';
@@ -178,7 +174,7 @@ class InvoiceService
                 'subject' => $resolved_content['email_title'],
                 'body' => $resolved_content['email_content'],
                 'html2pdf' => [
-                    $invoice_file_name => $resolved_content['invoice_content'],
+                    $resolved_content['invoice_file_name'] => $resolved_content['invoice_content'],
                 ],
             ];
 

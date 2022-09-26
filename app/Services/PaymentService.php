@@ -292,8 +292,7 @@ class PaymentService
         $this->invoiceService->sendInvoice(
             $transaction['t_xref_fg_id'],
             $transaction['t_client'],
-            $resolved_content,
-            $content['invoice_file_name']
+            $resolved_content
         );
     }
 

@@ -158,6 +158,12 @@ class TokenResolveService
         );
     }
 
+    /**
+     * @param array $transactionItems
+     * @param string $transactionCurrency
+     *
+     * @return array
+     */
     private function getBasketServiceValues(array $transactionItems, string $transactionCurrency): array
     {
         $basketValues = [
@@ -165,27 +171,28 @@ class TokenResolveService
             'vat' => 0,
             'price_vat' => 0,
         ];
+
         foreach ($transactionItems as $item) {
             foreach ($item['skus'] as $service) {
-                $sku = $service['sku'];
+                $sku =  $service['sku'];
                 $quantity = $service['quantity'];
                 $price = $service['price'];
                 $vat = ($service['vat'] / 100 * $price);
 
-                $basketValues['services'][$sku] = [
-                    'sku' => $service['sku'],
-                    'currency' => $transactionCurrency,
-                ];
+                $basketValues['services'][$sku]['sku'] = $sku;
+                $basketValues['services'][$sku]['currency'] = $transactionCurrency;
 
                 if (!array_key_exists('quantity', $basketValues['services'][$sku])) {
-                    $basketValues['services'][$sku]['quantity'] = 0;
+                    $basketValues['services'][$sku]['quantity'] = $quantity;
+                } else {
+                    $basketValues['services'][$sku]['quantity'] += $quantity;
                 }
-                $basketValues['services'][$sku]['quantity'] += $quantity;
 
                 if (!array_key_exists('price', $basketValues['services'][$sku])) {
-                    $basketValues['services'][$sku]['price'] = 0;
+                    $basketValues['services'][$sku]['price'] = $price;
+                } else {
+                    $basketValues['services'][$sku]['price'] += $price;
                 }
-                $basketValues['services'][$sku]['price'] += $price;
 
                 $basketValues['vat'] += $vat;
                 $basketValues['price_vat'] += ($vat + $price);

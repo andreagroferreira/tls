@@ -265,6 +265,7 @@ class PaymentService
         $content = $this->invoiceService->getInvoiceContent(
             $collection_name,
             $transaction['t_issuer'],
+            $transaction['t_service'],
             $lang
         );
 
@@ -291,7 +292,8 @@ class PaymentService
         $this->invoiceService->sendInvoice(
             $transaction['t_xref_fg_id'],
             $transaction['t_client'],
-            $resolved_content
+            $resolved_content,
+            $content['invoice_file_name']
         );
     }
 

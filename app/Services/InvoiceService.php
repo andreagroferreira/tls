@@ -117,6 +117,7 @@ class InvoiceService
     /**
      * @param string $collection_name
      * @param string $issuer
+     * @param string $service
      * @param string $lang
      *
      * @return array
@@ -124,6 +125,7 @@ class InvoiceService
     public function getInvoiceContent(
         string $collection_name,
         string $issuer,
+        string $service,
         string $lang
     ): array {
         $country = substr($issuer, 0, 2);
@@ -135,6 +137,9 @@ class InvoiceService
             ],
             'code' => [
                 'in' => [$city, $country, 'ww'],
+            ],
+            'type' => [
+                'eq' => $service,
             ],
         ];
         $select_fields = '*.*';
@@ -150,13 +155,15 @@ class InvoiceService
      * @param int    $fg_id
      * @param string $client
      * @param array  $resolved_content
+     * @param string $invoice_file_name
      *
      * @return void
      */
     public function sendInvoice(
         int $fg_id,
         string $client,
-        array $resolved_content
+        array $resolved_content,
+        string $invoice_file_name
     ): void {
         $form_group = $this->formGroupService->fetch($fg_id, $client);
         $form_user_email = $form_group['u_email'] ?? '';
@@ -171,7 +178,7 @@ class InvoiceService
                 'subject' => $resolved_content['email_title'],
                 'body' => $resolved_content['email_content'],
                 'html2pdf' => [
-                    'invoice' => $resolved_content['invoice_content'],
+                    $invoice_file_name => $resolved_content['invoice_content'],
                 ],
             ];
 

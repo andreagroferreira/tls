@@ -124,8 +124,7 @@ class TokenResolveService
             $selectFields,
             $selectFilters,
             $options
-        );
-
+        ); 
         if (empty($response)) {
             throw new \Exception('No item found for the collection - '.$collection);
         }
@@ -178,12 +177,12 @@ class TokenResolveService
                 ];
 
                 if (!array_key_exists('quantity', $basketValues['services'][$sku])) {
-                    $basketValues['services'][$sku]['quantity'] = 0;
+                    $basketValues['services'][$sku]['quantity'] = $quantity;
                 }
                 $basketValues['services'][$sku]['quantity'] += $quantity;
 
                 if (!array_key_exists('price', $basketValues['services'][$sku])) {
-                    $basketValues['services'][$sku]['price'] = 0;
+                    $basketValues['services'][$sku]['price'] = $price;
                 }
                 $basketValues['services'][$sku]['price'] += $price;
 
@@ -234,7 +233,7 @@ class TokenResolveService
         $servicesTableItems = [];
         foreach ($basketServiceTokensContents as $metaToken => $metaContent) {
             $contentTokens = $this->getBasketTokens($metaContent);
-            if ($metaToken === 'META_service_rows') {
+            if ('META_service_rows' === $metaToken) {
                 $servicesTableItems[$metaToken] = $this->getResolvedBasketServiceTokens($metaContent, $contentTokens['normal'], $basketServices);
             }
         }
@@ -323,11 +322,11 @@ class TokenResolveService
             $tokenDetails = explode(':', str_replace(['{{', '}}'], '', $token));
 
             $tokenPrefixRule = $tokenDetails[0];
-            if ($tokenPrefixRule === 'c') {
+            if ('c' === $tokenPrefixRule) {
                 $resolvedTokens[$token] = $this->getTokenTranslationFromDirectus($tokenDetails, $lang);
-            } elseif ($tokenPrefixRule === 'a') {
+            } elseif ('a' === $tokenPrefixRule) {
                 $resolvedTokens[$token] = $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
-            } elseif ($tokenPrefixRule === 'basket') {
+            } elseif ('basket' === $tokenPrefixRule) {
                 $resolvedTokens[$token] = $this->getTokenTranslationForPurchasedServices($transaction);
             }
         }
@@ -418,7 +417,7 @@ class TokenResolveService
             'ww',
         ];
 
-        if ($tokenDetails[1] === 'application_centers') {
+        if ('application_centers' == $tokenDetails[1]) {
             $issuer_filter = [$this->issuer, 'ww'];
         }
         $filters = [
@@ -494,7 +493,7 @@ class TokenResolveService
             $checkIfMeta = substr($token, 0, 7);
             $tokenName = str_replace(['{{', '}}'], '', $token);
 
-            if ($checkIfMeta === '{{META_') {
+            if ('{{META_' == $checkIfMeta) {
                 $tokenList['meta'][$token] = $tokenName;
             } else {
                 $tokenList['normal'][$token] = $tokenName;

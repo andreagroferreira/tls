@@ -218,7 +218,7 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}--invoice-mail-queue-email-service
+      name: allow-${APPLICATION_NAME}-invoice-mail-queue-email-service
       labels:
         app: "${APPLICATION_NAME}"
     spec:

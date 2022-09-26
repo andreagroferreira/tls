@@ -39,5 +39,11 @@ objects:
                     - POD=`oc get pods -o jsonpath='{.items[0].metadata.name}' --selector deploymentconfig=${APPLICATION_NAME}`;
                       echo 'Found POD $POD';
                       oc exec $POD -- bash -c "ls -la; php ./artisan schedule:run"
+                  resources:
+                    requests:
+                      memory: 128Mi
+                      cpu: 100m
+                    limits:
+                      memory: 512Mi
               serviceAccountName: php-cron-sa
               restartPolicy: Never

@@ -174,7 +174,7 @@ class TokenResolveService
 
         foreach ($transactionItems as $item) {
             foreach ($item['skus'] as $service) {
-                $sku =  $service['sku'];
+                $sku = $service['sku'];
                 $quantity = $service['quantity'];
                 $price = $service['price'];
                 $vat = ($service['vat'] / 100 * $price);

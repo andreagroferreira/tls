@@ -144,7 +144,8 @@ class InvoiceService
         return $this->directusService->getContent(
             $collection_name,
             $select_fields,
-            $select_filters, ['lang' => $lang, 'type' => $service]
+            $select_filters,
+            ['lang' => $lang, 'type' => $service]
         );
     }
 

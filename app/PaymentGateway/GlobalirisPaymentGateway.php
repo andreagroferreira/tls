@@ -175,7 +175,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
 
         $app_env = $this->isSandBox();
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
-        if ($this->gatewayService->getClientUseFile()) {
+        if (!$this->gatewayService->getClientUseFile()) {
             $merchantid     = $onlinePayment['config']['merchant_id'] ?? '';
             $secret         = $onlinePayment['config']['secret'] ?? '';
             $subaccount     = $onlinePayment['config']['account'] ?? '';

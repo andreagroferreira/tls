@@ -226,7 +226,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: "${APPLICATION_NAME}"-invoice-mail-queue
+                  app: "${APPLICATION_NAME}-invoice-mail-queue"
           ports:
             - port: 8443
               protocol: TCP
@@ -238,7 +238,7 @@ objects:
     metadata:
       name: allow-${APPLICATION_NAME}-invoice-mail-queue-file-library-api
       labels:
-        app: "${APPLICATION_NAME}"-invoice-mail-queue
+        app: "${APPLICATION_NAME}-invoice-mail-queue"
     spec:
       podSelector:
         matchLabels:

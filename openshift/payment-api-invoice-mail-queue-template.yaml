@@ -148,11 +148,11 @@ objects:
                 - name: REDIS_HOST
                   value: ${REDIS_HOST}
                 - name: PGPASSFILE
-                  value: /opt/app-root/pgpass/.pgpass                
+                  value: /opt/app-root/pgpass/.pgpass
                 - name: EMAIL_SERVICE_DOMAIN
                   value: ${EMAIL_SERVICE_DOMAIN}
                 - name: FILE_LIBRARY_API_DOMAIN
-                  value: ${FILE_LIBRARY_API_DOMAIN}  
+                  value: ${FILE_LIBRARY_API_DOMAIN}
                 - name: APP_ENV
                   value: ${APP_ENV}
                 - name: PROJECT
@@ -218,7 +218,7 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}-email-service
+      name: allow-${APPLICATION_NAME}--invoice-mail-queue-email-service
       labels:
         app: "${APPLICATION_NAME}"
     spec:
@@ -226,7 +226,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: "${APPLICATION_NAME}"
+                  app: "${APPLICATION_NAME}"-invoice-mail-queue
           ports:
             - port: 8443
               protocol: TCP
@@ -236,9 +236,9 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-${APPLICATION_NAME}-file-library-api
+      name: allow-${APPLICATION_NAME}-invoice-mail-queue-file-library-api
       labels:
-        app: "${APPLICATION_NAME}"
+        app: "${APPLICATION_NAME}"-invoice-mail-queue
     spec:
       podSelector:
         matchLabels:

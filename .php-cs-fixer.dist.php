@@ -12,6 +12,8 @@ return $config->setRules([
     '@PHP81Migration' => true,
     'no_superfluous_phpdoc_tags' => false,
     'phpdoc_no_empty_return' => false,
+    'multiline_whitespace_before_semicolons' => true,
+    'phpdoc_line_span' => true,
     'array_syntax' => ['syntax' => 'short'],
     'yoda_style' => false,
 ])->setFinder($finder);

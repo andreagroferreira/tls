@@ -13,6 +13,9 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 class TokenResolveServiceTest extends \TestCase
 {
+    /**
+     * @var array
+     */
     private $directusServiceMockResult = [
         [
             'code' => 'TUN',
@@ -24,6 +27,9 @@ class TokenResolveServiceTest extends \TestCase
         ],
     ];
 
+    /**
+     * @var array
+     */
     private $apiServiceMockResult = [
         'status' => 200,
         'body' => [

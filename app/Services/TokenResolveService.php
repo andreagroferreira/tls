@@ -183,16 +183,14 @@ class TokenResolveService
                 $basketValues['services'][$sku]['currency'] = $transactionCurrency;
 
                 if (!array_key_exists('quantity', $basketValues['services'][$sku])) {
-                    $basketValues['services'][$sku]['quantity'] = $quantity;
-                } else {
-                    $basketValues['services'][$sku]['quantity'] += $quantity;
+                    $basketValues['services'][$sku]['quantity'] = 0;
                 }
+                $basketValues['services'][$sku]['quantity'] += $quantity;
 
                 if (!array_key_exists('price', $basketValues['services'][$sku])) {
-                    $basketValues['services'][$sku]['price'] = $price;
-                } else {
-                    $basketValues['services'][$sku]['price'] += $price;
+                    $basketValues['services'][$sku]['price'] = 0;
                 }
+                $basketValues['services'][$sku]['price'] += $price;
 
                 $basketValues['vat'] += $vat;
                 $basketValues['price_vat'] += ($vat + $price);

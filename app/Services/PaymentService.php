@@ -265,6 +265,7 @@ class PaymentService
         $content = $this->invoiceService->getInvoiceContent(
             $collection_name,
             $transaction['t_issuer'],
+            $transaction['t_service'],
             $lang
         );
 

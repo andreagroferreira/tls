@@ -525,17 +525,18 @@ class TokenResolveServiceTest extends \TestCase
             't_issuer' => 'keNBO2de',
             't_currency' => 'KES',
             't_amount' => 2416,
-            't_items' => [0 => [
-                'f_id' => 13565,
-                'skus' => [
-                    0 => [
-                        'sku' => ' Premium Lounge',
-                        'price' => 454,
-                        'vat' => 1,
-                        'quantity' => 1,
+            't_items' => [
+                [
+                    'f_id' => 13565,
+                    'skus' => [
+                        [
+                            'sku' => ' Premium Lounge',
+                            'price' => 454,
+                            'vat' => 1,
+                            'quantity' => 1,
+                        ],
                     ],
                 ],
-            ],
             ],
         ];
 

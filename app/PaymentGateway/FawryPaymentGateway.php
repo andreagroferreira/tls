@@ -220,12 +220,27 @@ class FawryPaymentGateway implements PaymentGatewayInterface
 
     public function return($params)
     {
-        $payment_config = $this->getPaymentConfig($params);
+        $order_id = '';
+        if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
+            $order_id = $params['merchantRefNum'];
+        } else {
+            $charge_response = json_decode($params['chargeResponse'], true);
+            $order_id = $charge_response['merchantRefNumber'];
+        }
+        if (empty($order_id)) {
+            return [
+                'is_success' => 'fail',
+                'orderid'    => '[null]',
+                'message'    => 'empty_merchant_ref_number'
+            ];
+        }
+        $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
+        $payment_config = $this->getPaymentConfig($params, $transaction['t_xref_pa_id']);
         $pay_version = strtolower($payment_config['common']['version']);
         return $pay_version == 'v1' ? $this->returnV1($params) : $this->returnV2($params);
     }
 
-    private function getPaymentConfig($params) {
+    private function getPaymentConfig($params, $pa_id) {
         $order_id  = isset($params['merchantRefNum']) ? $params['merchantRefNum'] : $params['merchantRefNumber'];
         $reg = '/[a-z]{2}[A-Z]{3}2[a-z]{2}/';
         preg_match($reg, $order_id, $matches);
@@ -238,7 +253,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         }
         $issuer = $matches[0];
         $client = substr($issuer,-2);
-        return $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        return $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
     }
 
     private function returnV1($params)

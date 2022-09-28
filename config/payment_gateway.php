@@ -930,84 +930,6 @@ return [
                 ]
             ]
         ],
-        'tzDAR2de' => [
-            'tingg' => [
-                'label'   => 'Tingg pay',
-                'active'  => true,
-                'common'  => [
-                    'successRedirectUrl' => '/tingg/return',
-                    'failRedirectUrl'    => '/checkout/',
-                    'pendingRedirectUrl' => '/checkout/',
-                    'paymentWebhookUrl'  => '/tingg/notify'
-                ],
-                'sandbox' => [
-                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"),
-                    'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
-                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET"),
-                    'oauthHost'     => env("ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST"),
-                    'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST"),
-                ],
-                /*'prod'    => [
-                    'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_ACCESS_KEY"),
-                    'clientID'      => env("ENVPAY_TINGG_COMMON_CLIENT_ID"),
-                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_CLIENT_SECRET"),
-                    'oauthHost'     => env("ENVPAY_TINGG_COMMON_OAUTH_HOST"),'',
-                    'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST"),
-                ]*/
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
-            ]
-        ],
-        'ugKLA2de' => [
-            'tingg' => [
-                'label'   => 'Tingg pay',
-                'active'  => true,
-                'common'  => [
-                    'successRedirectUrl' => '/tingg/return',
-                    'failRedirectUrl'    => '/checkout/',
-                    'pendingRedirectUrl' => '/checkout/',
-                    'paymentWebhookUrl'  => '/tingg/notify'
-                ],
-                'sandbox' => [
-                    'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SANDBOX_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_SANDBOX_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_SANDBOX_ACCESS_KEY"),
-                    'clientID'      => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_ID"),
-                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_SANDBOX_CLIENT_SECRET"),
-                    'oauthHost'     => env("ENVPAY_TINGG_COMMON_SANDBOX_OAUTH_HOST"),
-                    'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_SANDBOX_QUERY_STATUS_HOST"),
-                ],
-                /*'prod'    => [
-                    'host'          => 'https://online.tingg.africa/v2/express/',
-                    'accountNumber' => env("ENVPAY_TINGG_COMMON_ACCOUNT_NUMBER"),
-                    'serviceCode'   => env("ENVPAY_TINGG_COMMON_SERVICE_CODE"),
-                    'ivKey'         => env("ENVPAY_TINGG_COMMON_IVKEY"),
-                    'secretKey'     => env("ENVPAY_TINGG_COMMON_SECRET_KEY"),
-                    'accessKey'     => env("ENVPAY_TINGG_COMMON_ACCESS_KEY"),
-                    'clientID'      => env("ENVPAY_TINGG_COMMON_CLIENT_ID"),
-                    'clientSecret'  => env("ENVPAY_TINGG_COMMON_CLIENT_SECRET"),
-                    'oauthHost'     => env("ENVPAY_TINGG_COMMON_OAUTH_HOST"),'',
-                    'queryStatusHost'=> env("ENVPAY_TINGG_COMMON_QUERY_STATUS_HOST"),
-                ]*/
-            ],
-            'pay_later' => [
-                'label' => "Pay later",
-            ]
-        ],
         'keNBO2de' => [
             'payu' => [
                 'label' => 'payu pay',
@@ -1032,94 +954,6 @@ return [
                     'payments_os_env' => 'live'
                 ]
             ],
-            'pay_later' => [
-                'label' => "Pay later",
-            ]
-        ],
-        'tnTUN2de' => [
-            'pay_later' => [
-                'label' => "Pay later",
-            ]
-        ],
-        'lyTIP2de' => [
-            'pay_later' => [
-                'label' => "Pay later",
-            ]
-        ],
-        'maRBA2de' => [
-            'cmi' => [
-                'label' => 'CMI pay',
-                'active' => true,
-                'common' => [
-                    'storetype' => '3d_pay_hosting',
-                    'tranType' => 'PreAuth',
-                    'okUrl' => '/cmi/return',
-                    'failUrl' => '/cmi/return',
-                    'hashAlgorithm' => 'ver3',
-                    'shopurl' => '/checkout/',
-                    'callbackUrl' => '/cmi/notify',
-                ],
-                'sandbox' => [
-                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY'),
-                ],
-                'prod' => [
-                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_STOREKEY')
-                ]
-            ]
-        ],
-        'maTNG2de' => [
-            'cmi' => [
-                'label' => 'CMI pay',
-                'active' => true,
-                'common' => [
-                    'storetype' => '3d_pay_hosting',
-                    'tranType' => 'PreAuth',
-                    'okUrl' => '/cmi/return',
-                    'failUrl' => '/cmi/return',
-                    'hashAlgorithm' => 'ver3',
-                    'shopurl' => '/checkout/',
-                    'callbackUrl' => '/cmi/notify',
-                ],
-                'sandbox' => [
-                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY'),
-                ],
-                'prod' => [
-                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_STOREKEY')
-                ]
-            ]
-        ],
-        'maRAK2de' => [
-            'cmi' => [
-                'label' => 'CMI pay',
-                'active' => true,
-                'common' => [
-                    'storetype' => '3d_pay_hosting',
-                    'tranType' => 'PreAuth',
-                    'okUrl' => '/cmi/return',
-                    'failUrl' => '/cmi/return',
-                    'hashAlgorithm' => 'ver3',
-                    'shopurl' => '/checkout/',
-                    'callbackUrl' => '/cmi/notify',
-                ],
-                'sandbox' => [
-                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY'),
-                ],
-                'prod' => [
-                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
-                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_MERCHANT_ID'),
-                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_STOREKEY')
-                ]
-            ]
         ],
         'gbLON2de' => [
             'globaliris' => [
@@ -1174,6 +1008,32 @@ return [
             ],
         ],
         'gbMNC2de' => [
+            'globaliris' => [
+                'label' => 'GLOBALIRIS pay',
+                'common' => [
+                    'env' => 'live',
+                    'activated' => true,
+                    'currency' => 'GBP',
+                    'min_fraction_digits' => '2',
+                    'txn_fee_rate' => '0',
+                    'txn_fee_extra' => '0',
+                    'return_url' => '/globaliris/return',
+                ],
+                'sandbox' => [
+                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
+                    'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
+                    'sandbox_account' => '',
+                ],
+                'prod' => [
+                    'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
+                    'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
+                    'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
+                    'host' => 'https://hpp.globaliris.com/pay',
+                ],
+            ],
+        ],
+        'ieDUB2de' => [
             'globaliris' => [
                 'label' => 'GLOBALIRIS pay',
                 'common' => [

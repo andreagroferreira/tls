@@ -12,7 +12,7 @@ class GatewayService
     }
 
     public function getGateway($client, $issuer, $gateway) {
-        return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+        return $this->getConfig($client, $issuer)[$gateway] ?? [];
     }
 
     public function getConfig($client, $issuer)

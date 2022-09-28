@@ -127,7 +127,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             return ['status' => 'fail', 'error' => 'INTERNAL ERROR', 'msg' => 'Transaction items not found.'];
         }
 
-        $expiry = strtotime("+7 day", strtotime($translations_data['t_expiration'])) * 1000;
+        $expiry = strtotime("+1 day", strtotime($translations_data['t_expiration'])) * 1000;
         $amount = number_format($translations_data['t_amount'], 2, '.', '');
 
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);

@@ -62,24 +62,24 @@ class BingaPaymentGateway implements PaymentGatewayInterface
 
     public function redirto($t_id)
     {
-        $translations_data = $this->transactionService->getTransaction($t_id);
+        $transaction_data = $this->transactionService->getTransaction($t_id);
         $app_env = $this->isSandBox();
-        $orderid = $translations_data['t_transaction_id'] ?? '';
-        $amount = $translations_data['t_amount'];
-        $expirationDate = $translations_data['t_expiration'];
-        $client = $translations_data['t_client'];
-        $issuer = $translations_data['t_issuer'];
-        //$fg_id   = $translations_data['t_xref_fg_id'];
-        $t_service   = $translations_data['t_service'] ?? 'tls';
+        $orderid = $transaction_data['t_transaction_id'] ?? '';
+        $amount = $transaction_data['t_amount'];
+        $expirationDate = $transaction_data['t_expiration'];
+        $client = $transaction_data['t_client'];
+        $issuer = $transaction_data['t_issuer'];
+        //$fg_id   = $transaction_data['t_xref_fg_id'];
+        $t_service   = $transaction_data['t_service'] ?? 'tls';
         $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
         $pay_config = $this->getPaySecret($payfort_config, $app_env);
         $amount = str_replace(',', '', $amount);
-        $currency = $translations_data['t_currency'] ?? $payfort_config['common']['currency'];
+        $currency = $transaction_data['t_currency'] ?? $payfort_config['common']['currency'];
         $store_id = $pay_config['store_id'];
         $store_private_key = $pay_config['store_private_key'];
         $host = $pay_config['host'];
 
-        $code = $translations_data['t_gateway_transaction_id'] ?? '';
+        $code = $transaction_data['t_gateway_transaction_id'] ?? '';
         if ($code) {
             $response = $this->apiService->callGeneralApi('get', $host . '/' . $code, '', $this->getHeaders($pay_config));
             Log::info('Binga redirto $response query code:' . json_encode($response));
@@ -97,7 +97,7 @@ class BingaPaymentGateway implements PaymentGatewayInterface
             ];
             $response = $this->apiService->callGeneralApiJson('POST', $host . '/prepayTls', $params, $this->getHeaders($pay_config));
             Log::info('Binga redirto $response:' . json_encode($response));
-            $this->paymentService->saveTransactionLog($translations_data['t_transaction_id'], $response, $this->getPaymentGatewayName());
+            $this->paymentService->saveTransactionLog($transaction_data['t_transaction_id'], $response, $this->getPaymentGatewayName());
         }
         $order = $response['body']['orders']['order'];
         if ((array_get($response, 'status') != 200 && array_get($response, 'status') != 201) || blank($order['code'])) {
@@ -107,15 +107,16 @@ class BingaPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: payment failed.'
             ];
         }
-        if ($translations_data['t_status'] == 'pending') {
+        if ($transaction_data['t_status'] == 'pending') {
             $update_fields = [
                 't_gateway_transaction_id' => $order['code'],
             ];
-            $this->transactionService->updateById($translations_data['t_id'], $update_fields);
+            $this->transactionService->updateById($transaction_data['t_id'], $update_fields);
         }
 
         $creationDate = str_replace(['T', 'Z'], ' ', $order['creationDate']);
-        $expirationDate = $order['expirationDate'] ?? date('Y-m-d H:i:s', strtotime($creationDate . '+2 hours'));
+        $expirationConfig = $payfort_config['common']['expiration'];
+        $expirationDate = $order['expirationDate'] ?? date('Y-m-d H:i:s', strtotime($creationDate . $expirationConfig));
         $nowDate = str_replace(['T', 'Z'], ' ', gmdate("Y-m-d\TH:i:s\Z"));
         $minuteDiff = intval((strtotime($expirationDate) - strtotime($nowDate)) / 60);
         $countdown = $minuteDiff > 0 ? $minuteDiff : 0;
@@ -129,10 +130,10 @@ class BingaPaymentGateway implements PaymentGatewayInterface
             'amount' => $order['amount'],
             'currency' => $currency,
             'countdown' => $countdown,
-            'return_url' => $translations_data['t_redirect_url'],
+            'return_url' => $transaction_data['t_redirect_url'],
         ];
 
-        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transaction_data);
 
         return [
             'form_method' => 'post',

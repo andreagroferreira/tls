@@ -48,11 +48,11 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.235.9",
+            "version": "3.236.1",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/aws/aws-sdk-php/3.235.9/aws-aws-sdk-php-3.235.9.zip",
-                "reference": "103d38254ef7fc6659ecb08f4b18bc1299011f8a",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/aws/aws-sdk-php/3.236.1/aws-aws-sdk-php-3.236.1.zip",
+                "reference": "1e8d1abe7582968df16a2e7a87c5dcc51d0dfd1b",
                 "shasum": ""
             },
             "require": {
@@ -127,7 +127,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2022-09-15T18:22:15+00:00"
+            "time": "2022-09-27T18:19:10+00:00"
         },
         {
             "name": "barryvdh/laravel-dompdf",
@@ -698,19 +698,19 @@
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/dompdf/dompdf/v2.0.0/dompdf-dompdf-v2.0.0.zip",
-                "reference": "79573d8b8a141ec8a17312515de8740eed014fa9",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/dompdf/dompdf/v2.0.1/dompdf-dompdf-v2.0.1.zip",
+                "reference": "c5310df0e22c758c85ea5288175fc6cd777bc085",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-mbstring": "*",
                 "masterminds/html5": "^2.0",
-                "phenx/php-font-lib": "^0.5.4",
-                "phenx/php-svg-lib": "^0.3.3 || ^0.4.0",
+                "phenx/php-font-lib": ">=0.5.4 <1.0.0",
+                "phenx/php-svg-lib": ">=0.3.3 <1.0.0",
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
@@ -740,21 +740,13 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Ménager",
-                    "email": "fabien.menager@gmail.com"
-                },
-                {
-                    "name": "Brian Sweeney",
-                    "email": "eclecticgeek@gmail.com"
-                },
-                {
-                    "name": "Gabriel Bull",
-                    "email": "me@gabrielbull.com"
+                    "name": "The Dompdf Community",
+                    "homepage": "https://github.com/dompdf/dompdf/blob/master/AUTHORS.md"
                 }
             ],
             "description": "DOMPDF is a CSS 2.1 compliant HTML to PDF converter",
             "homepage": "https://github.com/dompdf/dompdf",
-            "time": "2022-06-21T21:14:57+00:00"
+            "time": "2022-09-22T13:43:41+00:00"
         },
         {
             "name": "dragonmantank/cron-expression",
@@ -1351,11 +1343,11 @@
         },
         {
             "name": "illuminate/auth",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/auth/v8.83.23/illuminate-auth-v8.83.23.zip",
-                "reference": "72a344d7e8e23d3233a19d6ab6b442e93331be22",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/auth/v8.83.24/illuminate-auth-v8.83.24.zip",
+                "reference": "28e3e57f777685018374bb59bbaa54598dbdf441",
                 "shasum": ""
             },
             "require": {
@@ -1394,14 +1386,14 @@
             ],
             "description": "The Illuminate Auth package.",
             "homepage": "https://laravel.com",
-            "time": "2022-07-22T11:16:00+00:00"
+            "time": "2022-09-21T21:30:03+00:00"
         },
         {
             "name": "illuminate/broadcasting",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/broadcasting/v8.83.23/illuminate-broadcasting-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/broadcasting/v8.83.24/illuminate-broadcasting-v8.83.24.zip",
                 "reference": "d7c0c81bcc679c294746b161f4b834997e904cf4",
                 "shasum": ""
             },
@@ -1445,10 +1437,10 @@
         },
         {
             "name": "illuminate/bus",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/bus/v8.83.23/illuminate-bus-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/bus/v8.83.24/illuminate-bus-v8.83.24.zip",
                 "reference": "d2a8ae4bfd881086e55455e470776358eab27eae",
                 "shasum": ""
             },
@@ -1488,10 +1480,10 @@
         },
         {
             "name": "illuminate/cache",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/cache/v8.83.23/illuminate-cache-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/cache/v8.83.24/illuminate-cache-v8.83.24.zip",
                 "reference": "7ae5b3661413dad7264b5c69037190d766bae50f",
                 "shasum": ""
             },
@@ -1538,10 +1530,10 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/collections/v8.83.23/illuminate-collections-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/collections/v8.83.24/illuminate-collections-v8.83.24.zip",
                 "reference": "705a4e1ef93cd492c45b9b3e7911cccc990a07f4",
                 "shasum": ""
             },
@@ -1582,10 +1574,10 @@
         },
         {
             "name": "illuminate/config",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/config/v8.83.23/illuminate-config-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/config/v8.83.24/illuminate-config-v8.83.24.zip",
                 "reference": "feac56ab7a5c70cf2dc60dffe4323eb9851f51a8",
                 "shasum": ""
             },
@@ -1620,10 +1612,10 @@
         },
         {
             "name": "illuminate/console",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/console/v8.83.23/illuminate-console-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/console/v8.83.24/illuminate-console-v8.83.24.zip",
                 "reference": "4aaa93223eb3bd8119157c95f58c022967826035",
                 "shasum": ""
             },
@@ -1670,10 +1662,10 @@
         },
         {
             "name": "illuminate/container",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/container/v8.83.23/illuminate-container-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/container/v8.83.24/illuminate-container-v8.83.24.zip",
                 "reference": "14062628d05f75047c5a1360b9350028427d568e",
                 "shasum": ""
             },
@@ -1711,10 +1703,10 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/contracts/v8.83.23/illuminate-contracts-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/contracts/v8.83.24/illuminate-contracts-v8.83.24.zip",
                 "reference": "5e0fd287a1b22a6b346a9f7cd484d8cf0234585d",
                 "shasum": ""
             },
@@ -1749,11 +1741,11 @@
         },
         {
             "name": "illuminate/database",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/database/v8.83.23/illuminate-database-v8.83.23.zip",
-                "reference": "9c056fddf7c2a5cf30d3ffac3c7e50fcc5f8a322",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/database/v8.83.24/illuminate-database-v8.83.24.zip",
+                "reference": "1a5b0e4e6913415464fa2aab554a38b9e6fa44b1",
                 "shasum": ""
             },
             "require": {
@@ -1803,14 +1795,14 @@
                 "orm",
                 "sql"
             ],
-            "time": "2022-07-14T14:03:49+00:00"
+            "time": "2022-08-31T16:16:06+00:00"
         },
         {
             "name": "illuminate/encryption",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/encryption/v8.83.23/illuminate-encryption-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/encryption/v8.83.24/illuminate-encryption-v8.83.24.zip",
                 "reference": "00280dc6aa204b1b6c6d4bf75936d122bd856c15",
                 "shasum": ""
             },
@@ -1848,10 +1840,10 @@
         },
         {
             "name": "illuminate/events",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/events/v8.83.23/illuminate-events-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/events/v8.83.24/illuminate-events-v8.83.24.zip",
                 "reference": "b7f06cafb6c09581617f2ca05d69e9b159e5a35d",
                 "shasum": ""
             },
@@ -1893,10 +1885,10 @@
         },
         {
             "name": "illuminate/filesystem",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/filesystem/v8.83.23/illuminate-filesystem-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/filesystem/v8.83.24/illuminate-filesystem-v8.83.24.zip",
                 "reference": "73db3e9a233ed587ba54f52ab8580f3c7bc872b2",
                 "shasum": ""
             },
@@ -1945,10 +1937,10 @@
         },
         {
             "name": "illuminate/hashing",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/hashing/v8.83.23/illuminate-hashing-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/hashing/v8.83.24/illuminate-hashing-v8.83.24.zip",
                 "reference": "2617f4de8d0150a3f8641b086fafac8c1e0cdbf2",
                 "shasum": ""
             },
@@ -1983,10 +1975,10 @@
         },
         {
             "name": "illuminate/http",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/http/v8.83.23/illuminate-http-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/http/v8.83.24/illuminate-http-v8.83.24.zip",
                 "reference": "38b8b0c8ca5d5231df9c515f3a3e7aac5f0da9f4",
                 "shasum": ""
             },
@@ -2031,10 +2023,10 @@
         },
         {
             "name": "illuminate/log",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/log/v8.83.23/illuminate-log-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/log/v8.83.24/illuminate-log-v8.83.24.zip",
                 "reference": "1dbdc6aca24d1d2b5903f865bb206039d4b800b2",
                 "shasum": ""
             },
@@ -2070,10 +2062,10 @@
         },
         {
             "name": "illuminate/macroable",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/macroable/v8.83.23/illuminate-macroable-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/macroable/v8.83.24/illuminate-macroable-v8.83.24.zip",
                 "reference": "aed81891a6e046fdee72edd497f822190f61c162",
                 "shasum": ""
             },
@@ -2106,10 +2098,10 @@
         },
         {
             "name": "illuminate/pagination",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/pagination/v8.83.23/illuminate-pagination-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/pagination/v8.83.24/illuminate-pagination-v8.83.24.zip",
                 "reference": "16fe8dc35f9d18c58a3471469af656a02e9ab692",
                 "shasum": ""
             },
@@ -2146,10 +2138,10 @@
         },
         {
             "name": "illuminate/pipeline",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/pipeline/v8.83.23/illuminate-pipeline-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/pipeline/v8.83.24/illuminate-pipeline-v8.83.24.zip",
                 "reference": "23aeff5b26ae4aee3f370835c76bd0f4e93f71d2",
                 "shasum": ""
             },
@@ -2184,10 +2176,10 @@
         },
         {
             "name": "illuminate/queue",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/queue/v8.83.23/illuminate-queue-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/queue/v8.83.24/illuminate-queue-v8.83.24.zip",
                 "reference": "0023daabf67743f7a2bd8328ca2b5537d93e4ae7",
                 "shasum": ""
             },
@@ -2240,10 +2232,10 @@
         },
         {
             "name": "illuminate/redis",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/redis/v8.83.23/illuminate-redis-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/redis/v8.83.24/illuminate-redis-v8.83.24.zip",
                 "reference": "0fee121324054226823a59623fab3d98ad88fbd5",
                 "shasum": ""
             },
@@ -2284,10 +2276,10 @@
         },
         {
             "name": "illuminate/session",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/session/v8.83.23/illuminate-session-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/session/v8.83.24/illuminate-session-v8.83.24.zip",
                 "reference": "9c9988d7229d888c098eebbbb9fcb8c68580411c",
                 "shasum": ""
             },
@@ -2330,11 +2322,11 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/support/v8.83.23/illuminate-support-v8.83.23.zip",
-                "reference": "c3d643e77082786ae8a51502c757e9b1a3ee254e",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/support/v8.83.24/illuminate-support-v8.83.24.zip",
+                "reference": "1c79242468d3bbd9a0f7477df34f9647dde2a09b",
                 "shasum": ""
             },
             "require": {
@@ -2384,14 +2376,14 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2022-06-27T13:26:30+00:00"
+            "time": "2022-09-21T21:30:03+00:00"
         },
         {
             "name": "illuminate/testing",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/testing/v8.83.23/illuminate-testing-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/testing/v8.83.24/illuminate-testing-v8.83.24.zip",
                 "reference": "1c9ec9902df3b7a38b983bbf2242ce3c088de400",
                 "shasum": ""
             },
@@ -2436,10 +2428,10 @@
         },
         {
             "name": "illuminate/translation",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/translation/v8.83.23/illuminate-translation-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/translation/v8.83.24/illuminate-translation-v8.83.24.zip",
                 "reference": "e119d1e55351bd846579c333dd24f9a042b724b2",
                 "shasum": ""
             },
@@ -2478,10 +2470,10 @@
         },
         {
             "name": "illuminate/validation",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/validation/v8.83.23/illuminate-validation-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/validation/v8.83.24/illuminate-validation-v8.83.24.zip",
                 "reference": "bb104f15545a55664755f58a278c7013f835918a",
                 "shasum": ""
             },
@@ -2528,10 +2520,10 @@
         },
         {
             "name": "illuminate/view",
-            "version": "v8.83.23",
+            "version": "v8.83.24",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/view/v8.83.23/illuminate-view-v8.83.23.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/illuminate/view/v8.83.24/illuminate-view-v8.83.24.zip",
                 "reference": "5e73eef48d9242532f81fadc14c816a01bfb1388",
                 "shasum": ""
             },
@@ -3462,16 +3454,16 @@
         },
         {
             "name": "phenx/php-svg-lib",
-            "version": "0.4.1",
+            "version": "0.5.0",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/phenx/php-svg-lib/0.4.1/phenx-php-svg-lib-0.4.1.zip",
-                "reference": "4498b5df7b08e8469f0f8279651ea5de9626ed02",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/phenx/php-svg-lib/0.5.0/phenx-php-svg-lib-0.5.0.zip",
+                "reference": "76876c6cf3080bcb6f249d7d59705108166a6685",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": "^7.1 || ^7.2 || ^7.3 || ^7.4 || ^8.0",
+                "php": "^7.1 || ^8.0",
                 "sabberworm/php-css-parser": "^8.4"
             },
             "require-dev": {
@@ -3494,7 +3486,7 @@
             ],
             "description": "A library to read, parse and export to PDF SVG files.",
             "homepage": "https://github.com/PhenX/php-svg-lib",
-            "time": "2022-03-07T12:52:04+00:00"
+            "time": "2022-09-06T12:16:56+00:00"
         },
         {
             "name": "php-cs-fixer/diff",
@@ -7173,11 +7165,11 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.24",
+            "version": "9.5.25",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/phpunit/phpunit/9.5.24/phpunit-phpunit-9.5.24.zip",
-                "reference": "d0aa6097bef9fd42458a9b3c49da32c6ce6129c5",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/phpunit/phpunit/9.5.25/phpunit-phpunit-9.5.25.zip",
+                "reference": "3e6f90ca7e3d02025b1d147bd8d4a89fd4ca8a1d",
                 "shasum": ""
             },
             "require": {
@@ -7199,14 +7191,14 @@
                 "phpunit/php-timer": "^5.0.2",
                 "sebastian/cli-parser": "^1.0.1",
                 "sebastian/code-unit": "^1.0.6",
-                "sebastian/comparator": "^4.0.5",
+                "sebastian/comparator": "^4.0.8",
                 "sebastian/diff": "^4.0.3",
                 "sebastian/environment": "^5.1.3",
-                "sebastian/exporter": "^4.0.3",
+                "sebastian/exporter": "^4.0.5",
                 "sebastian/global-state": "^5.0.1",
                 "sebastian/object-enumerator": "^4.0.3",
                 "sebastian/resource-operations": "^3.0.3",
-                "sebastian/type": "^3.1",
+                "sebastian/type": "^3.2",
                 "sebastian/version": "^3.0.2"
             },
             "suggest": {
@@ -7255,9 +7247,13 @@
                 {
                     "url": "https://github.com/sebastianbergmann",
                     "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpunit/phpunit",
+                    "type": "tidelift"
                 }
             ],
-            "time": "2022-08-30T07:42:16+00:00"
+            "time": "2022-09-25T03:44:45+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -7398,11 +7394,11 @@
         },
         {
             "name": "sebastian/comparator",
-            "version": "4.0.6",
+            "version": "4.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/sebastian/comparator/4.0.6/sebastian-comparator-4.0.6.zip",
-                "reference": "55f4261989e546dc112258c7a75935a81a7ce382",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/sebastian/comparator/4.0.8/sebastian-comparator-4.0.8.zip",
+                "reference": "fa0f136dd2334583309d32b62544682ee972b51a",
                 "shasum": ""
             },
             "require": {
@@ -7458,7 +7454,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-10-26T15:49:45+00:00"
+            "time": "2022-09-14T12:41:17+00:00"
         },
         {
             "name": "sebastian/complexity",
@@ -7618,11 +7614,11 @@
         },
         {
             "name": "sebastian/exporter",
-            "version": "4.0.4",
+            "version": "4.0.5",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/sebastian/exporter/4.0.4/sebastian-exporter-4.0.4.zip",
-                "reference": "65e8b7db476c5dd267e65eea9cab77584d3cfff9",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/sebastian/exporter/4.0.5/sebastian-exporter-4.0.5.zip",
+                "reference": "ac230ed27f0f98f597c8a2b6eb7ac563af5e5b9d",
                 "shasum": ""
             },
             "require": {
@@ -7681,7 +7677,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-11T14:18:36+00:00"
+            "time": "2022-09-14T06:03:37+00:00"
         },
         {
             "name": "sebastian/global-state",

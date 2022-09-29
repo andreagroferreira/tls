@@ -63,7 +63,7 @@ class GatewayService
             );
         }
 
-        return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+        return $this->getConfig($client, $issuer)[$gateway] ?? [];
     }
 
     /**

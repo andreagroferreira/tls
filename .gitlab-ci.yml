@@ -83,6 +83,9 @@ test-unit:
   rules:
     - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TAG
       when: never
+    - if: $APP_ENV == "production"
+      when: manual
+      allow_failure: true
     - when: on_success
       allow_failure: true
 
@@ -565,6 +568,28 @@ deploy-instance:
       POSTGRES_SECRET_NAME="${PROJECT}-pgcluster-common-secret"
       POSTGRES_ADMIN_SECRET_NAME="${PROJECT}-pgsql-master"
       POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
+      AWS_ACCOUNT_S3="tlspay-s3-account"
+      MEMORY_REQUEST="${MEMORY_REQUEST}"
+      MEMORY_LIMIT="${MEMORY_LIMIT}"
+      CPU_REQUEST="${CPU_REQUEST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
+      REDIS_HOST="tls://${REDIS_HOST}"
+      TLSCONTACT_API="${TLSCONNECT_API_URL}"
+      CLIENT="${CLIENT}"
+      HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
+    - oc process -f ./openshift/payment-api-invoice-mail-queue-template.yaml
+      APPLICATION_NAME="${APPLICATION_NAME}"
+      PROJECT="${INSTANCE}"
+      NAMESPACE="${PROJECT}"
+      APP_ENV="${APP_ENV}"
+      OPENSHIFT_ENV="${ENV}"
+      ROUTE_IP_WHITE_LIST="${ROUTE_IP_WHITE_LIST}"
+      POSTGRES_DB_HOST="pgbouncer"
+      POSTGRES_SECRET_NAME="${PROJECT}-pgcluster-common-secret"
+      POSTGRES_ADMIN_SECRET_NAME="${PROJECT}-pgsql-master"
+      POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
+      EMAIL_SERVICE_DOMAIN="${EMAIL_SERVICE_DOMAIN}"
+      FILE_LIBRARY_API_DOMAIN="${FILE_LIBRARY_API_DOMAIN}"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       MEMORY_REQUEST="${MEMORY_REQUEST}"
       MEMORY_LIMIT="${MEMORY_LIMIT}"

@@ -1052,7 +1052,7 @@ return [
                     'sandbox_account' => '',
                 ],
                 'prod' => [
-                    'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
+                    'account' => env('ENVPAY_GLO_DEieALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
                     'host' => 'https://hpp.globaliris.com/pay',

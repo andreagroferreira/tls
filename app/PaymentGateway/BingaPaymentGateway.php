@@ -116,7 +116,7 @@ class BingaPaymentGateway implements PaymentGatewayInterface
 
         $creationDate = str_replace(['T', 'Z'], ' ', $order['creationDate']);
         $expirationConfig = $payfort_config['common']['expiration'];
-        $expirationDate = $order['expirationDate'] ?? date('Y-m-d H:i:s', strtotime($creationDate . $expirationConfig));
+        $expirationDate = gmdate('Y-m-d\TH:i:s', strtotime($creationDate . $expirationConfig)).'GMT';
         $nowDate = str_replace(['T', 'Z'], ' ', gmdate("Y-m-d\TH:i:s\Z"));
         $minuteDiff = intval((strtotime($expirationDate) - strtotime($nowDate)) / 60);
         $countdown = $minuteDiff > 0 ? $minuteDiff : 0;

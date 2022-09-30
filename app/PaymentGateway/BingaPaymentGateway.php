@@ -66,7 +66,6 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         $app_env = $this->isSandBox();
         $orderid = $transaction_data['t_transaction_id'] ?? '';
         $amount = $transaction_data['t_amount'];
-        $expirationDate = $transaction_data['t_expiration'];
         $client = $transaction_data['t_client'];
         $issuer = $transaction_data['t_issuer'];
         //$fg_id   = $transaction_data['t_xref_fg_id'];
@@ -78,6 +77,8 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         $store_id = $pay_config['store_id'];
         $store_private_key = $pay_config['store_private_key'];
         $host = $pay_config['host'];
+        $expirationConfig = $payfort_config['common']['expiration'];
+        $expirationDate = gmdate('Y-m-d\TH:i:s', strtotime($expirationConfig)).'GMT';
 
         $code = $transaction_data['t_gateway_transaction_id'] ?? '';
         if ($code) {
@@ -115,8 +116,7 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         }
 
         $creationDate = str_replace(['T', 'Z'], ' ', $order['creationDate']);
-        $expirationConfig = $payfort_config['common']['expiration'];
-        $expirationDate = gmdate('Y-m-d\TH:i:s', strtotime($creationDate . $expirationConfig)).'GMT';
+        $expirationDate = gmdate('Y-m-d H:i:s', strtotime($creationDate . $expirationConfig));
         $nowDate = str_replace(['T', 'Z'], ' ', gmdate("Y-m-d\TH:i:s\Z"));
         $minuteDiff = intval((strtotime($expirationDate) - strtotime($nowDate)) / 60);
         $countdown = $minuteDiff > 0 ? $minuteDiff : 0;

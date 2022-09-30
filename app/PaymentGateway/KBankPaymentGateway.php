@@ -66,8 +66,8 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
         $app_env        = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $host       = $kbank_config['prod']['host'] ?? '';
-            $secret     = $kbank_config['prod']['secret'] ?? '';
+            $host       = $kbank_config['config']['host'] ?? '';
+            $secret     = $kbank_config['config']['secret'] ?? '';
         } else if ($is_live && !$app_env) {
             $host       = $kbank_config['prod']['host'];
             $secret     = $kbank_config['prod']['secret'];
@@ -192,8 +192,8 @@ class KBankPaymentGateway implements PaymentGatewayInterface
         $is_live        = $kbank_config['common']['env'] == 'live' ? true : false;
         $app_env    = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $host       = $kbank_config['prod']['host'] ?? '';
-            $secret     = $kbank_config['prod']['secret'] ?? '';
+            $host       = $kbank_config['config']['host'] ?? '';
+            $secret     = $kbank_config['config']['secret'] ?? '';
         } else if ($is_live && !$app_env) {
             $host       = $kbank_config['prod']['host'];
             $secret     = $kbank_config['prod']['secret'];

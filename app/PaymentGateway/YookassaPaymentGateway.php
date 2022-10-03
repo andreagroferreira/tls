@@ -49,16 +49,20 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         return true;
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $transaction = $this->transactionService->getTransaction($t_id);
-        if (empty($transaction)) {
+        if (blank($transaction)) {
             return [
                 'status' => 'error',
                 'message' => 'Transaction ERROR: transaction not found'
             ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
-        $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_service']);
+        $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer'], $pa_id);
 
         $yookassa_params = [
             'amount' => [
@@ -121,7 +125,7 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         $query = parse_url($transaction['t_gateway_transaction_id'])['query'];
         $orderId = convertUrlQuery($query)['orderId'];
 
-        $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer']);
+        $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_xref_pa_id']);
 
         $paymentInfo = $this->apiService->getYookassaPayment($orderId, $yookassa_config, v4());
 
@@ -159,10 +163,21 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         return $this->paymentService->confirm($transaction, $confirm_params);
     }
 
-    public function getYookassaConfig($client, $issuer, $t_service): array
+    public function getYookassaConfig($client, $issuer, $pa_id): array
     {
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
-        $yookassa_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        $yookassa_config = array_merge($config['common'], $this->getPaySecret($config));
         return $yookassa_config;
+    }
+
+    private function getPaySecret($pay_config) {
+        if ($this->gatewayService->getClientUseFile()) {
+            $app_env = $this->isSandBox();
+            $is_live = ($pay_config['common']['env'] == 'live');
+            $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+        } else {
+            $key = 'config';
+        }
+        return $pay_config[$key];
     }
 }

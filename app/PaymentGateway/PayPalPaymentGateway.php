@@ -3,6 +3,7 @@
 namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionLogsService;
 use App\Services\TransactionService;
@@ -15,17 +16,21 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
     private $transactionService;
     private $paymentService;
     private $apiService;
+    private $gatewayService;
+
 
     public function __construct(
         TransactionService $transactionService,
         TransactionLogsService $transactionLogsService,
         PaymentService $paymentService,
-        ApiService $apiService
+        ApiService $apiService,
+        GatewayService $gatewayService
     ){
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->paymentService = $paymentService;
         $this->apiService         = $apiService;
+        $this->gatewayService     = $gatewayService;
     }
 
     public function getPaymentGatewayName() {
@@ -53,17 +58,20 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
         $translationsData =  $this->transactionService->fetchTransaction(['t_transaction_id' => $params['urlData']['transid']]);
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
-        $config = config('payment_gateway')[$client][$issuer];
-        $onlinePayment = $config ? $config['paypal'] : [];
+
+        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $translationsData['t_xref_pa_id']);
         $app_env = $this->isSandBox();
-        $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
-        if ($is_live  && !$app_env) {
+        $is_live = $payfort_config['common']['env'] == 'live' ? true : false;
+        if (!$this->gatewayService->getClientUseFile()) {
+            $url = $payfort_config['config']['host'] ?? '';
+        } else if ($is_live  && !$app_env) {
             // Live account
-            $url = $onlinePayment['prod']['host'];
+            $url = $payfort_config['prod']['host'];
         } else {
             // Test account
-            $url = $onlinePayment['sandbox']['sandbox_host'];
+            $url = $payfort_config['sandbox']['sandbox_host'];
         }
+
         $result = $this->paymentNotify($url);
         if ($result['verified']) {
             $payment_status       = $params['formData']['payment_status'];
@@ -113,21 +121,33 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
         }
     }
 
-    public function redirto($t_id) {
+    public function redirto($params) {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $translationsData = $this->transactionService->getTransaction($t_id);
+        if (blank($translationsData)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
         $fg_id = $translationsData['t_xref_fg_id'];
-        $config = config('payment_gateway')[$client][$issuer];
-        $onlinePayment = $config ? $config['paypal'] : [];
+        $onlinePayment = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $orderId = $translationsData['t_transaction_id'] ?? '';
         $amount = $translationsData["t_amount"] ?? '';
-        $app_env = $this->isSandBox();
         $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/forms_in_group/' . $fg_id);
         $applications = $applicationsResponse['status'] == 200 ? $applicationsResponse['body'] : [];
         $cai_list_with_avs = array_column($applications, 'f_cai');
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env = $this->isSandBox();
+        if (!$this->gatewayService->getClientUseFile()) {
+            $hosturl        = $onlinePayment['config']['host'] ?? '';
+            $account        = $onlinePayment['config']['account'] ?? '';
+        } else if ($is_live && !$app_env) {
             // Live account
             $hosturl        = $onlinePayment['prod']['host'] ?? '';
             $account        = $onlinePayment['prod']['account'] ?? '';

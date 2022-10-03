@@ -17,62 +17,43 @@ class GatewayService
         $this->paymentGatewayService = $paymentGatewayService;
     }
 
-    /**
-     * @param string $client
-     * @param string $issuer
-     * @param string $service
-     *
-     * @return array
-     */
-    public function getGateways(
-        string $client,
-        string $issuer,
-        string $service = 'tls'
-    ): array {
-        if (env('USE_UI_CONFIGURATION')) {
-            return $this->paymentGatewayService->getConfig(
-                $client,
-                $issuer,
-                $service
-            );
+    public function getGateways($client, $issuer, $service = 'tls')
+    {
+        $getClientUseFile = $this->getClientUseFile();
+        if ($getClientUseFile) {
+            return $this->getConfig($client, $issuer);
+        } else {
+            return $this->paymentGatewayService->getConfig($client, $issuer, $service);
         }
-
-        return $this->getConfig($client, $issuer);
     }
 
-    /**
-     * @param string $client
-     * @param string $issuer
-     * @param string $gateway
-     * @param string $service
-     *
-     * @return array
-     */
-    public function getGateway(
-        string $client,
-        string $issuer,
-        string $gateway,
-        string $service = 'tls'
-    ): array {
-        if (env('USE_UI_CONFIGURATION')) {
-            return $this->paymentGatewayService->getPaymentAccountConfig(
-                $client,
-                $issuer,
-                $gateway,
-                $service
-            );
+    public function getGateway($client, $issuer, $gateway, $pa_id = null)
+    {
+        $getClientUseFile = $this->getClientUseFile();
+        if ($getClientUseFile) {
+            return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+        } else {
+            $config = $this->paymentGatewayService->getPaymentAccountConfig($gateway, $pa_id);
+            $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $config['pa_type']), $config['config']);
+            foreach ($diff as $key => $value) {
+                $config['config'][$key] = $value;
+            }
+            return $config;
         }
-
-        return $this->getConfig($client, $issuer)[$gateway] ?? [];
     }
 
-    /**
-     * @param string $client
-     * @param string $issuer
-     *
-     * @return array
-     */
-    public function getConfig(string $client, string $issuer): array
+    public function getClientUseFile(): bool
+    {
+        $current_client = env('CLIENT');
+        $clients = explode(',', env('USE_FILE_CONFIGURATION'));
+        if (in_array($current_client, $clients)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getConfig($client, $issuer)
     {
         $config = [];
         $country = substr($issuer, 0, 2);
@@ -93,27 +74,27 @@ class GatewayService
         return $config;
     }
 
-    /**
-     * @param string $client
-     * @param string $issuer
-     * @param string $gateway
-     *
-     * @return array
-     */
-    public function getKbankConfig(
-        string $client,
-        string $issuer,
-        string $gateway
-    ): array {
-        $kbankConfig = $this->getGateway($client, $issuer, $gateway);
-        $appEnv = !('production' === env('APP_ENV'));
-        $isLive = 'live' == $kbankConfig['common']['env'];
-
-        if ($isLive && !$appEnv) {
-            return [
-                'redirect_host' => $kbankConfig['prod']['redirect_host'],
-                'api_key' => $kbankConfig['prod']['apikey'],
-                'mid' => $kbankConfig['prod']['mid'],
+    public function getKbankConfig($client, $issuer, $gateway, $pa_id) {
+        $kbank_config   = $this->getGateway($client, $issuer, $gateway, $pa_id);
+        $app_env        = !(env('APP_ENV') === 'production');
+        $is_live        = $kbank_config['common']['env'] == 'live';
+        if ($this->getClientUseFile()) {
+            $config_data = [
+                'redirect_host' => $kbank_config['config']['redirect_host'] ?? $kbank_config['config']['redirect_host'] ?? '',
+                'api_key'       => $kbank_config['config']['apikey'] ?? $kbank_config['config']['apikey'] ?? '',
+                'mid'           => $kbank_config['config']['mid'] ?? $kbank_config['config']['mid'] ?? ''
+            ];
+        } else if ($is_live && !$app_env) {
+            $config_data = [
+                'redirect_host' => $kbank_config['prod']['redirect_host'],
+                'api_key'       => $kbank_config['prod']['apikey'],
+                'mid'           => $kbank_config['prod']['mid']
+            ];
+        } else {
+            $config_data = [
+                'redirect_host' => $kbank_config['sandbox']['sandbox_redirect_host'],
+                'api_key'       => $kbank_config['sandbox']['sandbox_apikey'],
+                'mid'           => $kbank_config['sandbox']['sandbox_mid']
             ];
         }
 

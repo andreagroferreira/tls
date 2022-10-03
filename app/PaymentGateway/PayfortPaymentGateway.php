@@ -60,16 +60,24 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
 
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $translations_data = $this->transactionService->getTransaction($t_id);
-        $app_env = $this->isSandBox();
+        if (blank($translations_data)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $client  = $translations_data['t_client'];
         $issuer  = $translations_data['t_issuer'];
         $fg_id   = $translations_data['t_xref_fg_id'];
-        $t_service = $translations_data['t_service'] ?? 'tls';
-        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
-        $pay_config     = $this->getPaySecret($payfort_config, $app_env);
+        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        $pay_config     = $this->getPaySecret($payfort_config);
         $application    = $this->formGroupService->fetch($fg_id, $client);
         $u_email        = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $params = [
@@ -96,7 +104,6 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
 
     public function return($return_params)
     {
-        $app_env  = $this->isSandBox();
         $order_id = $return_params['merchant_reference'] ?? '';
 
         if (empty($order_id)) {
@@ -130,9 +137,8 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
                 'href'       => $transaction['t_onerror_url']
             ];
         }
-        $t_service      = $transaction['t_service'] ?? 'tls';
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
-        $pay_config     = $this->getPaySecret($payfort_config, $app_env);
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+        $pay_config     = $this->getPaySecret($payfort_config);
         $validate       = $this->validateSignature($return_params, $pay_config['response_phrase']);
         if ($validate) {
             if ($return_params['amount'] != $transaction['t_amount'] * 100) {
@@ -190,7 +196,6 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
 
     public function notify($notify_params)
     {
-        $app_env      = $this->isSandBox();
         $order_id     = $notify_params['merchant_reference'] ?? '';
         $json['code'] = 400;
 
@@ -212,9 +217,9 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
             $json['message'] = 'transaction_cancelled';
             return $json;
         }
-        $t_service      = $transaction['t_service'] ?? 'tls';
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
-        $pay_config     = $this->getPaySecret($payfort_config, $app_env);
+
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+        $pay_config     = $this->getPaySecret($payfort_config);
         $validate       = $this->validateSignature($notify_params, $pay_config['response_phrase']);
         if ($validate) {
             if ($notify_params['amount'] != $transaction['t_amount'] * 100) {
@@ -252,9 +257,14 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         }
     }
 
-    private function getPaySecret($pay_config, $app_env) {
-        $is_live = ($pay_config['common']['env'] == 'live');
-        $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+    private function getPaySecret($pay_config) {
+        if ($this->gatewayService->getClientUseFile()) {
+            $app_env = $this->isSandBox();
+            $is_live = ($pay_config['common']['env'] == 'live');
+            $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+        } else {
+            $key = 'config';
+        }
         return $pay_config[$key];
     }
 

@@ -40,9 +40,9 @@ class CybersourceController extends BaseController
      * )
      */
     public function redirto(Request $request) {
-        $orderId = $request->post('t_id');
+        $params = $request->post();
         try {
-            $body = $this->paymentGateway->redirto($orderId);
+            $body = $this->paymentGateway->redirto($params);
             return $this->sendResponse($body, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006111', $e->getMessage(), 400);

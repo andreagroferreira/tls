@@ -59,19 +59,34 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
 
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $translations_data = $this->transactionService->getTransaction($t_id);
-        $app_env  = $this->isSandBox();
+        if (blank($translations_data)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $orderid  = $translations_data['t_transaction_id'] ?? '';
         $amount   = $translations_data['t_amount'];
         $client   = $translations_data['t_client'];
         $issuer   = $translations_data['t_issuer'];
-        $t_service = $translations_data['t_service'] ?? 'tls';
-        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
+        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $currency           = $translations_data['t_currency'] ?? $cybersource_config['common']['currency'];
         $is_live            = $cybersource_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env  = $this->isSandBox();
+        if (!$this->gatewayService->getClientUseFile()) {
+            $init_hosturl     = $cybersource_config['config']['host'];
+            $access_key       = $cybersource_config['config']['access_key'];
+            $profile_id       = $cybersource_config['config']['profile_id'];
+            $transaction_type = $cybersource_config['config']['transaction_type'];
+            $secretKey        = $cybersource_config['config']['secret_key'];
+        } else if ($is_live && !$app_env) {
             // Live account
             $init_hosturl     = $cybersource_config['prod']['host'];
             $access_key       = $cybersource_config['prod']['access_key'];
@@ -132,15 +147,19 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
 
     public function notify($notify_params)
     {
-        $app_env            = $this->isSandBox();
         $order_id           = $notify_params['req_reference_number'];
         $transaction        = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         $client             = $transaction['t_client'];
         $issuer             = $transaction['t_issuer'];
-        $t_service          = $transaction['t_service'] ?? 'tls';
-        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
+        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live            = $cybersource_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env            = $this->isSandBox();
+        if (!$this->gatewayService->getClientUseFile()) {
+            $access_key       = $cybersource_config['config']['access_key'];
+            $profile_id       = $cybersource_config['config']['profile_id'];
+            $transaction_type = $cybersource_config['config']['transaction_type'];
+            $secretKey        = $cybersource_config['config']['secret_key'];
+        } else if ($is_live && !$app_env) {
             // Live account
             $access_key       = $cybersource_config['prod']['access_key'];
             $profile_id       = $cybersource_config['prod']['profile_id'];

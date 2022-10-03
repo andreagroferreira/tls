@@ -53,19 +53,22 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         return true;
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? '';
         $translations_data = $this->transactionService->getTransaction($t_id);
         if (blank($translations_data)) {
             return [
                 'status' => 'error',
                 'message' => 'Transaction ERROR: transaction not found'
             ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
 
         $order_id = $translations_data['t_transaction_id'];
-        $t_service   = $translations_data['t_service'] ?? 'tls';
-        $bnp_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer'], $t_service);
+        $bnp_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer'], $translations_data['t_xref_pa_id']);
 
         $get_data = [
             'userName' => array_get($bnp_config, 'current.user_name'),
@@ -126,8 +129,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
 
         $this->paymentService->saveTransactionLog($transaction['t_transaction_id'], $params, $this->getPaymentGatewayName());
 
-        $t_service   = $transaction['t_service'] ?? 'tls';
-        $bnp_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $t_service);
+        $bnp_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_xref_pa_id']);
         $get_data = [
             'userName' => array_get($bnp_config, 'current.user_name'),
             'password' => array_get($bnp_config, 'current.password'),
@@ -172,12 +174,14 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         ]]);
     }
 
-    protected function getConfig($client, $issuer, $t_service)
+    protected function getConfig($client, $issuer, $pa_id)
     {
         $app_env = $this->isSandBox();
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $is_live = $config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        if (!$this->gatewayService->getClientUseFile()) {
+            $config['current'] = $config['config'];
+        } else if ($is_live && !$app_env) {
             // Live account
             $config['current'] = $config['prod'];
         } else {

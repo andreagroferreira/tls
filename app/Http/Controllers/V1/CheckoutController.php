@@ -123,14 +123,29 @@ class CheckoutController extends BaseController
                     $selected_gateway => $payment_gateways[$selected_gateway]
                 ];
             }
-
-            $app_env = $this->isSandBox() ? 'sandbox' : 'prod';
-            foreach ($payment_gateways as $key => $value) {
-                if ($key !== 'pay_later') {
-                    if (!array_key_exists($app_env, $value)) {
-                        unset($payment_gateways[$key]);
+            $getClientUseFile = $this->gatewayService->getClientUseFile();
+            if($getClientUseFile){
+                $app_env = $this->isSandBox() ? 'sandbox' : 'prod';
+                foreach ($payment_gateways as $key => $value) {
+                    if ($key !== 'pay_later') {
+                        if (!array_key_exists($app_env, $value)) {
+                            unset($payment_gateways[$key]);
+                        }
                     }
                 }
+                $payment_gateways_new = [];
+                foreach ($payment_gateways as $key => $value) {
+                    if ($key !== 'pay_later') {
+                        $payment_type = $key . '_' . $app_env;
+                    } else {
+                        $payment_type = $key;
+                    }
+                    $payment_gateways_new[$payment_type] = $value;
+                    $payment_gateways_new[$payment_type]['pa_id'] = '';
+                    $payment_gateways_new[$payment_type]['psp_code'] = $key;
+                    $payment_gateways_new[$payment_type]['type'] = $app_env;
+                }
+                $payment_gateways = $payment_gateways_new;
             }
             $left_time = $expiration_time - $now_time;
             $data = [

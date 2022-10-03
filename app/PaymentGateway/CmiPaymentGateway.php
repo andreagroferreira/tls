@@ -74,9 +74,8 @@ class CmiPaymentGateway implements PaymentGatewayInterface
             ];
         }
 
-        $t_service  = $transaction['t_service'] ?? 'tls';
-        $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
-        $cmi_config = array_merge($config['common'], $this->isSandBox() ? $config['sandbox'] : $config['prod']);
+        $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+        $cmi_config = array_merge($config['common'], $this->getPaySecret($config));
         $isValid    = $this->validate($cmi_config['storeKey'] ?? [], $params);
 
         if (!$isValid) {
@@ -107,21 +106,26 @@ class CmiPaymentGateway implements PaymentGatewayInterface
 
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $transaction = $this->transactionService->getTransaction($t_id);
-        if (empty($transaction)) {
+        if (blank($transaction)) {
             return [
                 'status' => 'error',
                 'message' => 'Transaction ERROR: transaction not found'
             ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
         $client      = $transaction['t_client'];
         $issuer      = $transaction['t_issuer'];
         $fg_id       = $transaction['t_xref_fg_id'];
-        $t_service   = $transaction['t_service'] ?? 'tls';
-        $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
-        $cmi_config  = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
+
+        $config      = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        $cmi_config  = array_merge($config['common'], $this->getPaySecret($config));
+
         $application = $this->formGroupService->fetch($fg_id, $client);
         $form_list   = $this->formGroupService->fetchFomrs($fg_id, $client);
         $u_email     = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
@@ -184,9 +188,8 @@ class CmiPaymentGateway implements PaymentGatewayInterface
                 'href' => $transaction['t_redirect_url']
             ];
         }
-        $t_service  = $transaction['t_service'] ?? 'tls';
-        $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
-        $cmi_config = array_merge($config['common'], $this->isSandbox() ? $config['sandbox'] : $config['prod']);
+        $config     = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+        $cmi_config = array_merge($config['common'], $this->getPaySecret($config));
         $isValid    = $this->validate($cmi_config['storeKey'] ?? '', $params);
         if (!$isValid) {
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
@@ -241,4 +244,14 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         return base64_encode(pack('H*', $calculatedHashValue));
     }
 
+    private function getPaySecret($pay_config) {
+        if ($this->gatewayService->getClientUseFile()) {
+            $app_env = $this->isSandBox();
+            $is_live = ($pay_config['common']['env'] == 'live');
+            $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+        } else {
+            $key = 'config';
+        }
+        return $pay_config[$key];
+    }
 }

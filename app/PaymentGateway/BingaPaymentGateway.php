@@ -60,18 +60,26 @@ class BingaPaymentGateway implements PaymentGatewayInterface
 
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $transaction_data = $this->transactionService->getTransaction($t_id);
-        $app_env = $this->isSandBox();
+        if (blank($transaction_data)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $orderid = $transaction_data['t_transaction_id'] ?? '';
         $amount = $transaction_data['t_amount'];
         $client = $transaction_data['t_client'];
         $issuer = $transaction_data['t_issuer'];
         //$fg_id   = $transaction_data['t_xref_fg_id'];
-        $t_service   = $transaction_data['t_service'] ?? 'tls';
-        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $t_service);
-        $pay_config = $this->getPaySecret($payfort_config, $app_env);
+        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        $pay_config = $this->getPaySecret($payfort_config);
         $amount = str_replace(',', '', $amount);
         $currency = $transaction_data['t_currency'] ?? $payfort_config['common']['currency'];
         $store_id = $pay_config['store_id'];
@@ -149,7 +157,6 @@ class BingaPaymentGateway implements PaymentGatewayInterface
 
     public function notify($notify_params)
     {
-        $app_env = $this->isSandBox();
         $order_id = $notify_params['externalId'] ?? '';
         $nowDate = gmdate("Y-m-d\TH:i:s") . 'GMT+00:00';
         Log::info('binga start notify:' . json_encode($notify_params));
@@ -176,9 +183,9 @@ class BingaPaymentGateway implements PaymentGatewayInterface
             $msg = 'transaction_cancelled';
             return $msg;
         }
-        $t_service = $transaction['t_service'] ?? 'tls';
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $t_service);
-        $pay_config = $this->getPaySecret($payfort_config, $app_env);
+
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+        $pay_config = $this->getPaySecret($payfort_config);
         $store_id = $pay_config['store_id'];
         $store_private_key = $pay_config['store_private_key'];
         $sign_string = "PAY" . $amount . $store_id . $order_id . "TLS Contact" . $store_private_key;
@@ -226,10 +233,14 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         }
     }
 
-    private function getPaySecret($pay_config, $app_env)
-    {
-        $is_live = ($pay_config['common']['env'] == 'live');
-        $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+    private function getPaySecret($pay_config) {
+        if ($this->gatewayService->getClientUseFile()) {
+            $app_env = $this->isSandBox();
+            $is_live = ($pay_config['common']['env'] == 'live');
+            $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+        } else {
+            $key = 'config';
+        }
         return $pay_config[$key];
     }
 

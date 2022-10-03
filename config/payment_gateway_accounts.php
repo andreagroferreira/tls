@@ -88,9 +88,9 @@ return [
             'return_url'  => '/clictopay/return'
         ],
         'sandbox' => [
-            'sandbox_host'      => 'https://test.clictopay.com/payment/rest',
-            'sandbox_user_name' => null,
-            'sandbox_password'  => null
+            'host'      => 'https://test.clictopay.com/payment/rest',
+            'user_name' => null,
+            'password'  => null
         ],
         'prod'    => [
             'host'      => 'https://ipay.clictopay.com/payment/rest',
@@ -161,10 +161,10 @@ return [
             'return_url' => '/globaliris/return'
         ],
         'sandbox' => [
-            'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
-            'sandbox_merchant_id' => null,
-            'sandbox_secret' => null,
-            'sandbox_account' => null
+            'host' => 'https://hpp.sandbox.globaliris.com/pay',
+            'merchant_id' => null,
+            'secret' => null,
+            'account' => null
         ],
         'prod' => [
             'host' => 'https://hpp.globaliris.com/pay',
@@ -183,11 +183,11 @@ return [
             'notify_url'  => '/k-bank/notify'
         ],
         'sandbox' => [
-            'sandbox_host'          => 'https://dev-kpaymentgateway-services.kasikornbank.com',
-            'sandbox_redirect_host' => 'https://dev-kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
-            'sandbox_apikey'        => null,
-            'sandbox_secret'        => null,
-            'sandbox_mid'           => null
+            'host'          => 'https://dev-kpaymentgateway-services.kasikornbank.com',
+            'redirect_host' => 'https://dev-kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
+            'apikey'        => null,
+            'secret'        => null,
+            'mid'           => null
         ],
         'prod'    => [
             'host'          => 'https://kpaymentgateway-services.kasikornbank.com',
@@ -232,12 +232,12 @@ return [
             'notify_url' => '/paygate/notify',
         ],
         'sandbox' => [
-            'sandbox_initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
-            'sandbox_process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
-            'sandbox_query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
-            'sandbox_encryption_key' => null,
-            'sandbox_paygate_id' => null,
-            'sandbox_seller_email' => null,
+            'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
+            'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
+            'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
+            'encryption_key' => null,
+            'paygate_id' => null,
+            'seller_email' => null,
         ],
         'prod' => [
             'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
@@ -260,8 +260,8 @@ return [
             'notify_url' => '/paypal/notify'
         ],
         'sandbox' => [
-            'sandbox_host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
-            'sandbox_account' => null
+            'host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+            'account' => null
         ],
         'prod' => [
             'host' => 'https://www.paypal.com/cgi-bin/webscr',
@@ -300,10 +300,10 @@ return [
             'return_url' => '/payu/return'
         ],
         'sandbox' => [
-            'sandbox_app_id'      => null,
-            'sandbox_private_key' => null,
-            'sandbox_api_version' => '1.3.0',
-            'sandbox_payments_os_env' => 'test'
+            'app_id'      => null,
+            'private_key' => null,
+            'api_version' => '1.3.0',
+            'payments_os_env' => 'test'
         ],
         'prod' => [
             'app_id'      => null,

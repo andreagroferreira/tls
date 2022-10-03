@@ -49,16 +49,29 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         return 'notify';
     }
 
-    public function redirto($t_id) {
+    public function redirto($params) {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $translationsData = $this->transactionService->getTransaction($t_id);
+        if (blank($translationsData)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
         $fg_id = $translationsData['t_xref_fg_id'];
-        $t_service = $translationsData['t_service'] ?? 'tls';
-        $config = $this->gatewayService->getGateways($client, $issuer, $t_service);
-        $onlinePayment = $config ? $config['globaliris'] : [];
+        if ($this->gatewayService->getClientUseFile()) {
+            $config = $this->gatewayService->getConfig($client, $issuer);
+            $onlinePayment = $config ? $config['globaliris'] : [];
+        } else {
+            $onlinePayment = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        }
         $orderId = $translationsData['t_transaction_id'] ?? '';
-        $app_env = $this->isSandBox();
+
         $amount = $translationsData['t_amount'];
         $minFractionDigits = $onlinePayment['common']['min_fraction_digits'];
         if ($minFractionDigits) {
@@ -70,9 +83,16 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $amount =  round($amount, 0);
         $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/forms_in_group/' . $fg_id);
         $applications = $applicationsResponse['status'] == 200 ? $applicationsResponse['body'] : [];
+        $app_env = $this->isSandBox();
+
         $cai_list_with_avs = array_column($applications, 'f_cai');
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        if (!$this->gatewayService->getClientUseFile()) {
+            $hosturl        = $onlinePayment['config']['host'] ?? '';
+            $merchantid     = $onlinePayment['config']['merchant_id'] ?? '';
+            $account        = $onlinePayment['config']['account'] ?? '';
+            $secret         = $onlinePayment['config']['secret'] ?? '';
+        } else if ($is_live && !$app_env) {
             // Live account
             $hosturl        = $onlinePayment['prod']['host'] ?? '';
             $merchantid     = $onlinePayment['prod']['merchant_id'] ?? '';
@@ -146,23 +166,33 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $received_amount   = $params['AMOUNT'] ?? '';
-        $t_service = $translationsData['t_service'] ?? 'tls';
-        $config = $this->gatewayService->getGateways($client, $issuer, $t_service);
-        $onlinePayment = $config ? $config['globaliris'] : [];
-        $app_env = $this->isSandBox();
+        if ($this->gatewayService->getClientUseFile()) {
+            $config = $this->gatewayService->getConfig($client, $issuer);
+            $onlinePayment = $config ? $config['globaliris'] : [];
+        } else {
+            $onlinePayment = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $translationsData['t_xref_pa_id']);
+        }
 
+        $app_env = $this->isSandBox();
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        if (!$this->gatewayService->getClientUseFile()) {
+            $merchantid     = $onlinePayment['config']['merchant_id'] ?? '';
+            $secret         = $onlinePayment['config']['secret'] ?? '';
+            $subaccount     = $onlinePayment['config']['account'] ?? '';
+        } else if ($is_live && !$app_env) {
             // Live account
             $merchantid     = $onlinePayment['prod']['merchant_id'] ?? '';
             $secret         = $onlinePayment['prod']['secret'] ?? '';
-            $subaccount = $onlinePayment['prod']['account'] ?? '';
+            $subaccount     = $onlinePayment['prod']['account'] ?? '';
         } else {
             // Test account
             $merchantid     = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
             $secret         = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
-            $subaccount = $onlinePayment['sandbox']['sandbox_account'] ?? '';
+            $subaccount     = $onlinePayment['sandbox']['sandbox_account'] ?? '';
         }
+
+
+
         $tmp = "$timestamp.$merchantid.$orderId.$result.$message.$pasref.$authcode";
         $sha1hash = sha1($tmp);
         $tmp = "$sha1hash.$secret";

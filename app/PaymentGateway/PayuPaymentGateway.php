@@ -60,18 +60,27 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         return 'notify';
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $translationsData = $this->transactionService->getTransaction($t_id);
-        $app_env = $this->isSandBox();
+        if (blank($translationsData)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $client  = $translationsData['t_client'];
         $issuer  = $translationsData['t_issuer'];
         $fg_id   = $translationsData['t_xref_fg_id'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
-        $payu_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $translationsData['t_service']);
+        $payu_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $paymentsos_host = $payu_config['common']['paymentsos_host'];
         $payment_method  = $payu_config['common']['payment_method'];
-        $header = $this->getHeader($payu_config, $app_env);
+        $header = $this->getHeader($payu_config);
         // create payment
         $create_params = array(
             'amount'   => $translationsData['t_amount'] * 100,
@@ -125,9 +134,9 @@ class PayuPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
-        $payu_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_service']);
+        $payu_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $charges_host = $payu_config['common']['paymentsos_host'] . '/' . $payment_id . '/charges/' . $charge_id;
-        $charges_payments = $this->paymentInitiateService->paymentInitiate('get', $charges_host, '', false, $this->getHeader($payu_config, $app_env));
+        $charges_payments = $this->paymentInitiateService->paymentInitiate('get', $charges_host, '', false, $this->getHeader($payu_config));
         if (strpos($charges_payments,'error') !== false) {return ['status' => 'fail', 'message' => $charges_payments]; }
         $charges_payments = json_decode($charges_payments, true);
         if ($charges_payments['result']['status'] == 'Succeed') {
@@ -153,9 +162,15 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         }
     }
 
-    public function getHeader($payu_config, $app_env) {
-        $is_live        = $payu_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+    public function getHeader($payu_config) {
+        $is_live = $payu_config['common']['env'] == 'live' ? true : false;
+        $app_env = $this->isSandBox();
+        if (!$this->gatewayService->getClientUseFile()) {
+            $app_id          = $payu_config['config']['app_id'];
+            $private_key     = $payu_config['config']['private_key'];
+            $api_version     = $payu_config['config']['api_version'];
+            $payments_os_env = $payu_config['config']['payments_os_env'];
+        } else if ($is_live && !$app_env) {
             // Live account
             $app_id          = $payu_config['prod']['app_id'];
             $private_key     = $payu_config['prod']['private_key'];

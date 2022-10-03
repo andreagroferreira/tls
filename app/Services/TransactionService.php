@@ -177,7 +177,7 @@ class TransactionService
             't_callback_url' => $attributes['callback_url'],
             't_currency' => $attributes['currency'],
             't_workflow' => $attributes['workflow'],
-            't_invoice_storage' => $attributes['invoice_storage'] ?? 'file-library',
+            't_invoice_storage' => $attributes['invoice_storage'] ?? 's3',
             't_expiration' => Carbon::parse($this->dbConnectionService->getDbNowTime())->addMinutes(config('payment_gateway.expiration_minutes')),
         ];
         if (isset($attributes['payment_method'])) {

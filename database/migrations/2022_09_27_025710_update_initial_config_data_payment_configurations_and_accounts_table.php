@@ -80,6 +80,8 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
                 return 'hmpo_uk';
             case 'leg-be':
                 return 'leg_be';
+            case 'leg-de':
+                return 'leg_de';
             case 'biolab-ma':
                 return 'biolab_ma';
             default:

@@ -9,6 +9,8 @@ parameters:
     description: Name of the application
     required: true
     displayName: Application Name
+  - name: KEYCLOAK_BASE_URL
+    required: true
   - name: POSTGRES_SECRET_NAME
     required: true
   - name: POSTGRES_ADMIN_SECRET_NAME
@@ -1062,6 +1064,8 @@ objects:
             - env:
                 - name: APPLICATION_ENV
                   value: ${APPLICATION_ENV}
+                - name: KEYCLOAK_BASE_URL
+                  value: ${KEYCLOAK_BASE_URL}
                 - name: APP_DEBUG
                   value: ${DEBUG_MODE}
                 - name: VERIFYPEER

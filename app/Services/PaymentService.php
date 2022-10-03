@@ -96,9 +96,8 @@ class PaymentService
             $transaction[$field_key] = $field_val;
         }
 
-        $this->invoiceService->generate($transaction);
-        //dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
-        //    ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
+            ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
 
         if (!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($error_msg, 256));

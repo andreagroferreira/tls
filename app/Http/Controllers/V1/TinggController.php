@@ -38,9 +38,9 @@ class TinggController extends BaseController
      * )
      */
     public function redirto(Request $request) {
-        $t_id = $request->get('t_id');
+        $params = $request->post();
         try {
-            $result = $this->paymentGateway->redirto($t_id);
+            $result = $this->paymentGateway->redirto($params);
             if (!empty($result['status']) && $result['status'] == 'error') {
                 return $this->sendError('P0011', 'Tingg error:' . $result['message'], 400);
             }

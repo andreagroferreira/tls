@@ -75,4 +75,12 @@ class PaymentAccountsRepositories
     {
         return $this->paymentAccounts->find($id);
     }
+
+    public function fetchByIdAndPspId($ids, $psp_id)
+    {
+        return $this->paymentAccounts
+            ->whereIn('pa_id', $ids)
+            ->where('pa_xref_psp_id', $psp_id)
+            ->get();
+    }
 }

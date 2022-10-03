@@ -12,7 +12,7 @@ interface PaymentGatewayInterface
 
     public function notify($params);
 
-    public function redirto($t_id);
+    public function redirto($params);
 
     public function return($params);
 }

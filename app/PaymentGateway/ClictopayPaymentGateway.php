@@ -61,16 +61,30 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
         return 'notify';
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'];
         $translationsData = $this->transactionService->getTransaction($t_id);
-        $app_env = $this->isSandBox();
+        if (blank($translationsData)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $client  = $translationsData['t_client'];
         $issuer  = $translationsData['t_issuer'];
         $orderId = $translationsData['t_transaction_id'] ?? '';
-        $clictopay_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
-        $is_live        = $clictopay_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $clictopay_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        $is_live = $clictopay_config['common']['env'] == 'live' ? true : false;
+        $app_env = $this->isSandBox();
+        if (!$this->gatewayService->getClientUseFile()) {
+            $init_hosturl = $clictopay_config['config']['host'] ?? '';
+            $user_name    = $clictopay_config['config']['user_name'] ?? '';
+            $password     = $clictopay_config['config']['password'] ?? '';
+        } else if ($is_live && !$app_env) {
             // Live account
             $init_hosturl = $clictopay_config['prod']['host'];
             $user_name    = $clictopay_config['prod']['user_name'];
@@ -116,7 +130,6 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
 
     public function return($return_params)
     {
-        $app_env    = $this->isSandBox();
         $language   = $return_params['lang'];
         $gateway_id = $return_params['orderId'];
         $transaction = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $gateway_id, 't_tech_deleted' => false]);
@@ -128,9 +141,14 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Transaction ERROR: transaction not found'
             ];
         }
-        $clictopay_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
+        $clictopay_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live          = $clictopay_config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        $app_env = $this->isSandBox();
+        if (!$this->gatewayService->getClientUseFile()) {
+            $init_hosturl = $clictopay_config['config']['host'] ?? '';
+            $user_name    = $clictopay_config['config']['user_name'] ?? '';
+            $password     = $clictopay_config['config']['password'] ?? '';
+        } else if ($is_live && !$app_env) {
             // Live account
             $init_hosturl = $clictopay_config['prod']['host'];
             $user_name    = $clictopay_config['prod']['user_name'];

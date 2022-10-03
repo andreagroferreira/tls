@@ -60,17 +60,28 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
 
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $translations_data = $this->transactionService->getTransaction($t_id);
-        $app_env = $this->isSandBox();
+        if (blank($translations_data)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
+        }
         $orderid = $translations_data['t_transaction_id'] ?? '';
         $amount = $translations_data['t_amount'];
         $client  = $translations_data['t_client'];
         $issuer  = $translations_data['t_issuer'];
         $fg_id   = $translations_data['t_xref_fg_id'];
-        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
-        $pay_config     = $this->getPaySecret($payfort_config, $app_env);
+
+        $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        $pay_config = $this->getPaySecret($payfort_config);
+
         $application    = $this->formGroupService->fetch($fg_id, $client);
         $cai = $application['f_cai'] ?? 'alipay';
         $gateway     = $pay_config['gateway'];
@@ -129,7 +140,6 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
 
     public function return($return_params)
     {
-        $app_env  = $this->isSandBox();
         Log::info('alipay start return:'.json_encode($return_params));
         $order_id = $return_params['out_trade_no'] ?? '';
         $app_id = $return_params['app_id'];
@@ -165,8 +175,9 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
                 'href'       => $transaction['t_onerror_url']
             ];
         }
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
-        $pay_config     = $this->getPaySecret($payfort_config, $app_env);
+
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+        $pay_config     = $this->getPaySecret($payfort_config);
         ##signature verification start
         $sign_params = [];
         foreach($return_params as $key => $value) {
@@ -259,7 +270,6 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
     public function notify($notify_params)
     {
         $transaction_error = true;
-        $app_env = $this->isSandBox();
         $order_id = $notify_params['out_trade_no'] ?? '';
         Log::info('alipay start notify:'.json_encode($notify_params));
         $app_id = $notify_params['app_id'];
@@ -285,8 +295,8 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
             $msg = 'transaction_cancelled';
             return $msg;
         }
-        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName());
-        $pay_config     = $this->getPaySecret($payfort_config, $app_env);
+        $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+        $pay_config     = $this->getPaySecret($payfort_config);
         ##signature verifired start
         $sign_params = [];
         foreach($notify_params as $key => $value) {
@@ -369,9 +379,14 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         }
     }
 
-    private function getPaySecret($pay_config, $app_env) {
-        $is_live = ($pay_config['common']['env'] == 'live');
-        $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+    private function getPaySecret($pay_config) {
+        if ($this->gatewayService->getClientUseFile()) {
+            $app_env = $this->isSandBox();
+            $is_live = ($pay_config['common']['env'] == 'live');
+            $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+        } else {
+            $key = 'config';
+        }
         return $pay_config[$key];
     }
 }

@@ -45,14 +45,18 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         return true;
     }
 
-    public function redirto($t_id)
+    public function redirto($params)
     {
+        $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $translations_data = $this->transactionService->getTransaction($t_id);
         if (blank($translations_data)) {
             return [
                 'status' => 'error',
                 'message' => 'Transaction ERROR: transaction not found'
             ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
 
         $client = $translations_data['t_client'];
@@ -62,7 +66,7 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         $application_group = $this->formGroupService->fetch($fg_id, $client);
         $u_email = array_get($application_group, 'u_relative_email') ?? array_get($application_group, 'u_email') ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
 
-        $paysoft_config = $this->getConfig($client, $translations_data['t_issuer']);
+        $paysoft_config = $this->getConfig($client, $translations_data['t_issuer'], $pa_id);
         $return_url = get_callback_url(array_get($paysoft_config, 'common.return_url'));
 
         $form_fields['LMI_MERCHANT_ID'] = array_get($paysoft_config, 'current.merchant_id');
@@ -105,7 +109,7 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
             return false;
         }
 
-        $config = $this->getConfig($transaction['t_client'], $transaction['t_issuer']);
+        $config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_xref_pa_id']);
 
         if (!$this->validateSignature($config, $params)) {
             $this->logWarning('notify data check failed, signature verification failed.', $params);
@@ -142,7 +146,7 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
             return false;
         }
 
-        $paysoft_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer']);
+        $paysoft_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_xref_pa_id']);
 
         if ($transaction['t_status'] != 'pending') {
             $this->logWarning('initial notify data check failed, incorrect order status.', $params);
@@ -186,12 +190,14 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         ];
     }
 
-    protected function getConfig($client, $issuer)
+    protected function getConfig($client, $issuer, $pa_id)
     {
         $app_env = $this->isSandBox();
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $is_live = $config['common']['env'] == 'live' ? true : false;
-        if ($is_live && !$app_env) {
+        if (!$this->gatewayService->getClientUseFile()) {
+            $config['current'] = $config['config'];
+        } else if ($is_live && !$app_env) {
             // Live account
             $config['current'] = $config['prod'];
         } else {

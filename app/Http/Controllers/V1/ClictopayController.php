@@ -37,9 +37,9 @@ class ClictopayController extends BaseController
      * )
      */
     public function redirto(Request $request) {
-        $t_id = $request->post('t_id');
+        $params = $request->post();
         try {
-            $result = $this->paymentGateway->redirto($t_id);
+            $result = $this->paymentGateway->redirto($params);
             if (!empty($result['status']) && $result['status'] == 'fail') {
                 return $this->sendError('P0023', 'clictopay error:' . $result['content'], 400);
             } else {

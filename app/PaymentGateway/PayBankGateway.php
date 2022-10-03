@@ -45,15 +45,20 @@ class PayBankGateway implements PaymentGatewayInterface
     public function redirto($params)
     {
         $t_id = $params['t_id'];
+        $pa_id = $params['pa_id'] ?? null;
         $lang = $params['lang'] ?? 'en-us';
         $transaction = $this->transactionService->getTransaction($t_id);
-        $message = $this->getMessage($transaction);
-        if ($message['status'] == 'error') {
-            return $message;
+        if (blank($transaction)) {
+            return [
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found'
+            ];
+        } else if ($pa_id) {
+            $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
         $client  = $transaction['t_client'];
         $issuer  = $transaction['t_issuer'];
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $pay_bank_config = $config['common'];
         $return_url = get_callback_url($pay_bank_config['return_url']) ?? '';
         $params = [
@@ -170,7 +175,7 @@ class PayBankGateway implements PaymentGatewayInterface
             ];
             $client  = $transaction['t_client'];
             $issuer  = $transaction['t_issuer'];
-            $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName());
+            $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
             if(!empty($config['common']['expiration_minutes'])) {
                 $now_time = (new DbConnectionService())->getDbNowTime();
                 $gateway_expiration = Carbon::parse($now_time)->addMinutes($config['common']['expiration_minutes']);

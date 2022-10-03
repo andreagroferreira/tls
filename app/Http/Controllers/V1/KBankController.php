@@ -47,7 +47,7 @@ class KBankController extends BaseController
      * )
      */
     public function redirto(Request $request) {
-        $params = $request->only(['t_id', 'token']);
+        $params = $request->only(['t_id', 'token', 'pa_id']);
         $validator = validator($params, [
             't_id'  => 'required|int',
             'token' => 'required|string',
@@ -170,11 +170,11 @@ class KBankController extends BaseController
      */
     public function fetchConfig(Request $request) {
         $params = $request->post();
-        if (empty($params['client']) || empty($params['issuer']) || empty($params['payment'])) {
+        if (empty($params['client']) || empty($params['issuer']) || empty($params['payment']) || empty($params['pa_id'])) {
             $this->sendError('P0009', "client or issuer, payment no_data_received", 400);
         }
         try {
-            $kbank_config = $this->gatewayService->getKbankConfig($params['client'], $params['issuer'], $params['payment']);
+            $kbank_config = $this->gatewayService->getKbankConfig($params['client'], $params['issuer'], $params['payment'], $params['pa_id']);
             if (!empty($kbank_config)) {
                 return $this->sendResponse($kbank_config, 200);
             } else {

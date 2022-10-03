@@ -79,6 +79,7 @@ class TransactionService
                     'gateway_transaction_id' => $transaction->t_gateway_transaction_id,
                     'currency' => $transaction->t_currency,
                     'status' => 'done',
+                    'service' => $transaction->t_service,
                     'tech_creation' => $transaction->t_tech_creation,
                     'tech_modification' => $transaction->t_tech_modification,
                     'items' => array($items)
@@ -101,6 +102,9 @@ class TransactionService
         ])
             ->when(array_key_exists('status', $attributes), function ($collect) use ($attributes) {
                 return $collect->push(['t_status', '=', $attributes['status']]);
+            })
+            ->when(array_key_exists('service', $attributes), function ($collect) use ($attributes) {
+                return $collect->push(['t_service', '=', $attributes['service']]);
             })
             ->toArray();
 
@@ -160,7 +164,7 @@ class TransactionService
         return ['t_id' => $transaction->t_id, 'expire' => $transaction->t_expiration];
     }
 
-    public function create($attributes)
+    public function create(array $attributes)
     {
         $transaction_data = [
             't_id' => $this->transactionRepository->getTransactionIdSeq(),
@@ -173,10 +177,15 @@ class TransactionService
             't_callback_url' => $attributes['callback_url'],
             't_currency' => $attributes['currency'],
             't_workflow' => $attributes['workflow'],
+            't_invoice_storage' => $attributes['invoice_storage'] ?? 's3',
             't_expiration' => Carbon::parse($this->dbConnectionService->getDbNowTime())->addMinutes(config('payment_gateway.expiration_minutes')),
         ];
         if (isset($attributes['payment_method'])) {
             $transaction_data['t_payment_method'] = $attributes['payment_method'];
+        }
+
+        if (isset($attributes['service']) && $attributes['service'] == 'gov') {
+            $transaction_data['t_service'] = $attributes['service'];
         }
         $transaction_data['t_transaction_id'] = $this->generateTransactionId($transaction_data['t_id'], $transaction_data['t_issuer']);
 

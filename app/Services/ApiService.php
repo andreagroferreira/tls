@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiService
 {
@@ -151,7 +152,7 @@ class ApiService
             'body' => json_decode($response->getBody(), true)
         ];
         if ($response['status'] != 200) {
-            Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), $response));
+            Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), json_encode($response)));
         }
         return $response;
     }
@@ -214,9 +215,23 @@ class ApiService
         return $response;
     }
 
-    private function getStreamApi($url, $data)
-    {
-        $response = $this->guzzleClient->request('post', $url, [
+    /**
+     * @param string $url
+     * @param array $data
+     * @param string $method
+     *
+     * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    private function getStreamApi(
+        string $url,
+        array $data,
+        string $method = 'post'
+    ): array {
+        $response = $this->guzzleClient->request($method, $url, [
             'verify' => false,
             'http_errors' => false,
             'idn_conversion' => false,
@@ -224,13 +239,21 @@ class ApiService
             'headers' => ['log-uuid' => request()->get('log-uuid')],
             'json' => $data,
         ]);
+
         $response = [
             'status' => $response->getStatusCode(),
             'body' => $response->getBody()
         ];
+
         if ($response['status'] != 200) {
-            Log::error(sprintf("Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), $response));
+            Log::error(sprintf(
+                "Request api fail: %s [get_stream] | Parameters: %s | Api Return: %s",
+                $url,
+                json_encode($data, 256),
+                json_encode($response, 256)
+            ));
         }
+
         return $response;
     }
 
@@ -362,5 +385,61 @@ class ApiService
             'body' => json_decode($response->getBody(), true)
         ];
         return $response;
+    }
+
+    /**
+     * @param string $queryParams
+     * @param Response $data
+     *
+     * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callFileLibraryUploadApi(string $queryParams, Response $data): array
+    {
+        $url = $this->getFileLibraryApiDomain() . '/api/' . $this->getFileLibraryApiVersion() . '/file-library/upload/invoice?' . $queryParams;
+        $response = $this->guzzleClient->request('post', $url, [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => $this->accept,
+            'headers' => ['log-uuid' => request()->get('log-uuid'), 'Content-Type' => 'application/pdf'],
+            'body' => $data,
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        if ($response['status'] != 200) {
+            Log::error(sprintf("Request api fail: %s [POST] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), json_encode($response, 256)));
+        }
+        return $response;
+    }
+
+    private function getFileLibraryApiDomain(): string
+    {
+        return env('FILE_LIBRARY_API_DOMAIN');
+    }
+
+    private function getFileLibraryApiVersion(): string
+    {
+        return 'v1';
+    }
+
+    /**
+     * @param $queryParams
+     *
+     * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callFileLibraryDownloadApi($queryParams): array
+    {
+        $url = $this->getFileLibraryApiDomain().'/api/'.$this->getFileLibraryApiVersion().'/file-library/download?'.$queryParams;
+        return $this->getStreamApi($url, [], 'get');
     }
 }

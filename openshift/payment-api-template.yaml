@@ -396,6 +396,8 @@ parameters:
     required: true
   - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
     required: true
+  - name: ENVPAY_GLO_DEieALL2de_ACCOUNT
+    required: true
   - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
     required: true
   - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME
@@ -985,6 +987,8 @@ objects:
                   value: ${ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL}
                 - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
                   value: ${ENVPAY_GLO_DEgbALL2de_ACCOUNT}
+                - name: ENVPAY_GLO_DEieALL2de_ACCOUNT
+                  value: ${ENVPAY_GLO_DEieALL2de_ACCOUNT}
                 - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
                   value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST}
                 - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME
@@ -1458,6 +1462,8 @@ objects:
                   value: ${ENVPAY_PAYGATE_ZAALL2DE_SELLER_EMAIL}
                 - name: ENVPAY_GLO_DEgbALL2de_ACCOUNT
                   value: ${ENVPAY_GLO_DEgbALL2de_ACCOUNT}
+                - name: ENVPAY_GLO_DEieALL2de_ACCOUNT
+                  value: ${ENVPAY_GLO_DEieALL2de_ACCOUNT}
                 - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST
                   value: ${ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_HOST}
                 - name: ENVPAY_BNP_PARIBAS_COMMON_SANDBOX_USER_NAME

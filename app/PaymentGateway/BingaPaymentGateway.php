@@ -64,8 +64,8 @@ class BingaPaymentGateway implements PaymentGatewayInterface
     {
         $t_id = $params['t_id'];
         $pa_id = $params['pa_id'] ?? null;
-        $translations_data = $this->transactionService->getTransaction($t_id);
-        if (blank($translations_data)) {
+        $transaction_data = $this->transactionService->getTransaction($t_id);
+        if (blank($transaction_data)) {
             return [
                 'status' => 'error',
                 'message' => 'Transaction ERROR: transaction not found'
@@ -73,12 +73,11 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         } else if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
-        $orderid = $translations_data['t_transaction_id'] ?? '';
-        $amount = $translations_data['t_amount'];
-        $expirationDate = $translations_data['t_expiration'];
-        $client = $translations_data['t_client'];
-        $issuer = $translations_data['t_issuer'];
-        //$fg_id   = $translations_data['t_xref_fg_id'];
+        $orderid = $transaction_data['t_transaction_id'] ?? '';
+        $amount = $transaction_data['t_amount'];
+        $client = $transaction_data['t_client'];
+        $issuer = $transaction_data['t_issuer'];
+        //$fg_id   = $transaction_data['t_xref_fg_id'];
         $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
         $pay_config = $this->getPaySecret($payfort_config);
         $amount = str_replace(',', '', $amount);
@@ -86,6 +85,8 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         $store_id = $pay_config['store_id'];
         $store_private_key = $pay_config['store_private_key'];
         $host = $pay_config['host'];
+        $expirationConfig = $payfort_config['common']['expiration'];
+        $expirationDate = gmdate('Y-m-d\TH:i:s', strtotime($expirationConfig)).'GMT';
 
         $code = $transaction_data['t_gateway_transaction_id'] ?? '';
         if ($code) {
@@ -123,8 +124,7 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         }
 
         $creationDate = str_replace(['T', 'Z'], ' ', $order['creationDate']);
-        $expirationConfig = $payfort_config['common']['expiration'];
-        $expirationDate = $order['expirationDate'] ?? date('Y-m-d H:i:s', strtotime($creationDate . $expirationConfig));
+        $expirationDate = gmdate('Y-m-d H:i:s', strtotime($creationDate . $expirationConfig));
         $nowDate = str_replace(['T', 'Z'], ' ', gmdate("Y-m-d\TH:i:s\Z"));
         $minuteDiff = intval((strtotime($expirationDate) - strtotime($nowDate)) / 60);
         $countdown = $minuteDiff > 0 ? $minuteDiff : 0;

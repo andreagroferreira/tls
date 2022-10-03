@@ -108,6 +108,11 @@ deploy-instance:
         exit 1
       fi
     - export DIRECTUS_HOST="directus-cms:8080"
+    - - |
+        if ! KEYCLOAK_BASE_URL=$(oc get route secure-keycloak -o jsonpath='{.spec.host}'); then
+          echo "KEYCLOAK_BASE_URL is not defined!"
+          exit 1
+        fi
     - |
       if REDIS_HOST=$(oc get svc ${PROJECT}-redis-cluster-aws -o json); then
         export REDIS_HOST=$(echo "${REDIS_HOST}" | jq -r .spec.externalName)
@@ -128,6 +133,7 @@ deploy-instance:
       POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://${PAYMENT_SERVICE_URL}"
+      KEYCLOAK_BASE_URL="https://${KEYCLOAK_BASE_URL}/auth"
       DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       REDIS_HOST="tls://${REDIS_HOST}"

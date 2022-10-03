@@ -52,9 +52,10 @@ class PaymentGatewayService
 
     public function getConfig($client, $issuer, $service)
     {
+        $country_client = substr($issuer, -2);
         $country = substr($issuer, 0, 2);
-        $country_level_config = $country . 'All2' . $client;
-        $global_config = 'allall2' . $client;
+        $country_level_config = $country . 'All2' . $country_client;
+        $global_config = 'allall2' . $country_client;
         $getPaymentGatewayConfig = $this->getPaymentGatewayConfig($client, $issuer, $service);
         if (empty($getPaymentGatewayConfig)) {
             $getPaymentGatewayConfig = $this->getPaymentGatewayConfig($client, $country_level_config, $service);

@@ -122,30 +122,26 @@ class CheckoutController extends BaseController
                 $payment_gateways = [
                     $selected_gateway => $payment_gateways[$selected_gateway]
                 ];
-            }
-            $getClientUseFile = $this->gatewayService->getClientUseFile();
-            if($getClientUseFile){
-                $app_env = $this->isSandBox() ? 'sandbox' : 'prod';
-                foreach ($payment_gateways as $key => $value) {
-                    if ($key !== 'pay_later') {
-                        if (!array_key_exists($app_env, $value)) {
-                            unset($payment_gateways[$key]);
+            } else {
+                $getClientUseFile = $this->gatewayService->getClientUseFile();
+                if ($getClientUseFile) {
+                    $app_env = $this->isSandBox() ? 'sandbox' : 'prod';
+                    foreach ($payment_gateways as $key => $value) {
+                        if ($key !== 'pay_later') {
+                            if (!array_key_exists($app_env, $value)) {
+                                unset($payment_gateways[$key]);
+                            }
                         }
                     }
-                }
-                $payment_gateways_new = [];
-                foreach ($payment_gateways as $key => $value) {
-                    if ($key !== 'pay_later') {
-                        $payment_type = $key . '_' . $app_env;
-                    } else {
-                        $payment_type = $key;
+                    $payment_gateways_new = [];
+                    foreach ($payment_gateways as $key => $value) {
+                        $payment_gateways_new[$key] = $value;
+                        $payment_gateways_new[$key]['pa_id'] = '';
+                        $payment_gateways_new[$key]['psp_code'] = $key;
+                        $payment_gateways_new[$key]['type'] = $app_env;
                     }
-                    $payment_gateways_new[$payment_type] = $value;
-                    $payment_gateways_new[$payment_type]['pa_id'] = '';
-                    $payment_gateways_new[$payment_type]['psp_code'] = $key;
-                    $payment_gateways_new[$payment_type]['type'] = $app_env;
+                    $payment_gateways = $payment_gateways_new;
                 }
-                $payment_gateways = $payment_gateways_new;
             }
             $left_time = $expiration_time - $now_time;
             $data = [

@@ -4,6 +4,7 @@ include:
     file:
       - 'rollback.gitlab-ci.yml'
       - 'quality_security-check.gitlab-ci.yml'
+      - 'post-to-teams.gitlab-ci.yml'
 
 image: ${DOCKER_REGISTRY_ADDRESS}/openshift3/ose-cli:${DOCKER_TAG_OSE_CLI}
 

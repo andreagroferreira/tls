@@ -132,7 +132,32 @@ return [
                     'merchant_id' => env("ENVPAY_CMI_BEmaAll2be_MERCHANT_ID"),
                     'storeKey' => env("ENVPAY_CMI_BEmaAll2be_STOREKEY")
                 ]
-            ]
+            ],
+            'binga' => [
+                'label' => 'BINGA pay',
+                'common' => [
+                    'env' => 'live',
+                    "currency" => "MAD",
+                    'expiration' => '+2 hours',
+                    "cash_url" => "/binga/cash",
+                    "return_url" => "/binga/return",
+                    "notify_url" => "/binga/notify"
+                ],
+                'sandbox' => [
+                    "host" => "http://preprod.binga.ma:8080/v1.2/api/orders",
+                    "merchant_login" => env("ENVPAY_BINGA_SANDBOX_MERCHANT_LOGIN"),
+                    "merchant_password" => env("ENVPAY_BINGA_SANDBOX_MERCHANT_PASSWORD"),
+                    "store_id" => env("ENVPAY_BINGA_SANDBOX_STORE_ID"),
+                    "store_private_key" => env("ENVPAY_BINGA_SANDBOX_STORE_PRIVATE_KEY"),
+                ],
+                'prod' => [
+                    "host" => "https://api.binga.ma/bingaApi/api/orders",
+                    "merchant_login" => env("ENVPAY_BINGA_MERCHANT_LOGIN"),
+                    "merchant_password" => env("ENVPAY_BINGA_MERCHANT_PASSWORD"),
+                    "store_id" => env("ENVPAY_BINGA_STORE_ID"),
+                    "store_private_key" => env("ENVPAY_BINGA_STORE_PRIVATE_KEY"),
+                ]
+            ],
         ],
         'zaCPT2be' => [
             'paygate' => [
@@ -1165,7 +1190,7 @@ return [
                 'common' => [
                     'env' => 'live',
                     "currency" => "MAD",
-                    'expiration' => '+4 days',
+                    'expiration' => '+2 hours',
                     "cash_url" => "/binga/cash",
                     "return_url" => "/binga/return",
                     "notify_url" => "/binga/notify"
@@ -1185,29 +1210,29 @@ return [
                     "store_private_key" => env("ENVPAY_BINGA_STORE_PRIVATE_KEY"),
                 ]
             ],
-//            'cmi' => [
-//                'label' => 'CMI pay',
-//                'active' => true,
-//                'common' => [
-//                    'storetype' => '3d_pay_hosting',
-//                    'tranType' => 'PreAuth',
-//                    'okUrl' => '/cmi/return',
-//                    'failUrl' => '/cmi/return',
-//                    'hashAlgorithm' => 'ver3',
-//                    'shopurl' => '/checkout/',
-//                    'callbackUrl' => '/cmi/notify',
-//                ],
-//                'sandbox' => [
-//                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
-//                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID'),
-//                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY'),
-//                ],
-//                'prod' => [
-//                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
-//                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_MERCHANT_ID'),
-//                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_STOREKEY')
-//                ]
-//            ]
+            'cmi' => [
+                'label' => 'CMI pay',
+                'active' => true,
+                'common' => [
+                    'storetype' => '3d_pay_hosting',
+                    'tranType' => 'PreAuth',
+                    'okUrl' => '/cmi/return',
+                    'failUrl' => '/cmi/return',
+                    'hashAlgorithm' => 'ver3',
+                    'shopurl' => '/checkout/',
+                    'callbackUrl' => '/cmi/notify',
+                ],
+                'sandbox' => [
+                    'host' => 'https://testpayment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_SANDBOX_STOREKEY'),
+                ],
+                'prod' => [
+                    'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
+                    'merchant_id' => env('ENVPAY_CMI_DEmaAll2de_MERCHANT_ID'),
+                    'storeKey' => env('ENVPAY_CMI_DEmaAll2de_STOREKEY')
+                ]
+            ]
         ],
     ],
     'pl' => [
@@ -1955,9 +1980,8 @@ return [
         'sdAll2uk' => [
             'pay_later' => [
                 'label' => "Pay later",
+            ]
         ]
-
-    ]
     ],
     'leg_be' =>[
         'allAll2all'=> [

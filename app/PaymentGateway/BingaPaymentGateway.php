@@ -85,7 +85,7 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         $store_id = $pay_config['store_id'];
         $store_private_key = $pay_config['store_private_key'];
         $host = $pay_config['host'];
-        $expirationConfig = $payfort_config['common']['expiration'];
+        $expirationConfig = $payfort_config['common']['expiration'] ?? '+2 hours';
         $expirationDate = gmdate('Y-m-d\TH:i:s', strtotime($expirationConfig)).'GMT';
 
         $code = $transaction_data['t_gateway_transaction_id'] ?? '';

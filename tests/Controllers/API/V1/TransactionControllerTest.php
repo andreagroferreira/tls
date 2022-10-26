@@ -3,6 +3,7 @@
 namespace Tests\Controllers\API\V1;
 
 use Illuminate\Support\Carbon;
+use Throwable;
 
 /**
  * @internal
@@ -59,7 +60,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -164,7 +165,7 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -195,7 +196,7 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -225,7 +226,7 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -260,7 +261,7 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -299,7 +300,7 @@ class TransactionControllerTest extends TestCase
      *
      * @param array $defaultPayload
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -342,7 +343,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -361,7 +362,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -376,7 +377,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -395,7 +396,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -410,7 +411,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -445,7 +446,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -480,7 +481,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -495,7 +496,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -514,7 +515,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -529,7 +530,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -548,7 +549,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -563,7 +564,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -578,7 +579,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -599,7 +600,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -616,7 +617,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -631,7 +632,7 @@ class TransactionControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @return void
      */
@@ -665,6 +666,54 @@ class TransactionControllerTest extends TestCase
         $transactionsList = $this->response->decodeResponseJson();
 
         $this->assertCount(1, $transactionsList['data']);
+    }
+
+    /**
+     * @dataProvider defaultPayload
+     *
+     * @param array $defaultPayload
+     *
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testTransactionExpiredTimeProvidedInRequestPayloadValidation(array $defaultPayload): void
+    {
+        // Set expiration time.
+        $defaultPayload['t_expiration'] = -30;
+
+        $this->post($this->transactionApi, $defaultPayload);
+
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The t expiration must be greater than 0.',
+            ]);
+    }
+
+    /**
+     * @dataProvider defaultPayload
+     *
+     * @param array $defaultPayload
+     *
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testTransactionExpiredTimeProvidedInRequestPayload(array $defaultPayload): void
+    {
+        // Set expiration time.
+        $defaultPayload['t_expiration'] = 30;
+
+        $this->post($this->transactionApi, $defaultPayload);
+        $this->response->assertStatus(200)
+            ->assertJsonStructure(['t_id', 'expire']);
+
+        $transactionPost = $this->response->decodeResponseJson();
+        $this->assertEquals(
+            Carbon::parse($this->getDbNowTime())->subMinutes($defaultPayload['t_expiration'])->toDateString(),
+            Carbon::parse(array_get($transactionPost, 'expire'))->toDateString()
+        );
     }
 
     public function defaultPayload(): array

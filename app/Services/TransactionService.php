@@ -180,7 +180,7 @@ class TransactionService
             't_invoice_storage' => $attributes['invoice_storage'] ?? 'file-library'
         ];
 
-        $expirationMinutes = config('payment_gateway.expiration_minutes');
+        $expirationMinutes = config('payment_gateway.expiration_minutes') ?? 60;
 
         if (!empty($attributes['t_expiration'])) {
             $expirationMinutes = $attributes['t_expiration'];

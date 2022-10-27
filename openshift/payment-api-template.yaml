@@ -9,6 +9,10 @@ parameters:
     description: Name of the application
     required: true
     displayName: Application Name
+  - name: IMAGE_TAG
+    description: Application tag
+    required: true
+    displayName: Application tag
   - name: KEYCLOAK_BASE_URL
     required: true
   - name: POSTGRES_SECRET_NAME
@@ -554,10 +558,12 @@ objects:
     metadata:
       labels:
         app: ${APPLICATION_NAME}
+        version: ${IMAGE_TAG}
       name: ${APPLICATION_NAME}
     spec:
       selector:
         app: ${APPLICATION_NAME}
+        version: ${IMAGE_TAG}
         deploymentconfig: ${APPLICATION_NAME}
       triggers:
         - imageChangeParams:
@@ -577,6 +583,7 @@ objects:
             central-logging: "true"
           labels:
             app: ${APPLICATION_NAME}
+            version: ${IMAGE_TAG}
             deploymentconfig: ${APPLICATION_NAME}
         spec:
           initContainers:
@@ -1612,6 +1619,7 @@ objects:
         service.alpha.openshift.io/serving-cert-secret-name: ${APPLICATION_NAME}-x509-https-secret
       labels:
         app: ${APPLICATION_NAME}
+        version: ${IMAGE_TAG}
       name: ${APPLICATION_NAME}
     spec:
       selector:

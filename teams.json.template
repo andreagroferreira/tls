@@ -1,0 +1,20 @@
+{
+  "@type": "MessageCard",
+  "@context": "http://schema.org/extensions",
+  "themeColor": "0076D7",
+  "summary": "$APP_NAME: $ENV_TYPE environment for $CLIENT Client has been updated",
+  "sections": [{
+      "activityTitle": "$APP_NAME: $ENV_TYPE environment for $CLIENT Client has been updated",
+      "facts": [
+          {
+            "name": "VERSION",
+            "value": "$VERSION"
+          },
+          {
+            "name": "CLIENT",
+            "value": "$CLIENT"
+          }
+      ],
+      "markdown": true
+  }]
+}

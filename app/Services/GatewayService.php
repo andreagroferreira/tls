@@ -31,7 +31,7 @@ class GatewayService
     {
         $getClientUseFile = $this->getClientUseFile();
         if ($getClientUseFile) {
-            return config('payment_gateway')[$client][$issuer][$gateway] ?? [];
+            return $this->getConfig($client, $issuer)[$gateway] ?? [];
         } else {
             $config = $this->paymentGatewayService->getPaymentAccountConfig($gateway, $pa_id);
             $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $config['pa_type']), $config['config']);

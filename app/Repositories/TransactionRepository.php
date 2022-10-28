@@ -119,4 +119,43 @@ class TransactionRepository
         }
         return $result->get();
     }
+
+    /**
+     * @param array  $where
+     * @param int    $limit
+     * @param string $order_field
+     * @param string $order
+     *
+     * @return object
+     */
+    public function fetchTransactionsWithPage(array $where, int $limit, string $order_field, string $order): object
+    {
+        return $this->transactionModel
+            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')
+            ->where($where)
+            ->select([
+                't_id',
+                't_tech_creation',
+                't_client',
+                't_xref_fg_id',
+                't_transaction_id',
+                't_service',
+                'ti_fee_type',
+                'ti_quantity',
+                'ti_amount',
+                'ti_vat',
+                't_payment_method',
+                't_gateway',
+                't_gateway_transaction_id',
+                't_payment_method',
+                't_currency',
+                't_invoice_storage',
+                't_issuer',
+            ])
+            ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
+            ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
+            ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
+            ->orderBY($order_field, $order)
+            ->paginate($limit);
+    }
 }

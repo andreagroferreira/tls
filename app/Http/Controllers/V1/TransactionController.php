@@ -423,4 +423,99 @@ class TransactionController extends BaseController
 
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/getTransactions",
+     *     tags={"Payment API"},
+     *     description="get all transactions for Accounting Journal",
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          description="page, default 1",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="1"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          description="number of result per page",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="20"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="start_date",
+     *          in="query",
+     *          description="start date",
+     *          required=false,
+     *          @OA\Schema(type="date", example="2022-01-01"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="end_date",
+     *          in="query",
+     *          description="end date",
+     *          required=false,
+     *          @OA\Schema(type="date", example="2022-12-31"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="order_field",
+     *          in="query",
+     *          description="sort order field",
+     *          required=false,
+     *          @OA\Schema(type="string", example="t_xref_fg_id"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="order",
+     *          in="query",
+     *          description="sort order",
+     *          required=false,
+     *          @OA\Schema(type="string", example="desc"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the transaction",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function fetchTransactions(Request $request)
+    {
+        $params = [
+            'page' => $request->input('page', 1),
+            'limit' => $request->input('limit', 20),
+            'start_date' => $request->input('start_date', Carbon::today()->toDateString()),
+            'end_date' => $request->input('end_date', Carbon::today()->toDateString()),
+            'order_field' => $request->input('order_field', 't_id'),
+            'order' => $request->input('order', 'desc'),
+        ];
+
+        $validator = validator($params, [
+            'page' => 'required|integer',
+            'limit' => 'required|integer',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'order_field' => 'required|string',
+            'order' => [
+                'required',
+                'string',
+                Rule::in(['desc', 'asc']),
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $res = $this->transactionService->fetchTransactions($validator->validated());
+
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
 }

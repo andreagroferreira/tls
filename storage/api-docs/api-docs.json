@@ -3028,13 +3028,13 @@
                 }
             }
         },
-        "/api/v1/getTransactions": {
+        "/api/v1/list_transactions": {
             "get": {
                 "tags": [
                     "Payment API"
                 ],
                 "description": "get all transactions for Accounting Journal",
-                "operationId": "ca8acdd7e6e8e750917022c8ffc58713",
+                "operationId": "072689f645142722a62c2349be2aade7",
                 "parameters": [
                     {
                         "name": "page",

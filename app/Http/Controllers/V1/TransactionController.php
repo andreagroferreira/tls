@@ -426,7 +426,7 @@ class TransactionController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/v1/getTransactions",
+     *     path="/api/v1/list_transactions",
      *     tags={"Payment API"},
      *     description="get all transactions for Accounting Journal",
      *     @OA\Parameter(

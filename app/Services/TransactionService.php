@@ -328,7 +328,7 @@ class TransactionService
         return [
             'total' => array_get($transactions, 'total', 0),
             'data' => array_get($transactions, 'data', []),
-            'current_page' => array_get($transactions, 'current_page', []),
+            'current_page' => array_get($transactions, 'current_page', 1),
         ];
     }
 }

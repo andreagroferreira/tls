@@ -80,5 +80,14 @@ class PaymentConfigurationsRepositories
         return $this->paymentConfigurations->find($id);
     }
 
+    public function delete($id)
+    {
+        $paymentConfiguration = $this->paymentConfigurations->find($id)->first();
+        $where = [
+            'pc_country' => $paymentConfiguration->pc_country,
+            'pc_city' => $paymentConfiguration->pc_city
+        ];
 
+        return $this->paymentConfigurations->select()->where($where)->delete();
+    }
 }

@@ -46,7 +46,7 @@ class PaymentAccountsController extends BaseController
                         return $v === null;
                     });
                 } elseif($env === 'prod') {
-                    $fieldList[$key]['prod']    = array_filter($field, function ($v){
+                    $fieldList[$key]['production']    = array_filter($field, function ($v){
                         return $v === null;
                     });
                 }
@@ -240,13 +240,13 @@ class PaymentAccountsController extends BaseController
             $validator = validator($params, [
                 'pa_xref_psp_id' => 'required|integer',
                 'pa_name' => 'required|string',
-                'pa_type' => 'required|string|in:prod,sandbox,pay_later',
+                'pa_type' => 'required|string|in:production,sandbox,pay_later',
             ]);
         } else {
             $validator = validator($params, [
                 'pa_xref_psp_id' => 'required|integer',
                 'pa_name' => 'required|string',
-                'pa_type' => 'required|string|in:prod,sandbox',
+                'pa_type' => 'required|string|in:production,sandbox',
                 'pa_info' => [
                     'required',
                     'bail',

@@ -143,5 +143,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('location-config', ['uses' => 'PaymentConfigurationsController@getPaymentExistsConfig', 'middleware' => 'auth:dev,manager']);
     $router->post('payment-config', ['uses' => 'PaymentConfigurationsController@addPaymentConfig', 'middleware' => 'auth:dev,manager']);
     $router->post('payment-configurations', ['uses' => 'PaymentConfigurationsController@create', 'middleware' => 'auth:dev,manager']);
+    $router->delete('payment-configuration/{pc_id}', ['uses' => 'PaymentConfigurationsController@delete', 'middleware' => 'auth:dev,manager']);
     $router->get('location-available-accounts', ['uses' => 'PaymentConfigurationsController@getPaymentAccounts', 'middleware' => 'auth:dev,manager']);
 });

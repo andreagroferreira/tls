@@ -92,8 +92,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $app_env        = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
             $host_url    = $payment_config['config']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);
+            $merchant_id = $payment_config['config']['merchant_id'];
+            $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live account
             $host_url    = $payment_config['prod']['host'];
@@ -114,7 +114,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $charge_items = [];
         $quantity = '';
         $sku_list = '';
-        $profile_id = $application['fg_xref_u_id'] ?? $application['u_id'];
+        $profile_id = $application['fg_xref_u_id'] ?? $application['u_id'] ?? 0;
         $items = $this->transactionItemsService->fetchItemsByTransactionId($order_id);
 
         if (!empty($items)) {
@@ -293,8 +293,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $app_env = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
             $host_url    = $payment_config['config']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);
+            $merchant_id = $payment_config['config']['merchant_id'];
+            $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live account
             $host_url    = $payment_config['prod']['host'];
@@ -474,8 +474,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $is_live = $payment_config['common']['env'] == 'live' ? true : false;
         if (!$this->gatewayService->getClientUseFile()) {
             $host_url    = $payment_config['config']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['config']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['config']['secret_key']);
+            $merchant_id = $payment_config['config']['merchant_id'];
+            $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live config
             $host_url    = $payment_config['prod']['host'];

@@ -26,7 +26,7 @@ class CreatePaymentAccountsTable extends Migration
         });
         DB::connection('deploy_payment_pgsql')->statement(
             "CREATE UNIQUE INDEX payment_accounts_unique_name
-                    ON payment_accounts(pa_name, pa_type)
+                    ON payment_accounts(pa_name)
                     WHERE pa_tech_deleted is false"
         );
         DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE payment_accounts OWNER TO common;");

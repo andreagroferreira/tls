@@ -27,6 +27,10 @@ class TransactionControllerTest extends TestCase
      *  @var string
      */
     private $transactionsApi = 'api/v1/transactions';
+
+    /**
+     *  @var string
+     */
     private $listTransactionsApi = '/api/v1/list_transactions';
 
     /**
@@ -717,41 +721,10 @@ class TransactionControllerTest extends TestCase
         );
     }
 
-    public function defaultPayload(): array
-    {
-        return [
-            [
-                [
-                    'fg_id' => 10001,
-                    'client' => 'be',
-                    'issuer' => 'dzALG2fr',
-                    'currency' => 'EUR',
-                    'redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr',
-                    'onerror_url' => 'onError_tlsweb_url?lang=fr-fr',
-                    'reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
-                    'callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
-                    'workflow' => 'vac',
-                    'items' => [
-                        [
-                            'skus' => [
-                                [
-                                    'sku' => 1,
-                                    'price' => 1,
-                                    'vat' => 1,
-                                ],
-                            ],
-                            'f_id' => 10001,
-                        ],
-                    ],
-                ],
-            ],
-        ];
-    }
-
     /**
      * @return void
      */
-    public function testFetchTransactionsWithListTransactionsApiMethod(): void
+    public function testListTransactionsWithListTransactionsApiMethod(): void
     {
         $this->post($this->listTransactionsApi);
         $this->response->assertStatus(405);
@@ -760,7 +733,7 @@ class TransactionControllerTest extends TestCase
     /**
      * @return void
      */
-    public function testFetchTransactionsWithTransactionsResultStructure(): void
+    public function testListTransactionsWithTransactionsResultStructure(): void
     {
         $this->get($this->listTransactionsApi);
         $this->response->assertStatus(200)
@@ -776,7 +749,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithPagesFilterValidation(): void
+    public function testListTransactionsWithPagesFilterValidation(): void
     {
         $this->get($this->listTransactionsApi.'?page=test');
         $this->response->assertStatus(400)
@@ -791,7 +764,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithPagesFilterRequiredValidation(): void
+    public function testListTransactionsWithPagesFilterRequiredValidation(): void
     {
         $this->get($this->listTransactionsApi.'?page=');
         $this->response->assertStatus(400)
@@ -806,7 +779,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithLimitFilterValidation(): void
+    public function testListTransactionsWithLimitFilterValidation(): void
     {
         $this->get($this->listTransactionsApi.'?limit=test');
         $this->response->assertStatus(400)
@@ -821,7 +794,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithLimitFilterRequiredValidation(): void
+    public function testListTransactionsWithLimitFilterRequiredValidation(): void
     {
         $this->get($this->listTransactionsApi.'?limit=');
         $this->response->assertStatus(400)
@@ -836,7 +809,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithStartDateFilterValidation(): void
+    public function testListTransactionsWithStartDateFilterValidation(): void
     {
         $this->get($this->listTransactionsApi.'?start_date=2022-01-35');
         $this->response->assertStatus(400)
@@ -851,7 +824,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithStartDateFilterRequiredValidation(): void
+    public function testListTransactionsWithStartDateFilterRequiredValidation(): void
     {
         $this->get($this->listTransactionsApi.'?start_date=');
         $this->response->assertStatus(400)
@@ -866,7 +839,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithEndDateFilterValidation(): void
+    public function testListTransactionsWithEndDateFilterValidation(): void
     {
         $this->get($this->listTransactionsApi.'?start_date=2022-01-01&end_date=2022-12-35');
         $this->response->assertStatus(400)
@@ -881,7 +854,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithEndDateFilterRequiredValidation(): void
+    public function testListTransactionsWithEndDateFilterRequiredValidation(): void
     {
         $this->get($this->listTransactionsApi.'?end_date=');
         $this->response->assertStatus(400)
@@ -896,7 +869,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithDatesFilterWithNoResult(): void
+    public function testListTransactionsWithDatesFilterWithNoResult(): void
     {
         $tomorrow = Carbon::today()->addDay();
         $this->get($this->listTransactionsApi.'?start_date='.$tomorrow->toDateString().'&end_date='.$tomorrow->toDateString());
@@ -911,7 +884,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithOrderFieldFilterRequiredValidation(): void
+    public function testListTransactionsWithOrderFieldFilterRequiredValidation(): void
     {
         $this->get($this->listTransactionsApi.'?order_field=');
         $this->response->assertStatus(400)
@@ -926,7 +899,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithOrderFilterValidation(): void
+    public function testListTransactionsWithOrderFilterValidation(): void
     {
         $this->get($this->listTransactionsApi.'?order=test');
         $this->response->assertStatus(400)
@@ -941,7 +914,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithOrderFilterRequiredValidation(): void
+    public function testListTransactionsWithOrderFilterRequiredValidation(): void
     {
         $this->get($this->listTransactionsApi.'?order=');
         $this->response->assertStatus(400)
@@ -956,7 +929,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithPageOneFilter(): void
+    public function testListTransactionsWithPageOneFilter(): void
     {
         $transactions = $this->generateTransaction([
             't_xref_fg_id' => 10001,
@@ -1006,7 +979,7 @@ class TransactionControllerTest extends TestCase
             ],
             'current_page' => 1,
         ];
-        $this->get($this->listTransactionsApi.'?page=1&limit=1&start_date=2022-10-01');
+        $this->get($this->listTransactionsApi.'?page=1&start_date=2022-10-01');
         $this->response->assertStatus(200)->assertJson($expectedResult);
     }
 
@@ -1015,7 +988,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testFetchTransactionsWithLimitFilter(): void
+    public function testListTransactionsWithLimitFilter(): void
     {
         $transactions = $this->generateTransaction([
             't_xref_fg_id' => 10001,
@@ -1043,5 +1016,36 @@ class TransactionControllerTest extends TestCase
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertCount(1, $transactionsList['data']);
+    }
+    
+    public function defaultPayload(): array
+    {
+        return [
+            [
+                [
+                    'fg_id' => 10001,
+                    'client' => 'be',
+                    'issuer' => 'dzALG2fr',
+                    'currency' => 'EUR',
+                    'redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr',
+                    'onerror_url' => 'onError_tlsweb_url?lang=fr-fr',
+                    'reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
+                    'callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
+                    'workflow' => 'vac',
+                    'items' => [
+                        [
+                            'skus' => [
+                                [
+                                    'sku' => 1,
+                                    'price' => 1,
+                                    'vat' => 1,
+                                ],
+                            ],
+                            'f_id' => 10001,
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 }

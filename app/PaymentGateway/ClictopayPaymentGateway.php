@@ -110,7 +110,7 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
         );
         $init_host_url = $init_hosturl . '/register.do';
         $response = $this->apiService->callGeneralApi('post', $init_host_url, $params);
-        if ($response['status'] != 200 || (!empty($response['body']) && isset($response['body']['errorCode']))) {
+        if ($response['status'] != 200 || (!empty($response['body']) && !empty($response['body']['errorCode']))) {
             return ['status' => 'fail', 'content' => json_encode($response)];
         }
         $responseData = $response['body'];

@@ -81,7 +81,8 @@ class PaymentConfigurationsService
                 if($account){
                     $accountData = [
                         'pa_id'   => $account->pa_id,
-                        'pa_name' => $account->pa_name
+                        'pa_name' => $account->pa_name,
+                        'pa_type' => $account->pa_type
                     ];
                 }
                 if ($payment_config['pc_is_actived']) {
@@ -134,8 +135,24 @@ class PaymentConfigurationsService
         }, ARRAY_FILTER_USE_BOTH);
         $payment_config = array_values($res);
         foreach ($payment_config as $k => $v) {
-            $payment_config[$k]['pa_name_type'] = $v['pa_name'] . ' (' . $v['pa_type'] . ')';
+            $payment_config[$k]['pa_name_type'] = $v['pa_name'] . ' (' . ucfirst($v['pa_type']) . ')';
         }
         return $payment_config;
+    }
+
+    public function delete($params) {
+        $payment_config = $this->paymentConfigurationsRepositories->fetchById($params['pc_id']);
+        if (!empty($payment_config)) {
+            $response = $this->paymentConfigurationsRepositories->delete($params);
+            $status   = 'success';
+            $message  = $response;
+        } else {
+            $status  = 'error';
+            $message = 'The payment configuration does not exists in the database.';
+        }
+        return [
+            'status'  => $status,
+            'message' => $message
+        ];
     }
 }

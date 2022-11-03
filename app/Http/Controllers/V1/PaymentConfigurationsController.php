@@ -284,4 +284,44 @@ class PaymentConfigurationsController extends BaseController
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }
+
+    /**
+     * @OA\POST (
+     *     path="/api/v1/payment-configurations/{pc_id}",
+     *     tags={"Payment API"},
+     *     description="delete a payment_configuration",
+     *     @OA\Parameter(
+     *          name="pc_id",
+     *          in="path",
+     *          description="the payment_configurations pc_id",
+     *          required=true,
+     *          @OA\Schema(type="integer", example="10000"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="payment_configuration delete success",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function delete(Request $request) {
+        $params = [
+            'pc_id' => $request->route('pc_id'),
+        ];
+        $validator = validator($params, [
+            'pc_id' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+        try {
+            return $this->sendResponse($this->paymentConfigurationsService->delete($params));
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
 }

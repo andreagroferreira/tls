@@ -29,7 +29,7 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
                 $issuers = array_keys($configs);
                 foreach ($issuers as $issuer) {
                     $country  = ($issuer != 'allAll2all') ? substr($issuer, 0, 2) : 'all';
-                    $city     = ($issuer != 'allAll2all') ? substr($issuer, 2, 3) : 'all';
+                    $city     = ($issuer != 'allAll2all') ? substr($issuer, 2, 3) : 'All';
                     $gateways = config('payment_gateway')[$client][$issuer];
                     foreach ($gateways as $gateway_key => $gateway_val) {
                         $psp_info = DB::table('payment_service_providers')->where(['psp_code' => $gateway_key])->first();
@@ -37,20 +37,23 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
                         $configurations = [
                             'pc_project' => $client,
                             'pc_country' => $country,
-                            'pc_city'    => $city
+                            'pc_city'    => $city,
+                            'pc_is_actived' => true
                         ];
                         if (in_array($gateway_key, $this->env_gateway)) { $gateway_val = $this->getEnvpayContent($gateway_val); }
                         if ($gateway_key != 'pay_later') {
                             foreach ($this->configs as $config) {
                                 if (isset($gateway_val[$config]) && !empty($gateway_val[$config])) {
-                                    $accounts_data['pa_type'] = $config;
+                                    $accounts_data['pa_type'] = $config === 'prod' ? 'production' : $config;
                                     $accounts_data['pa_info'] = json_encode($this->getPaymentAccountInfo($gateway_val[$config]));
-                                    $accounts_data['pa_name'] = $gateway_key . ' ' . $client . '-' . $issuer . ' ' . $config;
+                                    $accounts_data['pa_name'] = ucfirst($gateway_key) . ' ' . $issuer;
+                                    $appEnv = env('APP_ENV') === 'production' ? 'prod' : 'sandbox';
+                                    $configurations['pc_is_actived'] = ($appEnv === $config);
                                     $this->createPayment($accounts_data, $configurations);
                                 }
                             }
                         } else {
-                            $accounts_data['pa_name'] = $gateway_key . ' ' . $client . '-' . $issuer;
+                            $accounts_data['pa_name'] = 'Pay Later';
                             $accounts_data['pa_type'] = 'pay_later';
                             $accounts_data['pa_info'] = '';
                             $this->createPayment($accounts_data, $configurations);

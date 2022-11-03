@@ -55,7 +55,7 @@ class PaymentGatewayService
         $country_client = substr($issuer, -2);
         $country = substr($issuer, 0, 2);
         $country_level_config = $country . 'All2' . $country_client;
-        $global_config = 'allall2' . $country_client;
+        $global_config = 'allAll2' . $country_client;
         $getPaymentGatewayConfig = $this->getPaymentGatewayConfig($client, $issuer, $service);
         if (empty($getPaymentGatewayConfig)) {
             $getPaymentGatewayConfig = $this->getPaymentGatewayConfig($client, $country_level_config, $service);
@@ -111,7 +111,8 @@ class PaymentGatewayService
             $payment_gateway_config[$gateway_type]['sort'] = ($gateway == 'pay_later' ? 2 : 1);
 
             if ($v['psp_code'] !== 'pay_later') {
-                $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $payment_gateway_config[$gateway_type]['type']), $payment_gateway_config[$gateway_type][$v['pa_type']]);
+                $type = $payment_gateway_config[$gateway_type]['type'] === 'production' ? 'prod' : $payment_gateway_config[$gateway_type]['type'];
+                $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $type), $payment_gateway_config[$gateway_type][$v['pa_type']]);
                 foreach ($diff as $key => $value) {
                     $payment_gateway_config[$gateway_type][$v['pa_type']][$key] = $value;
                 }

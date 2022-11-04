@@ -13,17 +13,20 @@ class UpdateUniqueFieldForPaymentAccountsTable extends Migration
      */
     public function up()
     {
-        $exception = null;
+        Schema::connection('deploy_payment_pgsql')->table('payment_accounts', function (Blueprint $table) {
+            $exception = null;
 
-        try {
-            $this->dropUnique(['pa_name', 'pa_type']);
-        } catch (\Exception $e) {
-            $exception = $e;
-        }
+            try {
+                $this->dropIndex($table, ['pa_name', 'pa_type']);
 
-        if ($exception !== null) {
-            $this->dropIndex(['pa_name', 'pa_type']);
-        }
+            } catch (\Exception $e) {
+                $exception = $e;
+            }
+
+            if ($exception !== null) {
+                $this->dropUnique($table, ['pa_name', 'pa_type']);
+            }
+        });
     }
 
     /**
@@ -33,40 +36,41 @@ class UpdateUniqueFieldForPaymentAccountsTable extends Migration
      */
     public function down()
     {
-        $exception = null;
+        Schema::connection('deploy_payment_pgsql')->table('payment_accounts', function (Blueprint $table) {
+            $exception = null;
 
-        try {
-            $this->dropUnique(['pa_name']);
-        } catch (\Exception $e) {
-            $exception = $e;
-        }
+            try {
+                $this->dropIndex($table, ['pa_name']);
 
-        if ($exception !== null) {
-            $this->dropIndex(['pa_name']);
-        }
-    }
+            } catch (\Exception $e) {
+                $exception = $e;
+            }
 
-    /**
-     * @param array $fields
-     * @return void
-     */
-    private function dropUnique(array $fields): void
-    {
-        Schema::connection('deploy_payment_pgsql')->table('payment_accounts', function (Blueprint $table) use ($fields) {
-            $table->dropUnique('payment_accounts_unique_name');
-            $table->unique($fields, 'payment_accounts_unique_name');
+            if ($exception !== null) {
+                $this->dropUnique($table, ['pa_name']);
+            }
         });
     }
 
     /**
+     * @param $table
      * @param array $fields
      * @return void
      */
-    private function dropIndex(array $fields): void
+    private function dropUnique($table, array $fields): void
     {
-        Schema::connection('deploy_payment_pgsql')->table('payment_accounts', function (Blueprint $table) use ($fields) {
-            $table->dropIndex('payment_accounts_unique_name');
-            $table->unique($fields, 'payment_accounts_unique_name');
-        });
+        $table->dropUnique('payment_accounts_unique_name');
+        $table->unique($fields, 'payment_accounts_unique_name');
+    }
+
+    /**
+     * @param $table
+     * @param array $fields
+     * @return void
+     */
+    private function dropIndex($table, array $fields): void
+    {
+        $table->dropIndex('payment_accounts_unique_name');
+        $table->unique($fields, 'payment_accounts_unique_name');
     }
 }

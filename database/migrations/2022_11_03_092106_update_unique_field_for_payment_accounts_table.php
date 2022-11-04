@@ -13,14 +13,16 @@ class UpdateUniqueFieldForPaymentAccountsTable extends Migration
      */
     public function up()
     {
+        $exception = null;
+
         try {
             $this->dropUnique(['pa_name', 'pa_type']);
-        } catch (\Exception $exception) {
-            if ($exception->getCode() === '42704') {
-                $this->dropIndex(['pa_name', 'pa_type']);
-                return;
-            }
-            throw $exception;
+        } catch (\Exception $e) {
+            $exception = $e;
+        }
+
+        if ($exception !== null) {
+            $this->dropIndex(['pa_name', 'pa_type']);
         }
     }
 
@@ -31,14 +33,16 @@ class UpdateUniqueFieldForPaymentAccountsTable extends Migration
      */
     public function down()
     {
+        $exception = null;
+
         try {
             $this->dropUnique(['pa_name']);
-        } catch (\Exception $exception) {
-            if ($exception->getCode() === '42704') {
-                $this->dropIndex(['pa_name']);
-                return;
-            }
-            throw $exception;
+        } catch (\Exception $e) {
+            $exception = $e;
+        }
+
+        if ($exception !== null) {
+            $this->dropIndex(['pa_name']);
         }
     }
 

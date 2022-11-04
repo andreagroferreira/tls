@@ -17,17 +17,35 @@ class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migrati
     public function up()
     {
         if (DB::getDefaultConnection() == 'deploy_payment_pgsql') {
+            DB::unprepared('TRUNCATE TABLE payment_service_providers CASCADE');
+
             $payment_gateways = [
-                'alipay', 'binga', 'bnp', 'clictopay', 'cmi', 'fawry', 'globaliris', 'paypal',
-                'k-bank', 'payfort', 'paygate', 'paysoft', 'payu', 'switch', 'tingg', 'pay_later'
+                'alipay' => 'Alipay',
+                'binga' => 'Binga',
+                'bnp' => 'Bnp',
+                'clictopay' => 'ClicToPay',
+                'cmi' => 'CMI',
+                'cybersource' => 'Cybersource',
+                'fawry' => 'Fawry',
+                'globaliris' => 'Globaliris',
+                'paypal' => 'PayPal',
+                'k-bank' => 'K-Bank',
+                'payfort' => 'PayFort',
+                'paygate' => 'PayGate',
+                'paysoft' => 'PaySoft',
+                'payu' => 'PayU',
+                'switch' => 'Switch',
+                'tingg' => 'Tingg',
+                'yookassa' => 'YooKassa',
+                'pay_later' => 'Pay Later',
             ];
             DB::beginTransaction();
             try {
-                foreach ($payment_gateways as $gateway) {
+                foreach ($payment_gateways as $key => $gateway) {
                     $payment_service = DB::table('payment_service_providers')->where(['psp_code' => $gateway])->first();
                     $condition       = [
-                        'psp_code' => $gateway,
-                        'psp_name' => ($gateway == 'pay_later') ? $gateway : $gateway . ' pay'
+                        'psp_code' => $key,
+                        'psp_name' => $gateway
                     ];
                     if (empty($payment_service)) {
                         DB::table('payment_service_providers')->insert($condition);

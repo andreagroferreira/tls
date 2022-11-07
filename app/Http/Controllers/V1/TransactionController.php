@@ -458,6 +458,87 @@ class TransactionController extends BaseController
      *          @OA\Schema(type="date", example="2022-12-31"),
      *      ),
      *      @OA\Parameter(
+     *          name="multi_search[t_country]",
+     *          in="query",
+     *          description="search country",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="gb"),
+     * 
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_city]",
+     *          in="query",
+     *          description="search city",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="LON"),
+     * 
+     *      ),
+     *     @OA\Parameter(
+     *          name="multi_search[ti_fee_type]",
+     *          in="query",
+     *          description="search fee type",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="service"),
+     * 
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_reference_id]",
+     *          in="query",
+     *          description="search reference id",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="GWP123456"),
+     * 
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_comment]",
+     *          in="query",
+     *          description="search comment",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="test"),
+     * 
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_xref_fg_id]",
+     *          in="query",
+     *          description="search group id",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="123"),
+     * 
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_client]",
+     *          in="query",
+     *          description="search client",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="de"),
+     * 
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_batch_id]",
+     *          in="query",
+     *          description="search batch id",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="B123"),
+     * 
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[ti_quantity]",
+     *          in="query",
+     *          description="search quantity",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="B123"),
+     * 
+     *      ),
+     *      @OA\Parameter(
      *          name="order_field",
      *          in="query",
      *          description="sort order field",
@@ -487,23 +568,25 @@ class TransactionController extends BaseController
         $params = [
             'page' => $request->input('page', 1),
             'limit' => $request->input('limit', 20),
-            'start_date' => $request->input('start_date', Carbon::today()->toDateString()),
-            'end_date' => $request->input('end_date', Carbon::today()->toDateString()),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
             'order_field' => $request->input('order_field', 't_id'),
             'order' => $request->input('order', 'desc'),
+            'multi_search'=> $request->input('multi_search')
         ];
 
         $validator = validator($params, [
             'page' => 'required|integer',
             'limit' => 'required|integer',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'start_date' => 'nullable|date_format:Y-m-d',
+            'end_date' => 'nullable|date_format:Y-m-d|after:start_date',
             'order_field' => 'required|string',
             'order' => [
                 'required',
                 'string',
                 Rule::in(['desc', 'asc']),
             ],
+            'multi_search'=>'nullable|array'
         ]);
 
         if ($validator->fails()) {

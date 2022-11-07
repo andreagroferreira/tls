@@ -221,13 +221,10 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     public function return($params)
     {
         $order_id = '';
-        if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
+        if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
             $order_id = $params['merchantRefNum'];
-        } else if (isset($params['chargeResponse'])) {
-            $charge_response = json_decode($params['chargeResponse'], true);
-            $order_id = $charge_response['merchantRefNumber'];
         } else {
-            $charge_response = json_decode($params, true);
+            $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];
         }
         if (empty($order_id)) {
@@ -262,13 +259,10 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     private function returnV1($params)
     {
         $order_id = '';
-        if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
+        if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
             $order_id = $params['merchantRefNum'];
-        } else if (isset($params['chargeResponse'])) {
-            $charge_response = json_decode($params['chargeResponse'], true);
-            $order_id = $charge_response['merchantRefNumber'];
         } else {
-            $charge_response = json_decode($params, true);
+            $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];
         }
         if (empty($order_id)) {

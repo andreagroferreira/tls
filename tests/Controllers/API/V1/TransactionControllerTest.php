@@ -977,25 +977,12 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsWithLimitFilter(): void
     {
-        $transactions = $this->generateTransaction([
-            't_xref_fg_id' => 10001,
-            't_transaction_id' => str_random(10),
-            't_client' => 'de',
-            't_issuer' => 'keNBO2de',
-            't_gateway_transaction_id' => str_random(10),
-            't_gateway' => 'cmi',
-            't_currency' => 'KES',
-            't_status' => 'pending',
-            't_redirect_url' => 'onSuccess_tlsweb_url?lang=en-us',
-            't_onerror_url' => 'onError_tlsweb_url?lang=en-us',
-            't_reminder_url' => 'callback_to_send_reminder?lang=en-us',
-            't_callback_url' => 'receipt_url/{fg_id}?lang=en-us',
-            't_workflow' => 'vac',
-            't_tech_creation' => '2022-10-01',
-        ]);
+        $transactions = $this->generateTransaction();
         $this->generateTransactionItems($transactions->t_transaction_id);
-
-        $this->get($this->listTransactionsApi.'?page=1&limit=1&start_date=2022-10-01');
+        
+        $today = Carbon::today();
+        $tomorrow = Carbon::today()->addDay(1);
+        $this->get($this->listTransactionsApi.'?page=1&limit=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,

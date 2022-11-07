@@ -223,8 +223,11 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $order_id = '';
         if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
             $order_id = $params['merchantRefNum'];
-        } else {
+        } else if (isset($params['chargeResponse'])) {
             $charge_response = json_decode($params['chargeResponse'], true);
+            $order_id = $charge_response['merchantRefNumber'];
+        } else {
+            $charge_response = json_decode($params, true);
             $order_id = $charge_response['merchantRefNumber'];
         }
         if (empty($order_id)) {
@@ -261,8 +264,11 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         $order_id = '';
         if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
             $order_id = $params['merchantRefNum'];
-        } else {
+        } else if (isset($params['chargeResponse'])) {
             $charge_response = json_decode($params['chargeResponse'], true);
+            $order_id = $charge_response['merchantRefNumber'];
+        } else {
+            $charge_response = json_decode($params, true);
             $order_id = $charge_response['merchantRefNumber'];
         }
         if (empty($order_id)) {

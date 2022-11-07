@@ -815,24 +815,10 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The start date is not a valid date.',
+                'message' => 'The start date does not match the format Y-m-d.',
             ]);
     }
 
-    /**
-     * @throws Throwable
-     *
-     * @return void
-     */
-    public function testListTransactionsWithStartDateFilterRequiredValidation(): void
-    {
-        $this->get($this->listTransactionsApi.'?start_date=');
-        $this->response->assertStatus(400)
-            ->assertJson([
-                'error' => 'params error',
-                'message' => 'The start date field is required.',
-            ]);
-    }
 
     /**
      * @throws Throwable
@@ -845,22 +831,7 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The end date is not a valid date.',
-            ]);
-    }
-
-    /**
-     * @throws Throwable
-     *
-     * @return void
-     */
-    public function testListTransactionsWithEndDateFilterRequiredValidation(): void
-    {
-        $this->get($this->listTransactionsApi.'?end_date=');
-        $this->response->assertStatus(400)
-            ->assertJson([
-                'error' => 'params error',
-                'message' => 'The end date field is required.',
+                'message' => 'The end date does not match the format Y-m-d.',
             ]);
     }
 
@@ -871,8 +842,8 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsWithDatesFilterWithNoResult(): void
     {
-        $tomorrow = Carbon::today()->addDay();
-        $this->get($this->listTransactionsApi.'?start_date='.$tomorrow->toDateString().'&end_date='.$tomorrow->toDateString());
+        $today = Carbon::today();
+        $this->get($this->listTransactionsApi.'?start_date='.$today->toDateString().'&end_date='.$today->addDay()->toDateString());
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 0,
@@ -958,7 +929,6 @@ class TransactionControllerTest extends TestCase
                     'city_code' => substr($transactions->t_issuer, 2, 3),
                     'country' => getCountryName(substr($transactions->t_issuer, 0, 2)),
                     'city' => getCityName(substr($transactions->t_issuer, 2, 3)),
-                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/'.$transactions->t_transaction_id.'.pdf',
                 ],
             ],
             'current_page' => 1,
@@ -990,6 +960,83 @@ class TransactionControllerTest extends TestCase
 
         $transactionsList = $this->response->decodeResponseJson();
         $this->assertCount(1, $transactionsList['data']);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithMultiSearchFilterValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?multi_search=test');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The multi search must be an array.',
+            ]);
+    }
+    
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithStartDateAndEndDateValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?start_date=2022-10-01&end_date=2022-09-12');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The end date must be a date after start date.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionstWithFilters(): void 
+    {
+        $transactions = $this->generateTransaction([
+            't_xref_fg_id' => 10001,
+            't_transaction_id' => str_random(10),
+            't_client' => 'de',
+            't_issuer' => 'keNBO2de',
+            't_gateway_transaction_id' => str_random(10),
+            't_gateway' => 'cmi',
+            't_currency' => 'KES',
+            't_status' => 'pending',
+            't_redirect_url' => 'onSuccess_tlsweb_url?lang=en-us',
+            't_onerror_url' => 'onError_tlsweb_url?lang=en-us',
+            't_reminder_url' => 'callback_to_send_reminder?lang=en-us',
+            't_callback_url' => 'receipt_url/{fg_id}?lang=en-us',
+            't_workflow' => 'vac',
+            't_tech_creation' => '2022-10-01',
+        ]);
+        $this->generateTransactionItems($transactions->t_transaction_id,[
+                'ti_xref_f_id' => 10001,
+                'ti_xref_transaction_id' => $transactions->t_transaction_id,
+                'ti_fee_type' => "service_fee",
+                'ti_vat' => 1,
+                'ti_amount' => 1,
+            ]);
+
+        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=ke&multi_search[t_city]=NBO&multi_search[ti_fee_type]=service');
+        $this->response->assertStatus(200);
+
+        $transactionsList = $this->response->decodeResponseJson();
+        
+        $this->assertCount(1, $transactionsList['data']);
+
+        //search with wrong fee type
+        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=ke&multi_search[t_city]=NBO&multi_search[ti_fee_type]=test');
+        $this->response->assertStatus(200);
+
+        $transactionsList = $this->response->decodeResponseJson();
+        
+        $this->assertCount(0, $transactionsList['data']);
     }
     
     public function defaultPayload(): array
@@ -1023,3 +1070,4 @@ class TransactionControllerTest extends TestCase
         ];
     }
 }
+

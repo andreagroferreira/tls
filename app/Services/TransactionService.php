@@ -188,7 +188,7 @@ class TransactionService
 
         $transaction_data['t_expiration'] = Carbon::parse($this->dbConnectionService->getDbNowTime())
             ->addMinutes($expirationMinutes);
-            
+
         if (isset($attributes['payment_method'])) {
             $transaction_data['t_payment_method'] = $attributes['payment_method'];
         }
@@ -306,14 +306,47 @@ class TransactionService
      */
     public function listTransactions(array $attributes): array
     {
+        $fullTextSearchColumn = ['ti_fee_type', 't_comment', 't_reference_id'];
+
         $where = collect([
             ['t_tech_deleted', '=', false],
-            ['t_tech_creation', '>=', $attributes['start_date'].' 00:00:00'],
-            ['t_tech_creation', '<=', $attributes['end_date'].' 23:59:59'],
-        ])
-            ->toArray();
+        ]);
 
-        $transactions = $this->transactionRepository->listTransactions($where, $attributes['limit'], $attributes['order_field'], $attributes['order']);
+        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
+            $where->push(
+                ['t_tech_creation', '>=', $attributes['start_date'] . ' 00:00:00'],
+                ['t_tech_creation', '<=', $attributes['end_date'] . ' 23:59:59']
+            );
+        }
+
+        if (!empty($attributes['multi_search'])) {
+            $issuer = array_get($attributes['multi_search'], 't_country').
+                      array_get($attributes['multi_search'], 't_city');
+            
+            unset($attributes['multi_search']['t_country']);
+            unset($attributes['multi_search']['t_city']);
+
+            $data = array_filter($attributes['multi_search']);
+            foreach ($data as $column => $value) {
+                if (in_array($column, $fullTextSearchColumn)) {
+                    $where->push([$column, 'LIKE', '%'.$value.'%']);
+                } else {
+                    $where->push([$column, '=', $value]);
+                }
+            }
+
+            if (!empty($issuer)) {
+                $where->push(['t_issuer', 'LIKE', '%'.$issuer.'%']);
+            }
+        }
+
+        $transactions = $this->transactionRepository->listTransactions(
+            $where->toArray(),
+            $attributes['limit'],
+            $attributes['order_field'],
+            $attributes['order']
+        );
+
         if (empty($transactions)) {
             return [];
         }

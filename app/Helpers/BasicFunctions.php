@@ -189,12 +189,12 @@ function csv2array($in, $option = '', $separator = "\t", $include_comment = fals
 
 function getCountryName($countryCode)
 {
-    return config('list_countries.'. $countryCode)['gc_name'];
+    return config('list_countries.'. $countryCode)['gc_name'] ?? 'N/A';
 }
 
 function getCityName($cityCode)
 {
-    return config('list_city.'. $cityCode)['gcc_name'];
+    return config('list_city.'. $cityCode)['gcc_name'] ?? 'N/A';
 }
 
 /**

@@ -3034,7 +3034,7 @@
                     "Payment API"
                 ],
                 "description": "get all transactions for Accounting Journal",
-                "operationId": "072689f645142722a62c2349be2aade7",
+                "operationId": "fbd6ee7ea6371dd1c466fc666d344c0e",
                 "parameters": [
                     {
                         "name": "page",
@@ -3074,6 +3074,87 @@
                         "schema": {
                             "type": "date",
                             "example": "2022-12-31"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_country]",
+                        "in": "query",
+                        "description": "search country",
+                        "required": false,
+                        "schema": {
+                            "example": "gb"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_city]",
+                        "in": "query",
+                        "description": "search city",
+                        "required": false,
+                        "schema": {
+                            "example": "LON"
+                        }
+                    },
+                    {
+                        "name": "multi_search[ti_fee_type]",
+                        "in": "query",
+                        "description": "search fee type",
+                        "required": false,
+                        "schema": {
+                            "example": "service"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_reference_id]",
+                        "in": "query",
+                        "description": "search reference id",
+                        "required": false,
+                        "schema": {
+                            "example": "GWP123456"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_comment]",
+                        "in": "query",
+                        "description": "search comment",
+                        "required": false,
+                        "schema": {
+                            "example": "test"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_xref_fg_id]",
+                        "in": "query",
+                        "description": "search group id",
+                        "required": false,
+                        "schema": {
+                            "example": "123"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_client]",
+                        "in": "query",
+                        "description": "search client",
+                        "required": false,
+                        "schema": {
+                            "example": "de"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_batch_id]",
+                        "in": "query",
+                        "description": "search batch id",
+                        "required": false,
+                        "schema": {
+                            "example": "B123"
+                        }
+                    },
+                    {
+                        "name": "multi_search[ti_quantity]",
+                        "in": "query",
+                        "description": "search quantity",
+                        "required": false,
+                        "schema": {
+                            "example": "B123"
                         }
                     },
                     {

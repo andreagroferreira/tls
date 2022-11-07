@@ -222,7 +222,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     {
         $order_id = '';
         if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
-            $order_id = $params['merchantRefNum'];
+            $order_id = $params['merchantRefNumber'];
         } else {
             $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];
@@ -241,7 +241,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     }
 
     private function getPaymentConfig($params, $pa_id) {
-        $order_id  = isset($params['merchantRefNum']) ? $params['merchantRefNum'] : $params['merchantRefNumber'];
+        $order_id = $params['merchantRefNumber'];
         $reg = '/[a-z]{2}[A-Z]{3}2[a-z]{2}/';
         preg_match($reg, $order_id, $matches);
         if (empty($matches)) {
@@ -260,7 +260,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     {
         $order_id = '';
         if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
-            $order_id = $params['merchantRefNum'];
+            $order_id = $params['merchantRefNumber'];
         } else {
             $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];

@@ -298,4 +298,37 @@ class TransactionService
     public function getDbTimeZone() {
         return Carbon::parse($this->dbConnectionService->getDbNowTime())->getTimezone()->toRegionName();
     }
+
+    /**
+     * @param array $attributes
+     *
+     * @return array
+     */
+    public function listTransactions(array $attributes): array
+    {
+        $where = collect([
+            ['t_tech_deleted', '=', false],
+            ['t_tech_creation', '>=', $attributes['start_date'].' 00:00:00'],
+            ['t_tech_creation', '<=', $attributes['end_date'].' 23:59:59'],
+        ])
+            ->toArray();
+
+        $transactions = $this->transactionRepository->listTransactions($where, $attributes['limit'], $attributes['order_field'], $attributes['order']);
+        if (empty($transactions)) {
+            return [];
+        }
+
+        $transactions = $transactions->toArray();
+        foreach ($transactions['data'] as $k => $details) {
+            $transactions['data'][$k]['country'] = getCountryName($details['country_code']);
+            $transactions['data'][$k]['city'] = getCityName($details['city_code']);
+            $transactions['data'][$k]['receipt_url'] = getFilePath($details, $details['t_invoice_storage']);
+        }
+
+        return [
+            'total' => array_get($transactions, 'total', 0),
+            'data' => array_get($transactions, 'data', []),
+            'current_page' => array_get($transactions, 'current_page', 1),
+        ];
+    }
 }

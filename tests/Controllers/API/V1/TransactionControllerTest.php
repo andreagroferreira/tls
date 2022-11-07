@@ -29,6 +29,11 @@ class TransactionControllerTest extends TestCase
     private $transactionsApi = 'api/v1/transactions';
 
     /**
+     *  @var string
+     */
+    private $listTransactionsApi = '/api/v1/list_transactions';
+
+    /**
      * @return void
      */
     public function testTransactionApiMethodIsPost(): void
@@ -716,6 +721,277 @@ class TransactionControllerTest extends TestCase
         );
     }
 
+    /**
+     * @return void
+     */
+    public function testListTransactionsWithListTransactionsApiMethod(): void
+    {
+        $this->post($this->listTransactionsApi);
+        $this->response->assertStatus(405);
+    }
+
+    /**
+     * @return void
+     */
+    public function testListTransactionsWithTransactionsResultStructure(): void
+    {
+        $this->get($this->listTransactionsApi);
+        $this->response->assertStatus(200)
+            ->assertJson([
+                'total' => 0,
+                'data' => [],
+                'current_page' => 1,
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithPagesFilterValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?page=test');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The page must be an integer.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithPagesFilterRequiredValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?page=');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The page field is required.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithLimitFilterValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?limit=test');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The limit must be an integer.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithLimitFilterRequiredValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?limit=');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The limit field is required.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithStartDateFilterValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?start_date=2022-01-35');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The start date is not a valid date.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithStartDateFilterRequiredValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?start_date=');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The start date field is required.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithEndDateFilterValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?start_date=2022-01-01&end_date=2022-12-35');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The end date is not a valid date.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithEndDateFilterRequiredValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?end_date=');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The end date field is required.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithDatesFilterWithNoResult(): void
+    {
+        $tomorrow = Carbon::today()->addDay();
+        $this->get($this->listTransactionsApi.'?start_date='.$tomorrow->toDateString().'&end_date='.$tomorrow->toDateString());
+        $this->response->assertStatus(200)
+            ->assertJson([
+                'total' => 0,
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithOrderFieldFilterRequiredValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?order_field=');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The order field field is required.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithOrderFilterValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?order=test');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The selected order is invalid.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithOrderFilterRequiredValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?order=');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The order field is required.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithPageOneFilter(): void
+    {
+        $transactions = $this->generateTransaction();
+        $transactionItems = $this->generateTransactionItems($transactions->t_transaction_id);
+        $expectedResult = [
+            'total' => 1,
+            'data' => [
+                [
+                    't_id' => $transactions->t_id,
+                    't_tech_creation' => $transactions->t_tech_creation,
+                    't_client' => $transactions->t_client,
+                    't_xref_fg_id' => $transactions->t_xref_fg_id,
+                    't_transaction_id' => $transactions->t_transaction_id,
+                    't_service' => $transactions->t_service,
+                    'ti_fee_type' => $transactionItems->ti_fee_type,
+                    'ti_quantity' => $transactionItems->ti_quantity,
+                    'ti_amount' => $transactionItems->ti_amount,
+                    'ti_vat' => $transactionItems->ti_vat,
+                    't_payment_method' => $transactions->t_payment_method,
+                    't_gateway' => $transactions->t_gateway,
+                    't_gateway_transaction_id' => $transactions->t_gateway_transaction_id,
+                    't_currency' => $transactions->t_currency,
+                    't_invoice_storage' => $transactions->t_invoice_storage,
+                    't_issuer' => $transactions->t_issuer,
+                    'amount_gross' => (($transactionItems->ti_vat / 100 * $transactionItems->ti_amount) + $transactionItems->ti_amount),
+                    'country_code' => substr($transactions->t_issuer, 0, 2),
+                    'city_code' => substr($transactions->t_issuer, 2, 3),
+                    'country' => getCountryName(substr($transactions->t_issuer, 0, 2)),
+                    'city' => getCityName(substr($transactions->t_issuer, 2, 3)),
+                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/'.$transactions->t_transaction_id.'.pdf',
+                ],
+            ],
+            'current_page' => 1,
+        ];
+        
+        $today = Carbon::today();
+        $tomorrow = Carbon::today()->addDay(1);
+        $this->get($this->listTransactionsApi.'?page=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
+        $this->response->assertStatus(200)->assertJson($expectedResult);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithLimitFilter(): void
+    {
+        $transactions = $this->generateTransaction();
+        $this->generateTransactionItems($transactions->t_transaction_id);
+        
+        $today = Carbon::today();
+        $tomorrow = Carbon::today()->addDay(1);
+        $this->get($this->listTransactionsApi.'?page=1&limit=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
+        $this->response->assertStatus(200)
+            ->assertJson([
+                'total' => 1,
+            ]);
+
+        $transactionsList = $this->response->decodeResponseJson();
+        $this->assertCount(1, $transactionsList['data']);
+    }
+    
     public function defaultPayload(): array
     {
         return [

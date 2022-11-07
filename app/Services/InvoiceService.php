@@ -73,7 +73,7 @@ class InvoiceService
         }
 
         $storage = Storage::disk($this->invoiceDisk);
-        $file = $this->getFilePath($transaction->toArray(), 's3');
+        $file = getFilePath($transaction->toArray(), 's3');
 
         if (!$storage->exists($file)) {
             return null;
@@ -93,7 +93,7 @@ class InvoiceService
      */
     public function getFileLibraryInvoiceFileContent(Transactions $transaction): ?object
     {
-        $file = $this->getFilePath($transaction->toArray());
+        $file = getFilePath($transaction->toArray());
 
         $queryParams = 'path='.$file;
 
@@ -181,23 +181,5 @@ class InvoiceService
 
             $this->apiService->callEmailApi('POST', 'send_email', $email_content);
         }
-    }
-
-    /**
-     * @param array  $transaction
-     * @param string $storageService
-     *
-     * @return string
-     */
-    protected function getFilePath(array $transaction, string $storageService = 'file-library'): string
-    {
-        if ($storageService === 's3') {
-            return array_get($transaction, 't_client').'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
-        }
-
-        $country = substr($transaction['t_issuer'], 0, 2);
-        $city = substr($transaction['t_issuer'], 2, 3);
-
-        return 'invoice/WW/'.$country.'/'.$city.'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
     }
 }

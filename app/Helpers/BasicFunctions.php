@@ -215,3 +215,20 @@ function convertUrlQuery($query): array
 
 }
 
+/**
+ * @param array  $transaction
+ * @param string $storageService
+ *
+ * @return string
+ */
+function getFilePath(array $transaction, string $storageService = 'file-library'): string
+{
+    if ($storageService === 's3') {
+        return array_get($transaction, 't_client').'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
+    }
+
+    $country = substr($transaction['t_issuer'], 0, 2);
+    $city = substr($transaction['t_issuer'], 2, 3);
+
+    return 'invoice/WW/'.$country.'/'.$city.'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
+}

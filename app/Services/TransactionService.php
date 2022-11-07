@@ -304,16 +304,16 @@ class TransactionService
      *
      * @return array
      */
-    public function fetchTransactions(array $attributes): array
+    public function listTransactions(array $attributes): array
     {
         $where = collect([
             ['t_tech_deleted', '=', false],
-            ['t_tech_creation', '>=', $attributes['start_date']],
-            ['t_tech_creation', '<', $attributes['end_date']],
+            ['t_tech_creation', '>=', $attributes['start_date'].' 00:00:00'],
+            ['t_tech_creation', '<=', $attributes['end_date'].' 23:59:59'],
         ])
             ->toArray();
 
-        $transactions = $this->transactionRepository->fetchTransactionsWithPage($where, $attributes['limit'], $attributes['order_field'], $attributes['order']);
+        $transactions = $this->transactionRepository->listTransactions($where, $attributes['limit'], $attributes['order_field'], $attributes['order']);
         if (empty($transactions)) {
             return [];
         }

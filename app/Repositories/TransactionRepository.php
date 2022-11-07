@@ -128,7 +128,7 @@ class TransactionRepository
      *
      * @return object
      */
-    public function fetchTransactionsWithPage(array $where, int $limit, string $order_field, string $order): object
+    public function listTransactions(array $where, int $limit, string $order_field, string $order): object
     {
         return $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')

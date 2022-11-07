@@ -482,7 +482,7 @@ class TransactionController extends BaseController
      *      ),
      * )
      */
-    public function fetchTransactions(Request $request)
+    public function listTransactions(Request $request)
     {
         $params = [
             'page' => $request->input('page', 1),
@@ -511,7 +511,7 @@ class TransactionController extends BaseController
         }
 
         try {
-            $res = $this->transactionService->fetchTransactions($validator->validated());
+            $res = $this->transactionService->listTransactions($validator->validated());
 
             return $this->sendResponse($res);
         } catch (\Exception $e) {

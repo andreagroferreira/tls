@@ -23,7 +23,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->get('form_transaction/{f_id}', 'TransactionController@fetchByForm');
     $router->post('transaction', 'TransactionController@create');
     $router->get('transactions', 'TransactionController@fetchAll');
-    $router->get('list_transactions', 'TransactionController@fetchTransactions');
+    $router->get('list_transactions', 'TransactionController@listTransactions');
 
     // form group api
     $router->get('form_group/{fg_id}', 'FormGroupController@fetch');

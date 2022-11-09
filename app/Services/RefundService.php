@@ -2,31 +2,31 @@
 
 namespace App\Services;
 
-use App\Repositories\RefundCommsRepository;
 use App\Repositories\RefundItemsRepository;
-use App\Repositories\RefundRequestsRepository;
+use App\Repositories\RefundLogRepository;
+use App\Repositories\RefundRepository;
 use Illuminate\Support\Facades\DB;
 
 class RefundService
 {
-    protected $refundRequestsRepository;
+    protected $refundRepository;
     protected $refundItemsRepository;
-    protected $refundCommsRepository;
+    protected $refundLogRepository;
     protected $dbConnectionService;
 
     public function __construct(
-        RefundRequestsRepository $refundRequestsRepository,
+        RefundRepository $refundRepository,
         RefundItemsRepository $refundItemsRepository,
-        RefundCommsRepository $refundCommsRepository,
+        RefundLogRepository $refundLogRepository,
         DbConnectionService $dbConnectionService
     ) {
-        $this->refundRequestsRepository = $refundRequestsRepository;
+        $this->refundRepository = $refundRepository;
         $this->refundItemsRepository = $refundItemsRepository;
-        $this->refundCommsRepository = $refundCommsRepository;
+        $this->refundLogRepository = $refundLogRepository;
         $this->dbConnectionService = $dbConnectionService;
-        $this->refundRequestsRepository->setConnection($this->dbConnectionService->getConnection());
+        $this->refundRepository->setConnection($this->dbConnectionService->getConnection());
         $this->refundItemsRepository->setConnection($this->dbConnectionService->getConnection());
-        $this->refundCommsRepository->setConnection($this->dbConnectionService->getConnection());
+        $this->refundLogRepository->setConnection($this->dbConnectionService->getConnection());
     }
 
     public function create(array $attributes)
@@ -35,8 +35,8 @@ class RefundService
         $db_connection->beginTransaction();
 
         try {
-            $refundRequest = $this->refundRequestsRepository->create($attributes);
-            $this->refundItemsRepository->createMany($refundRequest->rr_id, $attributes['items']);
+            $refundRequest = $this->refundRepository->create($attributes);
+            $this->refundItemsRepository->createMany($refundRequest->r_id, $attributes['items']);
 
             $db_connection->commit();
         } catch (\Exception $e) {

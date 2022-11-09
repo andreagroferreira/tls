@@ -6,12 +6,12 @@ namespace Tests\Controllers\API\V1;
  * @internal
  *
  * @covers \App\Http\Controllers\V1\RefundController
- * @covers \App\Models\RefundComms
- * @covers \App\Models\RefundItems
- * @covers \App\Models\RefundRequest
- * @covers \App\Repositories\RefundCommsRepository
- * @covers \App\Repositories\RefundItemsRepository
- * @covers \App\Repositories\RefundRequestRepository
+ * @covers \App\Models\Refund
+ * @covers \App\Models\RefundItem
+ * @covers \App\Models\RefundLog
+ * @covers \App\Repositories\RefundItemRepository
+ * @covers \App\Repositories\RefundLogRepository
+ * @covers \App\Repositories\RefundRepository
  * @covers \App\Services\RefundService
  */
 class RefundControllerTest extends TestCase

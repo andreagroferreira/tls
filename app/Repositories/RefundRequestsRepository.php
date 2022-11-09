@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\RefundRequest;
 
-class RefundRequestRepository
+class RefundRequestsRepository
 {
     protected $refundRequestModel;
 

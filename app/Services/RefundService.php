@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
-use App\Repositories\RefundRequestRepository;
+use App\Repositories\RefundCommsRepository;
+use App\Repositories\RefundItemsRepository;
+use App\Repositories\RefundRequestsRepository;
 use Illuminate\Support\Facades\DB;
 
 class RefundService
@@ -13,9 +15,9 @@ class RefundService
     protected $dbConnectionService;
 
     public function __construct(
-        RefundRequestRepository $refundRequestRepository,
-        RefundRequestRepository $refundItemsRepository,
-        RefundRequestRepository $refundCommsRepository,
+        RefundRequestsRepository $refundRequestRepository,
+        RefundItemsRepository $refundItemsRepository,
+        RefundCommsRepository $refundCommsRepository,
         DbConnectionService $dbConnectionService
     ) {
         $this->refundRequestRepository = $refundRequestRepository;

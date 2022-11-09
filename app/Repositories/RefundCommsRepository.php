@@ -2,30 +2,30 @@
 
 namespace App\Repositories;
 
-use App\Models\RefundComms;
+use App\Models\RefundComm;
 
 class RefundCommsRepository
 {
-    protected $refundCommsModel;
+    protected $refundCommModel;
 
-    public function __construct(RefundComms $refundCommsModel)
+    public function __construct(RefundComm $refundCommModel)
     {
-        $this->refundCommsModel = $refundCommsModel;
+        $this->refundCommModel = $refundCommModel;
     }
 
     public function setConnection($connection)
     {
-        $this->refundCommsModel->setConnection($connection);
+        $this->refundCommModel->setConnection($connection);
     }
 
     public function getConnection()
     {
-        return $this->refundCommsModel->getConnectionName();
+        return $this->refundCommModel->getConnectionName();
     }
 
     public function fetch($where, $field = '*')
     {
-        return $this->refundCommsModel
+        return $this->refundCommModel
             ->select($field)
             ->where($where)
             ->get();

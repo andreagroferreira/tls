@@ -2,29 +2,29 @@
 
 namespace App\Repositories;
 
-use App\Models\RefundItems;
+use App\Models\RefundItem;
 
 class RefundItemsRepository
 {
-    protected $refundItemsModel;
+    protected $refundItemModel;
 
-    public function __construct(RefundItems $refundItemsModel)
+    public function __construct(RefundItem $refundItemModel)
     {
-        $this->refundItemsModel = $refundItemsModel;
+        $this->refundItemModel = $refundItemModel;
     }
 
     public function setConnection($connection)
     {
-        $this->refundItemsModel->setConnection($connection);
+        $this->refundItemModel->setConnection($connection);
     }
 
     public function getConnection()
     {
-        return $this->refundItemsModel->getConnectionName();
+        return $this->refundItemModel->getConnectionName();
     }
 
     public function createMany($attributes)
     {
-        return $this->refundItemsModel->insert($attributes);
+        return $this->refundItemModel->insert($attributes);
     }
 }

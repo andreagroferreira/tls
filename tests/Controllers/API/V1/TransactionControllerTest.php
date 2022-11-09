@@ -988,7 +988,7 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The end date must be a date after start date.',
+                'message' => 'The end date must be a date after or equal to start date.',
             ]);
     }
 

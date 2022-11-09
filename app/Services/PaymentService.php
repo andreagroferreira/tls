@@ -76,9 +76,11 @@ class PaymentService
         }
 
         if ($transaction && !empty($transaction['t_items'])) {
-            $actionResult = $this->syncAction($transaction, $payment_gateway);
-            if (!empty($actionResult['error_msg'])) {
-                $error_msg[] = $actionResult['error_msg'];
+            if (!empty($transaction['t_xref_fg_id'])) {
+                $actionResult = $this->syncAction($transaction, $payment_gateway);
+                if (!empty($actionResult['error_msg'])) {
+                    $error_msg[] = $actionResult['error_msg'];
+                }
             }
         }
 

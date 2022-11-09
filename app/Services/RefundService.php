@@ -9,22 +9,22 @@ use Illuminate\Support\Facades\DB;
 
 class RefundService
 {
-    protected $refundRequestRepository;
+    protected $refundRequestsRepository;
     protected $refundItemsRepository;
     protected $refundCommsRepository;
     protected $dbConnectionService;
 
     public function __construct(
-        RefundRequestsRepository $refundRequestRepository,
+        RefundRequestsRepository $refundRequestsRepository,
         RefundItemsRepository $refundItemsRepository,
         RefundCommsRepository $refundCommsRepository,
         DbConnectionService $dbConnectionService
     ) {
-        $this->refundRequestRepository = $refundRequestRepository;
+        $this->refundRequestsRepository = $refundRequestsRepository;
         $this->refundItemsRepository = $refundItemsRepository;
         $this->refundCommsRepository = $refundCommsRepository;
         $this->dbConnectionService = $dbConnectionService;
-        $this->refundRequestRepository->setConnection($this->dbConnectionService->getConnection());
+        $this->refundRequestsRepository->setConnection($this->dbConnectionService->getConnection());
         $this->refundItemsRepository->setConnection($this->dbConnectionService->getConnection());
         $this->refundCommsRepository->setConnection($this->dbConnectionService->getConnection());
     }
@@ -35,7 +35,7 @@ class RefundService
         $db_connection->beginTransaction();
 
         try {
-            $refundRequest = $this->refundRequestRepository->create($attributes);
+            $refundRequest = $this->refundRequestsRepository->create($attributes);
             $this->refundItemsRepository->createMany($refundRequest->rr_id, $attributes['items']);
 
             $db_connection->commit();

@@ -6,8 +6,14 @@ use App\Models\RefundItem;
 
 class RefundItemRepository
 {
+    /**
+     * @var RefundItem
+     */
     protected $refundItemModel;
 
+    /**
+     * @param RefundItem $refundItemModel
+     */
     public function __construct(RefundItem $refundItemModel)
     {
         $this->refundItemModel = $refundItemModel;

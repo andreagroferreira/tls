@@ -9,11 +9,32 @@ use Illuminate\Support\Facades\DB;
 
 class RefundService
 {
+    /**
+     * @var RefundRepository
+     */
     protected $refundRepository;
+
+    /**
+     * @var refundItemRepository
+     */
     protected $refundItemRepository;
+
+    /**
+     * @var RefundLogRepository
+     */
     protected $refundLogRepository;
+
+    /**
+     * @var DbConnectionService
+     */
     protected $dbConnectionService;
 
+    /**
+     * @param RefundRepository     $refundRepository
+     * @param refundItemRepository $refundItemRepository
+     * @param RefundLogRepository  $refundLogRepository
+     * @param DbConnectionService  $dbConnectionService
+     */
     public function __construct(
         RefundRepository $refundRepository,
         RefundItemRepository $refundItemRepository,

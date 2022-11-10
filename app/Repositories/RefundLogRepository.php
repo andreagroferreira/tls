@@ -6,8 +6,14 @@ use App\Models\RefundLog;
 
 class RefundLogRepository
 {
+    /**
+     * @var RefundLog
+     */
     protected $refundLogModel;
 
+    /**
+     * @param RefundLog $refundLogModel
+     */
     public function __construct(RefundLog $refundLogModel)
     {
         $this->refundLogModel = $refundLogModel;

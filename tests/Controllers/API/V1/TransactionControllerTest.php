@@ -1044,43 +1044,13 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testListTransactionsWithCsvFilterValidation(): void
+    public function testListTransactionsWithCsvFilterRequiredValidation(): void
     {
         $this->get($this->listTransactionsApi.'?csv=test');
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The csv must be an integer.',
-            ]);
-    }
-
-    /**
-     * @throws Throwable
-     *
-     * @return void
-     */
-    public function testListTransactionsWithCsvFilterRequiredValidation(): void
-    {
-        $this->get($this->listTransactionsApi.'?csv=');
-        $this->response->assertStatus(400)
-            ->assertJson([
-                'error' => 'params error',
-                'message' => 'The csv field is required.',
-            ]);
-    }
-
-    /**
-     * @throws Throwable
-     *
-     * @return void
-     */
-    public function testListTransactionsWithCsvFilterAllowedValueValidation(): void
-    {
-        $this->get($this->listTransactionsApi.'?csv=5');
-        $this->response->assertStatus(400)
-            ->assertJson([
-                'error' => 'params error',
-                'message' => 'The selected csv is invalid.',
+                'message' => 'The csv field must be true or false.',
             ]);
     }
 

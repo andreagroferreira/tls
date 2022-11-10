@@ -301,11 +301,10 @@ class TransactionService
 
     /**
      * @param array $attributes
-     * @param int   $csvRequired
      *
      * @return array
      */
-    public function listTransactions(array $attributes, int $csvRequired): array
+    public function listTransactions(array $attributes): array
     {
         $fullTextSearchColumn = ['ti_fee_type', 't_comment', 't_reference_id'];
 
@@ -346,7 +345,7 @@ class TransactionService
             $attributes['limit'],
             $attributes['order_field'],
             $attributes['order'],
-            $csvRequired
+            $attributes['csv']
         );
 
         if (empty($transactions)) {

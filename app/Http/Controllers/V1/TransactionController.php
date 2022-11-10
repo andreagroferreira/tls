@@ -580,7 +580,7 @@ class TransactionController extends BaseController
             'order_field' => $request->input('order_field', 't_id'),
             'order' => $request->input('order', 'desc'),
             'multi_search'=> $request->input('multi_search'),
-            'csv' => $request->input('csv', 0)
+            'csv' => $request->input('csv', false)
         ];
 
         $validator = validator($params, [
@@ -595,11 +595,7 @@ class TransactionController extends BaseController
                 Rule::in(['desc', 'asc']),
             ],
             'multi_search'=>'nullable|array',
-            'csv' => [
-                'required',
-                'integer',
-                Rule::in([0, 1]),
-            ],
+            'csv'=>'nullable|bool',
         ]);
 
         if ($validator->fails()) {
@@ -607,7 +603,7 @@ class TransactionController extends BaseController
         }
 
         $csvRequired = $validator->validated()['csv'];
-        if ($csvRequired == 1) {
+        if ($csvRequired) {
             $maxAllowedDays = 90;
             $numberOfDays = round((strtotime($validator->validated()['end_date']) - strtotime($validator->validated()['start_date'])) / (60 * 60 * 24));
 
@@ -617,9 +613,9 @@ class TransactionController extends BaseController
         }
 
         try {
-            $res = $this->transactionService->listTransactions($validator->validated(), $csvRequired);
+            $res = $this->transactionService->listTransactions($validator->validated());
 
-            if ($csvRequired == 1) {
+            if ($csvRequired) {
                 $return = $this->transactionService->writeTransactionsToCsv($res['data']);
                 return response()->stream($return['callback'], 200, $return['headers']);
             }

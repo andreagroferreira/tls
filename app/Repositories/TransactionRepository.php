@@ -125,11 +125,11 @@ class TransactionRepository
      * @param int    $limit
      * @param string $order_field
      * @param string $order
-     * @param int    $csvRequired
+     * @param bool   $csvRequired
      *
      * @return array
      */
-    public function listTransactions(array $where, int $limit, string $order_field, string $order, int $csvRequired): array
+    public function listTransactions(array $where, int $limit, string $order_field, string $order, bool $csvRequired): array
     {
         $transactions = $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')
@@ -158,7 +158,7 @@ class TransactionRepository
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
             ->orderBY($order_field, $order);
 
-        if ($csvRequired == 1) {
+        if ($csvRequired) {
             $transactionsCsv['data'] = $transactions->get()->toArray();
 
             return $transactionsCsv;

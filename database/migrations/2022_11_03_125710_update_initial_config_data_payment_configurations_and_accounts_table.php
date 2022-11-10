@@ -27,6 +27,7 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
                 $client  = $this->getProjectId();
                 $configs = config('payment_gateway')[$client];
                 $issuers = array_keys($configs);
+                $hasPayLater = false;
                 foreach ($issuers as $issuer) {
                     $country  = ($issuer != 'allAll2all') ? substr($issuer, 0, 2) : 'all';
                     $city     = ($issuer != 'allAll2all') ? substr($issuer, 2, 3) : 'All';
@@ -53,6 +54,10 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
                                 }
                             }
                         } else {
+                            if ($hasPayLater) {
+                                continue;
+                            }
+                            $hasPayLater = true;
                             $accounts_data['pa_name'] = 'Pay Later';
                             $accounts_data['pa_type'] = 'pay_later';
                             $accounts_data['pa_info'] = '';

@@ -1038,6 +1038,84 @@ class TransactionControllerTest extends TestCase
         
         $this->assertCount(0, $transactionsList['data']);
     }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithCsvFilterValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?csv=test');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The csv must be an integer.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithCsvFilterRequiredValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?csv=');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The csv field is required.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithCsvFilterAllowedValueValidation(): void
+    {
+        $this->get($this->listTransactionsApi.'?csv=5');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The selected csv is invalid.',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsWithAllowedDaysExceededForCsvValidation(): void
+    {
+        $today = Carbon::today()->toDateString();
+        $end = Carbon::today()->addDay(100)->toDateString();
+
+        $this->get($this->listTransactionsApi.'?start_date='.$today.'&end_date='.$end.'&csv=1');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'date-range selection error',
+                'message' => 'Exceeds max allowed days of 90',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testListTransactionsIfCsvDownloadSuccessful(): void
+    {
+        $today = Carbon::today()->toDateString();
+        $tomorrow = Carbon::today()->addDay(1)->toDateString();
+
+        $this->get($this->listTransactionsApi.'?start_date='.$today.'&end_date='.$tomorrow.'&csv=1');
+        $this->response->assertStatus(200);
+        $this->assertTrue($this->response->headers->get('content-disposition') == 'attachment; filename=download.csv');
+    }
     
     public function defaultPayload(): array
     {

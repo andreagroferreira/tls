@@ -1788,6 +1788,40 @@
                 }
             }
         },
+        "/api/v1/payment-configurations/{pc_id}": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "delete a payment_configuration",
+                "operationId": "49ebe6dc80880315f433c56147648153",
+                "parameters": [
+                    {
+                        "name": "pc_id",
+                        "in": "path",
+                        "description": "the payment_configurations pc_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "payment_configuration delete success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/paysoft/redirto": {
             "post": {
                 "tags": [
@@ -3074,6 +3108,16 @@
                         "schema": {
                             "type": "date",
                             "example": "2022-12-31"
+                        }
+                    },
+                    {
+                        "name": "csv",
+                        "in": "query",
+                        "description": "CSV download (0 or 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "0"
                         }
                     },
                     {

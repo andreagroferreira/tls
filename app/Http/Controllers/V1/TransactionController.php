@@ -458,6 +458,13 @@ class TransactionController extends BaseController
      *          @OA\Schema(type="date", example="2022-12-31"),
      *      ),
      *      @OA\Parameter(
+     *          name="csv",
+     *          in="query",
+     *          description="CSV download (0 or 1)",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="0"),
+     *      ),
+     *      @OA\Parameter(
      *          name="multi_search[t_country]",
      *          in="query",
      *          description="search country",
@@ -572,7 +579,8 @@ class TransactionController extends BaseController
             'end_date' => $request->input('end_date'),
             'order_field' => $request->input('order_field', 't_id'),
             'order' => $request->input('order', 'desc'),
-            'multi_search'=> $request->input('multi_search')
+            'multi_search'=> $request->input('multi_search'),
+            'csv' => $request->input('csv', 0)
         ];
 
         $validator = validator($params, [
@@ -586,15 +594,35 @@ class TransactionController extends BaseController
                 'string',
                 Rule::in(['desc', 'asc']),
             ],
-            'multi_search'=>'nullable|array'
+            'multi_search'=>'nullable|array',
+            'csv' => [
+                'required',
+                'integer',
+                Rule::in([0, 1]),
+            ],
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
         }
 
+        $csvRequired = $validator->validated()['csv'];
+        if ($csvRequired == 1) {
+            $maxAllowedDays = 90;
+            $numberOfDays = round((strtotime($validator->validated()['end_date']) - strtotime($validator->validated()['start_date'])) / (60 * 60 * 24));
+
+            if ($numberOfDays > $maxAllowedDays) {
+                return $this->sendError('date-range selection error', 'Exceeds max allowed days of '.$maxAllowedDays);
+            }
+        }
+
         try {
-            $res = $this->transactionService->listTransactions($validator->validated());
+            $res = $this->transactionService->listTransactions($validator->validated(), $csvRequired);
+
+            if ($csvRequired == 1) {
+                $return = $this->transactionService->writeTransactionsToCsv($res['data']);
+                return response()->stream($return['callback'], 200, $return['headers']);
+            }
 
             return $this->sendResponse($res);
         } catch (\Exception $e) {

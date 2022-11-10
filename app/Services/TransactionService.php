@@ -301,10 +301,11 @@ class TransactionService
 
     /**
      * @param array $attributes
+     * @param int   $csvRequired
      *
      * @return array
      */
-    public function listTransactions(array $attributes): array
+    public function listTransactions(array $attributes, int $csvRequired): array
     {
         $fullTextSearchColumn = ['ti_fee_type', 't_comment', 't_reference_id'];
 
@@ -344,14 +345,14 @@ class TransactionService
             $where->toArray(),
             $attributes['limit'],
             $attributes['order_field'],
-            $attributes['order']
+            $attributes['order'],
+            $csvRequired
         );
 
         if (empty($transactions)) {
             return [];
         }
 
-        $transactions = $transactions->toArray();
         foreach ($transactions['data'] as $k => $details) {
             $transactions['data'][$k]['country'] = getCountryName($details['country_code']);
             $transactions['data'][$k]['city'] = getCityName($details['city_code']);
@@ -362,6 +363,74 @@ class TransactionService
             'total' => array_get($transactions, 'total', 0),
             'data' => array_get($transactions, 'data', []),
             'current_page' => array_get($transactions, 'current_page', 1),
+        ];
+    }
+
+    /**
+     * @param array $result
+     *
+     * @return array
+     */
+    public function writeTransactionsToCsv(array $result): array
+    {
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=download.csv',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+        $columns = [
+            'Client',
+            'Country',
+            'City',
+            'Date of transaction',
+            'Transaction ID',
+            'Group ID',
+            'Basket type',
+            'SKU',
+            'Payment type',
+            'Gateway transaction ID',
+            'Currency',
+            'Amount NET',
+            'VAT',
+            'Amount Gross',
+            'Quantity',
+        ];
+        $fields = [
+            't_client',
+            'country',
+            'city',
+            't_tech_creation',
+            't_transaction_id',
+            't_xref_fg_id',
+            't_service',
+            'ti_fee_type',
+            't_payment_method',
+            't_gateway_transaction_id',
+            't_currency',
+            'ti_amount',
+            'ti_vat',
+            'amount_gross',
+            'ti_quantity',
+        ];
+
+        $callback = function () use ($result, $columns, $fields) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            foreach ($result as $details) {
+                $row = [];
+                foreach ($fields as $v) {
+                    $row[$v] = $details[$v];
+                }
+                fputcsv($file, $row);
+            }
+            fclose($file);
+        };
+
+        return [
+            'callback' => $callback,
+            'headers' => $headers,
         ];
     }
 }

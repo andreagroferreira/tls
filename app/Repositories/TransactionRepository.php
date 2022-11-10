@@ -125,12 +125,13 @@ class TransactionRepository
      * @param int    $limit
      * @param string $order_field
      * @param string $order
+     * @param int    $csvRequired
      *
-     * @return object
+     * @return array
      */
-    public function listTransactions(array $where, int $limit, string $order_field, string $order): object
+    public function listTransactions(array $where, int $limit, string $order_field, string $order, int $csvRequired): array
     {
-        return $this->transactionModel
+        $transactions = $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')
             ->where($where)
             ->select([
@@ -155,7 +156,14 @@ class TransactionRepository
             ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
-            ->orderBY($order_field, $order)
-            ->paginate($limit);
+            ->orderBY($order_field, $order);
+
+        if ($csvRequired == 1) {
+            $transactionsCsv['data'] = $transactions->get()->toArray();
+
+            return $transactionsCsv;
+        }
+
+        return $transactions->paginate($limit)->toArray();
     }
 }

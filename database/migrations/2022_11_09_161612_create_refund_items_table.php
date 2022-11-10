@@ -17,7 +17,7 @@ class CreateRefundItemsTable extends Migration
             $table->bigIncrements('ri_id');
             $table->bigInteger('ri_xref_r_id')->index();
             $table->bigInteger('ri_xref_ti_id')->index();
-            $table->smallInteger('ri_quantity');
+            $table->smallInteger('ri_quantity')->nullable();
             $table->float('ri_amount', 10, 0)->nullable();
             $table->string('ri_reason_type');
             $table->string('ri_status')->comment('pending, approved, declined, done')->default('pending');

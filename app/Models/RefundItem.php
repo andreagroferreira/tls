@@ -8,11 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class RefundItem extends Model
 {
     use HasFactory;
+
+    /**
+     * @var bool
+     */
     public $timestamps = false;
 
+    /**
+     * @var string
+     */
     protected $table = 'refund_items';
+
+    /**
+     * @var string
+     */
     protected $primaryKey = 'ri_id';
 
+    /**
+     * @var array
+     */
     protected $fillable = [
         'ri_id',
         'ri_xref_r_id',
@@ -21,6 +35,6 @@ class RefundItem extends Model
         'ri_amount',
         'ri_reason_type',
         'ri_status',
-        'ri_invoice_path'
+        'ri_invoice_path',
     ];
 }

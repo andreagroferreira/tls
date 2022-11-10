@@ -9,10 +9,24 @@ class Refund extends Model
 {
     use HasFactory;
 
-    protected $table = 'refunds';
-    protected $primaryKey = 'r_id';
+    /**
+     * @var bool
+     */
     public $timestamps = false;
 
+    /**
+     * @var string
+     */
+    protected $table = 'refunds';
+
+    /**
+     * @var string
+     */
+    protected $primaryKey = 'r_id';
+
+    /**
+     * @var array
+     */
     protected $fillable = [
         'r_id',
         'r_issuer',

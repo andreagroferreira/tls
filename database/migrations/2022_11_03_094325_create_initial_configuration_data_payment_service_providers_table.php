@@ -27,7 +27,7 @@ class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migrati
                 'cmi' => 'CMI',
                 'cybersource' => 'Cybersource',
                 'fawry' => 'Fawry',
-                'globaliris' => 'Globaliris',
+                'globaliris' => 'Global Pay',
                 'paypal' => 'PayPal',
                 'k-bank' => 'K-Bank',
                 'payfort' => 'PayFort',

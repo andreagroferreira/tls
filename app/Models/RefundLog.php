@@ -19,7 +19,6 @@ class RefundLog extends Model
         'rl_xref_ri_id',
         'rl_type',
         'rl_log',
-        'rl_agent',
-        'ti_tech_deleted',
+        'rl_agent'
     ];
 }

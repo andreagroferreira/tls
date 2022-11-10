@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\RefundItem;
 
-class RefundItemsRepository
+class RefundItemRepository
 {
     protected $refundItemModel;
 

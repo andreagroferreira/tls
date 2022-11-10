@@ -15,7 +15,7 @@ class RefundLog extends Model
 
     protected $fillable = [
         'rl_id',
-        'rl_xref_rr_id',
+        'rl_xref_r_id',
         'rl_xref_ri_id',
         'rl_type',
         'rl_log',

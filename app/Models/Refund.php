@@ -19,6 +19,5 @@ class Refund extends Model
         'r_reason_type',
         'r_status',
         'r_appointment_date',
-        'r_tech_deleted',
     ];
 }

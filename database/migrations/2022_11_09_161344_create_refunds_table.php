@@ -17,14 +17,13 @@ class CreateRefundsTable extends Migration
             $table->bigIncrements('r_id');
             $table->string('r_issuer', 10);
             $table->string('r_reason_type');
-            $table->string('r_status')->comment('pending, closed, approved, confirmed, refunded, done');
+            $table->string('r_status')->comment('pending, closed, approved, confirmed, refunded, done')->default('pending');
             $table->timestamp('r_appointment_date')->nullable();
-            $table->timestamp('r_tech_creation')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('r_tech_modification')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->boolean('r_tech_deleted')->default(0);
+            $table->timestamp('r_tech_creation')->useCurrent();
+            $table->timestamp('r_tech_modification')->useCurrent();
         });
 
-        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE transactions OWNER TO common;');
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE refunds OWNER TO common;');
     }
 
     /**

@@ -15,17 +15,17 @@ class CreateRefundLogsTable extends Migration
     {
         Schema::connection('deploy_payment_pgsql')->create('refund_logs', function (Blueprint $table) {
             $table->bigIncrements('rl_id');
-            $table->bigInteger('rl_xref_rr_id')->index();
-            $table->string('rl_xref_ri_id')->index()->nullable();
+            $table->bigInteger('rl_xref_r_id')->index();
+            $table->bigInteger('rl_xref_ri_id')->index()->nullable();
             $table->string('rl_type')->comment('status_change, file_request, email_sent');
-            $table->text('rl_log');
+            $table->text('rl_description');
             $table->string('rl_agent');
-            $table->timestamp('rl_tech_creation')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('rl_tech_modification')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('rl_tech_creation')->useCurrent();
+            $table->timestamp('rl_tech_modification')->useCurrent();
             $table->boolean('rl_tech_deleted')->default(0);
         });
 
-        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE transactions OWNER TO common;');
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE refund_logs OWNER TO common;');
     }
 
     /**

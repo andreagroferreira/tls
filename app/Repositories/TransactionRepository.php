@@ -132,59 +132,56 @@ class TransactionRepository
     public function listTransactions(array $where, int $limit, string $order_field, string $order, bool $csvRequired): array
     {
         $transactions = $this->transactionModel
-        ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
-        ->leftJoin('refund_items', function($join)
-            {
+            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('refund_items', function ($join) {
                 $join->on('refund_items.ri_xref_ti_id', '=', 'transaction_items.ti_id');
                 $join->where('refund_items.ri_status', '=', 'done');
             })
-        ->leftJoin('refunds', function($join)
-            {
+            ->leftJoin('refunds', function ($join) {
                 $join->on('refunds.r_id', '=', 'refund_items.ri_xref_r_id');
             })
-        ->leftJoin('refund_logs', function($join)
-            {
+            ->leftJoin('refund_logs', function ($join) {
                 $join->on('refund_logs.rl_xref_ri_id', '=', 'refund_items.ri_id');
                 $join->on('refund_logs.rl_xref_r_id', '=', 'refund_items.ri_xref_r_id');
             })
-        ->where($where)
-        ->select([
-            't_xref_fg_id',
-            'ti_xref_f_id',
-            't_id',
-            't_transaction_id',
-            't_client',
-            't_issuer',
-            't_service',
-            't_payment_method',
-            't_gateway',
-            't_gateway_transaction_id',
-            't_currency',
-            't_invoice_storage',
-            't_workflow',
-            't_status',
-            't_tech_creation',                
-            'ti_id',
-            'ti_fee_type',
-            'ti_quantity',
-            'ti_amount',
-            'ti_vat',	
-            'r_reason_type',
-            'r_status',
-            'r_appointment_date',
-            'ri_quantity',
-            'ri_amount',
-            'ri_reason_type',
-            'ri_status',
-            'ri_invoice_path',                
-            'rl_type',
-            'rl_description',
-            'rl_agent',
-        ])
-        ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
-        ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
-        ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
-        ->orderBY($order_field, $order);
+            ->where($where)
+            ->select([
+                't_xref_fg_id',
+                'ti_xref_f_id',
+                't_id',
+                't_transaction_id',
+                't_client',
+                't_issuer',
+                't_service',
+                't_payment_method',
+                't_gateway',
+                't_gateway_transaction_id',
+                't_currency',
+                't_invoice_storage',
+                't_workflow',
+                't_status',
+                't_tech_creation',
+                'ti_id',
+                'ti_fee_type',
+                'ti_quantity',
+                'ti_amount',
+                'ti_vat',
+                'r_reason_type',
+                'r_status',
+                'r_appointment_date',
+                'ri_quantity',
+                'ri_amount',
+                'ri_reason_type',
+                'ri_status',
+                'ri_invoice_path',
+                'rl_type',
+                'rl_description',
+                'rl_agent',
+            ])
+            ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
+            ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
+            ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
+            ->orderBY($order_field, $order);
 
         if ($csvRequired) {
             $transactionsCsv['data'] = $transactions->get()->toArray();

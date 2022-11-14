@@ -310,6 +310,7 @@ class TransactionService
 
         $where = collect([
             ['t_tech_deleted', '=', false],
+            ['t_status', '=', 'done'],
         ]);
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {

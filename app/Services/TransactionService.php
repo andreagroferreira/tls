@@ -317,30 +317,29 @@ class TransactionService
             't_xref_fg_id',
             't_client',
             't_batch_id',
-            'ti_quantity'
+            'ti_quantity',
         ];
 
         $where = collect([
             ['t_tech_deleted', '=', false],
         ]);
 
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $where->push(
-                ['t_tech_creation', '>=', $attributes['start_date'] . ' 00:00:00'],
-                ['t_tech_creation', '<=', $attributes['end_date'] . ' 23:59:59']
-            );
+        if (!empty($attributes['start_date'])) {
+            $where->push(['t_tech_creation', '>=', $attributes['start_date'].' 00:00:00']);
+        }
+
+        if (!empty($attributes['end_date'])) {
+            $where->push(['t_tech_creation', '<=', $attributes['end_date'].' 23:59:59']);
         }
 
         if (!empty($attributes['multi_search'])) {
             $issuer = array_get($attributes['multi_search'], 't_country').
-                      array_get($attributes['multi_search'], 't_city');
-            
-            unset($attributes['multi_search']['t_country']);
-            unset($attributes['multi_search']['t_city']);
+                array_get($attributes['multi_search'], 't_city');
+
+            unset($attributes['multi_search']['t_country'], $attributes['multi_search']['t_city']);
 
             $data = array_filter($attributes['multi_search']);
             foreach ($data as $column => $value) {
-
                 if (!in_array($column, $allowedColumns)) {
                     continue;
                 }

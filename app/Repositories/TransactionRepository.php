@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\DB;
 class TransactionRepository
 {
     protected $transactionModel;
+    private $pageLimit;
 
     public function __construct(Transactions $transactionModel)
     {
         $this->transactionModel = $transactionModel;
+        $this->setPageLimit(50000);
     }
 
     public function setConnection($connection)
@@ -23,6 +25,27 @@ class TransactionRepository
     public function getConnection()
     {
         return $this->transactionModel->getConnectionName();
+    }
+
+    /**
+     * @param  int $limit
+     *
+     * @return void
+     */
+    public function setPageLimit(int $limit = null): void
+    {
+        if (empty($limit)) {
+            $limit = 50000;
+        }
+        $this->pageLimit = $limit;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getPageLimit(): int
+    {
+        return $this->pageLimit;
     }
 
     public function fetch($where, $field = '*')
@@ -125,13 +148,12 @@ class TransactionRepository
      * @param int    $limit
      * @param string $order_field
      * @param string $order
-     * @param bool   $csvRequired
      *
      * @return array
      */
-    public function listTransactions(array $where, int $limit, string $order_field, string $order, bool $csvRequired): array
+    public function listTransactions(array $where, int $limit, string $order_field, string $order): array
     {
-        $transactions = $this->transactionModel
+        return $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
             ->leftJoin('refund_items', function ($join) {
                 $join->on('refund_items.ri_xref_ti_id', '=', 'transaction_items.ti_id');
@@ -166,6 +188,7 @@ class TransactionRepository
                 'ti_quantity',
                 'ti_amount',
                 'ti_vat',
+
                 'r_reason_type',
                 'r_status',
                 'r_appointment_date',
@@ -181,14 +204,20 @@ class TransactionRepository
             ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
-            ->orderBY($order_field, $order);
+            ->orderBY($order_field, $order)
+            ->paginate($limit)
+            ->toArray();
+    }
 
-        if ($csvRequired) {
-            $transactionsCsv['data'] = $transactions->get()->toArray();
-
-            return $transactionsCsv;
-        }
-
-        return $transactions->paginate($limit)->toArray();
+    /**
+     * @param array  $where
+     * @param string $order_field
+     * @param string $order
+     *
+     * @return array
+     */
+    public function exportTransactionsToCsv(array $where, string $order_field, string $order): array
+    {
+        return $this->listTransactions($where, $this->getPageLimit(), $order_field, $order);
     }
 }

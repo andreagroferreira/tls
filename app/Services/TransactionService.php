@@ -341,12 +341,19 @@ class TransactionService
             }
         }
 
+        if ($attributes['csv']) {
+            $transactions = $this->transactionRepository->exportTransactionsToCsv(
+                $where->toArray(),
+                $attributes['order_field'],
+                $attributes['order']
+            );
+        }
+        
         $transactions = $this->transactionRepository->listTransactions(
             $where->toArray(),
             $attributes['limit'],
             $attributes['order_field'],
-            $attributes['order'],
-            $attributes['csv']
+            $attributes['order']
         );
 
         if (empty($transactions)) {

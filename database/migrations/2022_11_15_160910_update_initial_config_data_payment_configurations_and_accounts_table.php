@@ -26,8 +26,8 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
             DB::beginTransaction();
 
             try {
-                DB::unprepared('TRUNCATE TABLE payment_configurations CASCADE');
-                DB::unprepared('TRUNCATE TABLE payment_accounts CASCADE');
+                DB::unprepared('TRUNCATE TABLE payment_configurations RESTART IDENTITY CASCADE');
+                DB::unprepared('TRUNCATE TABLE payment_accounts RESTART IDENTITY CASCADE');
 
                 $this->createPayLaterPaymentAccount();
                 $client = $this->getProjectId();

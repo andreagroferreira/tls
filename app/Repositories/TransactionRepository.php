@@ -8,12 +8,11 @@ use Illuminate\Support\Facades\DB;
 class TransactionRepository
 {
     protected $transactionModel;
-    private $pageLimit;
+    private $pageLimit = 50000;
 
     public function __construct(Transactions $transactionModel)
     {
         $this->transactionModel = $transactionModel;
-        $this->setPageLimit(50000);
     }
 
     public function setConnection($connection)
@@ -26,26 +25,6 @@ class TransactionRepository
         return $this->transactionModel->getConnectionName();
     }
 
-    /**
-     * @param int $limit
-     *
-     * @return void
-     */
-    public function setPageLimit(int $limit = null): void
-    {
-        if (empty($limit)) {
-            $limit = 50000;
-        }
-        $this->pageLimit = $limit;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPageLimit(): int
-    {
-        return $this->pageLimit;
-    }
 
     public function fetch($where, $field = '*')
     {
@@ -127,6 +106,9 @@ class TransactionRepository
         return $this->transactionModel->find($transaction->t_id);
     }
 
+    /**
+     * @return mixed
+     */
     public function getTransactionIdSeq()
     {
         $res = DB::connection($this->getConnection())->select("SELECT nextval('transactions_t_id_seq')");
@@ -134,7 +116,12 @@ class TransactionRepository
         return array_first($res)->nextval;
     }
 
-    public function findBy($attributes)
+    /**
+     * @param $attributes
+     *
+     * @return string
+     */
+    public function findBy($attributes): string
     {
         $result = $this->transactionModel;
         foreach ($attributes as $key => $value) {
@@ -152,8 +139,12 @@ class TransactionRepository
      *
      * @return array
      */
-    public function listTransactions(array $where, int $limit, string $orderField, string $order): array
-    {
+    public function listTransactions(
+        array $where,
+        int $limit,
+        string $orderField,
+        string $order
+    ): array {
         return $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
             ->leftJoin('refund_items', function ($join) {
@@ -189,7 +180,6 @@ class TransactionRepository
                 'ti_quantity',
                 'ti_amount',
                 'ti_vat',
-
                 'r_reason_type',
                 'r_status',
                 'r_appointment_date',
@@ -219,6 +209,6 @@ class TransactionRepository
      */
     public function exportTransactionsToCsv(array $where, string $orderField, string $order): array
     {
-        return $this->listTransactions($where, $this->getPageLimit(), $orderField, $order);
+        return $this->listTransactions($where, $this->pageLimit, $orderField, $order);
     }
 }

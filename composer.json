@@ -9,7 +9,7 @@
         "php": "^7.3|^8.0",
         "barryvdh/laravel-dompdf": "^2.0",
         "darkaonline/swagger-lume": "^8.0",
-        "doctrine/dbal": "^3.5",
+        "doctrine/dbal": "^3.2.2",
         "firebase/php-jwt": "^6.3",
         "friendsofphp/php-cs-fixer": "v3.4.0",
         "guzzlehttp/guzzle": "^7.4.5",

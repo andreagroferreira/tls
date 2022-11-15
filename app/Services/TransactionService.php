@@ -311,6 +311,18 @@ class TransactionService
     {
         $fullTextSearchColumn = ['ti_fee_type', 't_comment', 't_reference_id'];
 
+        $allowedColumns = [
+            't_country',
+            't_city',
+            'ti_fee_type',
+            't_reference_id',
+            't_comment',
+            't_xref_fg_id',
+            't_client',
+            't_batch_id',
+            'ti_quantity',
+        ];
+
         $where = collect([
             ['t_tech_deleted', '=', false],
             ['t_status', '=', 'done'],
@@ -331,6 +343,10 @@ class TransactionService
 
             $data = array_filter($attributes['multi_search']);
             foreach ($data as $column => $value) {
+                if (!in_array($column, $allowedColumns)) {
+                    continue;
+                }
+
                 if (in_array($column, $fullTextSearchColumn)) {
                     $where->push([$column, 'LIKE', '%'.$value.'%']);
                 } else {

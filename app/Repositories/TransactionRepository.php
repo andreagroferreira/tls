@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Repositories;
 
 use App\Models\Transactions;
@@ -28,7 +27,7 @@ class TransactionRepository
     }
 
     /**
-     * @param  int $limit
+     * @param int $limit
      *
      * @return void
      */
@@ -39,7 +38,7 @@ class TransactionRepository
         }
         $this->pageLimit = $limit;
     }
-    
+
     /**
      * @return int
      */
@@ -85,7 +84,7 @@ class TransactionRepository
             ])
             ->where([
                 ['t_xref_fg_id', '=', $attributes['fg_id']],
-                ['t_tech_deleted', '=', false]
+                ['t_tech_deleted', '=', false],
             ])
             ->where(function ($query) {
                 //get all transactions where t_status is done
@@ -93,12 +92,12 @@ class TransactionRepository
                     ->OrWhere(function ($query) {
                         //get all transactions where t_status not equal to close and transaction not expired
                         $query->where('t_status', '<>', 'close')
-                            ->where(function($sub_query) {
-                                $sub_query->whereNull('t_expiration')
+                            ->where(function ($subQuery) {
+                                $subQuery->whereNull('t_expiration')
                                     ->orWhere('t_expiration', '>', 'now()');
                             })
-                            ->where(function($sub_query) {
-                                $sub_query->whereNull('t_gateway_expiration')
+                            ->where(function ($subQuery) {
+                                $subQuery->whereNull('t_gateway_expiration')
                                     ->Orwhere('t_gateway_expiration', '>', 'now()');
                             });
                     });
@@ -121,7 +120,7 @@ class TransactionRepository
         }
 
         foreach ($attributes as $key => $value) {
-            $transaction->$key = $value;
+            $transaction->{$key} = $value;
         }
         $transaction->save();
 
@@ -135,23 +134,25 @@ class TransactionRepository
         return array_first($res)->nextval;
     }
 
-    public function findBy($attributes) {
+    public function findBy($attributes)
+    {
         $result = $this->transactionModel;
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);
         }
+
         return $result->get();
     }
 
     /**
      * @param array  $where
      * @param int    $limit
-     * @param string $order_field
+     * @param string $orderField
      * @param string $order
      *
      * @return array
      */
-    public function listTransactions(array $where, int $limit, string $order_field, string $order): array
+    public function listTransactions(array $where, int $limit, string $orderField, string $order): array
     {
         return $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
@@ -204,20 +205,20 @@ class TransactionRepository
             ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
-            ->orderBY($order_field, $order)
+            ->orderBY($orderField, $order)
             ->paginate($limit)
             ->toArray();
     }
 
     /**
      * @param array  $where
-     * @param string $order_field
+     * @param string $orderField
      * @param string $order
      *
      * @return array
      */
-    public function exportTransactionsToCsv(array $where, string $order_field, string $order): array
+    public function exportTransactionsToCsv(array $where, string $orderField, string $order): array
     {
-        return $this->listTransactions($where, $this->getPageLimit(), $order_field, $order);
+        return $this->listTransactions($where, $this->getPageLimit(), $orderField, $order);
     }
 }

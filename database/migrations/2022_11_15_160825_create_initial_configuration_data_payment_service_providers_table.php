@@ -13,7 +13,7 @@ class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migrati
     public function up()
     {
         if (DB::getDefaultConnection() === 'deploy_payment_pgsql') {
-            DB::unprepared('TRUNCATE TABLE payment_service_providers CASCADE');
+            DB::unprepared('TRUNCATE TABLE payment_service_providers RESTART IDENTITY CASCADE');
 
             $payment_gateways = [
                 'pay_later' => 'Pay Later',

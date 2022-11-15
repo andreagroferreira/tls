@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6911e6edc786b8b9ec26ef26d675ca3e",
+    "content-hash": "c7fd483ad2d5e548feabff87c4276d05",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -245,6 +245,69 @@
                 }
             ],
             "time": "2021-08-15T20:50:18+00:00"
+        },
+        {
+            "name": "composer/package-versions-deprecated",
+            "version": "1.11.99.5",
+            "dist": {
+                "type": "zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/composer/package-versions-deprecated/1.11.99.5/composer-package-versions-deprecated-1.11.99.5.zip",
+                "reference": "b4f54f74ef3453349c24a845d22392cd31e65f1d",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.1.0 || ^2.0",
+                "php": "^7 || ^8"
+            },
+            "replace": {
+                "ocramius/package-versions": "1.11.99"
+            },
+            "require-dev": {
+                "composer/composer": "^1.9.3 || ^2.0@dev",
+                "ext-zip": "^1.13",
+                "phpunit/phpunit": "^6.5 || ^7"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "PackageVersions\\Installer",
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PackageVersions\\": "src/PackageVersions"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Pivetta",
+                    "email": "ocramius@gmail.com"
+                },
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be"
+                }
+            ],
+            "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-01-17T14:14:24+00:00"
         },
         {
             "name": "composer/pcre",
@@ -634,33 +697,33 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.5.1",
+            "version": "3.2.2",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/doctrine/dbal/3.5.1/doctrine-dbal-3.5.1.zip",
-                "reference": "f38ee8aaca2d58ee88653cb34a6a3880c23f38a5",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/doctrine/dbal/3.2.2/doctrine-dbal-3.2.2.zip",
+                "reference": "d1e581da590d611c8699acff9848056b2403c05b",
                 "shasum": ""
             },
             "require": {
-                "composer-runtime-api": "^2",
+                "composer/package-versions-deprecated": "^1.11.99",
                 "doctrine/cache": "^1.11|^2.0",
-                "doctrine/deprecations": "^0.5.3|^1",
-                "doctrine/event-manager": "^1|^2",
-                "php": "^7.4 || ^8.0",
+                "doctrine/deprecations": "^0.5.3",
+                "doctrine/event-manager": "^1.0",
+                "php": "^7.3 || ^8.0",
                 "psr/cache": "^1|^2|^3",
                 "psr/log": "^1|^2|^3"
             },
             "require-dev": {
-                "doctrine/coding-standard": "10.0.0",
-                "jetbrains/phpstorm-stubs": "2022.2",
-                "phpstan/phpstan": "1.8.10",
-                "phpstan/phpstan-strict-rules": "^1.4",
-                "phpunit/phpunit": "9.5.25",
-                "psalm/plugin-phpunit": "0.17.0",
-                "squizlabs/php_codesniffer": "3.7.1",
-                "symfony/cache": "^5.4|^6.0",
-                "symfony/console": "^4.4|^5.4|^6.0",
-                "vimeo/psalm": "4.29.0"
+                "doctrine/coding-standard": "9.0.0",
+                "jetbrains/phpstorm-stubs": "2021.1",
+                "phpstan/phpstan": "1.4.0",
+                "phpstan/phpstan-strict-rules": "^1.1",
+                "phpunit/phpunit": "9.5.11",
+                "psalm/plugin-phpunit": "0.16.1",
+                "squizlabs/php_codesniffer": "3.6.2",
+                "symfony/cache": "^5.2|^6.0",
+                "symfony/console": "^2.0.5|^3.0|^4.0|^5.0|^6.0",
+                "vimeo/psalm": "4.16.1"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -731,24 +794,24 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-24T07:26:18+00:00"
+            "time": "2022-01-17T23:48:30+00:00"
         },
         {
             "name": "doctrine/deprecations",
-            "version": "v1.0.0",
+            "version": "v0.5.3",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/doctrine/deprecations/v1.0.0/doctrine-deprecations-v1.0.0.zip",
-                "reference": "0e2a4f1f8cdfc7a92ec3b01c9334898c806b30de",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/doctrine/deprecations/v0.5.3/doctrine-deprecations-v0.5.3.zip",
+                "reference": "9504165960a1f83cc1480e2be1dd0a0478561314",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1|^8.0"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^9",
-                "phpunit/phpunit": "^7.5|^8.5|^9.5",
-                "psr/log": "^1|^2|^3"
+                "doctrine/coding-standard": "^6.0|^7.0|^8.0",
+                "phpunit/phpunit": "^7.0|^8.0|^9.0",
+                "psr/log": "^1.0"
             },
             "suggest": {
                 "psr/log": "Allows logging deprecations via PSR-3 logger implementation"
@@ -764,7 +827,7 @@
             ],
             "description": "A small layer on top of trigger_error(E_USER_DEPRECATED) or PSR-3 logging with options to disable all deprecations or selectively for packages.",
             "homepage": "https://www.doctrine-project.org/",
-            "time": "2022-05-02T15:47:09+00:00"
+            "time": "2021-03-21T12:59:47+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -8413,5 +8476,5 @@
         "php": "^7.3|^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "1.1.0"
 }

@@ -94,29 +94,44 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
     private function getProjectId()
     {
         $project = getenv('CLIENT');
+        $projectCode = null;
 
         switch ($project) {
             case 'gss-us':
-                return 'us';
+                $projectCode = 'us';
+
+                break;
 
             case 'srf-fr':
-                return 'srf_fr';
+                $projectCode = 'srf_fr';
+
+                break;
 
             case 'hmpo-uk':
-                return 'hmpo_uk';
+                $projectCode = 'hmpo_uk';
+
+                break;
 
             case 'leg-be':
-                return 'leg_be';
+                $projectCode = 'leg_be';
+
+                break;
 
             case 'leg-de':
-                return 'leg_de';
+                $projectCode = 'leg_de';
+
+                break;
 
             case 'biolab-ma':
-                return 'biolab_ma';
+                $projectCode = 'biolab_ma';
+
+                break;
 
             default:
-                return substr($project, -2);
+                $projectCode = substr($project, -2);
         }
+
+        return $projectCode;
     }
 
     // get environment variables

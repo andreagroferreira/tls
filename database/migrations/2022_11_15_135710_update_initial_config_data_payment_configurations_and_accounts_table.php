@@ -196,6 +196,7 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
     private function addPayLaterPayment(array $configurations): void
     {
         $configurations['pc_xref_pa_id'] = 1;
+        $configurations['pc_is_active'] = true;
         DB::table('payment_configurations')->insert($configurations);
     }
 

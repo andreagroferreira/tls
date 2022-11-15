@@ -85,7 +85,7 @@ class PaymentConfigurationsService
                         'pa_type' => $account->pa_type
                     ];
                 }
-                if ($payment_config['pc_is_actived']) {
+                if ($payment_config['pc_is_active']) {
                     $result[$res_key]['service'][] = $accountData;
                 }
             } else {
@@ -109,7 +109,7 @@ class PaymentConfigurationsService
                     $paymentConfig['pa_id'] = $res['pa_id'];
                     $paymentConfig['pa_name'] = $res['pa_name'];
                     $paymentConfig['pa_type'] = $res['pa_type'];
-                    $paymentConfig['is_show'] = $v['pc_is_actived'];
+                    $paymentConfig['is_show'] = $v['pc_is_active'];
                     $payConfig[] = $paymentConfig;
                 }
             }

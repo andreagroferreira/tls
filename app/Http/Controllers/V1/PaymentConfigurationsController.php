@@ -163,7 +163,7 @@ class PaymentConfigurationsController extends BaseController
                     'pc_country' => $pc_infos['pc_country'],
                     'pc_city' => $pc_infos['pc_city'],
                     'pc_service' => $pc_infos['pc_service'],
-                    'pc_is_actived' => $v['is_show'],
+                    'pc_is_active' => $v['is_show'],
                 ];
                 $this->paymentConfigurationsService->save($params_create);
             }

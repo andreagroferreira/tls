@@ -80,7 +80,7 @@ class PaymentGatewayService
             'pc_country' => $pc_country,
             'pc_city' => $pc_city,
             'pc_service' => $service,
-            'pc_is_actived' => true
+            'pc_is_active' => true
         ];
 
         $paymentConfigurations = $this->paymentConfigurationsRepositories->findBy($where)->toArray();

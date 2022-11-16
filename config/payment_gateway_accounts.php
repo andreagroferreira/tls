@@ -20,7 +20,7 @@ return [
             'private_key' => null,
             'public_key' => null,
         ],
-        'prod'    => [
+        'production'    => [
             'app_id' => null,
             'gateway' => null,
             'private_key' => null,
@@ -43,7 +43,7 @@ return [
             'store_id' => null,
             'store_private_key' => null,
         ],
-        'prod' => [
+        'production' => [
             'host' => 'https://api.binga.ma/bingaApi/api/orders',
             'merchant_login' => null,
             'merchant_password' => null,
@@ -69,7 +69,7 @@ return [
             'password' => null,
             'terminal_id' => null,
         ],
-        'prod' => [
+        'production' => [
             // TODO: To be completed
             'host' => 'test', // env('ENVPAY_BNP_PARIBAS_dzALL2fr_HOST')
             'user_name' => null,
@@ -92,7 +92,7 @@ return [
             'user_name' => null,
             'password'  => null
         ],
-        'prod'    => [
+        'production'    => [
             'host'      => 'https://ipay.clictopay.com/payment/rest',
             'user_name' => null,
             'password'  => null
@@ -115,7 +115,7 @@ return [
             'merchant_id' => null,
             'storeKey' => null,
         ],
-        'prod' => [
+        'production' => [
             'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
             'merchant_id' => null,
             'storeKey' => null
@@ -143,7 +143,7 @@ return [
             'merchant_id' => null,
             'secret_key' => null,
         ],
-        'prod' => [
+        'production' => [
             'host' => 'https://www.atfawry.com',
             'merchant_id' => null,
             'secret_key' => null,
@@ -166,7 +166,7 @@ return [
             'secret' => null,
             'account' => null
         ],
-        'prod' => [
+        'production' => [
             'host' => 'https://hpp.globaliris.com/pay',
             'merchant_id' => null,
             'secret' => null,
@@ -189,7 +189,7 @@ return [
             'secret'        => null,
             'mid'           => null
         ],
-        'prod'    => [
+        'production'    => [
             'host'          => 'https://kpaymentgateway-services.kasikornbank.com',
             'redirect_host' => 'https://kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
             'apikey'        => null,
@@ -213,7 +213,7 @@ return [
             'request_phrase'  => null,
             'response_phrase' => null
         ],
-        'prod' => [
+        'production' => [
             'host'            => 'https://checkout.payfort.com/FortAPI/paymentPage',
             'merchant_id'     => null,
             'access_code'     => null,
@@ -239,7 +239,7 @@ return [
             'paygate_id' => null,
             'seller_email' => null,
         ],
-        'prod' => [
+        'production' => [
             'initiate_host' => 'https://secure.paygate.co.za/payweb3/initiate.trans',
             'process_host' => 'https://secure.paygate.co.za/payweb3/process.trans',
             'query_host' => 'https://secure.paygate.co.za/payweb3/query.trans',
@@ -263,7 +263,7 @@ return [
             'host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
             'account' => null
         ],
-        'prod' => [
+        'production' => [
             'host' => 'https://www.paypal.com/cgi-bin/webscr',
             'account' => null
         ]
@@ -281,7 +281,7 @@ return [
             'signature_algorithm' => null,
             'signature_secret_key' => null,
         ],
-        'prod' => [
+        'production' => [
             // TODO: To be completed
             'host' => 'test', //env('ENVPAY_PAYSOFT_uaKBP2pl_HOST')
             'merchant_id' => null,
@@ -305,7 +305,7 @@ return [
             'api_version' => '1.3.0',
             'payments_os_env' => 'test'
         ],
-        'prod' => [
+        'production' => [
             'app_id'      => null,
             'private_key' => null,
             'api_version' => '1.3.0',
@@ -325,7 +325,7 @@ return [
             'entity_id' => null,
             'access_token' => null
         ],
-        'prod' => [
+        'production' => [
             // TODO: To be completed
             'host' => 'test', // env('ENVPAY_SWITCH_iqAll2be_HOST')
             'entity_id' => null,
@@ -353,7 +353,7 @@ return [
             'oauthHost'     => 'https://developer.tingg.africa/checkout/v2/custom/oauth/token',
             'queryStatusHost'=> 'https://developer.tingg.africa/checkout/v2/custom/requests/query-status',
         ],
-        'prod'    => [
+        'production'    => [
             'host'          => 'https://online.tingg.africa/v2/express/',
             'accountNumber' => null,
             'serviceCode'   => null,

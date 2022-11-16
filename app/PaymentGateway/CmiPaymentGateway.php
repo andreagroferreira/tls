@@ -248,7 +248,7 @@ class CmiPaymentGateway implements PaymentGatewayInterface
         if ($this->gatewayService->getClientUseFile()) {
             $app_env = $this->isSandBox();
             $is_live = ($pay_config['common']['env'] == 'live');
-            $key = ($is_live && !$app_env) ? 'prod' : 'sandbox';
+            $key = ($is_live && !$app_env) ? 'production' : 'sandbox';
         } else {
             $key = 'config';
         }

@@ -13,7 +13,7 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
     /**
      * @var array
      */
-    private $configs = ['sandbox', 'prod'];
+    private $configs = ['sandbox', 'production'];
 
     /**
      * Run the migrations.
@@ -34,7 +34,7 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
                 $paymentConfigurations = config('payment_gateway')[$client];
                 $appName = explode('-', env('PROJECT'));
                 $appEnv = end($appName);
-                $envName = ($appEnv === 'stg' || $appEnv === 'uat' || $appEnv === 'dev') ? 'sandbox' : 'prod';
+                $envName = ($appEnv === 'stg' || $appEnv === 'uat' || $appEnv === 'dev') ? 'sandbox' : 'production';
 
                 foreach ($paymentConfigurations as $issuer => $gateways) {
                     $country = $issuer !== 'allAll2all' ? substr($issuer, 0, 2) : 'all';
@@ -63,7 +63,7 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
 
                         foreach ($this->configs as $config) {
                             if (!empty($gatewayValues[$config])) {
-                                $paymentAccountData['pa_type'] = $config === 'prod' ? 'production' : $config;
+                                $paymentAccountData['pa_type'] = $config;
                                 $paymentAccountData['pa_info'] = json_encode($this->getPaymentAccountInfo($gatewayValues[$config]));
                                 $paymentAccountData['pa_name'] = ucfirst($gatewayKey).' '.$issuer;
                                 $configurations['pc_is_active'] = ($envName === $config);

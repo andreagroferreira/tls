@@ -94,10 +94,10 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             $secret         = $onlinePayment['config']['secret'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
-            $hosturl        = $onlinePayment['prod']['host'] ?? '';
-            $merchantid     = $onlinePayment['prod']['merchant_id'] ?? '';
-            $account        = $onlinePayment['prod']['account'] ?? '';
-            $secret         = $onlinePayment['prod']['secret'] ?? '';
+            $hosturl        = $onlinePayment['production']['host'] ?? '';
+            $merchantid     = $onlinePayment['production']['merchant_id'] ?? '';
+            $account        = $onlinePayment['production']['account'] ?? '';
+            $secret         = $onlinePayment['production']['secret'] ?? '';
         } else {
             // Test account
             $hosturl        = $onlinePayment['sandbox']['sandbox_host'] ?? '';
@@ -181,9 +181,9 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             $subaccount     = $onlinePayment['config']['account'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
-            $merchantid     = $onlinePayment['prod']['merchant_id'] ?? '';
-            $secret         = $onlinePayment['prod']['secret'] ?? '';
-            $subaccount     = $onlinePayment['prod']['account'] ?? '';
+            $merchantid     = $onlinePayment['production']['merchant_id'] ?? '';
+            $secret         = $onlinePayment['production']['secret'] ?? '';
+            $subaccount     = $onlinePayment['production']['account'] ?? '';
         } else {
             // Test account
             $merchantid     = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';

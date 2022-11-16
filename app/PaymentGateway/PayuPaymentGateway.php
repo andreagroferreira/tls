@@ -172,10 +172,10 @@ class PayuPaymentGateway implements PaymentGatewayInterface
             $payments_os_env = $payu_config['config']['payments_os_env'];
         } else if ($is_live && !$app_env) {
             // Live account
-            $app_id          = $payu_config['prod']['app_id'];
-            $private_key     = $payu_config['prod']['private_key'];
-            $api_version     = $payu_config['prod']['api_version'];
-            $payments_os_env = $payu_config['prod']['payments_os_env'];
+            $app_id          = $payu_config['production']['app_id'];
+            $private_key     = $payu_config['production']['private_key'];
+            $api_version     = $payu_config['production']['api_version'];
+            $payments_os_env = $payu_config['production']['payments_os_env'];
         } else {
             // Test account
             $app_id          = $payu_config['sandbox']['sandbox_app_id'];

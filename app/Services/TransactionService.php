@@ -323,10 +323,7 @@ class TransactionService
             'ti_quantity',
         ];
 
-        $where = collect([
-            ['t_tech_deleted', '=', false],
-            ['t_status', '=', 'done'],
-        ]);
+        $where = collect();
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
             $where->push(
@@ -361,14 +358,14 @@ class TransactionService
 
         if ($attributes['csv']) {
             $transactions = $this->transactionRepository->exportTransactionsToCsv(
-                $where->toArray(),
+                $where,
                 $attributes['order_field'],
                 $attributes['order']
             );
         }
 
         $transactions = $this->transactionRepository->listTransactions(
-            $where->toArray(),
+            $where,
             $attributes['limit'],
             $attributes['order_field'],
             $attributes['order']
@@ -421,6 +418,7 @@ class TransactionService
             'VAT',
             'Amount Gross',
             'Quantity',
+            'Agent',
         ];
         $fields = [
             't_client',
@@ -434,10 +432,11 @@ class TransactionService
             't_payment_method',
             't_gateway_transaction_id',
             't_currency',
-            'ti_amount',
+            'amount',
             'ti_vat',
             'amount_gross',
-            'ti_quantity',
+            'quantity',
+            'agent',
         ];
 
         $callback = function () use ($result, $columns, $fields) {

@@ -3,16 +3,27 @@
 namespace App\Repositories;
 
 use App\Models\Transactions;
+use App\Models\RefundItem;
 use Illuminate\Support\Facades\DB;
 
 class TransactionRepository
 {
     protected $transactionModel;
+
+    /**
+     * @var RefundItem
+     */
+    protected $refundItemModel;
+
+    /**
+     * @var int
+     */
     private $pageLimit = 50000;
 
-    public function __construct(Transactions $transactionModel)
+    public function __construct(Transactions $transactionModel, RefundItem $refundItemModel)
     {
         $this->transactionModel = $transactionModel;
+        $this->refundItemModel = $refundItemModel;
     }
 
     public function setConnection($connection)
@@ -24,7 +35,6 @@ class TransactionRepository
     {
         return $this->transactionModel->getConnectionName();
     }
-
 
     public function fetch($where, $field = '*')
     {
@@ -132,7 +142,7 @@ class TransactionRepository
     }
 
     /**
-     * @param array  $where
+     * @param object $where
      * @param int    $limit
      * @param string $orderField
      * @param string $order
@@ -140,25 +150,26 @@ class TransactionRepository
      * @return array
      */
     public function listTransactions(
-        array $where,
+        object $where,
         int $limit,
         string $orderField,
         string $order
     ): array {
-        return $this->transactionModel
-            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
-            ->leftJoin('refund_items', function ($join) {
-                $join->on('refund_items.ri_xref_ti_id', '=', 'transaction_items.ti_id');
-                $join->where('refund_items.ri_status', '=', 'done');
-            })
-            ->leftJoin('refunds', function ($join) {
-                $join->on('refunds.r_id', '=', 'refund_items.ri_xref_r_id');
-            })
+        $condition = $where->push(
+            ['t_tech_deleted', '=', false],
+            ['t_status', '=', 'done'],
+        )->toArray();
+
+        $refundQuery = $this->refundItemModel
+            ->leftJoin('transaction_items', 'transaction_items.ti_id', '=', 'refund_items.ri_xref_ti_id')
+            ->leftJoin('transactions', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')
             ->leftJoin('refund_logs', function ($join) {
                 $join->on('refund_logs.rl_xref_ri_id', '=', 'refund_items.ri_id');
                 $join->on('refund_logs.rl_xref_r_id', '=', 'refund_items.ri_xref_r_id');
+                $join->where('refund_logs.rl_type', '=', 'status_change');
             })
-            ->where($where)
+            ->where($condition)
+            ->where('refund_items.ri_status', 'done')
             ->select([
                 't_xref_fg_id',
                 'ti_xref_f_id',
@@ -177,37 +188,58 @@ class TransactionRepository
                 't_tech_creation',
                 'ti_id',
                 'ti_fee_type',
-                'ti_quantity',
-                'ti_amount',
+                'ri_quantity AS quantity',
+                'ri_amount AS amount',
                 'ti_vat',
-                'r_reason_type',
-                'r_status',
-                'r_appointment_date',
-                'ri_quantity',
-                'ri_amount',
-                'ri_reason_type',
-                'ri_status',
-                'ri_invoice_path',
-                'rl_type',
-                'rl_description',
-                'rl_agent',
+                'rl_agent AS agent',
+            ])
+            ->selectRaw('(ti_vat/100 * ri_amount)+ri_amount AS amount_gross')
+            ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
+            ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code');
+
+        return $this->transactionModel
+            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->where($condition)
+            ->select([
+                't_xref_fg_id',
+                'ti_xref_f_id',
+                't_id',
+                't_transaction_id',
+                't_client',
+                't_issuer',
+                't_service',
+                't_payment_method',
+                't_gateway',
+                't_gateway_transaction_id',
+                't_currency',
+                't_invoice_storage',
+                't_workflow',
+                't_status',
+                't_tech_creation',
+                'ti_id',
+                'ti_fee_type',
+                'ti_quantity AS quantity',
+                'ti_amount AS amount',
+                'ti_vat',
+                DB::raw('NULL as agent'),
             ])
             ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
+            ->union($refundQuery)
             ->orderBY($orderField, $order)
             ->paginate($limit)
             ->toArray();
     }
 
     /**
-     * @param array  $where
+     * @param object $where
      * @param string $orderField
      * @param string $order
      *
      * @return array
      */
-    public function exportTransactionsToCsv(array $where, string $orderField, string $order): array
+    public function exportTransactionsToCsv(object $where, string $orderField, string $order): array
     {
         return $this->listTransactions($where, $this->pageLimit, $orderField, $order);
     }

@@ -9,7 +9,7 @@ parameters:
     description: Name of the application
     required: true
     displayName: Application Name
-  - name: IMAGE_TAG
+  - name: IMAGE_TAG_LABEL
     description: Application tag
     required: true
     displayName: Application tag
@@ -468,6 +468,9 @@ parameters:
     name: HOSTNAME_HTTPS
     value: ''
     required: false
+  - name: CI_COMMIT_SHORT_SHA
+    displayName: Commit sha
+    required: true
 objects:
   - apiVersion: v1
     kind: ServiceAccount
@@ -558,12 +561,14 @@ objects:
     metadata:
       labels:
         app: ${APPLICATION_NAME}
-        version: ${IMAGE_TAG}
+        version: ${IMAGE_TAG_LABEL}
+        commit: ${CI_COMMIT_SHORT_SHA}
       name: ${APPLICATION_NAME}
     spec:
       selector:
         app: ${APPLICATION_NAME}
-        version: ${IMAGE_TAG}
+        version: ${IMAGE_TAG_LABEL}
+        commit: ${CI_COMMIT_SHORT_SHA}
         deploymentconfig: ${APPLICATION_NAME}
       triggers:
         - imageChangeParams:
@@ -583,7 +588,8 @@ objects:
             central-logging: "true"
           labels:
             app: ${APPLICATION_NAME}
-            version: ${IMAGE_TAG}
+            version: ${IMAGE_TAG_LABEL}
+            commit: ${CI_COMMIT_SHORT_SHA}
             deploymentconfig: ${APPLICATION_NAME}
         spec:
           initContainers:

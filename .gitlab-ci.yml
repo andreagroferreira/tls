@@ -125,7 +125,7 @@ deploy-instance:
     - oc process -f ./openshift/payment-api-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"
-      IMAGE_TAG="${CI_COMMIT_REF_SLUG}"
+      IMAGE_TAG_LABEL="${CI_COMMIT_REF_SLUG}"
       NAMESPACE="${PROJECT}"
       APP_ENV="${APP_ENV}"
       OPENSHIFT_ENV="${ENV}"
@@ -339,7 +339,8 @@ deploy-instance:
       FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY=$FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY
       FAW_egAll2de_LEGALIZATION_MERCHANT_ID=$FAW_egAll2de_LEGALIZATION_MERCHANT_ID
       FAW_egAll2de_LEGALIZATION_SECURITY_KEY=$FAW_egAll2de_LEGALIZATION_SECURITY_KEY
-      HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
+      HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" 
+      CI_COMMIT_SHORT_SHA="${CI_COMMIT_SHORT_SHA}" | oc apply -f -
     - oc start-build ${APPLICATION_NAME} --from-dir=. --follow -w
     - oc rollout status dc/${APPLICATION_NAME} -w
     - oc process -f ./openshift/payment-fawry-queue-template.yaml

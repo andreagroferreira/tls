@@ -41,13 +41,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
@@ -469,7 +469,7 @@ return [
                     'return_url' => '/globaliris/return',
                 ],
                 'sandbox' => [
-                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_host' => 'https://pay.sandbox.realexpayments.com/pay',
                     'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
@@ -478,7 +478,7 @@ return [
                     'account' => env('ENVPAY_GLO_BEgbALL2be_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
-                      'host' => 'https://hpp.globaliris.com/pay',
+                      'host' => 'https://pay.realexpayments.com/pay',
                 ],*/
             ],
         ],
@@ -552,7 +552,7 @@ return [
                     'return_url' => '/globaliris/return',
                 ],
                 'sandbox' => [
-                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_host' => 'https://pay.sandbox.realexpayments.com/pay',
                     'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
@@ -561,7 +561,7 @@ return [
                     'account' => env('ENVPAY_GLO_DEgbALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
-                    'host' => 'https://hpp.globaliris.com/pay',
+                    'host' => 'https://pay.realexpayments.com/pay',
                 ],
             ],
         ],
@@ -578,7 +578,7 @@ return [
                     'return_url' => '/globaliris/return',
                 ],
                 'sandbox' => [
-                    'sandbox_host' => 'https://hpp.sandbox.globaliris.com/pay',
+                    'sandbox_host' => 'https://pay.sandbox.realexpayments.com/pay',
                     'sandbox_merchant_id' => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     'sandbox_secret' => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     'sandbox_account' => '',
@@ -587,7 +587,7 @@ return [
                     'account' => env('ENVPAY_GLO_DEieALL2de_ACCOUNT'),
                     'secret' => env('ENVPAY_GLO_COMMON_SECRET'),
                     'merchant_id' => env('ENVPAY_GLO_COMMON_MERCHANT_ID'),
-                    'host' => 'https://hpp.globaliris.com/pay',
+                    'host' => 'https://pay.realexpayments.com/pay',
                 ],
             ],
         ],
@@ -780,13 +780,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_FRuzTAS2fr_ACCOUNT")
@@ -929,13 +929,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_FRgbALL2fr_ACCOUNT")
@@ -1037,13 +1037,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_HMPO_allALL2all_ACCOUNT")
@@ -1063,13 +1063,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_HMPO_itALL2uk_ACCOUNT")
@@ -1089,13 +1089,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
@@ -1115,13 +1115,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
@@ -1141,13 +1141,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
@@ -1170,13 +1170,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
@@ -1199,13 +1199,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
@@ -1228,13 +1228,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")
@@ -1296,13 +1296,13 @@ return [
                     "return_url" => "/globaliris/return"
                 ],
                 'sandbox' => [
-                    "sandbox_host" => "https://hpp.sandbox.globaliris.com/pay",
+                    "sandbox_host" => "https://pay.sandbox.realexpayments.com/pay",
                     "sandbox_merchant_id" => env("ENVPAY_GLO_COMMON_SANDBOX_MERCHANT_ID"),
                     "sandbox_secret" => env("ENVPAY_GLO_COMMON_SANDBOX_SECRET"),
                     "sandbox_account" => ''
                 ],
                 'production' => [
-                    "host" => "https://hpp.globaliris.com/pay",
+                    "host" => "https://pay.realexpayments.com/pay",
                     "merchant_id" => env("ENVPAY_GLO_COMMON_MERCHANT_ID"),
                     "secret" => env("ENVPAY_GLO_COMMON_SECRET"),
                     "account" => env("ENVPAY_GLO_BEgbALL2be_ACCOUNT")

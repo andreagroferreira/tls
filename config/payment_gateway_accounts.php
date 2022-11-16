@@ -161,13 +161,13 @@ return [
             'return_url' => '/globaliris/return'
         ],
         'sandbox' => [
-            'host' => 'https://hpp.sandbox.globaliris.com/pay',
+            'host' => 'https://pay.sandbox.realexpayments.com/pay',
             'merchant_id' => null,
             'secret' => null,
             'account' => null
         ],
         'production' => [
-            'host' => 'https://hpp.globaliris.com/pay',
+            'host' => 'https://pay.realexpayments.com/pay',
             'merchant_id' => null,
             'secret' => null,
             'account' => null

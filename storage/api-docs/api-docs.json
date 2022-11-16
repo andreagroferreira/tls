@@ -84,7 +84,7 @@
             }
         },
         "/api/v1/avs_recommendation/{f_id}": {
-            "post": {
+            "get": {
                 "tags": [
                     "Payment API"
                 ],

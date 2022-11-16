@@ -69,8 +69,8 @@ class KBankPaymentGateway implements PaymentGatewayInterface
             $host       = $kbank_config['config']['host'] ?? '';
             $secret     = $kbank_config['config']['secret'] ?? '';
         } else if ($is_live && !$app_env) {
-            $host       = $kbank_config['prod']['host'];
-            $secret     = $kbank_config['prod']['secret'];
+            $host       = $kbank_config['production']['host'];
+            $secret     = $kbank_config['production']['secret'];
         } else {
             $host       = $kbank_config['sandbox']['sandbox_host'];
             $secret     = $kbank_config['sandbox']['sandbox_secret'];
@@ -136,9 +136,9 @@ class KBankPaymentGateway implements PaymentGatewayInterface
             $secret     = $kbank_config['config']['secret'] ??  '';
             $mid        = $kbank_config['config']['mid'] ?? '';
         } else if ($is_live && !$app_env) {
-            $host       = $kbank_config['prod']['host'];
-            $secret     = $kbank_config['prod']['secret'];
-            $mid        = $kbank_config['prod']['mid'];
+            $host       = $kbank_config['production']['host'];
+            $secret     = $kbank_config['production']['secret'];
+            $mid        = $kbank_config['production']['mid'];
         } else {
             $host       = $kbank_config['sandbox']['sandbox_host'];
             $secret     = $kbank_config['sandbox']['sandbox_secret'];
@@ -195,8 +195,8 @@ class KBankPaymentGateway implements PaymentGatewayInterface
             $host       = $kbank_config['config']['host'] ?? '';
             $secret     = $kbank_config['config']['secret'] ?? '';
         } else if ($is_live && !$app_env) {
-            $host       = $kbank_config['prod']['host'];
-            $secret     = $kbank_config['prod']['secret'];
+            $host       = $kbank_config['production']['host'];
+            $secret     = $kbank_config['production']['secret'];
         } else {
             $host       = $kbank_config['sandbox']['sandbox_host'];
             $secret     = $kbank_config['sandbox']['sandbox_secret'];

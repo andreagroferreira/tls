@@ -230,7 +230,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             $config['current'] = $config['config'];
         } else if ($is_live && !$app_env) {
             // Live account
-            $config['current'] = $config['prod'];
+            $config['current'] = $config['production'];
         } else {
             // Test account
             $config['current'] = $config['sandbox'];

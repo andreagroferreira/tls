@@ -41,15 +41,12 @@ class PaymentAccountsController extends BaseController
         foreach (config('payment_gateway_accounts') as $key => $value) {
             $fieldList[$key]['label'] = $value['label'];
             foreach ($value as $env => $field) {
-                if (is_array($field) && $env === 'sandbox') {
-                    $fieldList[$key]['sandbox'] = array_filter($field, function ($v){
-                        return $v === null;
-                    });
-                } elseif($env === 'prod') {
-                    $fieldList[$key]['production']    = array_filter($field, function ($v){
-                        return $v === null;
-                    });
+                if (!is_array($field)) {
+                    continue;
                 }
+                $fieldList[$key][$env] = array_filter($field, function ($v){
+                    return $v === null;
+                });
             }
         }
 

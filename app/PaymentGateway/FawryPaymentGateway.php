@@ -96,9 +96,9 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live account
-            $host_url    = $payment_config['prod']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['prod']['secret_key']);
+            $host_url    = $payment_config['production']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
         } else {
             // Test account
             $host_url    = $payment_config['sandbox']['host'];
@@ -297,9 +297,9 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live account
-            $host_url    = $payment_config['prod']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['prod']['secret_key']);
+            $host_url    = $payment_config['production']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
         } else {
             // Test account
             $host_url    = $payment_config['sandbox']['host'];
@@ -478,9 +478,9 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live config
-            $host_url    = $payment_config['prod']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['prod']['secret_key']);
+            $host_url    = $payment_config['production']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
         } else {
             // Test config
             $host_url    = $payment_config['sandbox']['host'];

@@ -130,7 +130,10 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             'TLS_CURRENCY' => $curr,
             'VAR_REF' => $cai,
             'COMMENT1' => $cai,
-            'COMMENT2' => $url
+            'COMMENT2' => $url,
+            'HPP_CAPTURE_ADDRESS' => true,
+            'HPP_REMOVE_SHIPPING' => true,
+            'HPP_DO_NOT_RETURN_ADDRESS' => true
         ];
 
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);

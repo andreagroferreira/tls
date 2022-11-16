@@ -88,11 +88,11 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
             $secretKey        = $cybersource_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live account
-            $init_hosturl     = $cybersource_config['prod']['host'];
-            $access_key       = $cybersource_config['prod']['access_key'];
-            $profile_id       = $cybersource_config['prod']['profile_id'];
-            $transaction_type = $cybersource_config['prod']['transaction_type'];
-            $secretKey        = $cybersource_config['prod']['secret_key'];
+            $init_hosturl     = $cybersource_config['production']['host'];
+            $access_key       = $cybersource_config['production']['access_key'];
+            $profile_id       = $cybersource_config['production']['profile_id'];
+            $transaction_type = $cybersource_config['production']['transaction_type'];
+            $secretKey        = $cybersource_config['production']['secret_key'];
         } else {
             // Test account
             $init_hosturl     = $cybersource_config['sandbox']['host'];
@@ -161,10 +161,10 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
             $secretKey        = $cybersource_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live account
-            $access_key       = $cybersource_config['prod']['access_key'];
-            $profile_id       = $cybersource_config['prod']['profile_id'];
-            $transaction_type = $cybersource_config['prod']['transaction_type'];
-            $secretKey        = $cybersource_config['prod']['secret_key'];
+            $access_key       = $cybersource_config['production']['access_key'];
+            $profile_id       = $cybersource_config['production']['profile_id'];
+            $transaction_type = $cybersource_config['production']['transaction_type'];
+            $secretKey        = $cybersource_config['production']['secret_key'];
         } else {
             // Test account
             $access_key       = $cybersource_config['sandbox']['access_key'];

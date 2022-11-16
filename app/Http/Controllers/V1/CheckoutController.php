@@ -125,7 +125,7 @@ class CheckoutController extends BaseController
             }
             $getClientUseFile = $this->gatewayService->getClientUseFile();
             if($getClientUseFile){
-                $app_env = $this->isSandBox() ? 'sandbox' : 'prod';
+                $app_env = $this->isSandBox() ? 'sandbox' : 'production';
                 foreach ($payment_gateways as $key => $value) {
                     if ($key !== 'pay_later') {
                         if (!array_key_exists($app_env, $value)) {

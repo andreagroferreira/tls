@@ -75,8 +75,8 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
             $encryptionKey   = $paygate_config['config']['encryption_key'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
-            $query_host      = $paygate_config['prod']['query_host'];
-            $encryptionKey   = $paygate_config['prod']['encryption_key'];
+            $query_host      = $paygate_config['production']['query_host'];
+            $encryptionKey   = $paygate_config['production']['encryption_key'];
         } else {
             // Test account
             $query_host      = $paygate_config['sandbox']['sandbox_query_host'];
@@ -155,10 +155,10 @@ class PaygatePaymentGateway implements PaymentGatewayInterface
             $pay_method          = 'BT';
         } else if ($is_live && !$app_env) {
             // Live account
-            $init_hosturl        = $paygate_config['prod']['initiate_host'];
-            $process_hosturl     = $paygate_config['prod']['process_host'];
-            $paygate_id          = $paygate_config['prod']['paygate_id'];
-            $encryptionKey       = $paygate_config['prod']['encryption_key'];
+            $init_hosturl        = $paygate_config['production']['initiate_host'];
+            $process_hosturl     = $paygate_config['production']['process_host'];
+            $paygate_id          = $paygate_config['production']['paygate_id'];
+            $encryptionKey       = $paygate_config['production']['encryption_key'];
             $pay_method          = 'BT';
         } else {
             // Test account

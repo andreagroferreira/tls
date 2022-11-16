@@ -78,17 +78,11 @@ class GatewayService
         $kbank_config   = $this->getGateway($client, $issuer, $gateway, $pa_id);
         $app_env        = !(env('APP_ENV') === 'production');
         $is_live        = $kbank_config['common']['env'] == 'live';
-        if ($this->getClientUseFile()) {
+        if ($is_live && !$app_env) {
             $config_data = [
-                'redirect_host' => $kbank_config['config']['redirect_host'] ?? $kbank_config['config']['redirect_host'] ?? '',
-                'api_key'       => $kbank_config['config']['apikey'] ?? $kbank_config['config']['apikey'] ?? '',
-                'mid'           => $kbank_config['config']['mid'] ?? $kbank_config['config']['mid'] ?? ''
-            ];
-        } else if ($is_live && !$app_env) {
-            $config_data = [
-                'redirect_host' => $kbank_config['prod']['redirect_host'],
-                'api_key'       => $kbank_config['prod']['apikey'],
-                'mid'           => $kbank_config['prod']['mid']
+                'redirect_host' => $kbank_config['production']['redirect_host'],
+                'api_key'       => $kbank_config['production']['apikey'],
+                'mid'           => $kbank_config['production']['mid']
             ];
         } else {
             $config_data = [
@@ -98,10 +92,6 @@ class GatewayService
             ];
         }
 
-        return [
-            'redirect_host' => $kbankConfig['sandbox']['sandbox_redirect_host'],
-            'api_key' => $kbankConfig['sandbox']['sandbox_apikey'],
-            'mid' => $kbankConfig['sandbox']['sandbox_mid'],
-        ];
+        return $config_data;
     }
 }

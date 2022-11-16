@@ -84,7 +84,7 @@
             }
         },
         "/api/v1/avs_recommendation/{f_id}": {
-            "post": {
+            "get": {
                 "tags": [
                     "Payment API"
                 ],
@@ -1418,68 +1418,6 @@
             }
         },
         "/api/v1/payment-account": {
-            "put": {
-                "tags": [
-                    "Payment API"
-                ],
-                "description": "update a payment_accounts",
-                "operationId": "1d50a84183435a6d0ac79a3a9291d8f6",
-                "parameters": [
-                    {
-                        "name": "psp_id",
-                        "in": "query",
-                        "description": "payment_accounts pa_xref_psp_id",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": "10000"
-                        }
-                    },
-                    {
-                        "name": "pa_name",
-                        "in": "query",
-                        "description": "payment_accounts pa_name",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "cmi"
-                        }
-                    },
-                    {
-                        "name": "pa_type",
-                        "in": "query",
-                        "description": "payment_accounts pa_type",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "[sandbox, prod]"
-                        }
-                    },
-                    {
-                        "name": "pa_info",
-                        "in": "query",
-                        "description": "payment_accounts pa_info.",
-                        "required": true,
-                        "schema": {
-                            "type": "json",
-                            "example": ""
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "payment_accounts update success",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error: bad request"
-                    }
-                }
-            },
             "post": {
                 "tags": [
                     "Payment API"
@@ -3311,6 +3249,63 @@
                     "400": {
                         "description": "Error: bad request"
                     }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "200": {
+                "description": "payment_accounts update success",
+                "content": {
+                    "application/json": {
+                        "schema": {}
+                    }
+                }
+            },
+            "400": {
+                "description": "Error: bad request"
+            }
+        },
+        "parameters": {
+            "psp_id": {
+                "name": "psp_id",
+                "in": "query",
+                "description": "payment_accounts pa_xref_psp_id",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "example": "10000"
+                }
+            },
+            "pa_name": {
+                "name": "pa_name",
+                "in": "query",
+                "description": "payment_accounts pa_name",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "cmi"
+                }
+            },
+            "pa_type": {
+                "name": "pa_type",
+                "in": "query",
+                "description": "payment_accounts pa_type",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "[sandbox, prod]"
+                }
+            },
+            "pa_info": {
+                "name": "pa_info",
+                "in": "query",
+                "description": "payment_accounts pa_info.",
+                "required": true,
+                "schema": {
+                    "type": "json",
+                    "example": ""
                 }
             }
         }

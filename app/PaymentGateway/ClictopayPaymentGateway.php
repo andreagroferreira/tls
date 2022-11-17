@@ -86,9 +86,9 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
             $password     = $clictopay_config['config']['password'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
-            $init_hosturl = $clictopay_config['prod']['host'];
-            $user_name    = $clictopay_config['prod']['user_name'];
-            $password     = $clictopay_config['prod']['password'];
+            $init_hosturl = $clictopay_config['production']['host'];
+            $user_name    = $clictopay_config['production']['user_name'];
+            $password     = $clictopay_config['production']['password'];
         } else {
             // Test account
             $init_hosturl = $clictopay_config['sandbox']['sandbox_host'];
@@ -150,9 +150,9 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
             $password     = $clictopay_config['config']['password'] ?? '';
         } else if ($is_live && !$app_env) {
             // Live account
-            $init_hosturl = $clictopay_config['prod']['host'];
-            $user_name    = $clictopay_config['prod']['user_name'];
-            $password     = $clictopay_config['prod']['password'];
+            $init_hosturl = $clictopay_config['production']['host'];
+            $user_name    = $clictopay_config['production']['user_name'];
+            $password     = $clictopay_config['production']['password'];
         } else {
             // Test account
             $init_hosturl = $clictopay_config['sandbox']['sandbox_host'];

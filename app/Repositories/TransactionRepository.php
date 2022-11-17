@@ -127,11 +127,11 @@ class TransactionRepository
     }
 
     /**
-     * @param $attributes
+     * @param array $attributes
      *
      * @return string
      */
-    public function findBy($attributes): string
+    public function findBy(array $attributes): string
     {
         $result = $this->transactionModel;
         foreach ($attributes as $key => $value) {

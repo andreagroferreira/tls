@@ -363,13 +363,14 @@ class TransactionService
                 $attributes['order']
             );
         }
-
-        $transactions = $this->transactionRepository->listTransactions(
-            $where,
-            $attributes['limit'],
-            $attributes['order_field'],
-            $attributes['order']
-        );
+        else {
+            $transactions = $this->transactionRepository->listTransactions(
+                $where,
+                $attributes['limit'],
+                $attributes['order_field'],
+                $attributes['order']
+            );
+        }
 
         if (empty($transactions)) {
             return [];

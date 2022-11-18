@@ -355,11 +355,14 @@ class TransactionService
                 $where->push(['t_issuer', 'LIKE', '%'.$issuer.'%']);
             }
         }
-
+        
         if ($attributes['csv']) {
-            $transactions = $this->transactionRepository->exportTransactionsToCsv($where, $attributes['order_field'], $attributes['order']);
-        }
-        else {
+            $transactions = $this->transactionRepository->exportTransactionsToCsv(
+                $where,
+                $attributes['order_field'],
+                $attributes['order']
+            );
+        } else {
             $transactions = $this->transactionRepository->listTransactions(
                 $where,
                 $attributes['limit'],

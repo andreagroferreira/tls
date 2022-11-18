@@ -2,12 +2,16 @@
 
 namespace App\Repositories;
 
-use App\Models\Transactions;
 use App\Models\RefundItem;
+use App\Models\Transactions;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class TransactionRepository
 {
+    /**
+     * @var Transactions
+     */
     protected $transactionModel;
 
     /**
@@ -142,15 +146,15 @@ class TransactionRepository
     }
 
     /**
-     * @param object $where
-     * @param int    $limit
-     * @param string $orderField
-     * @param string $order
+     * @param Collection $where
+     * @param int        $limit
+     * @param string     $orderField
+     * @param string     $order
      *
      * @return array
      */
     public function listTransactions(
-        object $where,
+        Collection $where,
         int $limit,
         string $orderField,
         string $order
@@ -233,14 +237,17 @@ class TransactionRepository
     }
 
     /**
-     * @param object $where
-     * @param string $orderField
-     * @param string $order
+     * @param Collection $where
+     * @param string     $orderField
+     * @param string     $order
      *
      * @return array
      */
-    public function exportTransactionsToCsv(object $where, string $orderField, string $order): array
-    {
+    public function exportTransactionsToCsv(
+        Collection $where,
+        string $orderField,
+        string $order
+    ): array {
         return $this->listTransactions($where, $this->pageLimit, $orderField, $order);
     }
 }

@@ -162,7 +162,7 @@ class TransactionService
             ['ti_xref_transaction_id' => $transaction->t_transaction_id, 'ti_tech_deleted' => false],
             ['ti_xref_f_id', 'ti_xref_transaction_id', 'ti_fee_type', 'ti_vat', 'ti_amount', 'ti_tech_deleted']
         )->toArray();
-        if (count($res) != count($transItems)) {
+        if (count($res) !== count($transItems)) {
             $is_change = true;
         } else {
             foreach ($res as $key => $item) {
@@ -357,11 +357,7 @@ class TransactionService
         }
 
         if ($attributes['csv']) {
-            $transactions = $this->transactionRepository->exportTransactionsToCsv(
-                $where,
-                $attributes['order_field'],
-                $attributes['order']
-            );
+            $transactions = $this->transactionRepository->exportTransactionsToCsv($where, $attributes['order_field'], $attributes['order']);
         }
         else {
             $transactions = $this->transactionRepository->listTransactions(

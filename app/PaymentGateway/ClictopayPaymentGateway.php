@@ -130,7 +130,7 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
 
     public function return($return_params)
     {
-        $language   = $return_params['lang'];
+        $language   = $return_params['lang'] ?? $return_params['language'] ?? 'en';
         $gateway_id = $return_params['orderId'];
         $transaction = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $gateway_id, 't_tech_deleted' => false]);
         if (empty($transaction)) {
@@ -159,7 +159,7 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
             $user_name    = $clictopay_config['sandbox']['sandbox_user_name'];
             $password     = $clictopay_config['sandbox']['sandbox_password'];
         }
-        $init_host_url = $init_hosturl . '/getOrderStatusExtended.do?orderId=' . $gateway_id . '&lang=' . $language . '&userName=' . $user_name . '&password=' . $password;
+        $init_host_url = $init_hosturl . '/getOrderStatusExtended.do?orderId=' . $gateway_id . '&language=' . $language . '&userName=' . $user_name . '&password=' . $password;
         $response = $this->apiService->callGeneralApi('get', $init_host_url);
         if ($response['status'] != 200 || (isset($response['body']['errorMessage']) && $response['body']['errorMessage'] != 'Success')) {
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');

@@ -105,8 +105,8 @@ class GlobalirisControllerTest extends TestCase
     }
 
     private function getHash($post_data) {
-        $merchantid = env('APP_ENV') === 'production' ? config('payment_gateway.be.gbLON2be.globaliris.prod.merchant_id') : config('payment_gateway.be.gbLON2be.globaliris.sandbox.sandbox_merchant_id');
-        $secret = env('APP_ENV') === 'production' ? config('payment_gateway.be.gbLON2be.globaliris.prod.secret') : 'secret';
+        $merchantid = env('APP_ENV') === 'production' ? config('payment_gateway.be.gbLON2be.globaliris.production.merchant_id') : config('payment_gateway.be.gbLON2be.globaliris.sandbox.sandbox_merchant_id');
+        $secret = env('APP_ENV') === 'production' ? config('payment_gateway.be.gbLON2be.globaliris.production.secret') : 'secret';
 
         $timestamp = $post_data['TIMESTAMP'] ?? '';
         $result = $post_data['RESULT'] ?? '';

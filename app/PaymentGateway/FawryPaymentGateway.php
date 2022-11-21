@@ -96,9 +96,9 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live account
-            $host_url    = $payment_config['prod']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['prod']['secret_key']);
+            $host_url    = $payment_config['production']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
         } else {
             // Test account
             $host_url    = $payment_config['sandbox']['host'];
@@ -221,8 +221,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     public function return($params)
     {
         $order_id = '';
-        if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
-            $order_id = $params['merchantRefNum'];
+        if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
+            $order_id = $params['merchantRefNumber'];
         } else {
             $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];
@@ -241,7 +241,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     }
 
     private function getPaymentConfig($params, $pa_id) {
-        $order_id  = isset($params['merchantRefNum']) ? $params['merchantRefNum'] : $params['merchantRefNumber'];
+        $order_id = $params['merchantRefNumber'];
         $reg = '/[a-z]{2}[A-Z]{3}2[a-z]{2}/';
         preg_match($reg, $order_id, $matches);
         if (empty($matches)) {
@@ -259,8 +259,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     private function returnV1($params)
     {
         $order_id = '';
-        if (!isset($params['chargeResponse']) && isset($params['merchantRefNum'])) {
-            $order_id = $params['merchantRefNum'];
+        if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
+            $order_id = $params['merchantRefNumber'];
         } else {
             $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];
@@ -297,9 +297,9 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live account
-            $host_url    = $payment_config['prod']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['prod']['secret_key']);
+            $host_url    = $payment_config['production']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
         } else {
             // Test account
             $host_url    = $payment_config['sandbox']['host'];
@@ -478,9 +478,9 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $secret      = $payment_config['config']['secret_key'];
         } else if ($is_live && !$app_env) {
             // Live config
-            $host_url    = $payment_config['prod']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['prod']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['prod']['secret_key']);
+            $host_url    = $payment_config['production']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
+            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
         } else {
             // Test config
             $host_url    = $payment_config['sandbox']['host'];

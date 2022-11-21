@@ -1,11 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migration
 {
@@ -16,10 +12,11 @@ class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migrati
      */
     public function up()
     {
-        if (DB::getDefaultConnection() == 'deploy_payment_pgsql') {
-            DB::unprepared('TRUNCATE TABLE payment_service_providers CASCADE');
+        if (DB::getDefaultConnection() === 'deploy_payment_pgsql') {
+            DB::unprepared('TRUNCATE TABLE payment_service_providers RESTART IDENTITY CASCADE');
 
             $payment_gateways = [
+                'pay_later' => 'Pay Later',
                 'alipay' => 'Alipay',
                 'binga' => 'Binga',
                 'bnp' => 'Bnp',
@@ -27,7 +24,7 @@ class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migrati
                 'cmi' => 'CMI',
                 'cybersource' => 'Cybersource',
                 'fawry' => 'Fawry',
-                'globaliris' => 'Globaliris',
+                'globaliris' => 'Global Pay',
                 'paypal' => 'PayPal',
                 'k-bank' => 'K-Bank',
                 'payfort' => 'PayFort',
@@ -37,15 +34,15 @@ class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migrati
                 'switch' => 'Switch',
                 'tingg' => 'Tingg',
                 'yookassa' => 'YooKassa',
-                'pay_later' => 'Pay Later',
             ];
             DB::beginTransaction();
+
             try {
                 foreach ($payment_gateways as $key => $gateway) {
                     $payment_service = DB::table('payment_service_providers')->where(['psp_code' => $gateway])->first();
-                    $condition       = [
+                    $condition = [
                         'psp_code' => $key,
-                        'psp_name' => $gateway
+                        'psp_name' => $gateway,
                     ];
                     if (empty($payment_service)) {
                         DB::table('payment_service_providers')->insert($condition);
@@ -56,6 +53,7 @@ class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migrati
                 DB::commit();
             } catch (\Exception $e) {
                 DB::rollBack();
+
                 throw new LogicException($e->getMessage());
             }
         }
@@ -68,6 +66,5 @@ class CreateInitialConfigurationDataPaymentServiceProvidersTable extends Migrati
      */
     public function down()
     {
-
     }
 }

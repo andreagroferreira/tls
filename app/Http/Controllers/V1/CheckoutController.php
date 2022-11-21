@@ -122,15 +122,14 @@ class CheckoutController extends BaseController
                 $payment_gateways = [
                     $selected_gateway => $payment_gateways[$selected_gateway]
                 ];
-            } else {
-                $getClientUseFile = $this->gatewayService->getClientUseFile();
-                if ($getClientUseFile) {
-                    $app_env = $this->isSandBox() ? 'sandbox' : 'prod';
-                    foreach ($payment_gateways as $key => $value) {
-                        if ($key !== 'pay_later') {
-                            if (!array_key_exists($app_env, $value)) {
-                                unset($payment_gateways[$key]);
-                            }
+            }
+            $getClientUseFile = $this->gatewayService->getClientUseFile();
+            if($getClientUseFile){
+                $app_env = $this->isSandBox() ? 'sandbox' : 'production';
+                foreach ($payment_gateways as $key => $value) {
+                    if ($key !== 'pay_later') {
+                        if (!array_key_exists($app_env, $value)) {
+                            unset($payment_gateways[$key]);
                         }
                     }
                     $payment_gateways_new = [];

@@ -80,7 +80,7 @@ class PaymentGatewayService
             'pc_country' => $pc_country,
             'pc_city' => $pc_city,
             'pc_service' => $service,
-            'pc_is_actived' => true
+            'pc_is_active' => true
         ];
 
         $paymentConfigurations = $this->paymentConfigurationsRepositories->findBy($where)->toArray();
@@ -111,7 +111,7 @@ class PaymentGatewayService
             $payment_gateway_config[$gateway_type]['sort'] = ($gateway == 'pay_later' ? 2 : 1);
 
             if ($v['psp_code'] !== 'pay_later') {
-                $type = $payment_gateway_config[$gateway_type]['type'] === 'production' ? 'prod' : $payment_gateway_config[$gateway_type]['type'];
+                $type = $payment_gateway_config[$gateway_type]['type'];
                 $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $type), $payment_gateway_config[$gateway_type][$v['pa_type']]);
                 foreach ($diff as $key => $value) {
                     $payment_gateway_config[$gateway_type][$v['pa_type']][$key] = $value;

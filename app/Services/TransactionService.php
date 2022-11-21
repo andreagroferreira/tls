@@ -217,7 +217,7 @@ class TransactionService
 
     protected function generateTransactionId($transaction_id_seq, $issuer)
     {
-        $environment = env('APPLICATION_ENV') == 'prod' ? '' : strtoupper(env('APPLICATION_ENV')) . date('Ymd') . '-';
+        $environment = env('APPLICATION_ENV') == 'production' ? '' : strtoupper(env('APPLICATION_ENV')) . date('Ymd') . '-';
         $project = env('PROJECT') ? env('PROJECT') . '-' : '';
         return $project . $environment . $issuer . '-' . str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
     }
@@ -308,26 +308,42 @@ class TransactionService
     {
         $fullTextSearchColumn = ['ti_fee_type', 't_comment', 't_reference_id'];
 
+        $allowedColumns = [
+            't_country',
+            't_city',
+            'ti_fee_type',
+            't_reference_id',
+            't_comment',
+            't_xref_fg_id',
+            't_client',
+            't_batch_id',
+            'ti_quantity',
+        ];
+
         $where = collect([
             ['t_tech_deleted', '=', false],
         ]);
 
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $where->push(
-                ['t_tech_creation', '>=', $attributes['start_date'] . ' 00:00:00'],
-                ['t_tech_creation', '<=', $attributes['end_date'] . ' 23:59:59']
-            );
+        if (!empty($attributes['start_date'])) {
+            $where->push(['t_tech_creation', '>=', $attributes['start_date'].' 00:00:00']);
+        }
+
+        if (!empty($attributes['end_date'])) {
+            $where->push(['t_tech_creation', '<=', $attributes['end_date'].' 23:59:59']);
         }
 
         if (!empty($attributes['multi_search'])) {
             $issuer = array_get($attributes['multi_search'], 't_country').
-                      array_get($attributes['multi_search'], 't_city');
-            
-            unset($attributes['multi_search']['t_country']);
-            unset($attributes['multi_search']['t_city']);
+                array_get($attributes['multi_search'], 't_city');
+
+            unset($attributes['multi_search']['t_country'], $attributes['multi_search']['t_city']);
 
             $data = array_filter($attributes['multi_search']);
             foreach ($data as $column => $value) {
+                if (!in_array($column, $allowedColumns)) {
+                    continue;
+                }
+
                 if (in_array($column, $fullTextSearchColumn)) {
                     $where->push([$column, 'LIKE', '%'.$value.'%']);
                 } else {
@@ -344,14 +360,14 @@ class TransactionService
             $where->toArray(),
             $attributes['limit'],
             $attributes['order_field'],
-            $attributes['order']
+            $attributes['order'],
+            $attributes['csv']
         );
 
         if (empty($transactions)) {
             return [];
         }
 
-        $transactions = $transactions->toArray();
         foreach ($transactions['data'] as $k => $details) {
             $transactions['data'][$k]['country'] = getCountryName($details['country_code']);
             $transactions['data'][$k]['city'] = getCityName($details['city_code']);
@@ -362,6 +378,74 @@ class TransactionService
             'total' => array_get($transactions, 'total', 0),
             'data' => array_get($transactions, 'data', []),
             'current_page' => array_get($transactions, 'current_page', 1),
+        ];
+    }
+
+    /**
+     * @param array $result
+     *
+     * @return array
+     */
+    public function writeTransactionsToCsv(array $result): array
+    {
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=download.csv',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+        $columns = [
+            'Client',
+            'Country',
+            'City',
+            'Date of transaction',
+            'Transaction ID',
+            'Group ID',
+            'Basket type',
+            'SKU',
+            'Payment type',
+            'Gateway transaction ID',
+            'Currency',
+            'Amount NET',
+            'VAT',
+            'Amount Gross',
+            'Quantity',
+        ];
+        $fields = [
+            't_client',
+            'country',
+            'city',
+            't_tech_creation',
+            't_transaction_id',
+            't_xref_fg_id',
+            't_service',
+            'ti_fee_type',
+            't_payment_method',
+            't_gateway_transaction_id',
+            't_currency',
+            'ti_amount',
+            'ti_vat',
+            'amount_gross',
+            'ti_quantity',
+        ];
+
+        $callback = function () use ($result, $columns, $fields) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            foreach ($result as $details) {
+                $row = [];
+                foreach ($fields as $v) {
+                    $row[$v] = $details[$v];
+                }
+                fputcsv($file, $row);
+            }
+            fclose($file);
+        };
+
+        return [
+            'callback' => $callback,
+            'headers' => $headers,
         ];
     }
 }

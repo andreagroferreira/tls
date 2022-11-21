@@ -84,7 +84,7 @@
             }
         },
         "/api/v1/avs_recommendation/{f_id}": {
-            "post": {
+            "get": {
                 "tags": [
                     "Payment API"
                 ],
@@ -122,6 +122,16 @@
                         }
                     },
                     {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "the data limit",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2"
+                        }
+                    },
+                    {
                         "name": "refresh_cache",
                         "in": "query",
                         "description": "refresh cache",
@@ -137,7 +147,342 @@
                         "description": "get the recommended service success",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "type": "object",
+                                    "example": {
+                                        "all_avs": [
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-SPV",
+                                                "vat": "16.000",
+                                                "price": "956.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": true,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-COPY-BW",
+                                                "vat": "16.000",
+                                                "price": "0.50",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": false,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-PV",
+                                                "vat": "16.000",
+                                                "price": "179.66",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": true,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-ECR-OUT-AMM",
+                                                "vat": "16.000",
+                                                "price": "10.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": false,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-ECR-IN-AMM",
+                                                "vat": "16.000",
+                                                "price": "7.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": false,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-UASSP",
+                                                "vat": "16.000",
+                                                "price": "27.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": false,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-UAS",
+                                                "vat": "16.000",
+                                                "price": "25.50",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": false,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-PHOTO",
+                                                "vat": "16.000",
+                                                "price": "7.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": false,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-ECR-OUT",
+                                                "vat": "16.000",
+                                                "price": "50.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": true,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-SMS",
+                                                "vat": "16.000",
+                                                "price": "1.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": false,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-KMPWA",
+                                                "vat": "16.000",
+                                                "price": "55.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": true,
+                                                "avs_conflict": true,
+                                                "not_recommended": false,
+                                                "not_recommended_display": false,
+                                                "_score": 1000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-PL",
+                                                "vat": "16.000",
+                                                "price": "95.50",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": 1,
+                                                "is_display": false,
+                                                "avs_conflict": true,
+                                                "not_recommended": true,
+                                                "not_recommended_display": false,
+                                                "_score": 1001
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-WIWA",
+                                                "vat": "16.000",
+                                                "price": "95.50",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": 2,
+                                                "is_display": false,
+                                                "avs_conflict": false,
+                                                "not_recommended": true,
+                                                "not_recommended_display": false,
+                                                "_score": 1002
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-GROUP",
+                                                "vat": "16.000",
+                                                "price": "50.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": false,
+                                                "avs_conflict": false,
+                                                "not_recommended": true,
+                                                "not_recommended_display": true,
+                                                "_score": 2000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-ASS",
+                                                "vat": "16.000",
+                                                "price": "81.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": false,
+                                                "avs_conflict": true,
+                                                "not_recommended": true,
+                                                "not_recommended_display": true,
+                                                "_score": 2000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-FFA",
+                                                "vat": "16.000",
+                                                "price": "54.00",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": false,
+                                                "avs_conflict": false,
+                                                "not_recommended": true,
+                                                "not_recommended_display": true,
+                                                "_score": 2000
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-PTA",
+                                                "vat": "16.000",
+                                                "price": "93.50",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "recommendation_priority": null,
+                                                "is_display": false,
+                                                "avs_conflict": false,
+                                                "not_recommended": true,
+                                                "not_recommended_display": false,
+                                                "_score": 2000
+                                            }
+                                        ],
+                                        "requested_avs": [],
+                                        "paid_avs": [],
+                                        "denied_avs": [
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-PTA",
+                                                "vat": "16.000",
+                                                "price": "93.50",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "rcd_id": 1980
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-WIWA",
+                                                "vat": "16.000",
+                                                "price": "95.50",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "rcd_id": 1979
+                                            },
+                                            {
+                                                "service_name": null,
+                                                "sku": "UK-PL",
+                                                "vat": "16.000",
+                                                "price": "95.50",
+                                                "currency": "JOD",
+                                                "avs_description": null,
+                                                "sku_description": null,
+                                                "avs_sale_script": null,
+                                                "sku_sale_script": null,
+                                                "rcd_id": 1978
+                                            }
+                                        ]
+                                    }
+                                }
                             }
                         }
                     },
@@ -1418,68 +1763,6 @@
             }
         },
         "/api/v1/payment-account": {
-            "put": {
-                "tags": [
-                    "Payment API"
-                ],
-                "description": "update a payment_accounts",
-                "operationId": "1d50a84183435a6d0ac79a3a9291d8f6",
-                "parameters": [
-                    {
-                        "name": "psp_id",
-                        "in": "query",
-                        "description": "payment_accounts pa_xref_psp_id",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": "10000"
-                        }
-                    },
-                    {
-                        "name": "pa_name",
-                        "in": "query",
-                        "description": "payment_accounts pa_name",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "cmi"
-                        }
-                    },
-                    {
-                        "name": "pa_type",
-                        "in": "query",
-                        "description": "payment_accounts pa_type",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "[sandbox, prod]"
-                        }
-                    },
-                    {
-                        "name": "pa_info",
-                        "in": "query",
-                        "description": "payment_accounts pa_info.",
-                        "required": true,
-                        "schema": {
-                            "type": "json",
-                            "example": ""
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "payment_accounts update success",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error: bad request"
-                    }
-                }
-            },
             "post": {
                 "tags": [
                     "Payment API"
@@ -3151,6 +3434,16 @@
                         }
                     },
                     {
+                        "name": "csv",
+                        "in": "query",
+                        "description": "CSV download (0 or 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "0"
+                        }
+                    },
+                    {
                         "name": "multi_search[t_country]",
                         "in": "query",
                         "description": "search country",
@@ -3341,6 +3634,63 @@
                     "400": {
                         "description": "Error: bad request"
                     }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "200": {
+                "description": "payment_accounts update success",
+                "content": {
+                    "application/json": {
+                        "schema": {}
+                    }
+                }
+            },
+            "400": {
+                "description": "Error: bad request"
+            }
+        },
+        "parameters": {
+            "psp_id": {
+                "name": "psp_id",
+                "in": "query",
+                "description": "payment_accounts pa_xref_psp_id",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "example": "10000"
+                }
+            },
+            "pa_name": {
+                "name": "pa_name",
+                "in": "query",
+                "description": "payment_accounts pa_name",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "cmi"
+                }
+            },
+            "pa_type": {
+                "name": "pa_type",
+                "in": "query",
+                "description": "payment_accounts pa_type",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "[sandbox, prod]"
+                }
+            },
+            "pa_info": {
+                "name": "pa_info",
+                "in": "query",
+                "description": "payment_accounts pa_info.",
+                "required": true,
+                "schema": {
+                    "type": "json",
+                    "example": ""
                 }
             }
         }

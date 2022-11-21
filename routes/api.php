@@ -149,4 +149,5 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
 
     // refund apis
     $router->post('refund', 'RefundController@create');
+    $router->get('transaction_items_and_refunds/{ti_xref_f_id}', 'RefundController@getRefundTransactionItems');
 });

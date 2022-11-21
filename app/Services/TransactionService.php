@@ -355,7 +355,7 @@ class TransactionService
                 $where->push(['t_issuer', 'LIKE', '%'.$issuer.'%']);
             }
         }
-        
+
         if ($attributes['csv']) {
             $transactions = $this->transactionRepository->exportTransactionsToCsv(
                 $where,
@@ -460,7 +460,7 @@ class TransactionService
 
     protected function generateTransactionId($transaction_id_seq, $issuer)
     {
-        $environment = env('APPLICATION_ENV') == 'production' ? '' : strtoupper(env('APPLICATION_ENV')).date('Ymd').'-';
+        $environment = env('APPLICATION_ENV') == 'prod' ? '' : strtoupper(env('APPLICATION_ENV')).date('Ymd').'-';
         $project = env('PROJECT') ? env('PROJECT').'-' : '';
 
         return $project.$environment.$issuer.'-'.str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);

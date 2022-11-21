@@ -586,16 +586,19 @@ class TransactionController extends BaseController
         $validator = validator($params, [
             'page' => 'required|integer',
             'limit' => 'required|integer',
-            'start_date' => 'nullable|date_format:Y-m-d',
-            'end_date' => 'nullable|date_format:Y-m-d|after_or_equal:start_date',
+            'start_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d',
+            'end_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d|after_or_equal:start_date',
             'order_field' => 'required|string',
             'order' => [
                 'required',
                 'string',
                 Rule::in(['desc', 'asc']),
             ],
-            'multi_search'=>'nullable|array',
-            'csv'=>'nullable|bool',
+            'multi_search' => 'nullable|array',
+            'csv' => 'nullable|bool',
+        ], [
+            'start_date.required_if' => 'The start date field is required when csv is 1 or true.',
+            'end_date.required_if' => 'The end date field is required when csv is 1 or true.',
         ]);
 
         if ($validator->fails()) {

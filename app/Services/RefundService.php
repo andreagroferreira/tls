@@ -80,7 +80,7 @@ class RefundService
             return false;
         }
 
-        return ['t_id' => $refundRequest->rr_id];
+        return ['r_id' => $refundRequest->r_id];
     }
 
     /**

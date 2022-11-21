@@ -130,7 +130,7 @@ class ClictopayPaymentGateway implements PaymentGatewayInterface
 
     public function return($return_params)
     {
-        $language   = $return_params['language'] ?? 'en';
+        $language   = $return_params['lang'] ?? $return_params['language'] ?? 'en';
         $gateway_id = $return_params['orderId'];
         $transaction = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $gateway_id, 't_tech_deleted' => false]);
         if (empty($transaction)) {

@@ -1,18 +1,33 @@
 <?php
 
-
 namespace App\Repositories;
 
+use App\Models\RefundItem;
 use App\Models\Transactions;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class TransactionRepository
 {
+    /**
+     * @var Transactions
+     */
     protected $transactionModel;
 
-    public function __construct(Transactions $transactionModel)
+    /**
+     * @var RefundItem
+     */
+    protected $refundItemModel;
+
+    /**
+     * @var int
+     */
+    private $pageLimit = 50000;
+
+    public function __construct(Transactions $transactionModel, RefundItem $refundItemModel)
     {
         $this->transactionModel = $transactionModel;
+        $this->refundItemModel = $refundItemModel;
     }
 
     public function setConnection($connection)
@@ -62,7 +77,7 @@ class TransactionRepository
             ])
             ->where([
                 ['t_xref_fg_id', '=', $attributes['fg_id']],
-                ['t_tech_deleted', '=', false]
+                ['t_tech_deleted', '=', false],
             ])
             ->where(function ($query) {
                 //get all transactions where t_status is done
@@ -70,12 +85,12 @@ class TransactionRepository
                     ->OrWhere(function ($query) {
                         //get all transactions where t_status not equal to close and transaction not expired
                         $query->where('t_status', '<>', 'close')
-                            ->where(function($sub_query) {
-                                $sub_query->whereNull('t_expiration')
+                            ->where(function ($subQuery) {
+                                $subQuery->whereNull('t_expiration')
                                     ->orWhere('t_expiration', '>', 'now()');
                             })
-                            ->where(function($sub_query) {
-                                $sub_query->whereNull('t_gateway_expiration')
+                            ->where(function ($subQuery) {
+                                $subQuery->whereNull('t_gateway_expiration')
                                     ->Orwhere('t_gateway_expiration', '>', 'now()');
                             });
                     });
@@ -98,13 +113,16 @@ class TransactionRepository
         }
 
         foreach ($attributes as $key => $value) {
-            $transaction->$key = $value;
+            $transaction->{$key} = $value;
         }
         $transaction->save();
 
         return $this->transactionModel->find($transaction->t_id);
     }
 
+    /**
+     * @return mixed
+     */
     public function getTransactionIdSeq()
     {
         $res = DB::connection($this->getConnection())->select("SELECT nextval('transactions_t_id_seq')");
@@ -112,58 +130,124 @@ class TransactionRepository
         return array_first($res)->nextval;
     }
 
-    public function findBy($attributes) {
+    /**
+     * @param array $attributes
+     *
+     * @return string
+     */
+    public function findBy(array $attributes): string
+    {
         $result = $this->transactionModel;
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);
         }
+
         return $result->get();
     }
 
     /**
-     * @param array  $where
-     * @param int    $limit
-     * @param string $order_field
-     * @param string $order
-     * @param bool   $csvRequired
+     * @param Collection $where
+     * @param int        $limit
+     * @param string     $orderField
+     * @param string     $order
      *
      * @return array
      */
-    public function listTransactions(array $where, int $limit, string $order_field, string $order, bool $csvRequired): array
-    {
-        $transactions = $this->transactionModel
-            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')
-            ->where($where)
+    public function listTransactions(
+        Collection $where,
+        int $limit,
+        string $orderField,
+        string $order
+    ): array {
+        $condition = $where->push(
+            ['t_tech_deleted', '=', false],
+            ['t_status', '=', 'done'],
+        )->toArray();
+
+        $refundQuery = $this->refundItemModel
+            ->leftJoin('transaction_items', 'transaction_items.ti_id', '=', 'refund_items.ri_xref_ti_id')
+            ->leftJoin('transactions', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')
+            ->leftJoin('refund_logs', function ($join) {
+                $join->on('refund_logs.rl_xref_ri_id', '=', 'refund_items.ri_id');
+                $join->on('refund_logs.rl_xref_r_id', '=', 'refund_items.ri_xref_r_id');
+                $join->where('refund_logs.rl_type', '=', 'status_change');
+            })
+            ->where($condition)
+            ->where('refund_items.ri_status', 'done')
             ->select([
-                't_id',
-                't_tech_creation',
-                't_client',
                 't_xref_fg_id',
+                'ti_xref_f_id',
+                't_id',
                 't_transaction_id',
+                't_client',
+                't_issuer',
                 't_service',
-                'ti_fee_type',
-                'ti_quantity',
-                'ti_amount',
-                'ti_vat',
                 't_payment_method',
                 't_gateway',
                 't_gateway_transaction_id',
-                't_payment_method',
                 't_currency',
                 't_invoice_storage',
+                't_workflow',
+                't_status',
+                't_tech_creation',
+                'ti_id',
+                'ti_fee_type',
+                'ri_quantity AS quantity',
+                'ri_amount AS amount',
+                'ti_vat',
+                'rl_agent AS agent',
+            ])
+            ->selectRaw('(ti_vat/100 * ri_amount)+ri_amount AS amount_gross')
+            ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
+            ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code');
+
+        return $this->transactionModel
+            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->where($condition)
+            ->select([
+                't_xref_fg_id',
+                'ti_xref_f_id',
+                't_id',
+                't_transaction_id',
+                't_client',
                 't_issuer',
+                't_service',
+                't_payment_method',
+                't_gateway',
+                't_gateway_transaction_id',
+                't_currency',
+                't_invoice_storage',
+                't_workflow',
+                't_status',
+                't_tech_creation',
+                'ti_id',
+                'ti_fee_type',
+                'ti_quantity AS quantity',
+                'ti_amount AS amount',
+                'ti_vat',
+                DB::raw('NULL as agent'),
             ])
             ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
-            ->orderBY($order_field, $order);
+            ->union($refundQuery)
+            ->orderBY($orderField, $order)
+            ->paginate($limit)
+            ->toArray();
+    }
 
-        if ($csvRequired) {
-            $transactionsCsv['data'] = $transactions->get()->toArray();
-
-            return $transactionsCsv;
-        }
-
-        return $transactions->paginate($limit)->toArray();
+    /**
+     * @param Collection $where
+     * @param string     $orderField
+     * @param string     $order
+     *
+     * @return array
+     */
+    public function exportTransactionsToCsv(
+        Collection $where,
+        string $orderField,
+        string $order
+    ): array {
+        return $this->listTransactions($where, $this->pageLimit, $orderField, $order);
     }
 }

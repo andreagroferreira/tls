@@ -2881,6 +2881,46 @@
                 }
             }
         },
+        "/api/v1/refund": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "create a new refund request",
+                "operationId": "2cb41394b31d9c58ad95db0fd38babd1",
+                "responses": {
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/transaction_items_and_refunds/{ti_xref_f_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": " Get all Refund Transaction Items",
+                "operationId": "24ff0f241df8ffda0d9313971d558adc",
+                "parameters": [
+                    {
+                        "name": "ti_xref_f_id",
+                        "in": "query",
+                        "description": "Form ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/switch/redirto": {
             "post": {
                 "tags": [

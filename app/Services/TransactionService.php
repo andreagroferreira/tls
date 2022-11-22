@@ -16,15 +16,15 @@ class TransactionService
         TransactionRepository $transactionRepository,
         DbConnectionService $dbConnectionService,
         TransactionItemsService $transactionItemsService
-    )
-    {
+    ) {
         $this->transactionRepository = $transactionRepository;
         $this->dbConnectionService = $dbConnectionService;
         $this->transactionItemsService = $transactionItemsService;
         $this->transactionRepository->setConnection($this->dbConnectionService->getConnection());
     }
 
-    public function updateById($t_id, $attributes) {
+    public function updateById($t_id, $attributes)
+    {
         return $this->transactionRepository->update(['t_id' => $t_id], $attributes);
     }
 
@@ -38,19 +38,21 @@ class TransactionService
 
         return $transactions->transform(function ($item) {
             $item->items = $this->transactionItemsService->fetchItemsByTransactionId($item->transaction_id);
+
             return $item;
         });
     }
 
-    public function fetchByForm($params) {
+    public function fetchByForm($params)
+    {
         $transactions = $this->transactionItemsService->fetch([
-            'ti_xref_f_id' => $params['f_id']
+            'ti_xref_f_id' => $params['f_id'],
         ])
             ->whereNotIn('ti_fee_type', ['service_fees', 'visa_fees'])
             ->groupBy('ti_xref_transaction_id')
             ->toArray();
 
-        if(empty($transactions)) {
+        if (empty($transactions)) {
             return [];
         }
 
@@ -58,12 +60,12 @@ class TransactionService
         foreach ($transactions as $transaction_id => $services) {
             $transaction = $this->transactionRepository->fetch([
                 't_transaction_id' => $transaction_id,
-                't_status' => 'done'
+                't_status' => 'done',
             ])->first();
-            if(!empty($transaction)) {
+            if (!empty($transaction)) {
                 $items['f_id'] = current($services)['ti_xref_f_id'];
                 $items['skus'] = [];
-                foreach($services as $service) {
+                foreach ($services as $service) {
                     $items['skus'][] = [
                         'sku' => $service['ti_fee_type'],
                         'price' => $service['ti_amount'],
@@ -82,14 +84,15 @@ class TransactionService
                     'service' => $transaction->t_service,
                     'tech_creation' => $transaction->t_tech_creation,
                     'tech_modification' => $transaction->t_tech_modification,
-                    'items' => array($items)
+                    'items' => [$items],
                 ];
             }
         }
         $sort = SORT_DESC;
-        if(!empty($params['sort']) && $params['sort'] == 'asc') {
+        if (!empty($params['sort']) && $params['sort'] == 'asc') {
             $sort = SORT_ASC;
         }
+
         return collect($receipts)->sortBy('t_id', $sort)->values()->toArray();
     }
 
@@ -98,7 +101,7 @@ class TransactionService
         $where = collect([
             ['t_tech_deleted', '=', false],
             ['t_tech_creation', '>=', $attributes['start_date']],
-            ['t_tech_creation', '<', $attributes['end_date']]
+            ['t_tech_creation', '<', $attributes['end_date']],
         ])
             ->when(array_key_exists('status', $attributes), function ($collect) use ($attributes) {
                 return $collect->push(['t_status', '=', $attributes['status']]);
@@ -108,12 +111,16 @@ class TransactionService
             })
             ->toArray();
 
-        $res = $this->transactionRepository->fetchWithPage($where, $attributes['limit'], array_get($attributes, 'issuer'))
+        $res = $this->transactionRepository->fetchWithPage(
+            $where,
+            $attributes['limit'],
+            array_get($attributes, 'issuer')
+        )
             ->toArray();
 
         return [
             'total' => array_get($res, 'total', 0),
-            'data' => array_get($res, 'data', [])
+            'data' => array_get($res, 'data', []),
         ];
     }
 
@@ -137,27 +144,42 @@ class TransactionService
             (!is_null($transaction->t_expiration) && $now->gt($transaction->t_expiration))
             || (!is_null($transaction->t_gateway_expiration) && $now->gt($transaction->t_gateway_expiration))
         ) {
-            $this->transactionRepository->update(['t_id' => $transaction->t_id], ['t_status' => 'close', 't_tech_modification' => $now]);
+            $this->transactionRepository->update(
+                ['t_id' => $transaction->t_id],
+                ['t_status' => 'close', 't_tech_modification' => $now]
+            );
+
             return true;
         }
 
         $is_change = false;
-        $res = $this->convertItemsFieldToArray($transaction->t_transaction_id, $attributes['items'], ['ti_tech_deleted' => false]);
-        $transItems = $this->transactionItemsService->fetch(['ti_xref_transaction_id' => $transaction->t_transaction_id, 'ti_tech_deleted' => false], ['ti_xref_f_id', 'ti_xref_transaction_id', 'ti_fee_type', 'ti_vat', 'ti_amount', 'ti_tech_deleted'])->toArray();
-        if(count($res) != count($transItems)){
+        $res = $this->convertItemsFieldToArray(
+            $transaction->t_transaction_id,
+            $attributes['items'],
+            ['ti_tech_deleted' => false]
+        );
+        $transItems = $this->transactionItemsService->fetch(
+            ['ti_xref_transaction_id' => $transaction->t_transaction_id, 'ti_tech_deleted' => false],
+            ['ti_xref_f_id', 'ti_xref_transaction_id', 'ti_fee_type', 'ti_vat', 'ti_amount', 'ti_tech_deleted']
+        )->toArray();
+        if (count($res) !== count($transItems)) {
             $is_change = true;
-        }else{
+        } else {
             foreach ($res as $key => $item) {
                 if ($this->transactionItemsService->fetch($item)->isEmpty()) {
                     $is_change = true;
+
                     break;
-                } else {
-                    unset($res[$key]);
                 }
+                unset($res[$key]);
             }
         }
         if ($is_change || filled($res)) {
-            $this->transactionRepository->update(['t_id' => $transaction->t_id], ['t_status' => 'close', 't_tech_modification' => $now]);
+            $this->transactionRepository->update(
+                ['t_id' => $transaction->t_id],
+                ['t_status' => 'close', 't_tech_modification' => $now]
+            );
+
             return true;
         }
 
@@ -177,7 +199,7 @@ class TransactionService
             't_callback_url' => $attributes['callback_url'],
             't_currency' => $attributes['currency'],
             't_workflow' => $attributes['workflow'],
-            't_invoice_storage' => $attributes['invoice_storage'] ?? 'file-library'
+            't_invoice_storage' => $attributes['invoice_storage'] ?? 'file-library',
         ];
 
         $expirationMinutes = config('payment_gateway.expiration_minutes') ?? 60;
@@ -196,67 +218,43 @@ class TransactionService
         if (isset($attributes['service']) && $attributes['service'] == 'gov') {
             $transaction_data['t_service'] = $attributes['service'];
         }
-        $transaction_data['t_transaction_id'] = $this->generateTransactionId($transaction_data['t_id'], $transaction_data['t_issuer']);
+        $transaction_data['t_transaction_id'] = $this->generateTransactionId(
+            $transaction_data['t_id'],
+            $transaction_data['t_issuer']
+        );
 
         $db_connection = DB::connection($this->dbConnectionService->getConnection());
         $db_connection->beginTransaction();
 
         try {
-
             $transaction = $this->transactionRepository->create($transaction_data);
-            $this->transactionItemsService->createMany($this->convertItemsFieldToArray($transaction->t_transaction_id, $attributes['items']));
+            $this->transactionItemsService->createMany(
+                $this->convertItemsFieldToArray(
+                    $transaction->t_transaction_id,
+                    $attributes['items']
+                )
+            );
 
             $db_connection->commit();
         } catch (\Exception $e) {
             $db_connection->rollBack();
+
             return false;
         }
 
-        return ['t_id' => $transaction->t_id, 'expire' => Carbon::parse($transaction->t_expiration)->toDateTimeString()];
+        return ['t_id' => $transaction->t_id,
+            'expire' => Carbon::parse($transaction->t_expiration)->toDateTimeString(), ];
     }
 
-    protected function generateTransactionId($transaction_id_seq, $issuer)
+    public function update($transaction_id, $attributes)
     {
-        $environment = env('APPLICATION_ENV') == 'prod' ? '' : strtoupper(env('APPLICATION_ENV')) . date('Ymd') . '-';
-        $project = env('PROJECT') ? env('PROJECT') . '-' : '';
-        return $project . $environment . $issuer . '-' . str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
-    }
-
-    protected function convertItemsFieldToArray($transaction_id, $items_field, $add_field = [])
-    {
-        $response = [];
-        foreach (json_decode($items_field, true) as $items) {
-            foreach ($items['skus'] as $sku) {
-                $res = [
-                    'ti_xref_f_id' => $items['f_id'],
-                    'ti_xref_transaction_id' => $transaction_id,
-                    'ti_fee_type' => $sku['sku'],
-                    'ti_vat' => $sku['vat'],
-                    'ti_amount' => $sku['price'],
-                ];
-                //agent receipt is used
-                if (isset($sku['quantity'])) {
-                    $res['ti_quantity'] = $sku['quantity'];
-                }
-                if (filled($add_field)) {
-                    $res = $res + $add_field;
-                }
-
-                $response[] = $res;
-            }
-        }
-
-        return $response;
-    }
-
-    public function update($transaction_id, $attributes) {
         return $this->transactionRepository->update($transaction_id, $attributes);
     }
 
     public function getTransaction($t_id): array
     {
         $transaction = $this->transactionRepository->fetch(['t_id' => $t_id])->first();
-        if(empty($transaction)) {
+        if (empty($transaction)) {
             return [];
         }
         $transaction = $transaction->toArray();
@@ -271,31 +269,36 @@ class TransactionService
         }
         $transaction['t_amount'] = $amount;
         $transaction['t_items'] = $transaction_items;
+
         return $transaction;
     }
 
     public function fetchTransaction($attributes): array
     {
         $transaction = $this->transactionRepository->fetch($attributes);
-        if($transaction->isEmpty()) {
+        if ($transaction->isEmpty()) {
             return [];
         }
         $t_id = $transaction->first()->t_id;
+
         return $this->getTransaction($t_id);
     }
 
-    public function fetchByTransactionId($transaction_id) {
+    public function fetchByTransactionId($transaction_id)
+    {
         return $this->transactionRepository->findBy([
             't_id' => $transaction_id,
             't_tech_deleted' => false,
         ])->first();
     }
 
-    public function getDbNowTime() {
+    public function getDbNowTime()
+    {
         return Carbon::parse($this->dbConnectionService->getDbNowTime());
     }
 
-    public function getDbTimeZone() {
+    public function getDbTimeZone()
+    {
         return Carbon::parse($this->dbConnectionService->getDbNowTime())->getTimezone()->toRegionName();
     }
 
@@ -320,21 +323,18 @@ class TransactionService
             'ti_quantity',
         ];
 
-        $where = collect([
-            ['t_tech_deleted', '=', false],
-        ]);
+        $where = collect();
 
-        if (!empty($attributes['start_date'])) {
-            $where->push(['t_tech_creation', '>=', $attributes['start_date'].' 00:00:00']);
-        }
-
-        if (!empty($attributes['end_date'])) {
-            $where->push(['t_tech_creation', '<=', $attributes['end_date'].' 23:59:59']);
+        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
+            $where->push(
+                ['t_tech_creation', '>=', $attributes['start_date'].' 00:00:00'],
+                ['t_tech_creation', '<=', $attributes['end_date'].' 23:59:59']
+            );
         }
 
         if (!empty($attributes['multi_search'])) {
             $issuer = array_get($attributes['multi_search'], 't_country').
-                array_get($attributes['multi_search'], 't_city');
+                      array_get($attributes['multi_search'], 't_city');
 
             unset($attributes['multi_search']['t_country'], $attributes['multi_search']['t_city']);
 
@@ -356,13 +356,20 @@ class TransactionService
             }
         }
 
-        $transactions = $this->transactionRepository->listTransactions(
-            $where->toArray(),
-            $attributes['limit'],
-            $attributes['order_field'],
-            $attributes['order'],
-            $attributes['csv']
-        );
+        if ($attributes['csv']) {
+            $transactions = $this->transactionRepository->exportTransactionsToCsv(
+                $where,
+                $attributes['order_field'],
+                $attributes['order']
+            );
+        } else {
+            $transactions = $this->transactionRepository->listTransactions(
+                $where,
+                $attributes['limit'],
+                $attributes['order_field'],
+                $attributes['order']
+            );
+        }
 
         if (empty($transactions)) {
             return [];
@@ -411,6 +418,7 @@ class TransactionService
             'VAT',
             'Amount Gross',
             'Quantity',
+            'Agent',
         ];
         $fields = [
             't_client',
@@ -424,10 +432,11 @@ class TransactionService
             't_payment_method',
             't_gateway_transaction_id',
             't_currency',
-            'ti_amount',
+            'amount',
             'ti_vat',
             'amount_gross',
-            'ti_quantity',
+            'quantity',
+            'agent',
         ];
 
         $callback = function () use ($result, $columns, $fields) {
@@ -447,5 +456,40 @@ class TransactionService
             'callback' => $callback,
             'headers' => $headers,
         ];
+    }
+
+    protected function generateTransactionId($transaction_id_seq, $issuer)
+    {
+        $environment = env('APPLICATION_ENV') == 'prod' ? '' : strtoupper(env('APPLICATION_ENV')).date('Ymd').'-';
+        $project = env('PROJECT') ? env('PROJECT').'-' : '';
+
+        return $project.$environment.$issuer.'-'.str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
+    }
+
+    protected function convertItemsFieldToArray($transaction_id, $items_field, $add_field = [])
+    {
+        $response = [];
+        foreach (json_decode($items_field, true) as $items) {
+            foreach ($items['skus'] as $sku) {
+                $res = [
+                    'ti_xref_f_id' => $items['f_id'],
+                    'ti_xref_transaction_id' => $transaction_id,
+                    'ti_fee_type' => $sku['sku'],
+                    'ti_vat' => $sku['vat'],
+                    'ti_amount' => $sku['price'],
+                ];
+                //agent receipt is used
+                if (isset($sku['quantity'])) {
+                    $res['ti_quantity'] = $sku['quantity'];
+                }
+                if (filled($add_field)) {
+                    $res = $res + $add_field;
+                }
+
+                $response[] = $res;
+            }
+        }
+
+        return $response;
     }
 }

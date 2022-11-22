@@ -202,14 +202,13 @@ class TransactionService
             't_invoice_storage' => $attributes['invoice_storage'] ?? 'file-library',
         ];
 
-        $expirationMinutes = config('payment_gateway.expiration_minutes') ?? 60;
-
         if (!empty($attributes['expiration'])) {
-            $expirationMinutes = $attributes['expiration'];
+            $transaction_data['t_expiration'] = Carbon::createFromTimestamp($attributes['expiration'])
+                ->format('Y-m-d H:i:s');
+        } else {
+            $transaction_data['t_expiration'] = Carbon::parse($this->dbConnectionService->getDbNowTime())
+                ->addMinutes(config('payment_gateway.expiration_minutes') ?? 60);
         }
-
-        $transaction_data['t_expiration'] = Carbon::parse($this->dbConnectionService->getDbNowTime())
-            ->addMinutes($expirationMinutes);
 
         if (isset($attributes['payment_method'])) {
             $transaction_data['t_payment_method'] = $attributes['payment_method'];

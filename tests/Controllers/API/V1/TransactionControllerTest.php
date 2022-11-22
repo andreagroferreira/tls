@@ -702,7 +702,7 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The expiration must be a number.',
+                'message' => 'The expiration must be an integer.',
             ]);
     }
 
@@ -718,7 +718,7 @@ class TransactionControllerTest extends TestCase
     public function testTransactionExpiredTimeProvidedInRequestPayload(array $defaultPayload): void
     {
         // Set expiration time.
-        $defaultPayload['expiration'] = 10;
+        $defaultPayload['expiration'] = 1669383249;
 
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
@@ -726,8 +726,8 @@ class TransactionControllerTest extends TestCase
 
         $transactionPost = $this->response->decodeResponseJson();
         $this->assertEquals(
-            Carbon::parse($this->getDbNowTime())->subMinutes($defaultPayload['expiration'])->toDateString(),
-            Carbon::parse(array_get($transactionPost, 'expire'))->toDateString()
+            Carbon::createFromTimestamp($defaultPayload['expiration'])->format('Y-m-d H:i:s'),
+            Carbon::parse(array_get($transactionPost, 'expire'))->toDateTimeString()
         );
     }
 

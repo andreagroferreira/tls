@@ -204,8 +204,8 @@ class TransactionService
 
         $expirationMinutes = config('payment_gateway.expiration_minutes') ?? 60;
 
-        if (!empty($attributes['t_expiration'])) {
-            $expirationMinutes = $attributes['t_expiration'];
+        if (!empty($attributes['expiration'])) {
+            $expirationMinutes = $attributes['expiration'];
         }
 
         $transaction_data['t_expiration'] = Carbon::parse($this->dbConnectionService->getDbNowTime())

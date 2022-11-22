@@ -685,14 +685,24 @@ class TransactionControllerTest extends TestCase
     public function testTransactionExpiredTimeProvidedInRequestPayloadValidation(array $defaultPayload): void
     {
         // Set expiration time.
-        $defaultPayload['t_expiration'] = -30;
+        $defaultPayload['expiration'] = -30;
 
         $this->post($this->transactionApi, $defaultPayload);
 
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The t expiration must be greater than 0.',
+                'message' => 'The expiration must be greater than 0.',
+            ]);
+
+        // Set expiration time to string
+        $defaultPayload['expiration'] = 'test';
+        $this->post($this->transactionApi, $defaultPayload);
+
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The expiration must be a number.',
             ]);
     }
 
@@ -708,7 +718,7 @@ class TransactionControllerTest extends TestCase
     public function testTransactionExpiredTimeProvidedInRequestPayload(array $defaultPayload): void
     {
         // Set expiration time.
-        $defaultPayload['t_expiration'] = 30;
+        $defaultPayload['expiration'] = 10;
 
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
@@ -716,7 +726,7 @@ class TransactionControllerTest extends TestCase
 
         $transactionPost = $this->response->decodeResponseJson();
         $this->assertEquals(
-            Carbon::parse($this->getDbNowTime())->subMinutes($defaultPayload['t_expiration'])->toDateString(),
+            Carbon::parse($this->getDbNowTime())->subMinutes($defaultPayload['expiration'])->toDateString(),
             Carbon::parse(array_get($transactionPost, 'expire'))->toDateString()
         );
     }
@@ -818,7 +828,6 @@ class TransactionControllerTest extends TestCase
                 'message' => 'The start date does not match the format Y-m-d.',
             ]);
     }
-
 
     /**
      * @throws Throwable
@@ -933,7 +942,7 @@ class TransactionControllerTest extends TestCase
             ],
             'current_page' => 1,
         ];
-        
+
         $today = Carbon::today();
         $tomorrow = Carbon::today()->addDay(1);
         $this->get($this->listTransactionsApi.'?page=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
@@ -949,7 +958,7 @@ class TransactionControllerTest extends TestCase
     {
         $transactions = $this->generateTransaction();
         $this->generateTransactionItems($transactions->t_transaction_id);
-        
+
         $today = Carbon::today();
         $tomorrow = Carbon::today()->addDay(1);
         $this->get($this->listTransactionsApi.'?page=1&limit=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
@@ -976,7 +985,7 @@ class TransactionControllerTest extends TestCase
                 'message' => 'The multi search must be an array.',
             ]);
     }
-    
+
     /**
      * @throws Throwable
      *
@@ -997,7 +1006,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testListTransactionstWithFilters(): void 
+    public function testListTransactionstWithFilters(): void
     {
         $transactions = $this->generateTransaction([
             't_xref_fg_id' => 10001,
@@ -1015,19 +1024,19 @@ class TransactionControllerTest extends TestCase
             't_workflow' => 'vac',
             't_tech_creation' => '2022-10-01',
         ]);
-        $this->generateTransactionItems($transactions->t_transaction_id,[
-                'ti_xref_f_id' => 10001,
-                'ti_xref_transaction_id' => $transactions->t_transaction_id,
-                'ti_fee_type' => "service_fee",
-                'ti_vat' => 1,
-                'ti_amount' => 1,
-            ]);
+        $this->generateTransactionItems($transactions->t_transaction_id, [
+            'ti_xref_f_id' => 10001,
+            'ti_xref_transaction_id' => $transactions->t_transaction_id,
+            'ti_fee_type' => 'service_fee',
+            'ti_vat' => 1,
+            'ti_amount' => 1,
+        ]);
 
         $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=ke&multi_search[t_city]=NBO&multi_search[ti_fee_type]=service');
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();
-        
+
         $this->assertCount(1, $transactionsList['data']);
 
         //search with wrong fee type
@@ -1035,7 +1044,7 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();
-        
+
         $this->assertCount(0, $transactionsList['data']);
     }
 
@@ -1086,7 +1095,7 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200);
         $this->assertTrue($this->response->headers->get('content-disposition') == 'attachment; filename=download.csv');
     }
-    
+
     public function defaultPayload(): array
     {
         return [
@@ -1118,4 +1127,3 @@ class TransactionControllerTest extends TestCase
         ];
     }
 }
-

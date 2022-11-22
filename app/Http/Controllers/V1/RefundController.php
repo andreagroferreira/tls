@@ -47,7 +47,7 @@ class RefundController extends BaseController
      *     description=" Get all Refund Transaction Items",
      *     @OA\Parameter(
      *          name="ti_xref_f_id",
-     *          in="query",
+     *          in="path",
      *          description="Form ID",
      *          required=true,
      *          @OA\Schema(type="integer", example="10000"),

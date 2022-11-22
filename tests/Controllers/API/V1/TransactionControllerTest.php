@@ -902,8 +902,27 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsWithPageOneFilter(): void
     {
-        $transactions = $this->generateTransaction();
+        $transactions = $this->generateTransaction([
+            't_xref_fg_id' => 10000,
+            't_transaction_id' => str_random(10),
+            't_client' => 'be',
+            't_issuer' => 'dzALG2be',
+            't_gateway_transaction_id' => str_random(10),
+            't_gateway' => 'cmi',
+            't_currency' => 'MAD',
+            't_status' => 'done',
+            't_redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr',
+            't_onerror_url' => 'onError_tlsweb_url?lang=fr-fr',
+            't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
+            't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
+            't_workflow' => 'vac',
+            't_invoice_storage' => 'file-library',
+        ]);
         $transactionItems = $this->generateTransactionItems($transactions->t_transaction_id);
+
+        $refunds = $this->generateRefund();
+        $this->generateRefundItems($refunds->r_id, $transactionItems->ti_id);
+
         $expectedResult = [
             'total' => 1,
             'data' => [
@@ -915,9 +934,14 @@ class TransactionControllerTest extends TestCase
                     't_transaction_id' => $transactions->t_transaction_id,
                     't_service' => $transactions->t_service,
                     'ti_fee_type' => $transactionItems->ti_fee_type,
-                    'ti_quantity' => $transactionItems->ti_quantity,
-                    'ti_amount' => $transactionItems->ti_amount,
+                    'quantity' => $transactionItems->ti_quantity,
+                    'amount' => $transactionItems->ti_amount,
+                    'ti_id' => $transactionItems->ti_id,
+                    'agent' => null,
+                    'ti_xref_f_id' => $transactionItems->ti_xref_f_id,
                     'ti_vat' => $transactionItems->ti_vat,
+                    't_status' => $transactions->t_status,
+                    't_workflow' => $transactions->t_workflow,
                     't_payment_method' => $transactions->t_payment_method,
                     't_gateway' => $transactions->t_gateway,
                     't_gateway_transaction_id' => $transactions->t_gateway_transaction_id,
@@ -929,6 +953,7 @@ class TransactionControllerTest extends TestCase
                     'city_code' => substr($transactions->t_issuer, 2, 3),
                     'country' => getCountryName(substr($transactions->t_issuer, 0, 2)),
                     'city' => getCityName(substr($transactions->t_issuer, 2, 3)),
+                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/'.$transactions->t_transaction_id.'.pdf'
                 ],
             ],
             'current_page' => 1,
@@ -947,8 +972,26 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsWithLimitFilter(): void
     {
-        $transactions = $this->generateTransaction();
-        $this->generateTransactionItems($transactions->t_transaction_id);
+        $transactions = $this->generateTransaction([
+            't_xref_fg_id' => 10000,
+            't_transaction_id' => str_random(10),
+            't_client' => 'be',
+            't_issuer' => 'dzALG2be',
+            't_gateway_transaction_id' => str_random(10),
+            't_gateway' => 'cmi',
+            't_currency' => 'MAD',
+            't_status' => 'done',
+            't_redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr',
+            't_onerror_url' => 'onError_tlsweb_url?lang=fr-fr',
+            't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
+            't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
+            't_workflow' => 'vac',
+            't_invoice_storage' => 'file-library',
+        ]);
+        $transactionItems = $this->generateTransactionItems($transactions->t_transaction_id);
+
+        $refunds = $this->generateRefund();
+        $this->generateRefundItems($refunds->r_id, $transactionItems->ti_id);
         
         $today = Carbon::today();
         $tomorrow = Carbon::today()->addDay(1);
@@ -1000,22 +1043,22 @@ class TransactionControllerTest extends TestCase
     public function testListTransactionstWithFilters(): void 
     {
         $transactions = $this->generateTransaction([
-            't_xref_fg_id' => 10001,
+            't_xref_fg_id' => 10000,
             't_transaction_id' => str_random(10),
-            't_client' => 'de',
-            't_issuer' => 'keNBO2de',
+            't_client' => 'be',
+            't_issuer' => 'dzALG2be',
             't_gateway_transaction_id' => str_random(10),
             't_gateway' => 'cmi',
-            't_currency' => 'KES',
-            't_status' => 'pending',
-            't_redirect_url' => 'onSuccess_tlsweb_url?lang=en-us',
-            't_onerror_url' => 'onError_tlsweb_url?lang=en-us',
-            't_reminder_url' => 'callback_to_send_reminder?lang=en-us',
-            't_callback_url' => 'receipt_url/{fg_id}?lang=en-us',
+            't_currency' => 'MAD',
+            't_status' => 'done',
+            't_redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr',
+            't_onerror_url' => 'onError_tlsweb_url?lang=fr-fr',
+            't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
+            't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
             't_workflow' => 'vac',
-            't_tech_creation' => '2022-10-01',
+            't_invoice_storage' => 'file-library',
         ]);
-        $this->generateTransactionItems($transactions->t_transaction_id,[
+        $transactionItems = $this->generateTransactionItems($transactions->t_transaction_id,[
                 'ti_xref_f_id' => 10001,
                 'ti_xref_transaction_id' => $transactions->t_transaction_id,
                 'ti_fee_type' => "service_fee",
@@ -1023,7 +1066,10 @@ class TransactionControllerTest extends TestCase
                 'ti_amount' => 1,
             ]);
 
-        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=ke&multi_search[t_city]=NBO&multi_search[ti_fee_type]=service');
+        $refunds = $this->generateRefund();
+        $this->generateRefundItems($refunds->r_id, $transactionItems->ti_id);
+
+        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=dz&multi_search[t_city]=ALG&multi_search[ti_fee_type]=service');
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();
@@ -1031,7 +1077,7 @@ class TransactionControllerTest extends TestCase
         $this->assertCount(1, $transactionsList['data']);
 
         //search with wrong fee type
-        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=ke&multi_search[t_city]=NBO&multi_search[ti_fee_type]=test');
+        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=dz&multi_search[t_city]=ALG&multi_search[ti_fee_type]=test');
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();

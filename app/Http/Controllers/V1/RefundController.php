@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Services\RefundService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class RefundController extends BaseController
@@ -58,7 +59,7 @@ class RefundController extends BaseController
      *      ),
      * )
      */
-    public function getRefundTransactionItems(Request $request): object
+    public function getRefundTransactionItems(Request $request): JsonResponse
     {
         $params = [
             'ti_xref_f_id' => $request->route('ti_xref_f_id'),
@@ -106,7 +107,7 @@ class RefundController extends BaseController
      *      ),
      * )
      */
-    public function getRefundRequest(Request $request): object
+    public function getRefundRequest(Request $request): JsonResponse
     {
         $params = [
             'r_id' => $request->route('r_id'),

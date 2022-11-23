@@ -142,7 +142,7 @@ class RefundService
     private function getRefundRequestItems(array $refundData, array $transactionItems): array
     {
         foreach ($refundData as $data) {
-            if (isset($data['r_id']) && empty($refundRequest)) {
+            if (empty($refundRequest)) {
                 $refundRequest = [
                     'r_id' => $data['r_id'],
                     'r_issuer' => $data['r_issuer'],
@@ -151,7 +151,7 @@ class RefundService
                     'r_appointment_date' => $data['r_appointment_date'],
                 ];
             }
-            if (empty($transaction) && empty($transaction)) {
+            if (empty($transaction)) {
                 $transaction = [
                     't_id' => $data['t_id'],
                     'transaction_id' => $data['t_transaction_id'],

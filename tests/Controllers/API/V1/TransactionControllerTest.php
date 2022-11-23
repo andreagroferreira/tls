@@ -311,15 +311,17 @@ class TransactionControllerTest extends TestCase
      */
     public function testTransactionExpired(array $defaultPayload): void
     {
-        // Set expiration time negative.
-        config(['payment_gateway.expiration_minutes' => -20]);
-
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)
             ->assertJsonStructure(['t_id', 'expire']);
 
         $transactionPost = $this->response->decodeResponseJson();
-        $this->assertEquals(Carbon::parse($this->getDbNowTime())->subMinutes(config('payment_gateway.expiration_minutes'))->toDateString(), Carbon::parse(array_get($transactionPost, 'expire'))->toDateString());
+
+        $this->updateTable(
+            'transactions',
+            ['t_id' => $transactionPost['t_id']],
+            ['t_expiration' => Carbon::parse($this->getDbNowTime())->subMinute(10)]
+        );
 
         $this->get($this->transactionApi.'/'.$defaultPayload['fg_id']);
         $this->response->assertStatus(204);
@@ -704,6 +706,16 @@ class TransactionControllerTest extends TestCase
                 'error' => 'params error',
                 'message' => 'The expiration must be an integer.',
             ]);
+
+        // Set expiration to less then current time
+        $defaultPayload['expiration'] = strtotime(Carbon::parse($this->getDbNowTime())->subMinute());
+        $this->post($this->transactionApi, $defaultPayload);
+
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'unknown_error',
+                'message' => 'The expiration time is less then current time.',
+            ]);
     }
 
     /**
@@ -718,7 +730,7 @@ class TransactionControllerTest extends TestCase
     public function testTransactionExpiredTimeProvidedInRequestPayload(array $defaultPayload): void
     {
         // Set expiration time.
-        $defaultPayload['expiration'] = 1669383249;
+        $defaultPayload['expiration'] = strtotime(Carbon::parse($this->getDbNowTime())->addMinutes(30));
 
         $this->post($this->transactionApi, $defaultPayload);
         $this->response->assertStatus(200)

@@ -210,6 +210,12 @@ class TransactionService
                 ->addMinutes(config('payment_gateway.expiration_minutes') ?? 60);
         }
 
+        $currentTime = Carbon::parse($this->dbConnectionService->getDbNowTime())->format('Y-m-d H:i:s');
+
+        if ($transaction_data['t_expiration'] <= $currentTime) {
+            throw new \Exception('The expiration time is less then current time.');
+        }
+
         if (isset($attributes['payment_method'])) {
             $transaction_data['t_payment_method'] = $attributes['payment_method'];
         }

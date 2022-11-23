@@ -1077,7 +1077,13 @@ class TransactionControllerTest extends TestCase
         $this->assertCount(1, $transactionsList['data']);
 
         //search with wrong fee type
-        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=dz&multi_search[t_city]=ALG&multi_search[ti_fee_type]=test');
+        $params = [
+            'page' => 1,
+            'multi_search[t_country]' => 'dz',
+            'multi_search[t_city]' => 'ALG',
+            'multi_search[ti_fee_type]' => 'test',
+        ];
+        $this->get($this->listTransactionsApi.'?'.http_build_query($params));
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();

@@ -2983,13 +2983,13 @@
                         }
                     },
                     {
-                        "name": "t_expiration",
+                        "name": "expiration",
                         "in": "query",
-                        "description": "tls citizen appointment time(min)",
+                        "description": "tls citizen appointment booking expiration time(timestamp)",
                         "required": false,
                         "schema": {
                             "type": "integer",
-                            "example": "30"
+                            "example": "1669123675"
                         }
                     },
                     {

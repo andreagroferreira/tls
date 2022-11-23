@@ -224,11 +224,11 @@ class TransactionController extends BaseController
      *          @OA\Schema(type="string", example="card"),
      *      ),
      *      @OA\Parameter(
-     *          name="t_expiration",
+     *          name="expiration",
      *          in="query",
-     *          description="tls citizen appointment time(min)",
+     *          description="tls citizen appointment booking expiration time(timestamp)",
      *          required=false,
-     *          @OA\Schema(type="integer", example="30"),
+     *          @OA\Schema(type="integer", example="1669123675"),
      *      ),
      *     @OA\Parameter(
      *          name="items",
@@ -263,7 +263,7 @@ class TransactionController extends BaseController
             'workflow' => 'required|string',
             'payment_method' => 'nullable',
             'service' => 'nullable',
-            't_expiration'=> 'nullable|numeric|gt:0',
+            'expiration'=> 'nullable|integer|gt:0',
             'items' => [
                 'bail',
                 'required',

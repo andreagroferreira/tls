@@ -203,16 +203,13 @@ class TransactionService
         ];
 
         if (!empty($attributes['expiration'])) {
-            $transaction_data['t_expiration'] = Carbon::createFromTimestamp($attributes['expiration'])
-                ->format('Y-m-d H:i:s');
+            $transaction_data['t_expiration'] = Carbon::createFromTimestamp($attributes['expiration']);
         } else {
             $transaction_data['t_expiration'] = Carbon::parse($this->dbConnectionService->getDbNowTime())
                 ->addMinutes(config('payment_gateway.expiration_minutes') ?? 60);
         }
 
-        $currentTime = Carbon::parse($this->dbConnectionService->getDbNowTime())->format('Y-m-d H:i:s');
-
-        if ($transaction_data['t_expiration'] <= $currentTime) {
+        if ($transaction_data['t_expiration']->isPast()) {
             throw new \Exception('The expiration time is less then current time.');
         }
 

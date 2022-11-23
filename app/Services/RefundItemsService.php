@@ -118,6 +118,9 @@ class RefundItemsService
                 't_transaction_id' => $transactionId,
                 't_status' => 'done',
             ])->first();
+            if (empty($transaction)) {
+                break;
+            }
             $items['f_id'] = current($services)['ti_xref_f_id'];
             $items['skus'] = [];
             foreach ($services as $service) {

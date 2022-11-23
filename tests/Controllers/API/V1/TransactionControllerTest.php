@@ -684,7 +684,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testTransactionExpirationProvidedInRequestPayloadValidation(array $defaultPayload): void
+    public function testTransactionExpirationTimeProvidedInRequestPayloadValidation(array $defaultPayload): void
     {
         // Set expiration time.
         $defaultPayload['expiration'] = -30;

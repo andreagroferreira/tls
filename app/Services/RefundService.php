@@ -132,8 +132,14 @@ class RefundService
 
         return $this->getRefundRequestItems($refundData, $transactionItems);
     }
-
-    private function getRefundRequestItems($refundData, $transactionItems)
+    
+    /**
+     * @param  array $refundData
+     * @param  array $transactionItems
+     * 
+     * @return array
+     */
+    private function getRefundRequestItems(array $refundData, array $transactionItems): array
     {
         foreach ($refundData as $data) {
             if (isset($data['r_id']) && empty($refundRequest)) {

@@ -11,8 +11,7 @@ class PaymentConfigurationsController extends BaseController
 
     public function __construct(
         PaymentConfigurationsService $paymentConfigurations
-    )
-    {
+    ) {
         $this->paymentConfigurationsService = $paymentConfigurations;
     }
 
@@ -50,16 +49,17 @@ class PaymentConfigurationsController extends BaseController
     {
         $params = [
             'client' => $request->input('client'),
-            'type' => $request->input('type')
+            'type' => $request->input('type'),
         ];
         $validator = validator($params, [
             'client' => 'required|string',
-            'type' => 'required|string'
+            'type' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
         }
+
         try {
             return $this->sendResponse($this->paymentConfigurationsService->fetchList($params));
         } catch (\Exception $e) {
@@ -97,18 +97,71 @@ class PaymentConfigurationsController extends BaseController
                 'pc_id' => $request->get('pc_id'),
             ];
             $validator = validator($params, [
-                'pc_id' => 'integer'
+                'pc_id' => 'integer',
             ]);
             if ($validator->fails()) {
                 return $this->sendError('params error', $validator->errors()->first());
             }
             $res = $this->paymentConfigurationsService->getExistsConfigs($params['pc_id']);
+
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/paymentgateway-type",
+     *     tags={"Payment API"},
+     *     description="Get types (gov,tls) of payment gateway by issuer
+     *     , used by eCommerce service to show multiple baskets",
+     *     @OA\Parameter(
+     *          name="vac_id",
+     *          in="query",
+     *          description="Vac's ID",
+     *          required=true,
+     *          @OA\Schema(type="string", example="PAR"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="country",
+     *          in="query",
+     *          description="Country - Issuer",
+     *          required=true,
+     *          @OA\Schema(type="string", example="fr"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the paymentgateway list types",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      )
+     * )
+     */
+    public function getPaymentGatewayTypeConfig(Request $request): object
+    {
+        try {
+            $params = [
+                'vac_id' => $request->get('vac_id'),
+                'country' => $request->get('country'),
+            ];
+            $validator = validator($params, [
+                'vac_id' => 'required|string',
+                'country' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError('params error', $validator->errors()->first());
+            }
+            $res = $this->paymentConfigurationsService->fetchPaymentGatewayType($params);
+
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
 
     /**
      * @OA\Post(
@@ -154,6 +207,7 @@ class PaymentConfigurationsController extends BaseController
             return $this->sendError('params error', $validator->errors()->first());
         }
         $pc_infos = $this->paymentConfigurationsService->fetchById($params['pc_id']);
+
         try {
             $data = $params['data'];
             foreach ($data as $k => $v) {
@@ -167,9 +221,10 @@ class PaymentConfigurationsController extends BaseController
                 ];
                 $this->paymentConfigurationsService->save($params_create);
             }
+
             return $this->sendResponse([
                 'status' => 'success',
-                'message' => 'Save successful!'
+                'message' => 'Save successful!',
             ]);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
@@ -220,22 +275,24 @@ class PaymentConfigurationsController extends BaseController
      *      ),
      * )
      */
-    public function create(Request $request) {
-        $params    = [
+    public function create(Request $request)
+    {
+        $params = [
             'pc_project' => $request->input('client'),
             'pc_country' => $request->input('country'),
-            'pc_city'    => $request->input('city'),
-            'pc_service' => $request->input('service')
+            'pc_city' => $request->input('city'),
+            'pc_service' => $request->input('service'),
         ];
         $validator = validator($params, [
             'pc_project' => 'required|string',
             'pc_country' => 'required|string',
-            'pc_city'    => 'required|string',
-            'pc_service' => 'required|string'
+            'pc_city' => 'required|string',
+            'pc_service' => 'required|string',
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
         }
+
         try {
             return $this->sendResponse($this->paymentConfigurationsService->create($params));
         } catch (\Exception $e) {
@@ -272,13 +329,15 @@ class PaymentConfigurationsController extends BaseController
             'pc_id' => $request->get('pc_id'),
         ];
         $validator = validator($params, [
-            'pc_id' => 'integer'
+            'pc_id' => 'integer',
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
         }
+
         try {
             $res = $this->paymentConfigurationsService->paymentAccount($params);
+
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
@@ -308,16 +367,18 @@ class PaymentConfigurationsController extends BaseController
      *      ),
      * )
      */
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $params = [
             'pc_id' => $request->route('pc_id'),
         ];
         $validator = validator($params, [
-            'pc_id' => 'required|integer'
+            'pc_id' => 'required|integer',
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
         }
+
         try {
             return $this->sendResponse($this->paymentConfigurationsService->delete($params));
         } catch (\Exception $e) {

@@ -1646,6 +1646,50 @@
                 }
             }
         },
+        "/api/v1/paymentgateway-type": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get types (gov,tls) of payment gateway by issuer\n     *     , used by eCommerce service to show multiple baskets",
+                "operationId": "36275be71d8864c8668bc97c2d5d87cc",
+                "parameters": [
+                    {
+                        "name": "vac_id",
+                        "in": "query",
+                        "description": "Vac's ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "PAR"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "query",
+                        "description": "Country - Issuer",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "fr"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the paymentgateway list types",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/payment-config": {
             "post": {
                 "tags": [

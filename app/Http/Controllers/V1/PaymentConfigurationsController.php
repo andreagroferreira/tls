@@ -112,27 +112,20 @@ class PaymentConfigurationsController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/v1/paymentgateway-type",
+     *     path="/api/v1/payment-gateway-type/{city}",
      *     tags={"Payment API"},
-     *     description="Get types (gov,tls) of payment gateway by issuer
+     *     description="Get types (gov,tls) of payment gateway by city
      *     , used by eCommerce service to show multiple baskets",
      *     @OA\Parameter(
-     *          name="vac_id",
-     *          in="query",
-     *          description="Vac's ID",
+     *          name="city",
+     *          in="path",
+     *          description="Unique 3 letters City code per client ex: PAR(PARIS),LON(LONDON),CAI(CAIRO) ",
      *          required=true,
      *          @OA\Schema(type="string", example="PAR"),
      *      ),
-     *     @OA\Parameter(
-     *          name="country",
-     *          in="query",
-     *          description="Country - Issuer",
-     *          required=true,
-     *          @OA\Schema(type="string", example="fr"),
-     *      ),
      *      @OA\Response(
      *          response="200",
-     *          description="get the paymentgateway list types",
+     *          description="get the paymentgateway list types (tls,gov)",
      *          @OA\JsonContent(),
      *      ),
      *      @OA\Response(
@@ -141,16 +134,14 @@ class PaymentConfigurationsController extends BaseController
      *      )
      * )
      */
-    public function getPaymentGatewayTypeConfig(Request $request): object
+    public function getPaymentGatewayTypeByCity(Request $request): object
     {
         try {
             $params = [
-                'vac_id' => $request->get('vac_id'),
-                'country' => $request->get('country'),
+                'city' => $request->route('city'),
             ];
             $validator = validator($params, [
-                'vac_id' => 'required|string',
-                'country' => 'required|string',
+                'city' => 'required|string',
             ]);
             if ($validator->fails()) {
                 return $this->sendError('params error', $validator->errors()->first());

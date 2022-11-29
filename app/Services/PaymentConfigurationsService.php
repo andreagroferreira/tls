@@ -107,15 +107,15 @@ class PaymentConfigurationsService
     }
 
     /**
-     * @param $city
+     * @param string $city
      *
      * @return array
      */
-    public function fetchPaymentGatewayTypes($city): array
+    public function fetchPaymentGatewayTypes(string $city): array
     {
         $citiesInfo = config('list_city.'.$city);
 
-        if (empty($citiesInfo['gcc_xref_gc_id'])) {
+        if (empty($citiesInfo['gcc_xref_gc_id']) || empty($city)) {
             return [];
         }
 

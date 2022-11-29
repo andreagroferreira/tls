@@ -1651,7 +1651,7 @@
                 "tags": [
                     "Payment API"
                 ],
-                "description": "Get types (gov,tls) of payment gateway by city\n     *     , used by eCommerce service to show multiple baskets",
+                "description": "Get types (gov,tls) of payment gateway by city, used by eCommerce to show multiple baskets",
                 "operationId": "5c2029b70ea1f8347f7147c83f1ff724",
                 "parameters": [
                     {
@@ -1661,7 +1661,7 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "example": "PAR"
+                            "example": "CAI"
                         }
                     }
                 ],

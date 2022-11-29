@@ -114,8 +114,7 @@ class PaymentConfigurationsController extends BaseController
      * @OA\Get(
      *     path="/api/v1/payment-gateway-types/{city}",
      *     tags={"Payment API"},
-     *     description="Get types (gov,tls) of payment gateway by city
-     *     , used by eCommerce service to show multiple baskets",
+     *     description="Get types (gov,tls) of payment gateway by city, used by eCommerce to show multiple baskets",
      *     @OA\Parameter(
      *          name="city",
      *          in="path",

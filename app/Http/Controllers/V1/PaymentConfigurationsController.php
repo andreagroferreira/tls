@@ -112,7 +112,7 @@ class PaymentConfigurationsController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/v1/payment-gateway-type/{city}",
+     *     path="/api/v1/payment-gateway-types/{city}",
      *     tags={"Payment API"},
      *     description="Get types (gov,tls) of payment gateway by city
      *     , used by eCommerce service to show multiple baskets",
@@ -121,7 +121,7 @@ class PaymentConfigurationsController extends BaseController
      *          in="path",
      *          description="Unique 3 letters City code per client",
      *          required=true,
-     *          @OA\Schema(type="string", example="PAR(PARIS),LON(LONDON),CAI(CAIRO)"),
+     *          @OA\Schema(type="string", example="CAI"),
      *      ),
      *      @OA\Response(
      *          response="200",
@@ -146,7 +146,7 @@ class PaymentConfigurationsController extends BaseController
             if ($validator->fails()) {
                 return $this->sendError('params error', $validator->errors()->first());
             }
-            $res = $this->paymentConfigurationsService->fetchPaymentGatewayType($params);
+            $res = $this->paymentConfigurationsService->fetchPaymentGatewayTypes($params['city']);
 
             return $this->sendResponse($res);
         } catch (\Exception $e) {
@@ -371,7 +371,7 @@ class PaymentConfigurationsController extends BaseController
         }
 
         try {
-            return $this->sendResponse($this->paymentConfigurationsService->delete($params));
+            return $this->sendResponse($this->paymentConfigurationsService->remove($params));
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }

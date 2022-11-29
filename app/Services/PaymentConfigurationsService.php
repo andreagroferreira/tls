@@ -22,7 +22,7 @@ class PaymentConfigurationsService
         $this->paymentConfigurationsRepositories->setConnection($dbConnectionService->getConnection());
     }
 
-    public function create($params)
+    public function create($params): array
     {
         $payment_config = $this->paymentConfigurationsRepositories->fetch($params);
         if (empty($payment_config)) {
@@ -42,7 +42,13 @@ class PaymentConfigurationsService
 
     public function save($params)
     {
-        $where = ['pc_xref_pa_id' => $params['pc_xref_pa_id'], 'pc_project' => $params['pc_project'], 'pc_country' => $params['pc_country'], 'pc_city' => $params['pc_city'], 'pc_service' => $params['pc_service']];
+        $where = [
+            'pc_xref_pa_id' => $params['pc_xref_pa_id'],
+            'pc_project' => $params['pc_project'],
+            'pc_country' => $params['pc_country'],
+            'pc_city' => $params['pc_city'],
+            'pc_service' => $params['pc_service'],
+        ];
 
         return $this->paymentConfigurationsRepositories->update($where, $params);
     }
@@ -102,27 +108,33 @@ class PaymentConfigurationsService
 
     /**
      * @param $city
+     *
      * @return array
      */
-    public function fetchPaymentGatewayType($city): array
+    public function fetchPaymentGatewayTypes($city): array
     {
         $citiesInfo = config('list_city.'.$city);
-        $result = [];
 
-        if (!empty($citiesInfo['gcc_xref_gc_id'])) {
-            $payment_configurations = $this->paymentConfigurationsRepositories->findBy([
-                'pc_city' => $city,
-                'pc_country' => $citiesInfo['gcc_xref_gc_id'],
-            ]);
-
-            foreach ($payment_configurations as $k => $v) {
-                $result[] = $v['pc_service'];
-            }
-            $removeDuplicates = array_unique($result);
-            $result = array_values($removeDuplicates);
+        if (empty($citiesInfo['gcc_xref_gc_id'])) {
+            return [];
         }
 
-        return $result;
+        $payment_configurations = $this->paymentConfigurationsRepositories->findBy([
+            'pc_city' => $city,
+            'pc_country' => $citiesInfo['gcc_xref_gc_id'],
+        ]);
+
+        foreach ($payment_configurations as $k => $v) {
+            $result[] = $v['pc_service'];
+        }
+
+        if (empty($result)) {
+            $result = [];
+        }
+
+        $removeDuplicates = array_unique($result);
+
+        return array_values($removeDuplicates);
     }
 
     public function getExistsConfigs($pc_id)
@@ -171,7 +183,7 @@ class PaymentConfigurationsService
         return $payment_config;
     }
 
-    public function delete($params)
+    public function remove($params): array
     {
         $payment_config = $this->paymentConfigurationsRepositories->fetchById($params['pc_id']);
         if (!empty($payment_config)) {

@@ -1646,18 +1646,18 @@
                 }
             }
         },
-        "/api/v1/payment-gateway-type/{city}": {
+        "/api/v1/payment-gateway-types/{city}": {
             "get": {
                 "tags": [
                     "Payment API"
                 ],
                 "description": "Get types (gov,tls) of payment gateway by city\n     *     , used by eCommerce service to show multiple baskets",
-                "operationId": "58bd9dbef3d19f57887a385a1a5446bc",
+                "operationId": "5c2029b70ea1f8347f7147c83f1ff724",
                 "parameters": [
                     {
                         "name": "city",
                         "in": "path",
-                        "description": "Unique 3 letters City code per client ex: PAR(PARIS),LON(LONDON),CAI(CAIRO) ",
+                        "description": "Unique 3 letters City code per client",
                         "required": true,
                         "schema": {
                             "type": "string",

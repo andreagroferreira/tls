@@ -101,19 +101,17 @@ class PaymentConfigurationsService
     }
 
     /**
-     * @param $params
-     * $params['city'] => CAI.  Unique 3 letters City code per client ex: PAR(PARIS),LON(LONDON),CAI(CAIRO). Required
-     *
+     * @param $city
      * @return array
      */
-    public function fetchPaymentGatewayType($params): array
+    public function fetchPaymentGatewayType($city): array
     {
-        $citiesInfo = config('list_city.'.$params['city']);
+        $citiesInfo = config('list_city.'.$city);
         $result = [];
 
         if (!empty($citiesInfo['gcc_xref_gc_id'])) {
             $payment_configurations = $this->paymentConfigurationsRepositories->findBy([
-                'pc_city' => $params['city'],
+                'pc_city' => $city,
                 'pc_country' => $citiesInfo['gcc_xref_gc_id'],
             ]);
 

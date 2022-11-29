@@ -119,9 +119,9 @@ class PaymentConfigurationsController extends BaseController
      *     @OA\Parameter(
      *          name="city",
      *          in="path",
-     *          description="Unique 3 letters City code per client ex: PAR(PARIS),LON(LONDON),CAI(CAIRO) ",
+     *          description="Unique 3 letters City code per client",
      *          required=true,
-     *          @OA\Schema(type="string", example="PAR"),
+     *          @OA\Schema(type="string", example="PAR(PARIS),LON(LONDON),CAI(CAIRO)"),
      *      ),
      *      @OA\Response(
      *          response="200",
@@ -134,7 +134,7 @@ class PaymentConfigurationsController extends BaseController
      *      )
      * )
      */
-    public function getPaymentGatewayTypeByCity(Request $request): object
+    public function getPaymentGatewayTypesByCity(Request $request): object
     {
         try {
             $params = [

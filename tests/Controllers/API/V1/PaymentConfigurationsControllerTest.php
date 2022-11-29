@@ -30,7 +30,10 @@ class PaymentConfigurationsControllerTest extends TestCase
         $this->assertNotEmpty($this->response->json());
     }
 
-    public function testGetPaymentGatewayTypeByCity()
+    /**
+     * @return void
+     */
+    public function testGetPaymentGatewayTypesByCity()
     {
         $base_url = 'api/v1/payment-gateway-type/CAI';
         $this->get($base_url);

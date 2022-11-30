@@ -123,6 +123,7 @@ class RefundItemsService
             foreach ($services as $service) {
                 $items['skus'][] = [
                     'ti_id' => $service['ti_id'],
+                    'price_rule' => $service['ti_price_rule'],
                     'sku' => $service['ti_fee_type'],
                     'price' => $service['ti_amount'],
                     'vat' => $service['ti_vat'],

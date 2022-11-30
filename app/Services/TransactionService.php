@@ -81,6 +81,7 @@ class TransactionService
                         'price' => $service['ti_amount'],
                         'vat' => $service['ti_vat'],
                         'quantity' => $service['ti_quantity'],
+                        'price_rule' => $service['ti_price_rule'],
                     ];
                 }
                 $receipts[] = [

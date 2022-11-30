@@ -68,6 +68,7 @@ class RefundItemRepository
                 'ri_status',
                 'ri_invoice_path',
                 'ti_xref_transaction_id',
+                'ti_price_rule',
                 'r_id',
                 'r_issuer',
                 'r_reason_type',

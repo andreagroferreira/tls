@@ -970,6 +970,7 @@ class TransactionControllerTest extends TestCase
                     'ti_vat' => $transactionItems->ti_vat,
                     't_status' => $transactions->t_status,
                     't_workflow' => $transactions->t_workflow,
+                    'ti_price_rule' => $transactionItems->ti_price_rule,
                     't_payment_method' => $transactions->t_payment_method,
                     't_gateway' => $transactions->t_gateway,
                     't_gateway_transaction_id' => $transactions->t_gateway_transaction_id,
@@ -1092,6 +1093,7 @@ class TransactionControllerTest extends TestCase
             'ti_fee_type' => 'service_fee',
             'ti_vat' => 1,
             'ti_amount' => 1,
+            'ti_price_rule' => 'discount',
         ]);
         $refunds = $this->generateRefund();
         $this->generateRefundItems($refunds->r_id, $transactionItemOne->ti_id);
@@ -1118,6 +1120,7 @@ class TransactionControllerTest extends TestCase
             'ti_fee_type' => 'service_fee',
             'ti_vat' => 1,
             'ti_amount' => 1,
+            'ti_price_rule' => 'discount',
         ]);
 
         $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=dz&multi_search[t_city]=ALG&multi_search[ti_fee_type]=service');
@@ -1156,6 +1159,7 @@ class TransactionControllerTest extends TestCase
             'ti_fee_type' => 'service_fee',
             'ti_vat' => 1,
             'ti_amount' => 1,
+            'ti_price_rule' => 'discount',
         ]);
         $refunds = $this->generateRefund([
             'r_issuer' => 'dzALG2be',
@@ -1209,6 +1213,7 @@ class TransactionControllerTest extends TestCase
             'ti_fee_type' => 'service_fee',
             'ti_vat' => 1,
             'ti_amount' => 1,
+            'ti_price_rule' => 'discount',
         ]);
         $refunds = $this->generateRefund([
             'r_issuer' => 'dzALG2be',

@@ -134,7 +134,6 @@ class TransactionService
         $transaction = $this->transactionRepository
             ->fetch(['t_xref_fg_id' => $attributes['fg_id'], 't_status' => 'pending', 't_tech_deleted' => false])
             ->first();
-
         if (blank($transaction)) {
             return true;
         }
@@ -160,7 +159,7 @@ class TransactionService
         );
         $transItems = $this->transactionItemsService->fetch(
             ['ti_xref_transaction_id' => $transaction->t_transaction_id, 'ti_tech_deleted' => false],
-            ['ti_xref_f_id', 'ti_xref_transaction_id', 'ti_fee_type', 'ti_vat', 'ti_amount', 'ti_tech_deleted']
+            ['ti_xref_f_id', 'ti_xref_transaction_id', 'ti_fee_type', 'ti_vat', 'ti_amount', 'ti_tech_deleted', 'ti_price_rule']
         )->toArray();
         if (count($res) !== count($transItems)) {
             $is_change = true;
@@ -479,6 +478,7 @@ class TransactionService
                     'ti_fee_type' => $sku['sku'],
                     'ti_vat' => $sku['vat'],
                     'ti_amount' => $sku['price'],
+                    'ti_price_rule' => $sku['price_rule'] ?? null,
                 ];
                 //agent receipt is used
                 if (isset($sku['quantity'])) {

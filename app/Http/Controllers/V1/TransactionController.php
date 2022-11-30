@@ -55,7 +55,7 @@ class TransactionController extends BaseController
     {
         $params = [
             'fg_id' => $request->route('fg_id'),
-            'order' => $request->input('order', 'desc')
+            'order' => $request->input('order', 'desc'),
         ];
         $validator = validator($params, [
             'fg_id' => 'required|integer',
@@ -63,7 +63,7 @@ class TransactionController extends BaseController
                 'required',
                 'string',
                 Rule::in(['desc', 'asc']),
-            ]
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -74,14 +74,13 @@ class TransactionController extends BaseController
             $res = $this->transactionService->fetch($validator->validated());
             if ($res) {
                 return $this->sendResponse($res);
-            } else {
-                return $this->sendEmptyResponse(204);
             }
+
+            return $this->sendEmptyResponse(204);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }
-
 
     /**
      * @OA\Get(
@@ -121,7 +120,7 @@ class TransactionController extends BaseController
     {
         $params = [
             'f_id' => $request->route('f_id'),
-            'order' => $request->input('order', 'desc')
+            'order' => $request->input('order', 'desc'),
         ];
         $validator = validator($params, [
             'f_id' => 'required|integer',
@@ -129,7 +128,7 @@ class TransactionController extends BaseController
                 'required',
                 'string',
                 Rule::in(['desc', 'asc']),
-            ]
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -140,9 +139,9 @@ class TransactionController extends BaseController
             $res = $this->transactionService->fetchByForm($validator->validated());
             if ($res) {
                 return $this->sendResponse($res);
-            } else {
-                return $this->sendEmptyResponse(204);
             }
+
+            return $this->sendEmptyResponse(204);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
@@ -263,7 +262,7 @@ class TransactionController extends BaseController
             'workflow' => 'required|string',
             'payment_method' => 'nullable',
             'service' => 'nullable',
-            'expiration'=> 'nullable|integer|gt:0',
+            'expiration' => 'nullable|integer|gt:0',
             'items' => [
                 'bail',
                 'required',
@@ -271,7 +270,7 @@ class TransactionController extends BaseController
                 function ($attribute, $value, $fail) {
                     $array = json_decode($value, true);
                     foreach ($array as $item) {
-                        $item_array = (array)$item;
+                        $item_array = (array) $item;
                         $f_id = array_get($item_array, 'f_id', '');
                         if (!is_numeric($f_id)) {
                             $fail('The items.f_id must be an integer.');
@@ -281,13 +280,13 @@ class TransactionController extends BaseController
                             $fail('The items.skus field is required.');
                         }
                         foreach ($skus as $sku) {
-                            $diff = array_diff(['sku', 'price', 'vat'], array_keys((array)$sku));
+                            $diff = array_diff(['sku', 'price', 'vat'], array_keys((array) $sku));
                             if (filled($diff)) {
-                                $fail('The items.skus.' . implode(', ', $diff) . ' field is required.');
+                                $fail('The items.skus.'.implode(', ', $diff).' field is required.');
                             }
                         }
                     }
-                }
+                },
             ],
         ]);
 
@@ -304,16 +303,16 @@ class TransactionController extends BaseController
 
             $res = $this->transactionService->create($params);
 
-            $log_params = array();
-            $log_params['queue_type']   = 'create_payment_order';
-            $log_params['t_id']         = $res['t_id'];
+            $log_params = [];
+            $log_params['queue_type'] = 'create_payment_order';
+            $log_params['t_id'] = $res['t_id'];
             dispatch(new PaymentEauditorLogJob($log_params))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
 
             if ($res) {
                 return $this->sendResponse($res);
-            } else {
-                return $this->sendError('unknown_error', 'create failed');
             }
+
+            return $this->sendError('unknown_error', 'create failed');
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
@@ -383,7 +382,7 @@ class TransactionController extends BaseController
             'page' => $request->input('page', 1),
             'limit' => $request->input('limit', 20),
             'start_date' => $request->input('start_date', Carbon::today()->toDateString()),
-            'end_date' => $request->input('end_date', Carbon::tomorrow()->toDateString())
+            'end_date' => $request->input('end_date', Carbon::tomorrow()->toDateString()),
         ];
 
         if ($request->has('issuer')) {
@@ -399,15 +398,15 @@ class TransactionController extends BaseController
             'status' => [
                 'sometimes',
                 'required',
-                Rule::in(['pending', 'waiting', 'close', 'done'])
+                Rule::in(['pending', 'waiting', 'close', 'done']),
             ],
             'service' => [
                 'sometimes',
                 'required',
-                Rule::in(['tls', 'gov'])
-            ]
+                Rule::in(['tls', 'gov']),
+            ],
         ], [
-            'issuer.*.regex' => 'The issuer format is invalid.'
+            'issuer.*.regex' => 'The issuer format is invalid.',
         ]);
 
         if ($validator->fails()) {
@@ -420,7 +419,6 @@ class TransactionController extends BaseController
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
-
         }
     }
 
@@ -471,7 +469,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="gb"),
-     * 
+     *
      *      ),
      *      @OA\Parameter(
      *          name="multi_search[t_city]",
@@ -480,7 +478,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="LON"),
-     * 
+     *
      *      ),
      *     @OA\Parameter(
      *          name="multi_search[ti_fee_type]",
@@ -489,7 +487,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="service"),
-     * 
+     *
      *      ),
      *      @OA\Parameter(
      *          name="multi_search[t_reference_id]",
@@ -498,7 +496,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="GWP123456"),
-     * 
+     *
      *      ),
      *      @OA\Parameter(
      *          name="multi_search[t_comment]",
@@ -507,7 +505,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="test"),
-     * 
+     *
      *      ),
      *      @OA\Parameter(
      *          name="multi_search[t_xref_fg_id]",
@@ -516,7 +514,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="123"),
-     * 
+     *
      *      ),
      *      @OA\Parameter(
      *          name="multi_search[t_client]",
@@ -525,7 +523,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="de"),
-     * 
+     *
      *      ),
      *      @OA\Parameter(
      *          name="multi_search[t_batch_id]",
@@ -534,7 +532,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="B123"),
-     * 
+     *
      *      ),
      *      @OA\Parameter(
      *          name="multi_search[ti_quantity]",
@@ -543,7 +541,7 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="B123"),
-     * 
+     *
      *      ),
      *      @OA\Parameter(
      *          name="order_field",
@@ -579,8 +577,8 @@ class TransactionController extends BaseController
             'end_date' => $request->input('end_date'),
             'order_field' => $request->input('order_field', 't_id'),
             'order' => $request->input('order', 'desc'),
-            'multi_search'=> $request->input('multi_search'),
-            'csv' => $request->input('csv', false)
+            'multi_search' => $request->input('multi_search'),
+            'csv' => $request->input('csv', false),
         ];
 
         $validator = validator($params, [
@@ -620,6 +618,7 @@ class TransactionController extends BaseController
 
             if ($csvRequired) {
                 $return = $this->transactionService->writeTransactionsToCsv($res['data']);
+
                 return response()->stream($return['callback'], 200, $return['headers']);
             }
 

@@ -26,7 +26,6 @@ abstract class TestCase extends \TestCase
         if ($db_connection->table('pg_database')->whereRaw("datname='{$database}'")->count() === 0) {
             $db_connection->statement("CREATE DATABASE {$database}");
         }
-
         $this->artisan('migrate:refresh', ['--path' => 'database/migrations', '--database' => 'unit_test_payment_pgsql', '--force' => true]);
     }
 
@@ -79,6 +78,7 @@ abstract class TestCase extends \TestCase
                 'ti_fee_type' => 1,
                 'ti_vat' => 1,
                 'ti_amount' => 1,
+                'ti_price_rule' => 'discount',
             ];
         }
 

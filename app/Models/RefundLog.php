@@ -32,7 +32,7 @@ class RefundLog extends Model
         'rl_xref_r_id',
         'rl_xref_ri_id',
         'rl_type',
-        'rl_log',
+        'rl_description',
         'rl_agent',
     ];
 }

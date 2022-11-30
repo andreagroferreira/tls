@@ -154,8 +154,14 @@ class RefundService
             ->toArray();
 
         $tiId = array_first($refundItems)[0]['ri_xref_ti_id'];
-        $transaction = $this->transactionItemsService->fetch(['ti_id' => $tiId], 'ti_xref_transaction_id')->first()->toArray();
-        $refundRequest['transaction'] = $this->getTransactionItemsWithRefund($transaction['ti_xref_transaction_id'], $refundItems);
+        $transaction = $this->transactionItemsService
+            ->fetch(['ti_id' => $tiId], 'ti_xref_transaction_id')
+            ->first()
+            ->toArray();
+        $refundRequest['transaction'] = $this->getTransactionItemsWithRefund(
+            $transaction['ti_xref_transaction_id'],
+            $refundItems
+        );
 
         return $refundRequest;
     }
@@ -182,7 +188,10 @@ class RefundService
             't_tech_creation',
             't_tech_modification'
         ];
-        $transaction = $this->transactionService->fetchByWhere(['t_transaction_id' => $transactionId], $fields)->first()->toArray();
+        $transaction = $this->transactionService
+            ->fetchByWhere(['t_transaction_id' => $transactionId], $fields)
+            ->first()
+            ->toArray();
 
         $transactionItems = $this->transactionItemsService
             ->fetch(['ti_xref_transaction_id' => $transactionId])

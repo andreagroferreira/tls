@@ -19,21 +19,39 @@ class RefundItemRepository
         $this->refundItemModel = $refundItemModel;
     }
 
+    /**
+     * @param $connection
+     *
+     * @return void
+     */
     public function setConnection($connection)
     {
         $this->refundItemModel->setConnection($connection);
     }
 
+    /**
+     * @return null|string
+     */
     public function getConnection()
     {
         return $this->refundItemModel->getConnectionName();
     }
 
-    public function createMany($attributes)
+    /**
+     * @param array $attributes
+     *
+     * @return bool
+     */
+    public function createMany(array $attributes): bool
     {
         return $this->refundItemModel->insert($attributes);
     }
 
+    /**
+     * @param array $where
+     *
+     * @return object
+     */
     public function fetchRefundItems(array $where): object
     {
         return $this->refundItemModel
@@ -58,6 +76,4 @@ class RefundItemRepository
             ])
             ->get();
     }
-
-
 }

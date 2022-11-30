@@ -56,4 +56,17 @@ class TransactionItemsService
             'ti_tech_deleted' => false,
         ])->first();
     }
+
+    /**
+     * @param int $transactionItemId
+     *
+     * @return object
+     */
+    public function fetchByTransactionItemId(int $transactionItemId): object
+    {
+        return $this->transactionItemsRepository->fetchByTransactionItemId([
+            'ti_id' => $transactionItemId,
+            'ti_tech_deleted' => false,
+        ])->first();
+    }
 }

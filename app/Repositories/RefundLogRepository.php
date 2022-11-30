@@ -36,4 +36,14 @@ class RefundLogRepository
             ->where($where)
             ->get();
     }
+
+    /**
+     * @param array $attributes
+     * @return bool
+     */
+    public function createMany(array $attributes): bool
+    {
+        return $this->refundLogModel->insert($attributes);
+    }
+
 }

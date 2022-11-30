@@ -1042,6 +1042,7 @@ class TransactionControllerTest extends TestCase
             'ti_fee_type' => 'service_fee',
             'ti_vat' => 1,
             'ti_amount' => 1,
+            'ti_price_rule' => 'discount',
         ]);
 
         $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=ke&multi_search[t_city]=NBO&multi_search[ti_fee_type]=service');
@@ -1129,6 +1130,7 @@ class TransactionControllerTest extends TestCase
                                     'sku' => 1,
                                     'price' => 1,
                                     'vat' => 1,
+                                    'price_rule'=>'discount',
                                 ],
                             ],
                             'f_id' => 10001,

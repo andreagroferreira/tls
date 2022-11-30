@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class TransactionItems extends Model
 {
     use HasFactory;
+    public $timestamps = false;
 
     protected $table = 'transaction_items';
     protected $primaryKey = 'ti_id';
-    public $timestamps = false;
 
     protected $fillable = [
         'ti_xref_f_id',
@@ -19,6 +19,7 @@ class TransactionItems extends Model
         'ti_fee_type',
         'ti_vat',
         'ti_amount',
-        'ti_quantity'
+        'ti_quantity',
+        'ti_price_rule',
     ];
 }

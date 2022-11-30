@@ -132,20 +132,20 @@ class RefundService
             ->groupBy('ri_xref_ti_id')
             ->toArray();
 
-        $ti_id = array_first($refundItems)[0]['ri_xref_ti_id'];
-        $transaction = $this->transactionItemsService->fetch(['ti_id' => $ti_id], 'ti_xref_transaction_id')->first()->toArray();
+        $tiId = array_first($refundItems)[0]['ri_xref_ti_id'];
+        $transaction = $this->transactionItemsService->fetch(['ti_id' => $tiId], 'ti_xref_transaction_id')->first()->toArray();
         $refundRequest['transaction'] = $this->getTransactionItemsWithRefund($transaction['ti_xref_transaction_id'], $refundItems);
 
         return $refundRequest;
     }
     
     /**
-     * @param  string $transaction_id
+     * @param  string $transactionId
      * @param  array  $refundItems
      * 
      * @return array
      */
-    private function getTransactionItemsWithRefund(string $transaction_id, array $refundItems): array
+    private function getTransactionItemsWithRefund(string $transactionId, array $refundItems): array
     {
         $fields = [
             't_id',
@@ -161,10 +161,10 @@ class RefundService
             't_tech_creation',
             't_tech_modification'
         ];
-        $transaction = $this->transactionService->fetchByWhere(['t_transaction_id' => $transaction_id], $fields)->first()->toArray();
+        $transaction = $this->transactionService->fetchByWhere(['t_transaction_id' => $transactionId], $fields)->first()->toArray();
 
         $transactionItems = $this->transactionItemsService
-            ->fetch(['ti_xref_transaction_id' => $transaction_id])
+            ->fetch(['ti_xref_transaction_id' => $transactionId])
             ->groupBy('ti_xref_f_id')
             ->toArray();
         foreach ($transactionItems as $formId => $services) {

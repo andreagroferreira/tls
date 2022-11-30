@@ -194,6 +194,7 @@ class TransactionRepository
                 'ti_fee_type',
                 'ri_amount AS amount',
                 'ti_vat',
+                'ti_price_rule',
                 'rl_agent AS agent',
             ])
             ->selectRaw('ri_quantity*-1 AS quantity')
@@ -224,6 +225,7 @@ class TransactionRepository
                 'ti_fee_type',
                 'ti_amount AS amount',
                 'ti_vat',
+                'ti_price_rule',
                 DB::raw('NULL as agent'),
             ])
             ->selectRaw('ti_quantity AS quantity')

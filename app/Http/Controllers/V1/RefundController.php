@@ -110,7 +110,7 @@ class RefundController extends BaseController
      *      ),
      * )
      */
-    public function getRefundTransactionItems(Request $request): object
+    public function getRefundTransactionItems(Request $request): JsonResponse
     {
         $params = [
             'ti_xref_f_id' => $request->route('ti_xref_f_id'),
@@ -136,6 +136,54 @@ class RefundController extends BaseController
     }
 
     /**
+     * @OA\Get (
+     *     path="/api/v1/refund/{r_id}",
+     *     tags={"Payment API"},
+     *     description="Get Refund request details with Transaction & Refund Items",
+     *     @OA\Parameter(
+     *          name="r_id",
+     *          in="path",
+     *          description="Refund ID",
+     *          required=true,
+     *          @OA\Schema(type="integer", example="1"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="Got Refund request details with Transaction & Refund Items",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function getRefundRequest(Request $request): JsonResponse
+    {
+        $params = [
+            'r_id' => $request->route('r_id'),
+        ];
+
+        $validator = validator($params, [
+            'r_id' => 'integer',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        try {
+            $res = $this->refundService->getRefundRequest($validator->validated());
+            if (empty($res)) {
+                return $this->sendError('not found', 'Refund request not found');
+            }
+
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
+    
+    /** 
      * @param string $items
      * @param array  $request
      *

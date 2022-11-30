@@ -2688,6 +2688,40 @@
                 }
             }
         },
+        "/api/v1/refund/{r_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get Refund request details with Transaction & Refund Items",
+                "operationId": "8243a7f3cd86ac66c6dd589b51014f15",
+                "parameters": [
+                    {
+                        "name": "r_id",
+                        "in": "path",
+                        "description": "Refund ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Got Refund request details with Transaction & Refund Items",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/switch/redirto": {
             "post": {
                 "tags": [

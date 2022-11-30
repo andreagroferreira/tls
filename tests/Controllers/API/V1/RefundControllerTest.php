@@ -262,6 +262,73 @@ class RefundControllerTest extends TestCase
         $this->assertNotEmpty(array_get($transactionRefundItemsData, '0.items.skus.0.refund_items'));
     }
 
+    /**
+     * @return void
+     */
+    public function testGetRefundRequestMethod(): void
+    {
+        $this->post($this->refundApi.'/111');
+        $this->response->assertStatus(405);
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetRefundRequestValidation(): void
+    {
+        $this->get($this->refundApi.'/test');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'params error',
+                'message' => 'The r id must be an integer.',
+            ]);
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetRefundRequestNotFound(): void
+    {
+        $this->get($this->refundApi.'/111');
+        $this->response->assertStatus(400)
+            ->assertJson([
+                'error' => 'not found',
+                'message' => 'Refund request not found',
+            ]);
+    }
+
+    /**
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testGetRefundRequestSuccess(): void
+    {
+        $transactions = $this->generateTransaction([
+            't_xref_fg_id' => 10000,
+            't_transaction_id' => str_random(10),
+            't_client' => 'be',
+            't_issuer' => 'dzALG2be',
+            't_gateway_transaction_id' => str_random(10),
+            't_gateway' => 'cmi',
+            't_currency' => 'MAD',
+            't_status' => 'done',
+            't_redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr',
+            't_onerror_url' => 'onError_tlsweb_url?lang=fr-fr',
+            't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
+            't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
+            't_workflow' => 'vac',
+            't_invoice_storage' => 'file-library',
+        ]);
+        $transactionItems = $this->generateTransactionItems($transactions->t_transaction_id);
+
+        $refunds = $this->generateRefund();
+        $this->generateRefundItems($refunds->r_id, $transactionItems->ti_id);
+
+        $this->get($this->refundApi.'/1');
+        $this->response->assertStatus(200);
+    }
+
     public function defaultPayload(): array
     {
         return [

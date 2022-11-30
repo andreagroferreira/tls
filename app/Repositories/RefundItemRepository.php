@@ -46,7 +46,18 @@ class RefundItemRepository
     {
         return $this->refundItemModel->insert($attributes);
     }
-
+    
+    /**
+     * @param  array  $where
+     * @param  string $field
+     * 
+     * @return object
+     */
+    public function fetch(array $where, string $field = '*'): object
+    {
+        return $this->refundItemModel->select($field)->where($where)->get();
+    }
+    
     /**
      * @param array $where
      *

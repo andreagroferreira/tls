@@ -154,12 +154,12 @@ class RefundService
             ->toArray();
 
         $tiId = array_first($refundItems)[0]['ri_xref_ti_id'];
-        $transaction = $this->transactionItemsService
+        $transactionItem = $this->transactionItemsService
             ->fetch(['ti_id' => $tiId], 'ti_xref_transaction_id')
             ->first()
             ->toArray();
         $refundRequest['transaction'] = $this->getTransactionItemsWithRefund(
-            $transaction['ti_xref_transaction_id'],
+            $transactionItem['ti_xref_transaction_id'],
             $refundItems
         );
 

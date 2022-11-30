@@ -2605,7 +2605,57 @@
                 ],
                 "description": "create a new refund request",
                 "operationId": "2cb41394b31d9c58ad95db0fd38babd1",
+                "parameters": [
+                    {
+                        "name": "agent",
+                        "in": "query",
+                        "description": "agent email ID",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "test@test.com"
+                        }
+                    },
+                    {
+                        "name": "reason",
+                        "in": "query",
+                        "description": "the reason for refund",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "other"
+                        }
+                    },
+                    {
+                        "name": "appointment_date",
+                        "in": "query",
+                        "description": "Date of appintment",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2022-11-25 00:00:00"
+                        }
+                    },
+                    {
+                        "name": "items",
+                        "in": "query",
+                        "description": "Refund item ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": ""
+                        }
+                    }
+                ],
                 "responses": {
+                    "200": {
+                        "description": "Refund Request created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
                     "400": {
                         "description": "Error: bad request"
                     }
@@ -3017,13 +3067,13 @@
                         }
                     },
                     {
-                        "name": "t_expiration",
+                        "name": "expiration",
                         "in": "query",
-                        "description": "tls citizen appointment time(min)",
+                        "description": "tls citizen appointment booking expiration time(timestamp)",
                         "required": false,
                         "schema": {
                             "type": "integer",
-                            "example": "30"
+                            "example": "1669123675"
                         }
                     },
                     {

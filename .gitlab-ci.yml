@@ -41,10 +41,10 @@ prepare-instance:
     - composer install -o
   after_script:
     - rm -rf composer.*
+  extends: .job_dependencies_artifacts_expire_in  
   artifacts:
     paths:
       - ./
-    expire_in: 1 hour
   environment:
     name: $ENV
   rules:
@@ -74,6 +74,7 @@ test-unit:
   script:
     - export XDEBUG_MODE="coverage"
     - ./vendor/bin/phpunit --coverage-clover=coverage-report.clover --log-junit unittest-report.xml
+  extends: .artifacts_expire_in  
   artifacts:
     when: always
     reports:
@@ -81,7 +82,6 @@ test-unit:
         - unittest-report.xml
     paths:
       - "./"
-    expire_in: 3 days
   rules:
     - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TAG
       when: never

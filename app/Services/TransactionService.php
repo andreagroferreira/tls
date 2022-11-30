@@ -2,24 +2,34 @@
 
 namespace App\Services;
 
+use App\Jobs\InvoiceMailJob;
+use App\Jobs\TransactionSyncJob;
 use App\Repositories\TransactionRepository;
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TransactionService
 {
     protected $transactionRepository;
     protected $dbConnectionService;
     protected $transactionItemsService;
+    protected $formGroupService;
+    protected $transactionLogsService;
 
     public function __construct(
         TransactionRepository $transactionRepository,
         DbConnectionService $dbConnectionService,
-        TransactionItemsService $transactionItemsService
+        TransactionItemsService $transactionItemsService,
+        FormGroupService $formGroupService,
+        TransactionLogsService $transactionLogsService
     ) {
         $this->transactionRepository = $transactionRepository;
         $this->dbConnectionService = $dbConnectionService;
         $this->transactionItemsService = $transactionItemsService;
+        $this->formGroupService = $formGroupService;
+        $this->transactionLogsService = $transactionLogsService;
         $this->transactionRepository->setConnection($this->dbConnectionService->getConnection());
     }
 
@@ -230,15 +240,20 @@ class TransactionService
 
         try {
             $transaction = $this->transactionRepository->create($transaction_data);
+            $transactionItems = $this->convertItemsFieldToArray($transaction->t_transaction_id, $attributes['items']);
+            $totalAmount = array_sum(array_column($transactionItems, 'ti_amount'));
+
             $this->transactionItemsService->createMany(
-                $this->convertItemsFieldToArray(
-                    $transaction->t_transaction_id,
-                    $attributes['items']
-                )
+                $transactionItems
             );
 
+            if ($totalAmount === 0) {
+                $transactionData = $this->getTransaction($transaction->t_id);
+                $this->confirmTransaction($transactionData);
+            }
+
             $db_connection->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $db_connection->rollBack();
 
             return false;
@@ -458,6 +473,113 @@ class TransactionService
             'callback' => $callback,
             'headers' => $headers,
         ];
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @return void
+     */
+    public function confirmTransaction(array $transaction): void
+    {
+        if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
+            $actionResult = $this->syncTransaction($transaction, 'free');
+            if (!empty($actionResult['error_msg'])) {
+                Log::error(
+                    'Transaction ERROR: transaction sync '.
+                    $transaction['t_transaction_id'].' failed, because: '.
+                    json_encode($actionResult, 256)
+                );
+            }
+        }
+
+        $this->transactionRepository->updateById(
+            $transaction['t_id'],
+            [
+                't_status' => 'done',
+                't_gateway' => 'free',
+                't_payment_method' => 'free',
+            ]
+        );
+
+        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
+            ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+
+        $result = [
+            'is_success' => 'ok',
+            'orderid' => $transaction['t_transaction_id'],
+            'issuer' => $transaction['t_issuer'],
+            'amount' => $transaction['t_amount'],
+            'message' => 'Transaction OK: transaction has been confirmed.',
+        ];
+
+        $this->transactionLogsService->create([
+            'tl_xref_transaction_id' => $transaction['t_transaction_id'],
+            'tl_content' => json_encode($result),
+        ]);
+    }
+
+    /**
+     * @param array  $transaction
+     * @param string $paymentGateway
+     * @param string $agentName
+     * @param string $forcePayForNotOnlinePaymentAvs
+     *
+     * @return array
+     */
+    public function syncTransaction(
+        array $transaction,
+        string $paymentGateway,
+        string $agentName = '',
+        string $forcePayForNotOnlinePaymentAvs = ''
+    ): array {
+        $client = $transaction['t_client'];
+
+        $formGroupInfo = $this->formGroupService->fetch($transaction['t_xref_fg_id'], $client);
+        if (empty($formGroupInfo)) {
+            return [
+                'status' => 'error',
+                'error_msg' => 'form_group_not_found',
+            ];
+        }
+
+        $data = [
+            'gateway' => $paymentGateway,
+            'u_id' => !empty($formGroupInfo['fg_xref_u_id']) ? $formGroupInfo['fg_xref_u_id'] : 0,
+            't_items' => $transaction['t_items'],
+            't_transaction_id' => $transaction['t_transaction_id'],
+            't_issuer' => $transaction['t_issuer'],
+            't_currency' => $transaction['t_currency'],
+        ];
+
+        if (!empty($agentName)) {
+            $data['agent_name'] = $agentName;
+        }
+
+        if ($forcePayForNotOnlinePaymentAvs === 'yes') {
+            $data['force_pay_for_not_online_payment_avs'] = $forcePayForNotOnlinePaymentAvs;
+        }
+
+        Log::info('TransactionService syncTransaction start');
+
+        try {
+            dispatch(new TransactionSyncJob($client, $data))
+                ->onConnection('tlscontact_transaction_sync_queue')
+                ->onQueue('tlscontact_transaction_sync_queue');
+
+            Log::info('TransactionService syncTransaction:dispatch');
+
+            return [
+                'error_msg' => [],
+            ];
+        } catch (Exception $e) {
+            Log::info('TransactionService syncTransaction dispatch error_msg:'.$e->getMessage());
+
+            return [
+                'status' => 'error',
+                'error_msg' => $e->getMessage(),
+            ];
+        }
     }
 
     protected function generateTransactionId($transaction_id_seq, $issuer)

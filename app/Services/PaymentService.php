@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\PaymentEauditorLogJob;
-use App\Jobs\TransactionSyncJob;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -77,7 +76,12 @@ class PaymentService
 
         if ($transaction && !empty($transaction['t_items'])) {
             if (!empty($transaction['t_xref_fg_id'])) {
-                $actionResult = $this->syncAction($transaction, $payment_gateway);
+                $actionResult = $this->transactionService->syncTransaction(
+                    $transaction,
+                    $payment_gateway,
+                    $this->agent_name,
+                    $this->force_pay_for_not_online_payment_avs
+                );
                 if (!empty($actionResult['error_msg'])) {
                     $error_msg[] = $actionResult['error_msg'];
                 }
@@ -296,49 +300,6 @@ class PaymentService
             $transaction['t_client'],
             $resolved_content
         );
-    }
-
-    private function syncAction($transaction, $gateway)
-    {
-        $client = $transaction['t_client'];
-        $formGroupInfo = $this->formGroupService->fetch($transaction['t_xref_fg_id'], $client);
-        if (empty($formGroupInfo)) {
-            return [
-                'status' => 'error',
-                'error_msg' => 'form_group_not_found',
-            ];
-        }
-        $data = [
-            'gateway' => $gateway,
-            'u_id' => !empty($formGroupInfo['fg_xref_u_id']) ? $formGroupInfo['fg_xref_u_id'] : 0,
-            't_items' => $transaction['t_items'],
-            't_transaction_id' => $transaction['t_transaction_id'],
-            't_issuer' => $transaction['t_issuer'],
-            't_currency' => $transaction['t_currency'],
-        ];
-        if ($this->agent_name) {
-            $data['agent_name'] = $this->agent_name;
-        }
-        if ($this->force_pay_for_not_online_payment_avs === 'yes') {
-            $data['force_pay_for_not_online_payment_avs'] = $this->force_pay_for_not_online_payment_avs;
-        }
-        Log::info('paymentservice syncAction start');
-
-        try {
-            dispatch(new TransactionSyncJob($client, $data))->onConnection('tlscontact_transaction_sync_queue')->onQueue('tlscontact_transaction_sync_queue');
-            Log::info('paymentservice syncAction:dispatch');
-
-            return [
-                'error_msg' => [],
-            ];
-        } catch (\Exception $e) {
-            Log::info('paymentservice syncAction dispatch error_msg:'.$e->getMessage());
-
-            return [
-                'status' => 'error',
-                'error_msg' => $e->getMessage(),
-            ];
-        }
     }
 
     private function formatProfileData($data): array

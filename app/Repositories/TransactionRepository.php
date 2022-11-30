@@ -250,4 +250,14 @@ class TransactionRepository
     ): array {
         return $this->listTransactions($where, $this->pageLimit, $orderField, $order);
     }
+
+    /**
+     * @param int $tId
+     * @param array $data
+     * @return int
+     */
+    public function updateById(int $tId, array $data)
+    {
+        return $this->transactionModel->where('t_id', $tId)->update($data);
+    }
 }

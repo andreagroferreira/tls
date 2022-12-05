@@ -9,15 +9,18 @@ class PaymentConfigurationsService
 {
     protected $paymentAccountsRepositories;
     protected $paymentConfigurationsRepositories;
+    protected $gatewayService;
     protected $dbConnectionService;
 
     public function __construct(
         PaymentAccountsRepositories $paymentAccountsRepositories,
         PaymentConfigurationsRepositories $paymentConfigurationsRepositories,
+        GatewayService $gatewayService,
         DbConnectionService $dbConnectionService
     ) {
         $this->paymentAccountsRepositories = $paymentAccountsRepositories;
         $this->paymentConfigurationsRepositories = $paymentConfigurationsRepositories;
+        $this->gatewayService = $gatewayService;
         $this->paymentAccountsRepositories->setConnection($dbConnectionService->getConnection());
         $this->paymentConfigurationsRepositories->setConnection($dbConnectionService->getConnection());
     }
@@ -60,7 +63,12 @@ class PaymentConfigurationsService
         $pc_country = $res['pc_country'];
         $pc_city = $res['pc_city'];
         $pc_service = $res['pc_service'];
-        $where = ['pc_project' => $pc_project, 'pc_country' => $pc_country, 'pc_city' => $pc_city, 'pc_service' => $pc_service];
+        $where = [
+            'pc_project' => $pc_project,
+            'pc_country' => $pc_country,
+            'pc_city' => $pc_city,
+            'pc_service' => $pc_service,
+        ];
 
         return $this->paymentConfigurationsRepositories->fetchSelect($where);
     }
@@ -113,28 +121,31 @@ class PaymentConfigurationsService
      */
     public function fetchPaymentGatewayTypes(string $city): array
     {
+        $gateway = $this->gatewayService;
         $citiesInfo = config('list_city.'.$city);
 
         if (empty($citiesInfo['gcc_xref_gc_id']) || empty($city)) {
             return [];
         }
 
-        $payment_configurations = $this->paymentConfigurationsRepositories->findBy([
-            'pc_city' => $city,
-            'pc_country' => $citiesInfo['gcc_xref_gc_id'],
-        ]);
+        $clientInfo = explode('-', ENV('CLIENT'));
+        $client = $clientInfo[1];
 
-        foreach ($payment_configurations as $k => $v) {
-            $result[] = $v['pc_service'];
+        if (empty(ENV('CLIENT')) || sizeof($clientInfo) == 0) {
+            return [];
         }
 
-        if (empty($result)) {
-            $result = [];
+        $issuer = $citiesInfo['gcc_xref_gc_id'].$citiesInfo['gcc_id'].'2'.$client;
+
+        if (sizeof($gateway->getGateways($client, $issuer, 'tls')) > 0) {
+            $result[] = 'tls';
         }
 
-        $removeDuplicates = array_unique($result);
+        if (sizeof($gateway->getGateways($client, $issuer, 'gov')) > 0) {
+            $result[] = 'gov';
+        }
 
-        return array_values($removeDuplicates);
+        return $result;
     }
 
     public function getExistsConfigs($pc_id)

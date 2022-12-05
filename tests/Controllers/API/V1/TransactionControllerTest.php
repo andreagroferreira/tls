@@ -956,7 +956,7 @@ class TransactionControllerTest extends TestCase
             'data' => [
                 [
                     't_id' => $transactions->t_id,
-                    't_tech_creation' => $transactions->t_tech_creation,
+                    'modification_date' => $transactions->t_tech_modification,
                     't_client' => $transactions->t_client,
                     't_xref_fg_id' => $transactions->t_xref_fg_id,
                     't_transaction_id' => $transactions->t_transaction_id,

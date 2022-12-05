@@ -123,15 +123,16 @@ class PaymentConfigurationsService
     {
         $gateway = $this->gatewayService;
         $citiesInfo = config('list_city.'.$city);
+        $result = [];
 
         if (empty($citiesInfo['gcc_xref_gc_id']) || empty($city)) {
             return [];
         }
 
         $clientInfo = explode('-', ENV('CLIENT'));
-        $client = $clientInfo[1];
+        $client = $clientInfo[1] ?? '';
 
-        if (empty(ENV('CLIENT')) || sizeof($clientInfo) == 0) {
+        if (empty(ENV('CLIENT')) || sizeof($clientInfo) == 0 || $client == '') {
             return [];
         }
 

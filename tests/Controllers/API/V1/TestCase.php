@@ -265,4 +265,60 @@ abstract class TestCase extends \TestCase
 
         return $db_connection->where('ri_id', $item_id)->first();
     }
+
+    public function generateConfigurationPaymentGatewayTypeTls($params = []): object
+    {
+        if (blank($params)) {
+            $params = [
+                'pc_project' => 'de',
+                'pc_country' => 'eg',
+                'pc_city' => 'CAI',
+                'pc_service' => 'tls',
+                'pc_is_active' => true,
+            ];
+        }
+
+        $db_connection = DB::connection('unit_test_payment_pgsql')->table('payment_configurations');
+        $pc_id = $db_connection->insertGetId($params, 'pc_id');
+
+        return $db_connection->where('pc_id', $pc_id)->first();
+    }
+
+    public function generateConfigurationPaymentGatewayTypeGov($params = []): object
+    {
+        if (blank($params)) {
+            $params = [
+                'pc_project' => 'de',
+                'pc_country' => 'eg',
+                'pc_city' => 'ALY',
+                'pc_service' => 'gov',
+                'pc_is_active' => true,
+            ];
+        }
+
+        $db_connection = DB::connection('unit_test_payment_pgsql')->table('payment_configurations');
+        $pc_id = $db_connection->insertGetId($params, 'pc_id');
+
+        return $db_connection->where('pc_id', $pc_id)->first();
+    }
+
+    public function generateConfigurationPaymentGatewayTypeBoth($params = []): object
+    {
+        if (blank($params)) {
+            $params = [
+                'pc_project' => 'de',
+                'pc_country' => 'eg',
+                'pc_city' => 'CAI',
+                'pc_service' => 'gov',
+                'pc_is_active' => true,
+            ];
+        }
+
+        $db_connection = DB::connection('unit_test_payment_pgsql')->table('payment_configurations');
+        $pc_id = $db_connection->insertGetId($params, 'pc_id');
+
+        return $db_connection->where('pc_id', $pc_id)->first();
+    }
+
+
 }

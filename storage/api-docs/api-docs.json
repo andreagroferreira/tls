@@ -2629,7 +2629,7 @@
                     {
                         "name": "appointment_date",
                         "in": "query",
-                        "description": "Date of appintment",
+                        "description": "date of appointment",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -2639,7 +2639,7 @@
                     {
                         "name": "items",
                         "in": "query",
-                        "description": "Refund item ID",
+                        "description": "Refund items",
                         "required": true,
                         "schema": {
                             "type": "string",

@@ -47,14 +47,14 @@ class RefundController extends BaseController
      *      @OA\Parameter(
      *          name="appointment_date",
      *          in="query",
-     *          description="Date of appintment",
+     *          description="date of appointment",
      *          required=false,
      *          @OA\Schema(type="string", example="2022-11-25 00:00:00"),
      *      ),
      *      @OA\Parameter(
      *          name="items",
      *          in="query",
-     *          description="Refund item ID",
+     *          description="Refund items",
      *          required=true,
      *          @OA\Schema(type="string", example=""),
      *      ),
@@ -182,8 +182,8 @@ class RefundController extends BaseController
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }
-    
-    /** 
+
+    /**
      * @param string $items
      * @param array  $request
      *

@@ -95,9 +95,9 @@ class GatewayService
             }
         } else {
             $config_data = [
-                'redirect_host' => $kbank_config['config']['sandbox_redirect_host'],
-                'api_key'       => $kbank_config['config']['sandbox_apikey'],
-                'mid'           => $kbank_config['config']['sandbox_mid']
+                'redirect_host' => $kbank_config['config']['redirect_host'],
+                'api_key'       => $kbank_config['config']['apikey'],
+                'mid'           => $kbank_config['config']['mid']
             ];
         }
 

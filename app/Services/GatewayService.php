@@ -76,11 +76,31 @@ class GatewayService
 
     public function getKbankConfig($client, $issuer, $gateway, $pa_id) {
         $kbank_config   = $this->getGateway($client, $issuer, $gateway, $pa_id);
+        $getClientUseFile = $this->getClientUseFile();
+        if ($getClientUseFile) {
+            $app_env        = !(env('APP_ENV') === 'production');
+            $is_live        = $kbank_config['common']['env'] == 'live';
+            if ($is_live && !$app_env) {
+                $config_data = [
+                    'redirect_host' => $kbank_config['production']['redirect_host'],
+                    'api_key'       => $kbank_config['production']['apikey'],
+                    'mid'           => $kbank_config['production']['mid']
+                ];
+            } else {
+                $config_data = [
+                    'redirect_host' => $kbank_config['sandbox']['sandbox_redirect_host'],
+                    'api_key'       => $kbank_config['sandbox']['sandbox_apikey'],
+                    'mid'           => $kbank_config['sandbox']['sandbox_mid']
+                ];
+            }
+        } else {
+            $config_data = [
+                'redirect_host' => $kbank_config['config']['sandbox_redirect_host'],
+                'api_key'       => $kbank_config['config']['sandbox_apikey'],
+                'mid'           => $kbank_config['config']['sandbox_mid']
+            ];
+        }
 
-        return [
-            'redirect_host' => $kbank_config['config']['redirect_host'],
-            'api_key'       => $kbank_config['config']['apikey'],
-            'mid'           => $kbank_config['config']['mid']
-        ];
+        return $config_data;
     }
 }

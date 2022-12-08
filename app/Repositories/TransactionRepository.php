@@ -240,6 +240,33 @@ class TransactionRepository
 
     /**
      * @param Collection $where
+     *
+     * @return array
+     */
+    public function listTransactionsSkuSummary(Collection $where): array
+    {
+        $condition = $where->push(
+            ['t_tech_deleted', '=', false],
+            ['t_status', '=', 'done'],
+        )->toArray();
+
+        return $this->transactionModel
+            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->where($condition)
+            ->select([
+                'ti_fee_type AS sku',
+                't_payment_method AS payment_method',
+                't_currency AS currency'
+            ])
+            ->selectRaw('SUM(ti_amount) AS amount')
+            ->selectRaw('SUM((ti_vat/100 * ti_amount)+ti_amount) AS amount_gross')
+            ->groupBY('ti_fee_type', 'payment_method', 't_currency')
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * @param Collection $where
      * @param string     $orderField
      * @param string     $order
      *

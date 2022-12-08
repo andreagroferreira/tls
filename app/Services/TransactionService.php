@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Collection;
 
 class TransactionService
 {
@@ -386,6 +387,9 @@ class TransactionService
                 $attributes['order_field'],
                 $attributes['order']
             );
+            if (!empty($transactions['data'])) {
+                $summary = $this->listTransactionsSkuSummary($where);
+            }
         }
 
         if (empty($transactions)) {
@@ -402,7 +406,83 @@ class TransactionService
             'total' => array_get($transactions, 'total', 0),
             'data' => array_get($transactions, 'data', []),
             'current_page' => array_get($transactions, 'current_page', 1),
+            'summary' => $summary ?? [],
         ];
+    }
+
+    /**
+     * @param  Collection $where
+     *
+     * @return array
+     */
+    private function listTransactionsSkuSummary(Collection $where): array
+    {
+        $data = $this->transactionRepository->listTransactionsSkuSummary($where);
+        foreach ($data as $skuDetails) {
+            $sku = $skuDetails['sku'];
+            $currency = $skuDetails['currency'];
+            $paymentMethod = $skuDetails['payment_method'];
+
+            $skuData[$currency][$sku][$paymentMethod]['amount'] = (float)$skuDetails['amount'];
+            $skuData[$currency][$sku][$paymentMethod]['amount-gross'] = (float)$skuDetails['amount_gross'];
+
+            $totalsByPaymentMethod[$currency][$paymentMethod]['amount'][] = (float)$skuDetails['amount'];
+            $totalsByPaymentMethod[$currency][$paymentMethod]['amount-gross'][] = (float)$skuDetails['amount_gross'];
+
+            $totals[$currency]['amount'][] = (float)$skuDetails['amount'];
+            $totals[$currency]['amount-gross'][] = (float)$skuDetails['amount_gross'];
+        }
+        foreach ($skuData as $currency => $skuList) {
+            $totalsByPayment = $totalsByPaymentMethod[$currency];
+            $skuSummary = $this->skuSummary($skuList);
+
+            $summary[] = [
+                'currency' => $currency,
+                'cash-amount-total' =>
+                    !empty($totalsByPayment['cash']) ? array_sum($totalsByPayment['cash']['amount']) : 0,
+                'cash-amount-gross-total' =>
+                    !empty($totalsByPayment['cash']) ? round(array_sum($totalsByPayment['cash']['amount-gross']), 4) : 0,
+                'card-amount-total' =>
+                    !empty($totalsByPayment['card']) ? array_sum($totalsByPayment['card']['amount']) : 0,
+                'card-amount-gross-total' =>
+                    !empty($totalsByPayment['card']) ? round(array_sum($totalsByPayment['card']['amount-gross']), 4) : 0,
+                'amount-total' => array_sum($totals[$currency]['amount']),
+                'amount-gross-total' => round(array_sum($totals[$currency]['amount-gross']), 4),
+                'skus' => $skuSummary,
+            ];
+        }
+        return $summary;
+    }
+
+    /**
+     * @param  array $skuList
+     *
+     * @return array
+     */
+    private function skuSummary(array $skuList): array
+    {
+        foreach ($skuList as $sku => $skuDetails) {
+            $totalAmount = 0;
+            $totalAmountGross = 0;
+            $summary = [];
+
+            foreach ($skuDetails as $paymentMethod => $amountData) {
+                $summary[] = [
+                    'payment-type' => $paymentMethod,
+                    'amount' => $amountData['amount'],
+                    'amount-gross' => $amountData['amount-gross'],
+                ];
+                $totalAmount += $amountData['amount'];
+                $totalAmountGross += $amountData['amount-gross'];
+            }
+            $skus[] = [
+                'sku' => $sku,
+                'amount-total' => $totalAmount,
+                'amount-gross-total' => $totalAmountGross,
+                'summary' => $summary,
+            ];
+        }
+        return $skus ?? [];
     }
 
     /**

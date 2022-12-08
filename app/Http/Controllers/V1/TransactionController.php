@@ -573,8 +573,8 @@ class TransactionController extends BaseController
         $params = [
             'page' => $request->input('page', 1),
             'limit' => $request->input('limit', 20),
-            'start_date' => $request->input('start_date'),
-            'end_date' => $request->input('end_date'),
+            'start_date' => $request->input('start_date', Carbon::today()->toDateString()),
+            'end_date' => $request->input('end_date', Carbon::today()->toDateString()),
             'order_field' => $request->input('order_field', 't_id'),
             'order' => $request->input('order', 'desc'),
             'multi_search' => $request->input('multi_search'),

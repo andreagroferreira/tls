@@ -192,13 +192,13 @@ class TransactionRepository
                 'ri_tech_modification AS modification_date',
                 'ti_id',
                 'ti_fee_type',
-                'ri_amount AS amount',
+                'ri_amount AS amount_gross',
                 'ti_vat',
                 'ti_price_rule',
                 'rl_agent AS agent',
             ])
             ->selectRaw('ri_quantity*-1 AS quantity')
-            ->selectRaw('(ti_vat/100 * ri_amount)+ri_amount AS amount_gross')
+            ->selectRaw('ri_amount-(ti_vat/100 * ri_amount) AS amount')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code');
 
@@ -223,13 +223,13 @@ class TransactionRepository
                 't_tech_modification AS modification_date',
                 'ti_id',
                 'ti_fee_type',
-                'ti_amount AS amount',
+                'ti_amount AS amount_gross',
                 'ti_vat',
                 'ti_price_rule',
                 DB::raw('NULL as agent'),
             ])
             ->selectRaw('ti_quantity AS quantity')
-            ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
+            ->selectRaw('ti_amount-(ti_vat/100 * ti_amount) AS amount')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
             ->union($refundQuery)

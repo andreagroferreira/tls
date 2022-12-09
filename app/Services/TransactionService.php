@@ -423,31 +423,20 @@ class TransactionService
             $currency = $skuDetails['currency'];
             $paymentMethod = $skuDetails['payment_method'];
 
-            $skuData[$currency][$sku][$paymentMethod]['amount'] = (float)$skuDetails['amount'];
-            $skuData[$currency][$sku][$paymentMethod]['amount-gross'] = (float)$skuDetails['amount_gross'];
-
-            $totalsByPaymentMethod[$currency][$paymentMethod]['amount'][] = (float)$skuDetails['amount'];
-            $totalsByPaymentMethod[$currency][$paymentMethod]['amount-gross'][] = (float)$skuDetails['amount_gross'];
-
-            $totals[$currency]['amount'][] = (float)$skuDetails['amount'];
-            $totals[$currency]['amount-gross'][] = (float)$skuDetails['amount_gross'];
+            $skuData[$currency][$sku][$paymentMethod] = (float)$skuDetails['amount'];
+            $totalByPaymentMethod[$currency][$paymentMethod][] = (float)$skuDetails['amount'];
+            $totalAmount[$currency][] = (float)$skuDetails['amount'];
         }
         foreach ($skuData as $currency => $skuList) {
-            $totalsByPayment = $totalsByPaymentMethod[$currency];
             $skuSummary = $this->skuSummary($skuList);
 
             $summary[] = [
                 'currency' => $currency,
                 'cash-amount-total' =>
-                    !empty($totalsByPayment['cash']) ? array_sum($totalsByPayment['cash']['amount']) : 0,
-                'cash-amount-gross-total' =>
-                    !empty($totalsByPayment['cash']) ? round(array_sum($totalsByPayment['cash']['amount-gross']), 4) : 0,
+                !empty($totalByPaymentMethod[$currency]['cash']) ? array_sum($totalByPaymentMethod[$currency]['cash']) : 0,
                 'card-amount-total' =>
-                    !empty($totalsByPayment['card']) ? array_sum($totalsByPayment['card']['amount']) : 0,
-                'card-amount-gross-total' =>
-                    !empty($totalsByPayment['card']) ? round(array_sum($totalsByPayment['card']['amount-gross']), 4) : 0,
-                'amount-total' => array_sum($totals[$currency]['amount']),
-                'amount-gross-total' => round(array_sum($totals[$currency]['amount-gross']), 4),
+                !empty($totalByPaymentMethod[$currency]['card']) ? array_sum($totalByPaymentMethod[$currency]['card']) : 0,
+                'amount-total' => array_sum($totalAmount[$currency]),
                 'skus' => $skuSummary,
             ];
         }
@@ -463,22 +452,18 @@ class TransactionService
     {
         foreach ($skuList as $sku => $skuDetails) {
             $totalAmount = 0;
-            $totalAmountGross = 0;
             $summary = [];
 
-            foreach ($skuDetails as $paymentMethod => $amountData) {
+            foreach ($skuDetails as $paymentMethod => $amount) {
                 $summary[] = [
                     'payment-type' => $paymentMethod,
-                    'amount' => $amountData['amount'],
-                    'amount-gross' => $amountData['amount-gross'],
+                    'amount' => $amount,
                 ];
-                $totalAmount += $amountData['amount'];
-                $totalAmountGross += $amountData['amount-gross'];
+                $totalAmount += $amount;
             }
             $skus[] = [
                 'sku' => $sku,
                 'amount-total' => $totalAmount,
-                'amount-gross-total' => $totalAmountGross,
                 'summary' => $summary,
             ];
         }

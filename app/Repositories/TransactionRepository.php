@@ -258,9 +258,8 @@ class TransactionRepository
                 't_payment_method AS payment_method',
                 't_currency AS currency'
             ])
-            ->selectRaw('SUM(ti_amount) AS amount')
-            ->selectRaw('SUM((ti_vat/100 * ti_amount)+ti_amount) AS amount_gross')
-            ->groupBY('ti_fee_type', 'payment_method', 't_currency')
+            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) AS amount')
+            ->groupBY('ti_fee_type', 't_payment_method', 't_currency')
             ->get()
             ->toArray();
     }

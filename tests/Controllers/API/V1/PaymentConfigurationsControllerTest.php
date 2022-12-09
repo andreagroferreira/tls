@@ -8,7 +8,6 @@ namespace Tests\Controllers\API\V1;
  */
 class PaymentConfigurationsControllerTest extends TestCase
 {
-
     /**
      * @var string
      */
@@ -44,11 +43,19 @@ class PaymentConfigurationsControllerTest extends TestCase
     }
 
     /**
+     * @throws Throwable
+     *
      * @return void
      */
     public function testGetPaymentGatewayTypesByCityTls()
     {
-        $this->generateConfigurationPaymentGatewayTypeTls();
+        $this->generateConfigurationPaymentGatewayType(
+            $this->getClient(),
+            'tls',
+            'CAI',
+            'eg',
+        );
+
         $this->get($this->paymentGatewayTypesApi.'/CAI');
         $this->response->assertStatus(200)
             ->assertJson([
@@ -61,7 +68,13 @@ class PaymentConfigurationsControllerTest extends TestCase
      */
     public function testGetPaymentGatewayTypesByCityGov()
     {
-        $this->generateConfigurationPaymentGatewayTypeGov();
+        $this->generateConfigurationPaymentGatewayType(
+            $this->getClient(),
+            'gov',
+            'ALY',
+            'eg'
+        );
+
         $this->get($this->paymentGatewayTypesApi.'/ALY');
         $this->response->assertStatus(200)
             ->assertJson([
@@ -74,7 +87,20 @@ class PaymentConfigurationsControllerTest extends TestCase
      */
     public function testGetPaymentGatewayTypesByCityBoth()
     {
-        $this->generateConfigurationPaymentGatewayTypeBoth();
+        $this->generateConfigurationPaymentGatewayType(
+            $this->getClient(),
+            'gov',
+            'CAI',
+            'eg'
+        );
+
+        $this->generateConfigurationPaymentGatewayType(
+            $this->getClient(),
+            'tls',
+            'CAI',
+            'eg'
+        );
+
         $this->get($this->paymentGatewayTypesApi.'/CAI');
         $this->response->assertStatus(200)
             ->assertJson([
@@ -85,10 +111,11 @@ class PaymentConfigurationsControllerTest extends TestCase
     /**
      * @return void
      */
-    public function testGetPaymentGatewayTypesByCityInvalid()
+    public function testGetPaymentGatewayTypesByCityWithNoPaymentGateways()
     {
         $this->get($this->paymentGatewayTypesApi.'/PAR');
         $this->response->assertStatus(200)
             ->assertJson([]);
     }
+
 }

@@ -6,11 +6,17 @@ use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends \TestCase
 {
+    /**
+     * @var string
+     */
+    private $client;
+
     public function setUp(): void
     {
         parent::setUp();
         $this->setUpConnections();
         $this->runDatabaseMigrations();
+        $this->client = $this->getClient();
     }
 
     public function setUpConnections()
@@ -266,59 +272,78 @@ abstract class TestCase extends \TestCase
         return $db_connection->where('ri_id', $item_id)->first();
     }
 
-    public function generateConfigurationPaymentGatewayTypeTls($params = []): object
+    /**
+     * @return string
+     */
+    public function getClient(): string
+    {
+        $clientInfo = explode('-', ENV('CLIENT'));
+
+        return $clientInfo[1] ?? '';
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return object
+     */
+    public function generateConfigurationPaymentGatewayServiceProvider(array $params = []): object
     {
         if (blank($params)) {
             $params = [
-                'pc_project' => 'de',
-                'pc_country' => 'eg',
-                'pc_city' => 'CAI',
-                'pc_service' => 'tls',
-                'pc_is_active' => true,
+                'psp_code' => 'pay_later',
+                'psp_name' => 'Service Provider Test',
             ];
         }
+        $db_connection = DB::connection('unit_test_payment_pgsql')->table('payment_service_providers');
+        $psp_id = $db_connection->insertGetId($params, 'psp_id');
+
+        return $db_connection->where('psp_id', $psp_id)->first();
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return object
+     */
+    public function generateConfigurationPaymentGatewayAccount(array $params = []): object
+    {
+        if (blank($params)) {
+            $params = [
+                'pa_type' => 'sandbox',
+                'pa_xref_psp_id' => $this->generateConfigurationPaymentGatewayServiceProvider()->psp_id,
+                'pa_name' => 'test-'.rand(1, 999),
+                'pa_info' => 'test',
+            ];
+        }
+        $db_connection = DB::connection('unit_test_payment_pgsql')->table('payment_accounts');
+        $pa_id = $db_connection->insertGetId($params, 'pa_id');
+
+        return $db_connection->where('pa_id', $pa_id)->first();
+    }
+
+    /**
+     * @param string $client
+     * @param string $service
+     * @param string $city
+     * @param string $country
+     *
+     * @return object
+     */
+    public function generateConfigurationPaymentGatewayType($client, $service, $city, $country): object
+    {
+        $params = [
+            'pc_project' => $client,
+            'pc_country' => $country,
+            'pc_xref_pa_id' => $this->generateConfigurationPaymentGatewayAccount()->pa_id,
+            'pc_city' => $city,
+            'pc_service' => $service,
+            'pc_is_active' => true,
+        ];
 
         $db_connection = DB::connection('unit_test_payment_pgsql')->table('payment_configurations');
         $pc_id = $db_connection->insertGetId($params, 'pc_id');
 
         return $db_connection->where('pc_id', $pc_id)->first();
     }
-
-    public function generateConfigurationPaymentGatewayTypeGov($params = []): object
-    {
-        if (blank($params)) {
-            $params = [
-                'pc_project' => 'de',
-                'pc_country' => 'eg',
-                'pc_city' => 'ALY',
-                'pc_service' => 'gov',
-                'pc_is_active' => true,
-            ];
-        }
-
-        $db_connection = DB::connection('unit_test_payment_pgsql')->table('payment_configurations');
-        $pc_id = $db_connection->insertGetId($params, 'pc_id');
-
-        return $db_connection->where('pc_id', $pc_id)->first();
-    }
-
-    public function generateConfigurationPaymentGatewayTypeBoth($params = []): object
-    {
-        if (blank($params)) {
-            $params = [
-                'pc_project' => 'de',
-                'pc_country' => 'eg',
-                'pc_city' => 'CAI',
-                'pc_service' => 'gov',
-                'pc_is_active' => true,
-            ];
-        }
-
-        $db_connection = DB::connection('unit_test_payment_pgsql')->table('payment_configurations');
-        $pc_id = $db_connection->insertGetId($params, 'pc_id');
-
-        return $db_connection->where('pc_id', $pc_id)->first();
-    }
-
-
 }

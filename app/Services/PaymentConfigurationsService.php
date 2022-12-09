@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\PaymentAccountsRepositories;
 use App\Repositories\PaymentConfigurationsRepositories;
+use Illuminate\Support\Facades\Log;
 
 class PaymentConfigurationsService
 {
@@ -115,6 +116,16 @@ class PaymentConfigurationsService
     }
 
     /**
+     * @return string
+     */
+    public function getClient(): string
+    {
+        $clientInfo = explode('-', ENV('CLIENT'));
+
+        return $clientInfo[1] ?? '';
+    }
+
+    /**
      * @param string $city
      *
      * @return array
@@ -122,28 +133,27 @@ class PaymentConfigurationsService
     public function fetchPaymentGatewayTypes(string $city): array
     {
         $gateway = $this->gatewayService;
-        $citiesInfo = config('list_city.'.$city);
         $result = [];
-
-        if (empty($citiesInfo['gcc_xref_gc_id']) || empty($city)) {
-            return [];
-        }
-
-        $clientInfo = explode('-', ENV('CLIENT'));
-        $client = $clientInfo[1] ?? '';
-
-        if (empty(ENV('CLIENT')) || sizeof($clientInfo) == 0 || $client == '') {
-            return [];
-        }
-
+        $citiesInfo = config('list_city.'.$city);
+        $client = $this->getClient();
         $issuer = $citiesInfo['gcc_xref_gc_id'].$citiesInfo['gcc_id'].'2'.$client;
 
-        if (sizeof($gateway->getGateways($client, $issuer, 'tls')) > 0) {
-            $result[] = 'tls';
+        if (empty($citiesInfo['gcc_xref_gc_id']) || empty($city) || $client == '') {
+            return [];
         }
 
-        if (sizeof($gateway->getGateways($client, $issuer, 'gov')) > 0) {
-            $result[] = 'gov';
+        try {
+            if (sizeof($gateway->getGateways($client, $issuer, 'tls')) > 0) {
+                $result[] = 'tls';
+            }
+
+            if (sizeof($gateway->getGateways($client, $issuer, 'gov')) > 0) {
+                $result[] = 'gov';
+            }
+        } catch (\Exception $e) {
+            Log::warning('Payment Configuration Error: fetchPaymentGatewayTypes "'.$e->getMessage().'"');
+
+            return [];
         }
 
         return $result;

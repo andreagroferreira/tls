@@ -1646,6 +1646,40 @@
                 }
             }
         },
+        "/api/v1/payment-gateway-types/{city}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get types (gov,tls) of payment gateway by city, used by eCommerce to show multiple baskets",
+                "operationId": "5c2029b70ea1f8347f7147c83f1ff724",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "Unique 3 letters City code per client",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "CAI"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the paymentgateway list types (tls,gov)",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/payment-config": {
             "post": {
                 "tags": [

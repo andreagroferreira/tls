@@ -143,8 +143,8 @@ class TokenResolveService
         $basketValues = [
             'currency' => $transactionCurrency,
             'amount' => $transaction['t_amount'],
-            'total_with_tax' => $this->formatDecimalNumber((float) $basketServiceValues['price_vat']),
-            'total_without_tax' => $this->formatDecimalNumber((float) $transaction['t_amount']),
+            'total_with_tax' => $this->formatDecimalNumber((float) $transaction['t_amount']),
+            'total_without_tax' => $this->formatDecimalNumber((float) $basketServiceValues['price_without_vat']),
             'tax' => $this->formatDecimalNumber((float) $basketServiceValues['vat']),
         ];
 
@@ -169,7 +169,7 @@ class TokenResolveService
         $basketValues = [
             'services' => [],
             'vat' => 0,
-            'price_vat' => 0,
+            'price_without_vat' => 0,
         ];
 
         foreach ($transactionItems as $item) {
@@ -193,7 +193,7 @@ class TokenResolveService
                 $basketValues['services'][$sku]['price'] += $price;
 
                 $basketValues['vat'] += $vat;
-                $basketValues['price_vat'] += ($vat + $price);
+                $basketValues['price_without_vat'] += ($price - $vat);
             }
         }
 

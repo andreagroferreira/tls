@@ -423,20 +423,27 @@ class TransactionService
             $currency = $skuDetails['currency'];
             $paymentMethod = $skuDetails['payment_method'];
 
-            $skuData[$currency][$sku][$paymentMethod] = (float)$skuDetails['amount'];
-            $totalByPaymentMethod[$currency][$paymentMethod][] = (float)$skuDetails['amount'];
-            $totalAmount[$currency][] = (float)$skuDetails['amount'];
+            if (!isset($skuData[$currency][$sku][$paymentMethod])) {
+                $skuData[$currency][$sku][$paymentMethod] = 0;
+            }
+            $skuData[$currency][$sku][$paymentMethod] += (float)$skuDetails['amount'];
+            if (!isset($totalByPaymentMethod[$currency][$paymentMethod])) {
+                $totalByPaymentMethod[$currency][$paymentMethod] = 0;
+            }
+            $totalByPaymentMethod[$currency][$paymentMethod] += (float)$skuDetails['amount'];
+            if (!isset($totalAmount[$currency])) {
+                $totalAmount[$currency] = 0;
+            }
+            $totalAmount[$currency] += (float)$skuDetails['amount'];
         }
         foreach ($skuData as $currency => $skuList) {
             $skuSummary = $this->skuSummary($skuList);
 
             $summary[] = [
                 'currency' => $currency,
-                'cash-amount-total' =>
-                !empty($totalByPaymentMethod[$currency]['cash']) ? array_sum($totalByPaymentMethod[$currency]['cash']) : 0,
-                'card-amount-total' =>
-                !empty($totalByPaymentMethod[$currency]['card']) ? array_sum($totalByPaymentMethod[$currency]['card']) : 0,
-                'amount-total' => array_sum($totalAmount[$currency]),
+                'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
+                'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
+                'amount-total' => $totalAmount[$currency] ?? 0,
                 'skus' => $skuSummary,
             ];
         }

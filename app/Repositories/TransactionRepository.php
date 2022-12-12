@@ -250,16 +250,33 @@ class TransactionRepository
             ['t_status', '=', 'done'],
         )->toArray();
 
-        return $this->transactionModel
+        $applicantQuery = $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
             ->where($condition)
+            ->whereNotNull('transactions.t_xref_pa_id')
+            ->whereNull('transactions.t_payment_method')
+            ->select([
+                'ti_fee_type AS sku',
+                DB::raw('\'card\' as payment_method'),
+                't_currency AS currency'
+            ])
+            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) AS amount')
+            ->groupBY('ti_fee_type', 't_payment_method', 't_currency');
+
+        $agentQuery = $this->transactionModel
+            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->where($condition)
+            ->whereNotNull('transactions.t_payment_method')
             ->select([
                 'ti_fee_type AS sku',
                 't_payment_method AS payment_method',
                 't_currency AS currency'
             ])
             ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) AS amount')
-            ->groupBY('ti_fee_type', 't_payment_method', 't_currency')
+            ->groupBY('ti_fee_type', 't_payment_method', 't_currency');
+
+        return $applicantQuery
+            ->unionAll($agentQuery)
             ->get()
             ->toArray();
     }

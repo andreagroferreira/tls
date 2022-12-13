@@ -167,6 +167,7 @@ class TransactionRepository
         $refundQuery = $this->refundItemModel
             ->leftJoin('transaction_items', 'transaction_items.ti_id', '=', 'refund_items.ri_xref_ti_id')
             ->leftJoin('transactions', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')
+            ->leftJoin('payment_accounts', 'payment_accounts.pa_id', '=', 'transactions.t_xref_pa_id')
             ->leftJoin('refund_logs', function ($join) {
                 $join->on('refund_logs.rl_xref_ri_id', '=', 'refund_items.ri_id');
                 $join->on('refund_logs.rl_xref_r_id', '=', 'refund_items.ri_xref_r_id');
@@ -182,7 +183,7 @@ class TransactionRepository
                 't_client',
                 't_issuer',
                 't_service',
-                't_payment_method',
+                DB::raw('(CASE WHEN t_xref_pa_id IS NULL THEN t_payment_method ELSE pa_name END) AS t_payment_method'),
                 't_gateway',
                 't_gateway_transaction_id',
                 't_currency',
@@ -204,6 +205,7 @@ class TransactionRepository
 
         return $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('payment_accounts', 'payment_accounts.pa_id', '=', 'transactions.t_xref_pa_id')
             ->where($condition)
             ->select([
                 't_xref_fg_id',
@@ -213,7 +215,7 @@ class TransactionRepository
                 't_client',
                 't_issuer',
                 't_service',
-                't_payment_method',
+                DB::raw('(CASE WHEN t_xref_pa_id IS NULL THEN t_payment_method ELSE pa_name END) AS t_payment_method'),
                 't_gateway',
                 't_gateway_transaction_id',
                 't_currency',
@@ -254,8 +256,9 @@ class TransactionRepository
     }
 
     /**
-     * @param int $tId
+     * @param int   $tId
      * @param array $data
+     *
      * @return int
      */
     public function updateById(int $tId, array $data)

@@ -944,6 +944,7 @@ class TransactionControllerTest extends TestCase
             't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
             't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
             't_workflow' => 'vac',
+            't_payment_method' => 'cash',
             't_invoice_storage' => 'file-library',
         ]);
         $transactionItems = $this->generateTransactionItems($transactions->t_transaction_id);
@@ -971,7 +972,7 @@ class TransactionControllerTest extends TestCase
                     't_status' => $transactions->t_status,
                     't_workflow' => $transactions->t_workflow,
                     'ti_price_rule' => $transactionItems->ti_price_rule,
-                    't_payment_method' => $transactions->t_payment_method,
+                    't_payment_method' => 'cash',
                     't_gateway' => $transactions->t_gateway,
                     't_gateway_transaction_id' => $transactions->t_gateway_transaction_id,
                     't_currency' => $transactions->t_currency,
@@ -987,7 +988,7 @@ class TransactionControllerTest extends TestCase
             ],
             'current_page' => 1,
         ];
-        
+
         $today = Carbon::today();
         $tomorrow = Carbon::today()->addDay(1);
         $this->get($this->listTransactionsApi.'?page=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
@@ -1015,13 +1016,14 @@ class TransactionControllerTest extends TestCase
             't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
             't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
             't_workflow' => 'vac',
+            't_payment_method' => 'cash',
             't_invoice_storage' => 'file-library',
         ]);
         $transactionItems = $this->generateTransactionItems($transactions->t_transaction_id);
 
         $refunds = $this->generateRefund();
         $this->generateRefundItems($refunds->r_id, $transactionItems->ti_id);
-        
+
         $today = Carbon::today();
         $tomorrow = Carbon::today()->addDay(1);
         $this->get($this->listTransactionsApi.'?page=1&limit=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
@@ -1048,7 +1050,7 @@ class TransactionControllerTest extends TestCase
                 'message' => 'The multi search must be an array.',
             ]);
     }
-    
+
     /**
      * @throws Throwable
      *
@@ -1069,7 +1071,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testListTransactionstWithTransactionStatusIsDone(): void 
+    public function testListTransactionstWithTransactionStatusIsDone(): void
     {
         $transactionOne = $this->generateTransaction([
             't_xref_fg_id' => 10000,
@@ -1085,6 +1087,7 @@ class TransactionControllerTest extends TestCase
             't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
             't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
             't_workflow' => 'vac',
+            't_payment_method' => 'cash',
             't_invoice_storage' => 'file-library',
         ]);
         $transactionItemOne = $this->generateTransactionItems($transactionOne->t_transaction_id, [
@@ -1135,7 +1138,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testListTransactionstWithRefundStatusIsDone(): void 
+    public function testListTransactionstWithRefundStatusIsDone(): void
     {
         $transactionOne = $this->generateTransaction([
             't_xref_fg_id' => 10000,
@@ -1151,6 +1154,7 @@ class TransactionControllerTest extends TestCase
             't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
             't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
             't_workflow' => 'vac',
+            't_payment_method' => 'cash',
             't_invoice_storage' => 'file-library',
         ]);
         $transactionItemOne = $this->generateTransactionItems($transactionOne->t_transaction_id, [
@@ -1189,7 +1193,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testListTransactionstWithRefundStatusIsPending(): void 
+    public function testListTransactionstWithRefundStatusIsPending(): void
     {
         $transactionOne = $this->generateTransaction([
             't_xref_fg_id' => 10000,
@@ -1205,6 +1209,7 @@ class TransactionControllerTest extends TestCase
             't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
             't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
             't_workflow' => 'vac',
+            't_payment_method' => 'cash',
             't_invoice_storage' => 'file-library',
         ]);
         $transactionItemOne = $this->generateTransactionItems($transactionOne->t_transaction_id, [
@@ -1243,7 +1248,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testListTransactionstWithFilters(): void 
+    public function testListTransactionstWithFilters(): void
     {
         $transactions = $this->generateTransaction([
             't_xref_fg_id' => 10000,
@@ -1259,6 +1264,7 @@ class TransactionControllerTest extends TestCase
             't_reminder_url' => 'callback_to_send_reminder?lang=fr-fr',
             't_callback_url' => 'receipt_url/{fg_id}?lang=fr-fr',
             't_workflow' => 'vac',
+            't_payment_method' => 'cash',
             't_invoice_storage' => 'file-library',
         ]);
         $transactionItems = $this->generateTransactionItems($transactions->t_transaction_id, [
@@ -1277,7 +1283,7 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();
-        
+
         $this->assertCount(1, $transactionsList['data']);
 
         //search with wrong fee type
@@ -1291,7 +1297,7 @@ class TransactionControllerTest extends TestCase
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();
-        
+
         $this->assertCount(0, $transactionsList['data']);
     }
 

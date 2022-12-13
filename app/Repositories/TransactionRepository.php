@@ -257,7 +257,7 @@ class TransactionRepository
             ->whereNull('transactions.t_payment_method')
             ->select([
                 'ti_fee_type AS sku',
-                DB::raw('\'card\' as payment_method'),
+                DB::raw('\'online\' as payment_method'),
                 't_currency AS currency'
             ])
             ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) AS amount')

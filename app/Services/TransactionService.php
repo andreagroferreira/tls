@@ -443,6 +443,7 @@ class TransactionService
                 'currency' => $currency,
                 'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
                 'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
+                'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
                 'amount-total' => $totalAmount[$currency] ?? 0,
                 'skus' => $skuSummary,
             ];

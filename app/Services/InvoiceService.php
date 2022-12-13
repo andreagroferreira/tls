@@ -148,38 +148,4 @@ class InvoiceService
             ['lang' => $lang, 'type' => $service]
         );
     }
-
-    /**
-     * @param int    $fg_id
-     * @param string $client
-     * @param array  $resolved_content
-     * @param string $invoice_file_name
-     *
-     * @return void
-     */
-    public function sendInvoice(
-        int $fg_id,
-        string $client,
-        array $resolved_content
-    ): void {
-        $form_group = $this->formGroupService->fetch($fg_id, $client);
-        $form_user_email = $form_group['u_email'] ?? '';
-
-        if (empty($form_user_email)) {
-            return;
-        }
-
-        if (!empty($resolved_content['email_content']) && !empty($resolved_content['invoice_content'])) {
-            $email_content = [
-                'to' => $form_user_email,
-                'subject' => $resolved_content['email_title'],
-                'body' => $resolved_content['email_content'],
-                'html2pdf' => [
-                    $resolved_content['invoice_file_name'] => $resolved_content['invoice_content'],
-                ],
-            ];
-
-            $this->apiService->callEmailApi('POST', 'send_email', $email_content);
-        }
-    }
 }

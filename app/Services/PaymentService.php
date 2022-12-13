@@ -294,12 +294,6 @@ class PaymentService
         if (!$response) {
             throw new \Exception('Error Processing Invoice Upload Request');
         }
-
-        $this->invoiceService->sendInvoice(
-            $transaction['t_xref_fg_id'],
-            $transaction['t_client'],
-            $resolved_content
-        );
     }
 
     private function formatProfileData($data): array

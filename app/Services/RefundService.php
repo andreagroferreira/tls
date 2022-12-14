@@ -45,13 +45,13 @@ class RefundService
     protected $transactionService;
 
     /**
-     * @param RefundRepository     $refundRepository
-     * @param refundItemRepository $refundItemRepository
-     * @param RefundLogRepository  $refundLogRepository
-     * @param DbConnectionService  $dbConnectionService
-     * @param RefundItemsService   $refundItemsService
+     * @param RefundRepository        $refundRepository
+     * @param refundItemRepository    $refundItemRepository
+     * @param RefundLogRepository     $refundLogRepository
+     * @param DbConnectionService     $dbConnectionService
+     * @param RefundItemsService      $refundItemsService
      * @param TransactionItemsService $transactionItemsService
-     * @param TransactionService $transactionService
+     * @param TransactionService      $transactionService
      */
     public function __construct(
         RefundRepository $refundRepository,
@@ -132,12 +132,12 @@ class RefundService
             return [];
         }
 
-        return collect($transactionsRefundItems)->sortBy('t_id', SORT_DESC)->values()->toArray();
+        return $transactionsRefundItems;
     }
 
     /**
-     * @param  array $attributes
-     * 
+     * @param array $attributes
+     *
      * @return array
      */
     public function getRefundRequest(array $attributes): array
@@ -165,11 +165,41 @@ class RefundService
 
         return $refundRequest;
     }
-    
+
     /**
-     * @param  string $transactionId
-     * @param  array  $refundItems
-     * 
+     * @param int $transactionItemId
+     *
+     * @return string
+     */
+    public function getIssuer(int $transactionItemId): string
+    {
+        return $this->transactionItemsService
+            ->fetchByTransactionItemId($transactionItemId)->t_issuer ?? '';
+    }
+
+    /**
+     * @param int $transactionItemId
+     * @param int $transactionItemQuantity
+     * @param int $quantity
+     *
+     * @return bool
+     */
+    public function getRefundItemStatus(int $transactionItemId, int $transactionItemQuantity, int $quantity): bool
+    {
+        $refundQuantityCount = $this->refundItemRepository
+            ->fetchRefundItems(['ri_xref_ti_id' => $transactionItemId])
+            ->sum('ri_quantity');
+        if (($refundQuantityCount + $quantity) <= $transactionItemQuantity) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $transactionId
+     * @param array  $refundItems
+     *
      * @return array
      */
     private function getTransactionItemsWithRefund(string $transactionId, array $refundItems): array
@@ -186,7 +216,7 @@ class RefundService
             't_status',
             't_service',
             't_tech_creation',
-            't_tech_modification'
+            't_tech_modification',
         ];
         $transaction = $this->transactionService
             ->fetchByWhere(['t_transaction_id' => $transactionId], $fields)
@@ -216,36 +246,6 @@ class RefundService
         $transaction['items'] = $transactionItemsWithRefund;
 
         return $transaction;
-    }
-    
-     /** 
-     * @param int $transactionItemId
-     *
-     * @return string
-     */
-    public function getIssuer(int $transactionItemId): string
-    {
-        return $this->transactionItemsService
-            ->fetchByTransactionItemId($transactionItemId)->t_issuer ?? '';
-    }
-
-    /**
-     * @param int $transactionItemId
-     * @param int $transactionItemQuantity
-     * @param int $quantity
-     *
-     * @return bool
-     */
-    public function getRefundItemStatus(int $transactionItemId, int $transactionItemQuantity, int $quantity): bool
-    {
-        $refundQuantityCount = $this->refundItemRepository
-            ->fetchRefundItems(['ri_xref_ti_id' => $transactionItemId])
-            ->sum('ri_quantity');
-        if (($refundQuantityCount + $quantity) <= $transactionItemQuantity) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

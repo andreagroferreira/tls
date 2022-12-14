@@ -201,7 +201,7 @@ class TransactionRepository
                 'rl_agent AS agent',
             ])
             ->selectRaw('ri_quantity*-1 AS quantity')
-            ->selectRaw('(ti_vat/100 * ri_amount)+ri_amount AS amount_gross')
+            ->selectRaw('ri_amount-(ti_vat/100 * ri_amount) AS amount_without_tax')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code');
 
@@ -234,7 +234,7 @@ class TransactionRepository
                 't_agent_name as agent'
             ])
             ->selectRaw('ti_quantity AS quantity')
-            ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')
+            ->selectRaw('ti_amount-(ti_vat/100 * ti_amount) AS amount_without_tax')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
             ->union($refundQuery)

@@ -979,7 +979,7 @@ class TransactionControllerTest extends TestCase
                     't_currency' => $transactions->t_currency,
                     't_invoice_storage' => $transactions->t_invoice_storage,
                     't_issuer' => $transactions->t_issuer,
-                    'amount_gross' => (($transactionItems->ti_vat / 100 * $transactionItems->ti_amount) + $transactionItems->ti_amount),
+                    'amount_without_tax' => ($transactionItems->ti_amount-($transactionItems->ti_vat / 100 * $transactionItems->ti_amount)),
                     'country_code' => substr($transactions->t_issuer, 0, 2),
                     'city_code' => substr($transactions->t_issuer, 2, 3),
                     'country' => getCountryName(substr($transactions->t_issuer, 0, 2)),

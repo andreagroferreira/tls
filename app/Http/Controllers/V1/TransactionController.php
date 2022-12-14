@@ -229,6 +229,13 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Schema(type="integer", example="1669123675"),
      *      ),
+     *      @OA\Parameter(
+     *          name="agent_name",
+     *          in="query",
+     *          description="agent name",
+     *          required=false,
+     *          @OA\Schema(type="string", example="test"),
+     *      ),
      *     @OA\Parameter(
      *          name="items",
      *          in="query",
@@ -263,6 +270,7 @@ class TransactionController extends BaseController
             'payment_method' => 'nullable',
             'service' => 'nullable',
             'expiration' => 'nullable|integer|gt:0',
+            'agent_name'=>'nullable|string',
             'items' => [
                 'bail',
                 'required',

@@ -1428,6 +1428,153 @@ class TransactionControllerTest extends TestCase
         $this->missingFromDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
     }
 
+    /**
+     * @dataProvider defaultPayload
+     *
+     * @param array $defaultPayload
+     *
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testTransactionWithFeeNameInItems(array $defaultPayload): void
+    {
+        //set product name
+        $defaultPayload['items'][0]['skus'][0]['product_name'] = 'service fee';
+
+        // Create Transaction
+        $this->post($this->transactionApi, $defaultPayload);
+        $this->response->assertStatus(200)
+            ->assertJsonStructure(['t_id', 'expire']);
+
+        $postResponse = $this->response->decodeResponseJson();
+        $this->assertTrue(Carbon::parse($this->getDbNowTime())->lt(array_get($postResponse, 'expire')));
+
+        // Get Created Transaction
+        $this->get($this->transactionApi.'/'.$defaultPayload['fg_id']);
+        $this->response->assertStatus(200);
+
+        $transactionData = $this->response->decodeResponseJson();
+
+        $this->assertNotEmpty($transactionData);
+        $this->assertEquals(array_get($transactionData[0]['items'][0]['skus'][0], 'product_name'), 'service fee');
+    }
+
+    /**
+     * @dataProvider defaultPayload
+     *
+     * @param array $defaultPayload
+     *
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testTransactionWithAgentNameAndPaymentMethod(array $defaultPayload): void
+    {
+        //set agentName and paymentMethod
+        $defaultPayload['agent_name'] = 'test';
+        $defaultPayload['payment_method'] = 'card';
+
+        $mockFormGroupService = $this->mockFormGroupService();
+        $mockFormGroupService->method('fetch')
+            ->willReturn(['fg_xref_u_id' => 1]);
+
+        // Create Transaction
+        $this->post($this->transactionApi, $defaultPayload);
+        $this->response->assertStatus(200)
+            ->assertJsonStructure(['t_id', 'expire']);
+
+        $postResponse = $this->response->decodeResponseJson();
+        $this->assertTrue(Carbon::parse($this->getDbNowTime())->lt(array_get($postResponse, 'expire')));
+
+        // Get Created Transaction
+        $this->get($this->transactionApi.'/'.$defaultPayload['fg_id']);
+        $this->response->assertStatus(200);
+
+        $transactionData = $this->response->decodeResponseJson();
+        $this->assertNotEmpty($transactionData);
+
+        $this->assertEquals(array_get($transactionData[0], 'status'), 'done');
+        $this->assertEquals(array_get($transactionData[0], 'gateway'), 'paybank');
+        $this->assertEquals(array_get($transactionData[0], 'agent_gateway'), 'card');
+        $this->seeInDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
+        $this->seeInDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
+    }
+
+    /**
+     * @dataProvider defaultPayload
+     *
+     * @param array $defaultPayload
+     *
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testTransactionWithAgentNameOnly(array $defaultPayload): void
+    {
+        //set agentName and paymentMethod
+        $defaultPayload['agent_name'] = 'test';
+
+        // Create Transaction
+        $this->post($this->transactionApi, $defaultPayload);
+        $this->response->assertStatus(200)
+            ->assertJsonStructure(['t_id', 'expire']);
+
+        $postResponse = $this->response->decodeResponseJson();
+        $this->assertTrue(Carbon::parse($this->getDbNowTime())->lt(array_get($postResponse, 'expire')));
+
+        // Get Created Transaction
+        $this->get($this->transactionApi.'/'.$defaultPayload['fg_id']);
+        $this->response->assertStatus(200);
+
+        $transactionData = $this->response->decodeResponseJson();
+
+        $this->assertNotEmpty($transactionData);
+
+        $this->assertEquals(array_get($transactionData[0], 'status'), 'pending');
+        $this->assertEquals(array_get($transactionData[0], 'gateway'), null);
+        $this->assertEquals(array_get($transactionData[0], 'agent_gateway'), null);
+        $this->missingFromDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
+        $this->missingFromDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
+    }
+
+    /**
+     * @dataProvider defaultPayload
+     *
+     * @param array $defaultPayload
+     *
+     * @throws Throwable
+     *
+     * @return void
+     */
+    public function testTransactionWithPaymentMethodOnly(array $defaultPayload): void
+    {
+        //set agentName and paymentMethod
+        $defaultPayload['payment_method'] = 'card';
+
+        // Create Transaction
+        $this->post($this->transactionApi, $defaultPayload);
+        $this->response->assertStatus(200)
+            ->assertJsonStructure(['t_id', 'expire']);
+
+        $postResponse = $this->response->decodeResponseJson();
+        $this->assertTrue(Carbon::parse($this->getDbNowTime())->lt(array_get($postResponse, 'expire')));
+
+        // Get Created Transaction
+        $this->get($this->transactionApi.'/'.$defaultPayload['fg_id']);
+        $this->response->assertStatus(200);
+
+        $transactionData = $this->response->decodeResponseJson();
+
+        $this->assertNotEmpty($transactionData);
+
+        $this->assertEquals(array_get($transactionData[0], 'status'), 'pending');
+        $this->assertEquals(array_get($transactionData[0], 'gateway'), null);
+        $this->assertEquals(array_get($transactionData[0], 'agent_gateway'), 'card');
+        $this->missingFromDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
+        $this->missingFromDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
+    }
+
     public function defaultPayload(): array
     {
         return [

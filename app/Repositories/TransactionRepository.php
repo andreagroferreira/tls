@@ -71,6 +71,7 @@ class TransactionRepository
                 't_currency AS currency',
                 't_status AS status',
                 't_service AS service',
+                't_agent_name as agent',
                 't_invoice_storage AS invoice_storage',
                 't_tech_creation AS tech_creation',
                 't_tech_modification AS tech_modification',
@@ -196,6 +197,7 @@ class TransactionRepository
                 'ri_amount AS amount',
                 'ti_vat',
                 'ti_price_rule',
+                'ti_fee_name',
                 'rl_agent AS agent',
             ])
             ->selectRaw('ri_quantity*-1 AS quantity')
@@ -228,7 +230,8 @@ class TransactionRepository
                 'ti_amount AS amount',
                 'ti_vat',
                 'ti_price_rule',
-                DB::raw('NULL as agent'),
+                'ti_fee_name',
+                't_agent_name as agent'
             ])
             ->selectRaw('ti_quantity AS quantity')
             ->selectRaw('(ti_vat/100 * ti_amount)+ti_amount AS amount_gross')

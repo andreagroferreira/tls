@@ -32,6 +32,7 @@ class Transactions extends Model
         't_workflow',
         't_payment_method',
         't_service',
-        't_invoice_storage'
+        't_invoice_storage',
+        't_agent_name',
     ];
 }

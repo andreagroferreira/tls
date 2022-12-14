@@ -40,7 +40,7 @@ class TransactionService
 
     public function fetch($attributes)
     {
-        $transactions = $this->transactionRepository->fetchByFgID($attributes);
+        $transactions = $this->transactionRepository->fetchByFgId($attributes);
 
         if ($transactions->isEmpty()) {
             return false;
@@ -82,6 +82,7 @@ class TransactionService
                         'vat' => $service['ti_vat'],
                         'quantity' => $service['ti_quantity'],
                         'price_rule' => $service['ti_price_rule'],
+                        'product_name' => $service['ti_fee_name'],
                     ];
                 }
                 $receipts[] = [

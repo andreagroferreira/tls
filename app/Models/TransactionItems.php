@@ -21,5 +21,6 @@ class TransactionItems extends Model
         'ti_amount',
         'ti_quantity',
         'ti_price_rule',
+        'ti_fee_name',
     ];
 }

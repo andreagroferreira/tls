@@ -431,9 +431,9 @@ class TransactionService
             'Payment type',
             'Gateway transaction ID',
             'Currency',
-            'Amount NET',
+            'Amount (without tax)',
             'VAT',
-            'Amount Gross',
+            'Amount (with tax)',
             'Quantity',
             'Agent',
         ];
@@ -449,9 +449,9 @@ class TransactionService
             't_payment_method',
             't_gateway_transaction_id',
             't_currency',
-            'amount',
+            'amount_without_tax',
             'ti_vat',
-            'amount_gross',
+            'amount',
             'quantity',
             'agent',
         ];

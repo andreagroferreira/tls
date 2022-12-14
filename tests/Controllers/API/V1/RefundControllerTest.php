@@ -91,7 +91,7 @@ class RefundControllerTest extends TestCase
         $this->response->assertStatus(200);
 
         $transactionsRefundList = $this->response->decodeResponseJson();
-        $this->assertCount(1, $transactionsRefundList);
+        $this->assertCount(2, $transactionsRefundList);
     }
 
     /**
@@ -258,8 +258,8 @@ class RefundControllerTest extends TestCase
         $transactionRefundItemsData = $this->response->decodeResponseJson();
         $this->assertNotEmpty($transactionRefundItemsData);
 
-        $this->assertEquals($postResponse['r_id'], array_get($transactionRefundItemsData, '0.refund_request.r_id'));
-        $this->assertNotEmpty(array_get($transactionRefundItemsData, '0.items.skus.0.refund_items'));
+        $this->assertEquals($postResponse['r_id'], array_get($transactionRefundItemsData, 'refund_requests.0.r_id'));
+        $this->assertNotEmpty(array_get($transactionRefundItemsData, 'refund_requests.0.r_items'));
     }
 
     /**

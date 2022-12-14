@@ -48,10 +48,10 @@ class RefundItemsService
      */
     public function getRefundTransactionItems(array $attributes): array
     {
-        $transactions = $this->transactionItemsService->fetch($attributes)
+        $transactionItems = $this->transactionItemsService->fetch($attributes)
             ->groupBy('ti_xref_transaction_id')->toArray();
 
-        if (empty($transactions)) {
+        if (empty($transactionItems)) {
             return [];
         }
         $where = collect([
@@ -59,11 +59,15 @@ class RefundItemsService
         ]);
 
         $refundItems = $this->refundItemRepository->fetchRefundItems($where->toArray())->toArray();
-        $refundArray = $this->getRefundItemsRefundRequest($refundItems);
-        $refundRequestArray = !empty($refundArray['refund_request']) ? $refundArray['refund_request'] : [];
-        $refundItemsArray = !empty($refundArray['refund_items']) ? $refundArray['refund_items'] : [];
+        $transactions = $this->getTransactionItems($transactionItems);
+        if (empty($transactions)) {
+            return [];
+        }
 
-        return $this->getTransactionItemsWithRefundItems($transactions, $refundItemsArray, $refundRequestArray);
+        return [
+            'transaction' => $transactions,
+            'refund_requests' => $this->getRefundRequestAndRefundItems($refundItems),
+        ];
     }
 
     /**
@@ -71,47 +75,39 @@ class RefundItemsService
      *
      * @return array
      */
-    private function getRefundItemsRefundRequest(array $refundItems): array
+    private function getRefundRequestAndRefundItems(array $refundItems): array
     {
         $refundRequestArray = [];
-        $refundItemsArray = [];
         foreach ($refundItems as $rItem) {
-            $refundItemsArray[$rItem['ti_xref_transaction_id']][$rItem['ri_xref_ti_id']] = [
+            $refundItemsArray[$rItem['r_id']][$rItem['ri_id']] = [
                 'ri_xref_ti_id' => $rItem['ri_xref_ti_id'],
                 'ri_id' => $rItem['ri_id'],
                 'ri_quantity' => $rItem['ri_quantity'],
-                'ri_amount' => (float)$rItem['ri_amount'],
+                'ri_amount' => (float) $rItem['ri_amount'],
                 'ri_reason_type' => $rItem['ri_reason_type'],
                 'ri_status' => $rItem['ri_status'],
                 'ri_invoice_path' => $rItem['ri_invoice_path'],
             ];
-            $refundRequestArray[$rItem['ti_xref_transaction_id']] = [
+            $refundRequestArray[$rItem['r_id']] = [
                 'r_id' => $rItem['r_id'],
                 'r_issuer' => $rItem['r_issuer'],
                 'r_reason_type' => $rItem['r_reason_type'],
                 'r_status' => $rItem['r_status'],
                 'r_appointment_date' => $rItem['r_appointment_date'],
+                'r_items' => array_values($refundItemsArray[$rItem['r_id']]),
             ];
         }
 
-        return [
-            'refund_request' => $refundRequestArray,
-            'refund_items' => $refundItemsArray,
-        ];
+        return array_values($refundRequestArray);
     }
 
     /**
      * @param array $transactions
-     * @param array $refundItemsArray
-     * @param array $refundRequestArray
      *
      * @return array
      */
-    private function getTransactionItemsWithRefundItems(
-        array $transactions,
-        array $refundItemsArray,
-        array $refundRequestArray
-    ): array {
+    private function getTransactionItems(array $transactions): array
+    {
         $transactionData = [];
         foreach ($transactions as $transactionId => $services) {
             $transaction = $this->transactionRepository->fetch([
@@ -132,7 +128,6 @@ class RefundItemsService
                     'vat' => $service['ti_vat'],
                     'quantity' => $service['ti_quantity'],
                     'amount_gross' => ($service['ti_vat'] / 100 * $service['ti_amount']) + $service['ti_amount'],
-                    'refund_items' => (!empty($refundItemsArray[$transactionId][$service['ti_id']])) ? $refundItemsArray[$transactionId][$service['ti_id']] : [],
                 ];
             }
             $transactionData[] = [
@@ -146,7 +141,6 @@ class RefundItemsService
                 'service' => $transaction->t_service,
                 'tech_creation' => $transaction->t_tech_creation,
                 'tech_modification' => $transaction->t_tech_modification,
-                'refund_request' => (!empty($refundRequestArray[$transactionId])) ? $refundRequestArray[$transactionId] : [],
                 'items' => $items,
             ];
         }

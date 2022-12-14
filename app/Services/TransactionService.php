@@ -222,16 +222,21 @@ class TransactionService
         }
 
         if ($transaction_data['t_expiration']->isPast()) {
-            throw new \Exception('The expiration time is less then current time.');
+            throw new Exception('The expiration time is less then current time.');
         }
 
-        if (isset($attributes['payment_method'])) {
+        if (!empty($attributes['payment_method'])) {
             $transaction_data['t_payment_method'] = $attributes['payment_method'];
         }
 
         if (isset($attributes['service']) && $attributes['service'] == 'gov') {
             $transaction_data['t_service'] = $attributes['service'];
         }
+
+        if (!empty($attributes['agent_name'])) {
+            $transaction_data['t_agent_name'] = $attributes['agent_name'];
+        }
+
         $transaction_data['t_transaction_id'] = $this->generateTransactionId(
             $transaction_data['t_id'],
             $transaction_data['t_issuer']
@@ -249,7 +254,7 @@ class TransactionService
                 $transactionItems
             );
 
-            if ($totalAmount === 0) {
+            if ($totalAmount === 0 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
                 $transactionData = $this->getTransaction($transaction->t_id);
                 $this->confirmTransaction($transactionData);
             }
@@ -556,8 +561,17 @@ class TransactionService
      */
     public function confirmTransaction(array $transaction): void
     {
+        $gateway = 'free';
+        $paymentMethod = 'free';
+        $agentName = '';
+        if (!empty($transaction['t_agent_name']) && !empty($transaction['t_payment_method'])) {
+            $gateway = 'paybank';
+            $paymentMethod = $transaction['t_payment_method'];
+            $agentName = $transaction['t_agent_name'];
+        }
+
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
-            $actionResult = $this->syncTransaction($transaction, 'free');
+            $actionResult = $this->syncTransaction($transaction, $gateway, $agentName);
             if (!empty($actionResult['error_msg'])) {
                 Log::error(
                     'Transaction ERROR: transaction sync '.
@@ -571,8 +585,8 @@ class TransactionService
             $transaction['t_id'],
             [
                 't_status' => 'done',
-                't_gateway' => 'free',
-                't_payment_method' => 'free',
+                't_gateway' => $gateway,
+                't_payment_method' => $paymentMethod,
             ]
         );
 
@@ -683,6 +697,10 @@ class TransactionService
                 }
                 if (filled($add_field)) {
                     $res = $res + $add_field;
+                }
+
+                if (!empty($sku['product_name'])) {
+                    $res['ti_fee_name'] = trim($sku['product_name']);
                 }
 
                 $response[] = $res;

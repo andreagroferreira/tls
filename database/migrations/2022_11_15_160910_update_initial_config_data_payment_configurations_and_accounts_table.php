@@ -31,10 +31,9 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
 
                 $this->createPayLaterPaymentAccount();
                 $client = $this->getProjectId();
-                $paymentConfigurations = config('payment_gateway')[$client];
-                $appName = explode('-', env('PROJECT'));
-                $appEnv = end($appName);
-                $envName = ($appEnv === 'stg' || $appEnv === 'uat' || $appEnv === 'dev') ? 'sandbox' : 'production';
+                $paymentConfigurations = config('payment_gateway')[$client] ?? [];
+                $appEnv = env('APP_ENV');
+                $envName = ($appEnv === 'production') ? 'production' : 'sandbox';
 
                 foreach ($paymentConfigurations as $issuer => $gateways) {
                     $country = $issuer !== 'allAll2all' ? substr($issuer, 0, 2) : 'all';

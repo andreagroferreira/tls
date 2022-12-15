@@ -351,8 +351,8 @@ class TransactionService
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
             $where->push(
-                ['t_tech_creation', '>=', $attributes['start_date'].' 00:00:00'],
-                ['t_tech_creation', '<=', $attributes['end_date'].' 23:59:59']
+                ['t_tech_modification', '>=', $attributes['start_date'].' 00:00:00'],
+                ['t_tech_modification', '<=', $attributes['end_date'].' 23:59:59']
             );
         }
 
@@ -424,37 +424,39 @@ class TransactionService
     private function listTransactionsSkuSummary(Collection $where): array
     {
         $data = $this->transactionRepository->listTransactionsSkuSummary($where);
-        foreach ($data as $skuDetails) {
-            $sku = $skuDetails['sku'];
-            $currency = $skuDetails['currency'];
-            $paymentMethod = $skuDetails['payment_method'];
+        if (!empty($data)) {
+            foreach ($data as $skuDetails) {
+                $sku = $skuDetails['sku'];
+                $currency = $skuDetails['currency'];
+                $paymentMethod = $skuDetails['payment_method'];
 
-            if (!isset($skuData[$currency][$sku][$paymentMethod])) {
-                $skuData[$currency][$sku][$paymentMethod] = 0;
+                if (!isset($skuData[$currency][$sku][$paymentMethod])) {
+                    $skuData[$currency][$sku][$paymentMethod] = 0;
+                }
+                $skuData[$currency][$sku][$paymentMethod] += (float)$skuDetails['amount'];
+                if (!isset($totalByPaymentMethod[$currency][$paymentMethod])) {
+                    $totalByPaymentMethod[$currency][$paymentMethod] = 0;
+                }
+                $totalByPaymentMethod[$currency][$paymentMethod] += (float)$skuDetails['amount'];
+                if (!isset($totalAmount[$currency])) {
+                    $totalAmount[$currency] = 0;
+                }
+                $totalAmount[$currency] += (float)$skuDetails['amount'];
             }
-            $skuData[$currency][$sku][$paymentMethod] += (float)$skuDetails['amount'];
-            if (!isset($totalByPaymentMethod[$currency][$paymentMethod])) {
-                $totalByPaymentMethod[$currency][$paymentMethod] = 0;
-            }
-            $totalByPaymentMethod[$currency][$paymentMethod] += (float)$skuDetails['amount'];
-            if (!isset($totalAmount[$currency])) {
-                $totalAmount[$currency] = 0;
-            }
-            $totalAmount[$currency] += (float)$skuDetails['amount'];
-        }
-        foreach ($skuData as $currency => $skuList) {
-            $skuSummary = $this->skuSummary($skuList);
+            foreach ($skuData as $currency => $skuList) {
+                $skuSummary = $this->skuSummary($skuList);
 
-            $summary[] = [
-                'currency' => $currency,
-                'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
-                'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
-                'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
-                'amount-total' => $totalAmount[$currency] ?? 0,
-                'skus' => $skuSummary,
-            ];
+                $summary[] = [
+                    'currency' => $currency,
+                    'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
+                    'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
+                    'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
+                    'amount-total' => $totalAmount[$currency] ?? 0,
+                    'skus' => $skuSummary,
+                ];
+            }
         }
-        return $summary;
+        return $summary ?? [];
     }
 
     /**

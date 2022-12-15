@@ -272,6 +272,7 @@ class TransactionRepository
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
             ->where($condition)
             ->whereNotNull('transactions.t_payment_method')
+            ->whereIn('transactions.t_payment_method', array('cash', 'card'))
             ->select([
                 'ti_fee_type AS sku',
                 't_payment_method AS payment_method',

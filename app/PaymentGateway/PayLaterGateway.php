@@ -5,6 +5,7 @@ namespace App\PaymentGateway;
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
+use Illuminate\Support\Facades\Log;
 
 class PayLaterGateway implements PaymentGatewayInterface
 {
@@ -68,6 +69,16 @@ class PayLaterGateway implements PaymentGatewayInterface
 
     public function return($params)
     {
+        $transaction = $this->transactionService->getTransaction($params['t_id']);
+        if ($transaction && !empty($transaction['t_items'])) {
+            if (!empty($transaction['t_xref_fg_id'])) {
+                $actionResult = $this->transactionService->syncTransactionToWorkflow($transaction);
+                if (!empty($actionResult['error_msg'])) {
+                    Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($actionResult['error_msg'], 256));
+                }
+            }
+        }
+        
         $this->updatePayLaterTransactionStatus($params['t_id']);
         return [
             'lang' => $params['lang'],

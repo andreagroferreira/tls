@@ -574,7 +574,7 @@ class TransactionService
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
-            $actionResult = $this->syncTransaction($transaction, $gateway, $agentName);
+            $actionResult = $this->syncTransactionToWorkflow($transaction);
             if (!empty($actionResult['error_msg'])) {
                 Log::error(
                     'Transaction ERROR: transaction sync '.

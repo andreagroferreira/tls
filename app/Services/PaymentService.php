@@ -76,12 +76,7 @@ class PaymentService
 
         if ($transaction && !empty($transaction['t_items'])) {
             if (!empty($transaction['t_xref_fg_id'])) {
-                $actionResult = $this->transactionService->syncTransaction(
-                    $transaction,
-                    $payment_gateway,
-                    $this->agent_name,
-                    $this->force_pay_for_not_online_payment_avs
-                );
+                $actionResult = $this->transactionService->syncTransactionToWorkflow($transaction);
                 if (!empty($actionResult['error_msg'])) {
                     $error_msg[] = $actionResult['error_msg'];
                 }

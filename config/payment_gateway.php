@@ -538,6 +538,9 @@ return [
                     'payments_os_env' => 'live'
                 ]
             ],
+            'pay_later' => [
+                'label' => "Pay later",
+            ]
         ],
         'gbAll2de' => [
             'globaliris' => [

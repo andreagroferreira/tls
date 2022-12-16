@@ -77,4 +77,27 @@ class QueueService
             Log::info('QueueService sync to tls success');
         }
     }
+    
+    /**
+     * @param  string $client
+     * @param  string $location
+     * @param  array  $data
+     *
+     * @return void
+     */
+    public function syncTransactionToWorkflow(string $client, string $location, array $data): void
+    {
+        Log::info('QueueService syncTransactionToWorkflow:' . $client .'-'. $location .'---'. json_encode($data));
+        $response = $this->apiService->callWorkflowApi('POST', '/v1/' . $client . '/confirm-payment/' . $location, $data);
+        Log::info('QueueService syncTransactionToWorkflow $response:'. json_encode($response));
+        if ($response['status'] != 200 || ($response['body']['status'] ?? '') == 'fatal') {
+            Log::error('QueueService sync to workflow failed');
+            throw new \Exception("sync to workflow failed");
+        } else {
+            foreach ($data['t_items'] as $item) {
+                $this->actionRepository->clearActionCache($item['f_id']);
+            }
+            Log::info('QueueService sync to workflow success');
+        }
+    }
 }

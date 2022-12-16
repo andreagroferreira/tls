@@ -24,6 +24,7 @@ variables:
   TLSCONNECT_API_URL: "https://tlsconnect-service-api.${PROJECT}.svc:8443"
   EMAIL_SERVICE_DOMAIN: "https://tlsconnect-email-service.${PROJECT}.svc:8443"
   FILE_LIBRARY_API_DOMAIN: "https://file-library-api.${PROJECT}.svc:8443"
+  WORKFLOW_SERVICE_DOMAIN: "https://workflow-service.${PROJECT}.svc:8443"
   ENABLE_DAST: "true"
   IMAGE_TAG: ""
 
@@ -586,6 +587,26 @@ deploy-instance:
       DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
+      CLIENT="${CLIENT}"
+      HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
+    - oc process -f ./openshift/payment-api-sync-transaction-workflow-queue-template.yaml
+      APPLICATION_NAME="${APPLICATION_NAME}"
+      PROJECT="${INSTANCE}"
+      NAMESPACE="${PROJECT}"
+      APP_ENV="${APP_ENV}"
+      OPENSHIFT_ENV="${ENV}"
+      ROUTE_IP_WHITE_LIST="${ROUTE_IP_WHITE_LIST}"
+      POSTGRES_DB_HOST="pgbouncer"
+      POSTGRES_SECRET_NAME="${PROJECT}-pgcluster-common-secret"
+      POSTGRES_ADMIN_SECRET_NAME="${PROJECT}-pgsql-master"
+      POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
+      AWS_ACCOUNT_S3="tlspay-s3-account"
+      MEMORY_REQUEST="${MEMORY_REQUEST}"
+      MEMORY_LIMIT="${MEMORY_LIMIT}"
+      CPU_REQUEST="${CPU_REQUEST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
+      REDIS_HOST="tls://${REDIS_HOST}"
+      WORKFLOW_SERVICE_DOMAIN="${WORKFLOW_SERVICE_DOMAIN}"
       CLIENT="${CLIENT}"
       HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
     - oc process -f ./openshift/payment-api-invoice-mail-queue-template.yaml

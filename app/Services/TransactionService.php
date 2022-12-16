@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\TransactionSyncJob;
+use App\Jobs\TransactionSyncToWorkflowJob;
 use App\Repositories\TransactionRepository;
 use Exception;
 use Illuminate\Support\Carbon;
@@ -670,6 +671,75 @@ class TransactionService
                 'error_msg' => $e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * @param  array  $transaction
+     *
+     * @return array
+     */
+    public function syncTransactionToWorkflow(array $transaction): array
+    {
+        $client = $transaction['t_client'];
+        $location = substr($transaction['t_issuer'], 0, 5);
+        $data = $this->createWorkflowPayload($transaction);
+
+        Log::info('TransactionService syncTransactionToWorkflow start');
+
+        try {
+            dispatch(new TransactionSyncToWorkflowJob($client, $location, $data))
+                ->onConnection('workflow_transaction_sync_queue')
+                ->onQueue('workflow_transaction_sync_queue');
+            
+            Log::info('TransactionService syncTransactionToWorkflow:dispatch');
+
+            return [
+                'error_msg' => [],
+            ];
+        } catch (Exception $e) {
+            Log::info('TransactionService syncTransactionToWorkflow dispatch error_msg:'.$e->getMessage());
+
+            return [
+                'status' => 'error',
+                'error_msg' => $e->getMessage(),
+            ];
+        }
+    }
+    
+    /**
+     * @param  array $transaction
+     * 
+     * @return array
+     */
+    private function createWorkflowPayload(array $transaction): array
+    {
+        foreach ($transaction['t_items'] as $items) {
+            foreach ($items['skus'] as $sku) {
+                $orderDetails[] = [
+                    'f_id' => $items['f_id'],
+                    'sku' => $sku['sku'],
+                    'name' => $sku['product_name'],
+                    'vat' => $sku['vat'],
+                    'quantity' => $sku['quantity'],
+                    'price' => $sku['price'],
+                    'currency' => $transaction['t_currency'],
+                    // 'label' => $sku['label'], //TODO
+                    // 'stamp' => $sku['stamp'], //TODO
+                ];
+            }
+        }
+        $data = [
+            'client' => $transaction['t_client'],
+            'location' => substr($transaction['t_issuer'], 0, 5),
+            'fg_id' => $transaction['t_xref_fg_id'],
+            //'date' => '2022-11-20', //TODO
+            //'time' => '08:00', //TODO
+            'order_id' => $transaction['t_transaction_id'],
+            'payment_type' => $transaction['t_service'],
+            'order_details' => $orderDetails
+        ];
+
+        return $data;
     }
 
     protected function generateTransactionId($transaction_id_seq, $issuer)

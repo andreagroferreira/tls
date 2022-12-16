@@ -442,4 +442,33 @@ class ApiService
         $url = $this->getFileLibraryApiDomain().'/api/'.$this->getFileLibraryApiVersion().'/file-library/download?'.$queryParams;
         return $this->getStreamApi($url, [], 'get');
     }
+    
+    /**
+     * @return string
+     */
+    private function getWorkflowApiDomain(): string
+    {
+        return env('WORKFLOW_SERVICE_DOMAIN');
+    }
+    
+    /**
+     * @param  string $method
+     * @param  string $url
+     * @param  array  $data
+     * 
+     * @return array
+     */
+    public function callWorkflowApi(string $method, string $url, array $data = array()): array
+    {
+        $url = $this->getWorkflowApiDomain() . '/' . $url;
+        switch (strtolower($method)) {
+            case 'post':
+                $response = $this->postApi($url, $data);
+                break;
+            default:
+                $response = null;
+                break;
+        }
+        return $response;
+    }
 }

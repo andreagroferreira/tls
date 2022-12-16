@@ -537,7 +537,7 @@ return [
                     'api_version' => '1.3.0',
                     'payments_os_env' => 'live'
                 ]
-                ],
+            ],
         ],
         'gbAll2de' => [
             'globaliris' => [

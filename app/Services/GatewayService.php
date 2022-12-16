@@ -43,7 +43,7 @@ class GatewayService
     }
 
     public function getClientUseFile(): bool
-    {return true;
+    {
         $current_client = env('CLIENT');
         $clients = explode(',', env('USE_FILE_CONFIGURATION'));
         if (in_array($current_client, $clients)) {

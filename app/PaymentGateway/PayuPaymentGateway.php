@@ -146,6 +146,7 @@ class PayuPaymentGateway implements PaymentGatewayInterface
                 'currency'               => $transaction['t_currency'],
                 'transaction_id'         => $transaction['t_transaction_id'],
                 'gateway_transaction_id' => $charge_id,
+                'gateway_transaction_reference' => $charges_payments['provider_data']['transaction_id'] ?? null,
             ];
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $charges_payments,'success');
             return $this->paymentService->confirm($transaction, $confirm_params);

@@ -595,7 +595,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
     private function getFawryRefNumber(array $payload): ?string
     {
         $refNumber = $payload['FawryRefNo'] ?? $payload['fawryRefNumber'] ?? $payload['referenceNumber'] ?? null;
-        return (string) $refNumber;
+
+        return !blank($refNumber) ? (string) $refNumber : null;
     }
 
     private function returnFail() {

@@ -20,6 +20,7 @@ class Transactions extends Model
         't_client',
         't_issuer',
         't_gateway_transaction_id',
+        't_gateway_transaction_reference',
         't_gateway',
         't_currency',
         't_status',

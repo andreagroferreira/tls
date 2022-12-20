@@ -87,6 +87,7 @@ class PaymentService
         $update_fields = [
             't_gateway' => $payment_gateway,
             't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
+            't_gateway_transaction_reference' => $confirm_params['gateway_transaction_reference'] ?? null,
             't_status' => 'done',
             't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
             't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,

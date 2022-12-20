@@ -97,6 +97,8 @@ objects:
       replicas: 1
       template:
         metadata:
+          annotations:
+            central-logging: "true"
           labels:
             app: ${APPLICATION_NAME}-invoice-mail-queue
             deploymentconfig: ${APPLICATION_NAME}-invoice-mail-queue

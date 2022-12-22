@@ -94,13 +94,13 @@ class GetPayuReference extends Command
      */
     private function getHeader(): array
     {
-        $sandbox = $this->isSandBox() ? 'test' : 'live';
+        $env = $this->isSandBox() ? 'test' : 'live';
 
         return [
             'app_id: '.$this->appId,
             'private_key: '.$this->privateKey,
             'api-version: 1.3.0',
-            'x-payments-os-env: '.$sandbox,
+            'x-payments-os-env: '.$env,
             'Content-Type: application/json',
         ];
     }

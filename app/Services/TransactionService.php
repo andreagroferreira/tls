@@ -4,16 +4,20 @@ namespace App\Services;
 
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\TransactionSyncJob;
+use App\Jobs\TransactionSyncToEcommerceJob;
 use App\Jobs\TransactionSyncToWorkflowJob;
 use App\Repositories\TransactionRepository;
+use App\Traits\FeatureVersionsTrait;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 
 class TransactionService
 {
+    use FeatureVersionsTrait;
+
     protected $transactionRepository;
     protected $dbConnectionService;
     protected $transactionItemsService;
@@ -255,9 +259,11 @@ class TransactionService
                 $transactionItems
             );
 
-            if ($totalAmount === 0 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
-                $transactionData = $this->getTransaction($transaction->t_id);
-                $this->confirmTransaction($transactionData);
+            if (!$this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                if ($totalAmount === 0 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
+                    $transactionData = $this->getTransaction($transaction->t_id);
+                    $this->confirmTransaction($transactionData);
+                }
             }
 
             $db_connection->commit();
@@ -574,12 +580,21 @@ class TransactionService
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
-            $actionResult = $this->syncTransaction($transaction, $gateway, $agentName);
+            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
             if (!empty($actionResult['error_msg'])) {
                 Log::error(
-                    'Transaction ERROR: transaction sync '.
+                    'Transaction ERROR: transaction sync to workflow service '.
                     $transaction['t_transaction_id'].' failed, because: '.
-                    json_encode($actionResult, 256)
+                    json_encode($workflowServiceSyncStatus, 256)
+                );
+            }
+
+            $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'FREE');
+            if (!empty($ecommerceSyncStatus['error_msg'])) {
+                Log::error(
+                    'Transaction ERROR: transaction sync to ecommerce '.
+                    $transaction['t_transaction_id'].' failed, because: '.
+                    json_encode($ecommerceSyncStatus, 256)
                 );
             }
         }
@@ -690,7 +705,7 @@ class TransactionService
             dispatch(new TransactionSyncToWorkflowJob($client, $location, $data))
                 ->onConnection('workflow_transaction_sync_queue')
                 ->onQueue('workflow_transaction_sync_queue');
-            
+
             Log::info('TransactionService syncTransactionToWorkflow:dispatch');
 
             return [
@@ -705,10 +720,10 @@ class TransactionService
             ];
         }
     }
-    
+
     /**
      * @param  array $transaction
-     * 
+     *
      * @return array
      */
     private function createWorkflowPayload(array $transaction): array
@@ -780,5 +795,38 @@ class TransactionService
         }
 
         return $response;
+    }
+
+    /**
+     * @param array  $transaction
+     * @param string $paymentStatus
+     *
+     * @return array
+     */
+    public function syncTransactionToEcommerce(array $transaction, string $paymentStatus): array
+    {
+        $fg_id = $transaction['t_xref_fg_id'];
+        $data = $this->createEcommercePayload($transaction, $paymentStatus);
+
+        Log::info('TransactionService syncTransactionToEcommerce start');
+
+        try {
+            dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
+                ->onConnection('ecommerce_transaction_sync_queue')
+                ->onQueue('ecommerce_transaction_sync_queue');
+
+            Log::info('TransactionService syncTransactionToEcommerce:dispatch');
+
+            return [
+                'error_msg' => [],
+            ];
+        } catch (\Exception $e) {
+            Log::info('TransactionService syncTransactionToEcommerce dispatch error_msg:'.$e->getMessage());
+
+            return [
+                'status' => 'error',
+                'error_msg' => $e->getMessage(),
+            ];
+        }
     }
 }

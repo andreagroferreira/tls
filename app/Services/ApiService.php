@@ -442,7 +442,7 @@ class ApiService
         $url = $this->getFileLibraryApiDomain().'/api/'.$this->getFileLibraryApiVersion().'/file-library/download?'.$queryParams;
         return $this->getStreamApi($url, [], 'get');
     }
-    
+
     /**
      * @return string
      */
@@ -450,12 +450,20 @@ class ApiService
     {
         return env('WORKFLOW_SERVICE_DOMAIN');
     }
-    
+
+    /**
+     * @return string
+     */
+    private function getEcommerceApiDomain(): string
+    {
+        return env('ECOMMERCE_SERVICE_DOMAIN');
+    }
+
     /**
      * @param  string $method
      * @param  string $url
      * @param  array  $data
-     * 
+     *
      * @return array
      */
     public function callWorkflowApi(string $method, string $url, array $data = array()): array
@@ -468,6 +476,57 @@ class ApiService
             default:
                 $response = null;
                 break;
+        }
+        return $response;
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array $data
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callEcommerceApi(string $method, string $url, array $data = array()): array
+    {
+        $url = $this->getEcommerceApiDomain() . '/' . $url;
+        switch (strtolower($method)) {
+            case 'put':
+                $response = $this->putApi($url, $data);
+                break;
+            default:
+                $response = null;
+                break;
+        }
+        return $response;
+    }
+
+    /**
+     * @param string $url
+     * @param array $data
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    private function putApi(string $url, array $data): array
+    {
+        $response = $this->guzzleClient->request('put', $url, [
+            'verify' => false,
+            'http_errors' => false,
+            'idn_conversion' => false,
+            'Accept' => $this->accept,
+            'headers' => ['log-uuid' => request()->get('log-uuid')],
+            'json' => $data,
+        ]);
+        $response = [
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody(), true)
+        ];
+        if ($response['status'] != 200) {
+            Log::error(sprintf("Request api fail: %s [PUT] | Parameters: %s | Api Return: %s", $url, json_encode($data, 256), json_encode($response, 256)));
         }
         return $response;
     }

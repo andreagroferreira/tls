@@ -60,6 +60,51 @@ class InvoiceService
     }
 
     /**
+     * generate.
+     *
+     * @param mixed $transaction
+     *
+     * @return void
+     */
+    public function generate(array $transaction)
+    {
+        if (empty($transaction['t_callback_url'])) {
+            Log::warning('Transaction Error: empty callback url');
+
+            return false;
+        }
+
+        $callback_url = $transaction['t_callback_url'];
+        $data = [
+            't_id' => $transaction['t_id'],
+            'transaction_id' => $transaction['t_transaction_id'],
+            'gateway_transaction_id' => $transaction['t_gateway_transaction_id'],
+            'gateway' => $transaction['t_gateway'],
+            'currency' => $transaction['t_currency'],
+            'status' => $transaction['t_status'],
+            'tech_creation' => $transaction['t_tech_creation'],
+            'tech_modification' => $transaction['t_tech_modification'],
+            'items' => $transaction['t_items'],
+        ];
+
+        try {
+            $response = $this->apiService->callInvoiceApi($callback_url, $data);
+        } catch (\Exception $e) {
+            Log::warning('Transaction Error: error callback url "'.$transaction['t_callback_url'].'"');
+
+            return false;
+        }
+
+        if ($response['status'] != 200) {
+            Log::warning('Transaction Error: generate receipt failed');
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @param Transactions $transaction
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException

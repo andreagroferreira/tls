@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Repositories\TransactionRepository;
+use App\Services\DbConnectionService;
 use App\Services\PaymentInitiateService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -42,14 +43,20 @@ class GetPayuReference extends Command
      * Execute the console command.
      *
      * @param TransactionRepository  $transactionRepository
+     * @param DbConnectionService    $dbConnectionService
      * @param PaymentInitiateService $paymentInitiateService
      *
      * @throws \Exception
      *
      * @return void
      */
-    public function handle(TransactionRepository $transactionRepository, PaymentInitiateService $paymentInitiateService): void
-    {
+    public function handle(
+        TransactionRepository $transactionRepository,
+        DbConnectionService $dbConnectionService,
+        PaymentInitiateService $paymentInitiateService
+    ): void {
+        $transactionRepository->setConnection($dbConnectionService->getConnection());
+
         foreach ($this->getPaymentIds() as $paymentId) {
             $result = $paymentInitiateService->paymentInitiate(
                 'get',
@@ -87,13 +94,13 @@ class GetPayuReference extends Command
      */
     private function getHeader(): array
     {
-        $sandbox = $this->isSandBox();
+        $sandbox = $this->isSandBox() ? 'test' : 'live';
 
         return [
             'app_id: '.$this->appId,
             'private_key: '.$this->privateKey,
             'api-version: 1.3.0',
-            'x-payments-os-env: '.$sandbox ? 'test' : 'live',
+            'x-payments-os-env: '.$sandbox,
             'Content-Type: application/json',
         ];
     }

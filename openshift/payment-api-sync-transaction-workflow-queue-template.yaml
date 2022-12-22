@@ -23,6 +23,8 @@ parameters:
     required: true
   - name: DIRECTUS_DOMAIN
     required: true
+  - name: WORKFLOW_SERVICE_DOMAIN
+    required: true
   - name: REDIS_HOST
     required: true
   - name: AWS_ACCOUNT_S3
@@ -141,6 +143,8 @@ objects:
                   value: ${CLIENT}
                 - name: DIRECTUS_DOMAIN
                   value: ${DIRECTUS_DOMAIN}
+                - name: WORKFLOW_SERVICE_DOMAIN
+                  value: ${WORKFLOW_SERVICE_DOMAIN}
                 - name: REDIS_HOST
                   value: ${REDIS_HOST}
                 - name: PGPASSFILE

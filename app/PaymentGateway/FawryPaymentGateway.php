@@ -352,6 +352,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                         'currency'       => $transaction['t_currency'],
                         'transaction_id' => $transaction['t_transaction_id'],
                         'gateway_transaction_id' => '',
+                        'gateway_transaction_reference' => $this->getFawryRefNumber($params),
                     ];
                     $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
                     $response = $this->paymentService->confirm($transaction, $confirm_params);
@@ -414,6 +415,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'currency'       => $transaction['t_currency'],
                 'transaction_id' => $transaction['t_transaction_id'],
                 'gateway_transaction_id' => '',
+                'gateway_transaction_reference' => $this->getFawryRefNumber($params),
             ];
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
             $response = $this->paymentService->confirm($transaction, $confirm_params);
@@ -574,6 +576,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             'currency'       => $transaction['t_currency'],
             'transaction_id' => $transaction['t_transaction_id'],
             'gateway_transaction_id' => '',
+            'gateway_transaction_reference' => $this->getFawryRefNumber($params),
         ];
         $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
         $response = $this->paymentService->confirm($transaction, $confirm_params);
@@ -582,6 +585,18 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'status' => 'success',
             ];
         }
+    }
+
+    /**
+     * @param array $payload
+     *
+     * @return string|null
+     */
+    private function getFawryRefNumber(array $payload): ?string
+    {
+        $refNumber = $payload['FawryRefNo'] ?? $payload['fawryRefNumber'] ?? $payload['referenceNumber'] ?? null;
+
+        return !blank($refNumber) ? (string) $refNumber : null;
     }
 
     private function returnFail() {

@@ -4,12 +4,15 @@ namespace App\Services;
 
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\PaymentEauditorLogJob;
+use App\Traits\FeatureVersionsTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class PaymentService
 {
+    use FeatureVersionsTrait;
+
     protected $transactionService;
     protected $transactionLogsService;
     protected $formGroupService;
@@ -76,9 +79,21 @@ class PaymentService
 
         if ($transaction && !empty($transaction['t_items'])) {
             if (!empty($transaction['t_xref_fg_id'])) {
-                $actionResult = $this->transactionService->syncTransactionToWorkflow($transaction);
-                if (!empty($actionResult['error_msg'])) {
-                    $error_msg[] = $actionResult['error_msg'];
+                if ($this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                    $actionResult = $this->transactionService->syncTransaction(
+                        $transaction,
+                        $payment_gateway,
+                        $this->agent_name,
+                        $this->force_pay_for_not_online_payment_avs
+                    );
+                    if (!empty($actionResult['error_msg'])) {
+                        $error_msg[] = $actionResult['error_msg'];
+                    }
+                } else {
+                    $ecommerceSyncStatus = $this->transactionService->syncTransactionToEcommerce($transaction, 'PAID');
+                    if (!empty($ecommerceSyncStatus['error_msg'])) {
+                        $error_msg[] = $ecommerceSyncStatus['error_msg'];
+                    }
                 }
             }
         }
@@ -86,6 +101,7 @@ class PaymentService
         $update_fields = [
             't_gateway' => $payment_gateway,
             't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
+            't_gateway_transaction_reference' => $confirm_params['gateway_transaction_reference'] ?? null,
             't_status' => 'done',
             't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
             't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,
@@ -97,8 +113,12 @@ class PaymentService
             $transaction[$field_key] = $field_val;
         }
 
-        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
-            ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        if ($this->isVersion(1, $transaction['t_issuer'], 'invoice')) {
+            $this->invoiceService->generate($transaction);
+        } else {
+            dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
+                ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        }
 
         if (!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($error_msg, 256));

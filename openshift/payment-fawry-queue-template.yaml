@@ -452,6 +452,8 @@ objects:
       replicas: 1
       template:
         metadata:
+          annotations:
+            central-logging: "true"
           labels:
             app: ${APPLICATION_NAME}-callback-queue
             deploymentconfig: ${APPLICATION_NAME}-callback-queue

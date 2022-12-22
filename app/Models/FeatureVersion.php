@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FeatureVersions extends Model
+class FeatureVersion extends Model
 {
     use HasFactory;
 

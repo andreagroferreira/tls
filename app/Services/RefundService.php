@@ -5,10 +5,14 @@ namespace App\Services;
 use App\Repositories\RefundItemRepository;
 use App\Repositories\RefundLogRepository;
 use App\Repositories\RefundRepository;
+use App\Traits\FeatureVersionsTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class RefundService
 {
+    use FeatureVersionsTrait;
+
     /**
      * @var RefundRepository
      */
@@ -117,6 +121,12 @@ class RefundService
             return [];
         }
 
+        if ($refundRequest->r_status === 'done') {
+            if (!$this->isVersion(1, $attributes['r_issuer'], 'transaction_sync')) {
+                $this->syncRefundTransactionToEcommerce($refundRequest, $refundItemRequest);
+            }
+        }
+
         return ['r_id' => $refundRequest->r_id];
     }
 
@@ -194,6 +204,33 @@ class RefundService
         }
 
         return false;
+    }
+
+    /**
+     * @param object $refundRequest
+     * @param object $refundItemRequest
+     *
+     * @return void
+     */
+    private function syncRefundTransactionToEcommerce(object $refundRequest, object $refundItemRequest): void
+    {
+        $transactionId = $refundItemRequest->first()->ti_xref_transaction_id;
+        $refundItems = $this->refundItemRepository
+            ->fetch(['ri_xref_r_id' => $refundRequest->r_id])
+            ->groupBy('ri_xref_ti_id')
+            ->toArray();
+        $transaction = $this->getTransactionItemsWithRefund($transactionId, $refundItems);
+        if ($transaction && !empty($transaction['items'])) {
+            if (!empty($transaction['t_xref_fg_id'])) {
+                $ecommerceSyncStatus = $this->transactionService->syncTransactionToEcommerce($transaction, 'REFUND');
+                if (!empty($ecommerceSyncStatus['error_msg'])) {
+                    $error_msg[] = $ecommerceSyncStatus['error_msg'];
+                }
+            }
+        }
+        if (!empty($error_msg)) {
+            Log::error('Refund ERROR: Refund '.$refundRequest->r_id.' failed, because: '.json_encode($error_msg, 256));
+        }
     }
 
     /**

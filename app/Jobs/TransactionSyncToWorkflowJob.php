@@ -3,24 +3,26 @@
 namespace App\Jobs;
 
 class TransactionSyncToWorkflowJob extends Job
-{    
+{
     /**
      * @var string
      */
     private $client;
+
     /**
      * @var string
      */
     private $location;
+
     /**
      * @var array
      */
     private $data;
 
     /**
-     * @param  string $client
-     * @param  string $location
-     * @param  array  $data
+     * @param string $client
+     * @param string $location
+     * @param array  $data
      */
     public function __construct(string $client, string $location, array $data)
     {

@@ -508,14 +508,14 @@ class TransactionService
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
-            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
-            if (!empty($workflowServiceSyncStatus['error_msg'])) {
-                Log::error(
-                    'Transaction ERROR: transaction sync to workflow service '.
-                    $transaction['t_transaction_id'].' failed, because: '.
-                    json_encode($workflowServiceSyncStatus, 256)
-                );
-            }
+//            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
+//            if (!empty($workflowServiceSyncStatus['error_msg'])) {
+//                Log::error(
+//                    'Transaction ERROR: transaction sync to workflow service '.
+//                    $transaction['t_transaction_id'].' failed, because: '.
+//                    json_encode($workflowServiceSyncStatus, 256)
+//                );
+//            }
 
             $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'FREE');
             if (!empty($ecommerceSyncStatus['error_msg'])) {

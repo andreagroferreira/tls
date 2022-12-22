@@ -124,6 +124,7 @@ class RefundItemsService
                     'ti_id' => $service['ti_id'],
                     'price_rule' => $service['ti_price_rule'],
                     'sku' => $service['ti_fee_type'],
+                    'product_name' => $service['ti_fee_name'],
                     'price' => $service['ti_amount'],
                     'vat' => $service['ti_vat'],
                     'quantity' => $service['ti_quantity'],

@@ -502,11 +502,9 @@ class TransactionService
     {
         $gateway = 'free';
         $paymentMethod = 'free';
-        $agentName = '';
         if (!empty($transaction['t_agent_name']) && !empty($transaction['t_payment_method'])) {
             $gateway = 'paybank';
             $paymentMethod = $transaction['t_payment_method'];
-            $agentName = $transaction['t_agent_name'];
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {

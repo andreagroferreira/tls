@@ -74,6 +74,7 @@ class PayLaterGateway implements PaymentGatewayInterface
         $transaction = $this->transactionService->getTransaction($params['t_id']);
 
         if (!$this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+            $this->syncTransactionToWorkflowService($transaction);
             $this->syncTransactionToEcommerce($transaction);
         }
 
@@ -136,6 +137,23 @@ class PayLaterGateway implements PaymentGatewayInterface
                 'Transaction ERROR: transaction sync to ecommerce '.
                 $transaction['t_transaction_id'].' failed, because: '.
                 json_encode($ecommerceSyncStatus, 256)
+            );
+        }
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @return void
+     */
+    private function syncTransactionToWorkflowService(array $transaction): void
+    {
+        $workflowServiceSyncStatus = $this->transactionService->syncTransactionToWorkflow($transaction);
+        if (!empty($workflowServiceSyncStatus['error_msg'])) {
+            Log::error(
+                'Transaction ERROR: transaction '.
+                $transaction['t_transaction_id'].' failed, because: '.
+                json_encode($workflowServiceSyncStatus['error_msg'], 256)
             );
         }
     }

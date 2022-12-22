@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\TransactionSyncJob;
 use App\Jobs\TransactionSyncToEcommerceJob;
+use App\Jobs\TransactionSyncToWorkflowJob;
 use App\Repositories\TransactionRepository;
 use App\Traits\FeatureVersionsTrait;
 use Illuminate\Support\Arr;
@@ -501,14 +502,21 @@ class TransactionService
     {
         $gateway = 'free';
         $paymentMethod = 'free';
-        $agentName = '';
         if (!empty($transaction['t_agent_name']) && !empty($transaction['t_payment_method'])) {
             $gateway = 'paybank';
             $paymentMethod = $transaction['t_payment_method'];
-            $agentName = $transaction['t_agent_name'];
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
+            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
+            if (!empty($workflowServiceSyncStatus['error_msg'])) {
+                Log::error(
+                    'Transaction ERROR: transaction sync to workflow service '.
+                    $transaction['t_transaction_id'].' failed, because: '.
+                    json_encode($workflowServiceSyncStatus, 256)
+                );
+            }
+
             $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'FREE');
             if (!empty($ecommerceSyncStatus['error_msg'])) {
                 Log::error(
@@ -609,6 +617,39 @@ class TransactionService
     }
 
     /**
+     * @param array $transaction
+     *
+     * @return array
+     */
+    public function syncTransactionToWorkflow(array $transaction): array
+    {
+        $client = $transaction['t_client'];
+        $location = substr($transaction['t_issuer'], 0, 5);
+        $data = $this->createWorkflowPayload($transaction);
+
+        Log::info('TransactionService syncTransactionToWorkflow start');
+
+        try {
+            dispatch(new TransactionSyncToWorkflowJob($client, $location, $data))
+                ->onConnection('workflow_transaction_sync_queue')
+                ->onQueue('workflow_transaction_sync_queue');
+
+            Log::info('TransactionService syncTransactionToWorkflow:dispatch');
+
+            return [
+                'error_msg' => [],
+            ];
+        } catch (\Exception $e) {
+            Log::info('TransactionService syncTransactionToWorkflow dispatch error_msg:'.$e->getMessage());
+
+            return [
+                'status' => 'error',
+                'error_msg' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
      * @param array  $transaction
      * @param string $paymentStatus
      *
@@ -662,7 +703,7 @@ class TransactionService
                     'ti_amount' => $sku['price'],
                     'ti_price_rule' => $sku['price_rule'] ?? null,
                 ];
-                // agent receipt is used
+                //agent receipt is used
                 if (isset($sku['quantity'])) {
                     $res['ti_quantity'] = $sku['quantity'];
                 }
@@ -754,6 +795,41 @@ class TransactionService
     }
 
     /**
+     * @param array $transaction
+     *
+     * @return array
+     */
+    private function createWorkflowPayload(array $transaction): array
+    {
+        foreach ($transaction['t_items'] as $items) {
+            foreach ($items['skus'] as $sku) {
+                $orderDetails[] = [
+                    'f_id' => $items['f_id'],
+                    'sku' => $sku['sku'],
+                    'name' => $sku['product_name'],
+                    'vat' => $sku['vat'],
+                    'quantity' => $sku['quantity'],
+                    'price' => $sku['price'],
+                    'currency' => $transaction['t_currency'],
+                    // 'label' => $sku['label'], //TODO
+                    // 'stamp' => $sku['stamp'], //TODO
+                ];
+            }
+        }
+
+        return [
+            'client' => $transaction['t_client'],
+            'location' => substr($transaction['t_issuer'], 0, 5),
+            'fg_id' => $transaction['t_xref_fg_id'],
+            //'date' => '2022-11-20', //TODO
+            //'time' => '08:00', //TODO
+            'order_id' => $transaction['t_transaction_id'],
+            'payment_type' => $transaction['t_service'],
+            'order_details' => $orderDetails,
+        ];
+    }
+
+    /**
      * @param array  $transaction
      * @param string $paymentStatus
      *
@@ -761,6 +837,8 @@ class TransactionService
      */
     private function createEcommercePayload(array $transaction, string $paymentStatus): array
     {
+        $filteredItems = [];
+
         foreach ($transaction['t_items'] as $key => $items) {
             $filteredItems[$key] = [
                 'f_id' => $items['f_id'],

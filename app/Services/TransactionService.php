@@ -8,7 +8,6 @@ use App\Jobs\TransactionSyncToEcommerceJob;
 use App\Jobs\TransactionSyncToWorkflowJob;
 use App\Repositories\TransactionRepository;
 use App\Traits\FeatureVersionsTrait;
-use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -228,7 +227,7 @@ class TransactionService
         }
 
         if ($transaction_data['t_expiration']->isPast()) {
-            throw new Exception('The expiration time is less then current time.');
+            throw new \Exception('The expiration time is less then current time.');
         }
 
         if (!empty($attributes['payment_method'])) {
@@ -268,7 +267,7 @@ class TransactionService
             }
 
             $db_connection->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $db_connection->rollBack();
 
             return false;
@@ -512,7 +511,7 @@ class TransactionService
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
             $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
-            if (!empty($actionResult['error_msg'])) {
+            if (!empty($workflowServiceSyncStatus['error_msg'])) {
                 Log::error(
                     'Transaction ERROR: transaction sync to workflow service '.
                     $transaction['t_transaction_id'].' failed, because: '.
@@ -609,7 +608,7 @@ class TransactionService
             return [
                 'error_msg' => [],
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::info('TransactionService syncTransaction dispatch error_msg:'.$e->getMessage());
 
             return [
@@ -642,7 +641,7 @@ class TransactionService
             return [
                 'error_msg' => [],
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::info('TransactionService syncTransactionToWorkflow dispatch error_msg:'.$e->getMessage());
 
             return [

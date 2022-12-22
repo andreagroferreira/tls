@@ -20,7 +20,7 @@ class PaymentService
     protected $apiService;
     protected $tokenResolveService;
     protected $agent_name = '';
-    protected $force_pay_for_not_online_payment_avs = 'no'; // 支持支付 s_online_avs=no 的avs
+    protected $force_pay_for_not_online_payment_avs = 'no'; //支持支付 s_online_avs=no 的avs
 
     public function __construct(
         TransactionService $transactionService,
@@ -113,8 +113,12 @@ class PaymentService
             $transaction[$field_key] = $field_val;
         }
 
-        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
-            ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        if ($this->isVersion(1, $transaction['t_issuer'], 'invoice')) {
+            $this->invoiceService->generate($transaction);
+        } else {
+            dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
+                ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        }
 
         if (!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($error_msg, 256));
@@ -137,7 +141,7 @@ class PaymentService
     public function sendEAuditorProfileLogs($data): bool
     {
         $eauditor_log_content = $this->formatProfileData($data);
-        // send eauditor log
+        //send eauditor log
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $eauditor_log_content);
 
         return true;
@@ -227,11 +231,11 @@ class PaymentService
      * @param array  $transaction
      * @param string $invoice_content
      *
-     * @return bool
-     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return bool
      */
     public function convertInvoiceContentToPdf(array $transaction, string $invoice_content): bool
     {
@@ -260,11 +264,11 @@ class PaymentService
      * @param array  $transaction
      * @param string $collection_name
      *
-     * @return void
-     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return void
      */
     public function sendInvoice(array $transaction, string $collection_name): void
     {

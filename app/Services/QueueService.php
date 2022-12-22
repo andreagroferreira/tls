@@ -77,4 +77,26 @@ class QueueService
             Log::info('QueueService sync to tls success');
         }
     }
+    
+    /**
+     * @param  int    $fg_id
+     * @param  array  $data
+     *
+     * @return void
+     */
+    public function syncTransactionToEcommerce(int $fg_id, array $data): void
+    {
+        Log::info('QueueService syncTransactionToEcommerce:' . $fg_id .'---'. json_encode($data));
+        $response = $this->apiService->callEcommerceApi('PUT', '/baskets/' . $fg_id . '/payments/', $data);
+        Log::info('QueueService syncTransactionToEcommerce $response:'. json_encode($response));
+        if ($response['status'] != 200 || ($response['body']['status'] ?? '') == 'fatal') {
+            Log::error('QueueService sync to ecommerce failed');
+            throw new \Exception("sync to ecommerce failed");
+        } else {
+            foreach ($data['t_items'] as $item) {
+                $this->actionRepository->clearActionCache($item['f_id']);
+            }
+            Log::info('QueueService sync to ecommerce success');
+        }
+    }
 }

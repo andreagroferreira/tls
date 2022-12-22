@@ -4,15 +4,19 @@ namespace App\Services;
 
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\TransactionSyncJob;
+use App\Jobs\TransactionSyncToEcommerceJob;
 use App\Repositories\TransactionRepository;
-use Exception;
+use App\Traits\FeatureVersionsTrait;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 
 class TransactionService
 {
+    use FeatureVersionsTrait;
+
     protected $transactionRepository;
     protected $dbConnectionService;
     protected $transactionItemsService;
@@ -222,7 +226,7 @@ class TransactionService
         }
 
         if ($transaction_data['t_expiration']->isPast()) {
-            throw new Exception('The expiration time is less then current time.');
+            throw new \Exception('The expiration time is less then current time.');
         }
 
         if (!empty($attributes['payment_method'])) {
@@ -254,13 +258,15 @@ class TransactionService
                 $transactionItems
             );
 
-            if ($totalAmount === 0 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
-                $transactionData = $this->getTransaction($transaction->t_id);
-                $this->confirmTransaction($transactionData);
+            if (!$this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                if ($totalAmount === 0 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
+                    $transactionData = $this->getTransaction($transaction->t_id);
+                    $this->confirmTransaction($transactionData);
+                }
             }
 
             $db_connection->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $db_connection->rollBack();
 
             return false;
@@ -417,76 +423,6 @@ class TransactionService
     }
 
     /**
-     * @param  Collection $where
-     *
-     * @return array
-     */
-    private function listTransactionsSkuSummary(Collection $where): array
-    {
-        $data = $this->transactionRepository->listTransactionsSkuSummary($where);
-        if (!empty($data)) {
-            foreach ($data as $skuDetails) {
-                $sku = $skuDetails['sku'];
-                $currency = $skuDetails['currency'];
-                $paymentMethod = $skuDetails['payment_method'];
-
-                if (!isset($skuData[$currency][$sku][$paymentMethod])) {
-                    $skuData[$currency][$sku][$paymentMethod] = 0;
-                }
-                $skuData[$currency][$sku][$paymentMethod] += (float)$skuDetails['amount'];
-                if (!isset($totalByPaymentMethod[$currency][$paymentMethod])) {
-                    $totalByPaymentMethod[$currency][$paymentMethod] = 0;
-                }
-                $totalByPaymentMethod[$currency][$paymentMethod] += (float)$skuDetails['amount'];
-                if (!isset($totalAmount[$currency])) {
-                    $totalAmount[$currency] = 0;
-                }
-                $totalAmount[$currency] += (float)$skuDetails['amount'];
-            }
-            foreach ($skuData as $currency => $skuList) {
-                $skuSummary = $this->skuSummary($skuList);
-
-                $summary[] = [
-                    'currency' => $currency,
-                    'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
-                    'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
-                    'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
-                    'amount-total' => $totalAmount[$currency] ?? 0,
-                    'skus' => $skuSummary,
-                ];
-            }
-        }
-        return $summary ?? [];
-    }
-
-    /**
-     * @param  array $skuList
-     *
-     * @return array
-     */
-    private function skuSummary(array $skuList): array
-    {
-        foreach ($skuList as $sku => $skuDetails) {
-            $totalAmount = 0;
-            $summary = [];
-
-            foreach ($skuDetails as $paymentMethod => $amount) {
-                $summary[] = [
-                    'payment-type' => $paymentMethod,
-                    'amount' => $amount,
-                ];
-                $totalAmount += $amount;
-            }
-            $skus[] = [
-                'sku' => $sku,
-                'amount-total' => $totalAmount,
-                'summary' => $summary,
-            ];
-        }
-        return $skus ?? [];
-    }
-
-    /**
      * @param array $result
      *
      * @return array
@@ -573,12 +509,12 @@ class TransactionService
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
-            $actionResult = $this->syncTransaction($transaction, $gateway, $agentName);
-            if (!empty($actionResult['error_msg'])) {
+            $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'FREE');
+            if (!empty($ecommerceSyncStatus['error_msg'])) {
                 Log::error(
-                    'Transaction ERROR: transaction sync '.
+                    'Transaction ERROR: transaction sync to ecommerce '.
                     $transaction['t_transaction_id'].' failed, because: '.
-                    json_encode($actionResult, 256)
+                    json_encode($ecommerceSyncStatus, 256)
                 );
             }
         }
@@ -662,8 +598,41 @@ class TransactionService
             return [
                 'error_msg' => [],
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::info('TransactionService syncTransaction dispatch error_msg:'.$e->getMessage());
+
+            return [
+                'status' => 'error',
+                'error_msg' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * @param array  $transaction
+     * @param string $paymentStatus
+     *
+     * @return array
+     */
+    public function syncTransactionToEcommerce(array $transaction, string $paymentStatus): array
+    {
+        $fg_id = $transaction['t_xref_fg_id'];
+        $data = $this->createEcommercePayload($transaction, $paymentStatus);
+
+        Log::info('TransactionService syncTransactionToEcommerce start');
+
+        try {
+            dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
+                ->onConnection('ecommerce_transaction_sync_queue')
+                ->onQueue('ecommerce_transaction_sync_queue');
+
+            Log::info('TransactionService syncTransactionToEcommerce:dispatch');
+
+            return [
+                'error_msg' => [],
+            ];
+        } catch (\Exception $e) {
+            Log::info('TransactionService syncTransactionToEcommerce dispatch error_msg:'.$e->getMessage());
 
             return [
                 'status' => 'error',
@@ -693,7 +662,7 @@ class TransactionService
                     'ti_amount' => $sku['price'],
                     'ti_price_rule' => $sku['price_rule'] ?? null,
                 ];
-                //agent receipt is used
+                // agent receipt is used
                 if (isset($sku['quantity'])) {
                     $res['ti_quantity'] = $sku['quantity'];
                 }
@@ -710,5 +679,102 @@ class TransactionService
         }
 
         return $response;
+    }
+
+    /**
+     * @param Collection $where
+     *
+     * @return array
+     */
+    private function listTransactionsSkuSummary(Collection $where): array
+    {
+        $data = $this->transactionRepository->listTransactionsSkuSummary($where);
+        if (!empty($data)) {
+            foreach ($data as $skuDetails) {
+                $sku = $skuDetails['sku'];
+                $currency = $skuDetails['currency'];
+                $paymentMethod = $skuDetails['payment_method'];
+
+                if (!isset($skuData[$currency][$sku][$paymentMethod])) {
+                    $skuData[$currency][$sku][$paymentMethod] = 0;
+                }
+                $skuData[$currency][$sku][$paymentMethod] += (float) $skuDetails['amount'];
+                if (!isset($totalByPaymentMethod[$currency][$paymentMethod])) {
+                    $totalByPaymentMethod[$currency][$paymentMethod] = 0;
+                }
+                $totalByPaymentMethod[$currency][$paymentMethod] += (float) $skuDetails['amount'];
+                if (!isset($totalAmount[$currency])) {
+                    $totalAmount[$currency] = 0;
+                }
+                $totalAmount[$currency] += (float) $skuDetails['amount'];
+            }
+            foreach ($skuData as $currency => $skuList) {
+                $skuSummary = $this->skuSummary($skuList);
+
+                $summary[] = [
+                    'currency' => $currency,
+                    'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
+                    'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
+                    'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
+                    'amount-total' => $totalAmount[$currency] ?? 0,
+                    'skus' => $skuSummary,
+                ];
+            }
+        }
+
+        return $summary ?? [];
+    }
+
+    /**
+     * @param array $skuList
+     *
+     * @return array
+     */
+    private function skuSummary(array $skuList): array
+    {
+        foreach ($skuList as $sku => $skuDetails) {
+            $totalAmount = 0;
+            $summary = [];
+
+            foreach ($skuDetails as $paymentMethod => $amount) {
+                $summary[] = [
+                    'payment-type' => $paymentMethod,
+                    'amount' => $amount,
+                ];
+                $totalAmount += $amount;
+            }
+            $skus[] = [
+                'sku' => $sku,
+                'amount-total' => $totalAmount,
+                'summary' => $summary,
+            ];
+        }
+
+        return $skus ?? [];
+    }
+
+    /**
+     * @param array  $transaction
+     * @param string $paymentStatus
+     *
+     * @return array
+     */
+    private function createEcommercePayload(array $transaction, string $paymentStatus): array
+    {
+        foreach ($transaction['t_items'] as $key => $items) {
+            $filteredItems[$key] = [
+                'f_id' => $items['f_id'],
+            ];
+
+            foreach ($items['skus'] as $sku) {
+                $filteredItems[$key]['skus'][] = Arr::only($sku, ['sku', 'quantity']);
+            }
+        }
+
+        return [
+            't_id' => $transaction['t_id'],
+            'paymentStatus' => $paymentStatus,
+            'items' => $filteredItems,
+        ];
     }
 }

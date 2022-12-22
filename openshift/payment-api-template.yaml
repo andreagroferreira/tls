@@ -1031,7 +1031,7 @@ objects:
                 - name: WORKFLOW_SERVICE_DOMAIN
                   value: ${WORKFLOW_SERVICE_DOMAIN}
                 - name: ECOMMERCE_SERVICE_DOMAIN
-                    value: ${ECOMMERCE_SERVICE_DOMAIN}
+                  value: ${ECOMMERCE_SERVICE_DOMAIN}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:

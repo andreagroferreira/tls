@@ -52,6 +52,11 @@ trait FeatureVersionsTrait
      */
     public function isVersion(int $version, string $issuer, string $fvType): bool
     {
-        return $this->getFeatureVersion($issuer, $fvType)->fv_version === $version;
+        $versionData = $this->getFeatureVersion($issuer, $fvType)->toArray();
+        if (empty($versionData)) {
+            return false;
+        }
+
+        return array_first($versionData)['fv_version'] === $version;
     }
 }

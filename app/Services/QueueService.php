@@ -88,7 +88,7 @@ class QueueService
     public function syncTransactionToEcommerce(int $fg_id, array $data): void
     {
         Log::info('QueueService syncTransactionToEcommerce:' . $fg_id .'---'. json_encode($data));
-        $response = $this->apiService->callEcommerceApi('PUT', '/baskets/' . $fg_id . '/payments/', $data);
+        $response = $this->apiService->callEcommerceApi('PUT', '/baskets/' . $fg_id . '/payments', $data);
         Log::info('QueueService syncTransactionToEcommerce $response:'. json_encode($response));
         if ($response['status'] != 200 || ($response['body']['status'] ?? '') == 'fatal') {
             Log::error('QueueService sync to ecommerce failed');

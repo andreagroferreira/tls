@@ -845,7 +845,7 @@ class TransactionService
             ];
 
             foreach ($items['skus'] as $sku) {
-                $filteredItems[$key]['skus'][] = Arr::only($sku, ['sku', 'quantity']);
+                $filteredItems[$key]['skus'][] = Arr::only($sku, ['sku', 'quantity', 'price']);
             }
         }
 

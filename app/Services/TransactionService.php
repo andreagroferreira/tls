@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\TransactionSyncJob;
+use App\Jobs\TransactionSyncToEcommerceJob;
+use App\Jobs\TransactionSyncToWorkflowJob;
 use App\Repositories\TransactionRepository;
-use Exception;
+use App\Traits\FeatureVersionsTrait;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +16,8 @@ use Illuminate\Support\Facades\Log;
 
 class TransactionService
 {
+    use FeatureVersionsTrait;
+
     protected $transactionRepository;
     protected $dbConnectionService;
     protected $transactionItemsService;
@@ -229,7 +234,7 @@ class TransactionService
         }
 
         if ($transaction_data['t_expiration']->isPast()) {
-            throw new Exception('The expiration time is less then current time.');
+            throw new \Exception('The expiration time is less then current time.');
         }
 
         if (!empty($attributes['payment_method'])) {
@@ -261,13 +266,15 @@ class TransactionService
                 $transactionItems
             );
 
-            if ($totalAmount === 0 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
-                $transactionData = $this->getTransaction($transaction->t_id);
-                $this->confirmTransaction($transactionData);
+            if (!$this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                if ($totalAmount === 0 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
+                    $transactionData = $this->getTransaction($transaction->t_id);
+                    $this->confirmTransaction($transactionData);
+                }
             }
 
             $db_connection->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $db_connection->rollBack();
 
             return false;
@@ -502,20 +509,27 @@ class TransactionService
     {
         $gateway = 'free';
         $paymentMethod = 'free';
-        $agentName = '';
         if (!empty($transaction['t_agent_name']) && !empty($transaction['t_payment_method'])) {
             $gateway = 'paybank';
             $paymentMethod = $transaction['t_payment_method'];
-            $agentName = $transaction['t_agent_name'];
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
-            $actionResult = $this->syncTransaction($transaction, $gateway, $agentName);
-            if (!empty($actionResult['error_msg'])) {
+//            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
+//            if (!empty($workflowServiceSyncStatus['error_msg'])) {
+//                Log::error(
+//                    'Transaction ERROR: transaction sync to workflow service '.
+//                    $transaction['t_transaction_id'].' failed, because: '.
+//                    json_encode($workflowServiceSyncStatus, 256)
+//                );
+//            }
+
+            $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'FREE');
+            if (!empty($ecommerceSyncStatus['error_msg'])) {
                 Log::error(
-                    'Transaction ERROR: transaction sync '.
+                    'Transaction ERROR: transaction sync to ecommerce '.
                     $transaction['t_transaction_id'].' failed, because: '.
-                    json_encode($actionResult, 256)
+                    json_encode($ecommerceSyncStatus, 256)
                 );
             }
         }
@@ -599,8 +613,74 @@ class TransactionService
             return [
                 'error_msg' => [],
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::info('TransactionService syncTransaction dispatch error_msg:'.$e->getMessage());
+
+            return [
+                'status' => 'error',
+                'error_msg' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @return array
+     */
+    public function syncTransactionToWorkflow(array $transaction): array
+    {
+        $client = $transaction['t_client'];
+        $location = substr($transaction['t_issuer'], 0, 5);
+        $data = $this->createWorkflowPayload($transaction);
+
+        Log::info('TransactionService syncTransactionToWorkflow start');
+
+        try {
+            dispatch(new TransactionSyncToWorkflowJob($client, $location, $data))
+                ->onConnection('workflow_transaction_sync_queue')
+                ->onQueue('workflow_transaction_sync_queue');
+
+            Log::info('TransactionService syncTransactionToWorkflow:dispatch');
+
+            return [
+                'error_msg' => [],
+            ];
+        } catch (\Exception $e) {
+            Log::info('TransactionService syncTransactionToWorkflow dispatch error_msg:'.$e->getMessage());
+
+            return [
+                'status' => 'error',
+                'error_msg' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * @param array  $transaction
+     * @param string $paymentStatus
+     *
+     * @return array
+     */
+    public function syncTransactionToEcommerce(array $transaction, string $paymentStatus): array
+    {
+        $fg_id = $transaction['t_xref_fg_id'];
+        $data = $this->createEcommercePayload($transaction, $paymentStatus);
+
+        Log::info('TransactionService syncTransactionToEcommerce start');
+
+        try {
+            dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
+                ->onConnection('ecommerce_transaction_sync_queue')
+                ->onQueue('ecommerce_transaction_sync_queue');
+
+            Log::info('TransactionService syncTransactionToEcommerce:dispatch');
+
+            return [
+                'error_msg' => [],
+            ];
+        } catch (\Exception $e) {
+            Log::info('TransactionService syncTransactionToEcommerce dispatch error_msg:'.$e->getMessage());
 
             return [
                 'status' => 'error',
@@ -719,5 +799,67 @@ class TransactionService
         }
 
         return $skus ?? [];
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @return array
+     */
+    private function createWorkflowPayload(array $transaction): array
+    {
+        foreach ($transaction['t_items'] as $items) {
+            foreach ($items['skus'] as $sku) {
+                $orderDetails[] = [
+                    'f_id' => $items['f_id'],
+                    'sku' => $sku['sku'],
+                    'name' => $sku['product_name'],
+                    'vat' => $sku['vat'],
+                    'quantity' => $sku['quantity'],
+                    'price' => $sku['price'],
+                    'currency' => $transaction['t_currency'],
+                    // 'label' => $sku['label'], //TODO
+                    // 'stamp' => $sku['stamp'], //TODO
+                ];
+            }
+        }
+
+        return [
+            'client' => $transaction['t_client'],
+            'location' => substr($transaction['t_issuer'], 0, 5),
+            'fg_id' => $transaction['t_xref_fg_id'],
+            //'date' => '2022-11-20', //TODO
+            //'time' => '08:00', //TODO
+            'order_id' => $transaction['t_transaction_id'],
+            'payment_type' => $transaction['t_service'],
+            'order_details' => $orderDetails,
+        ];
+    }
+
+    /**
+     * @param array  $transaction
+     * @param string $paymentStatus
+     *
+     * @return array
+     */
+    private function createEcommercePayload(array $transaction, string $paymentStatus): array
+    {
+        $filteredItems = [];
+
+        foreach ($transaction['t_items'] as $key => $items) {
+            $filteredItems[$key] = [
+                'f_id' => $items['f_id'],
+            ];
+
+            foreach ($items['skus'] as $sku) {
+                $filteredItems[$key]['skus'][] = Arr::only($sku, ['sku', 'quantity']);
+            }
+        }
+
+        return [
+            't_id' => $transaction['t_id'],
+            'paymentStatus' => $paymentStatus,
+            'items' => $filteredItems,
+        ];
     }
 }

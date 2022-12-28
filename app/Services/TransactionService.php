@@ -671,20 +671,20 @@ class TransactionService
         $fg_id = $transaction['t_xref_fg_id'];
         $data = $this->createEcommercePayload($transaction, $paymentStatus);
 
-        Log::info('TransactionService syncTransactionToEcommerce start');
+        Log::info('TransactionService syncTransactionToEcommerce start: '.$fg_id);
 
         try {
             dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
                 ->onConnection('ecommerce_transaction_sync_queue')
                 ->onQueue('ecommerce_transaction_sync_queue');
 
-            Log::info('TransactionService syncTransactionToEcommerce:dispatch');
+            Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id);
 
             return [
                 'error_msg' => [],
             ];
         } catch (\Exception $e) {
-            Log::info('TransactionService syncTransactionToEcommerce dispatch error_msg:'.$e->getMessage());
+            Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id.' - error_msg:'.$e->getMessage());
 
             return [
                 'status' => 'error',
@@ -856,7 +856,7 @@ class TransactionService
             ];
 
             foreach ($items['skus'] as $sku) {
-                $filteredItems[$key]['skus'][] = Arr::only($sku, ['sku', 'quantity']);
+                $filteredItems[$key]['skus'][] = Arr::only($sku, ['sku', 'quantity', 'price']);
             }
         }
 

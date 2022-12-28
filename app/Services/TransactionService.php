@@ -7,9 +7,9 @@ use App\Jobs\TransactionSyncJob;
 use App\Repositories\TransactionRepository;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 
 class TransactionService
 {
@@ -145,7 +145,14 @@ class TransactionService
     public function checkDuplicateCreation($attributes)
     {
         $transaction = $this->transactionRepository
-            ->fetch(['t_xref_fg_id' => $attributes['fg_id'], 't_status' => 'pending', 't_tech_deleted' => false])
+            ->fetch(
+                [
+                    't_xref_fg_id' => $attributes['fg_id'],
+                    't_status' => 'pending',
+                    't_service' => $attributes['service'],
+                    't_tech_deleted' => false,
+                ]
+            )
             ->first();
         if (blank($transaction)) {
             return true;
@@ -417,76 +424,6 @@ class TransactionService
     }
 
     /**
-     * @param  Collection $where
-     *
-     * @return array
-     */
-    private function listTransactionsSkuSummary(Collection $where): array
-    {
-        $data = $this->transactionRepository->listTransactionsSkuSummary($where);
-        if (!empty($data)) {
-            foreach ($data as $skuDetails) {
-                $sku = $skuDetails['sku'];
-                $currency = $skuDetails['currency'];
-                $paymentMethod = $skuDetails['payment_method'];
-
-                if (!isset($skuData[$currency][$sku][$paymentMethod])) {
-                    $skuData[$currency][$sku][$paymentMethod] = 0;
-                }
-                $skuData[$currency][$sku][$paymentMethod] += (float)$skuDetails['amount'];
-                if (!isset($totalByPaymentMethod[$currency][$paymentMethod])) {
-                    $totalByPaymentMethod[$currency][$paymentMethod] = 0;
-                }
-                $totalByPaymentMethod[$currency][$paymentMethod] += (float)$skuDetails['amount'];
-                if (!isset($totalAmount[$currency])) {
-                    $totalAmount[$currency] = 0;
-                }
-                $totalAmount[$currency] += (float)$skuDetails['amount'];
-            }
-            foreach ($skuData as $currency => $skuList) {
-                $skuSummary = $this->skuSummary($skuList);
-
-                $summary[] = [
-                    'currency' => $currency,
-                    'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
-                    'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
-                    'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
-                    'amount-total' => $totalAmount[$currency] ?? 0,
-                    'skus' => $skuSummary,
-                ];
-            }
-        }
-        return $summary ?? [];
-    }
-
-    /**
-     * @param  array $skuList
-     *
-     * @return array
-     */
-    private function skuSummary(array $skuList): array
-    {
-        foreach ($skuList as $sku => $skuDetails) {
-            $totalAmount = 0;
-            $summary = [];
-
-            foreach ($skuDetails as $paymentMethod => $amount) {
-                $summary[] = [
-                    'payment-type' => $paymentMethod,
-                    'amount' => $amount,
-                ];
-                $totalAmount += $amount;
-            }
-            $skus[] = [
-                'sku' => $sku,
-                'amount-total' => $totalAmount,
-                'summary' => $summary,
-            ];
-        }
-        return $skus ?? [];
-    }
-
-    /**
      * @param array $result
      *
      * @return array
@@ -710,5 +647,77 @@ class TransactionService
         }
 
         return $response;
+    }
+
+    /**
+     * @param Collection $where
+     *
+     * @return array
+     */
+    private function listTransactionsSkuSummary(Collection $where): array
+    {
+        $data = $this->transactionRepository->listTransactionsSkuSummary($where);
+        if (!empty($data)) {
+            foreach ($data as $skuDetails) {
+                $sku = $skuDetails['sku'];
+                $currency = $skuDetails['currency'];
+                $paymentMethod = $skuDetails['payment_method'];
+
+                if (!isset($skuData[$currency][$sku][$paymentMethod])) {
+                    $skuData[$currency][$sku][$paymentMethod] = 0;
+                }
+                $skuData[$currency][$sku][$paymentMethod] += (float) $skuDetails['amount'];
+                if (!isset($totalByPaymentMethod[$currency][$paymentMethod])) {
+                    $totalByPaymentMethod[$currency][$paymentMethod] = 0;
+                }
+                $totalByPaymentMethod[$currency][$paymentMethod] += (float) $skuDetails['amount'];
+                if (!isset($totalAmount[$currency])) {
+                    $totalAmount[$currency] = 0;
+                }
+                $totalAmount[$currency] += (float) $skuDetails['amount'];
+            }
+            foreach ($skuData as $currency => $skuList) {
+                $skuSummary = $this->skuSummary($skuList);
+
+                $summary[] = [
+                    'currency' => $currency,
+                    'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
+                    'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
+                    'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
+                    'amount-total' => $totalAmount[$currency] ?? 0,
+                    'skus' => $skuSummary,
+                ];
+            }
+        }
+
+        return $summary ?? [];
+    }
+
+    /**
+     * @param array $skuList
+     *
+     * @return array
+     */
+    private function skuSummary(array $skuList): array
+    {
+        foreach ($skuList as $sku => $skuDetails) {
+            $totalAmount = 0;
+            $summary = [];
+
+            foreach ($skuDetails as $paymentMethod => $amount) {
+                $summary[] = [
+                    'payment-type' => $paymentMethod,
+                    'amount' => $amount,
+                ];
+                $totalAmount += $amount;
+            }
+            $skus[] = [
+                'sku' => $sku,
+                'amount-total' => $totalAmount,
+                'summary' => $summary,
+            ];
+        }
+
+        return $skus ?? [];
     }
 }

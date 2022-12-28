@@ -144,6 +144,10 @@ class TransactionService
 
     public function checkDuplicateCreation($attributes)
     {
+        if (empty($attributes['service'])) {
+            $attributes['service'] = 'tls';
+        }
+
         $transaction = $this->transactionRepository
             ->fetch(
                 [

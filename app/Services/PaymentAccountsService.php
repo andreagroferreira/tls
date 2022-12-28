@@ -55,5 +55,25 @@ class PaymentAccountsService
     {
         return $this->paymentAccountsRepositories->create($params);
     }
+    
+    /**
+     * @param  array $pspCodes
+     * 
+     * @return array
+     */
+    public function fetchPaymentServiceProviderName(array $pspCodes): array
+    {
+        $paymentServiceProviders = $this->paymentServiceProvidersRepositories->fetchIn(
+            'psp_code',
+            $pspCodes,
+            ['psp_code', 'psp_name']
+        )->toArray();
+        if (!empty($paymentServiceProviders)) {
+            foreach ($paymentServiceProviders as $service) {
+                $paymentServiceProviderName[$service['psp_code']] = $service['psp_name'];
+            }
+        }
 
+        return $paymentServiceProviderName;
+    }
 }

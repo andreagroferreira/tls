@@ -150,7 +150,14 @@ class TransactionService
     public function checkDuplicateCreation($attributes)
     {
         $transaction = $this->transactionRepository
-            ->fetch(['t_xref_fg_id' => $attributes['fg_id'], 't_status' => 'pending', 't_tech_deleted' => false])
+            ->fetch(
+                [
+                    't_xref_fg_id' => $attributes['fg_id'],
+                    't_status' => 'pending',
+                    't_service' => $attributes['service'],
+                    't_tech_deleted' => false,
+                ]
+            )
             ->first();
         if (blank($transaction)) {
             return true;

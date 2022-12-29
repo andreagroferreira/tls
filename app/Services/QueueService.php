@@ -94,10 +94,6 @@ class QueueService
             Log::error('QueueService sync to ecommerce failed');
             throw new \Exception("sync to ecommerce failed");
         }
-
-        foreach ($data['t_items'] as $item) {
-            $this->actionRepository->clearActionCache($item['f_id']);
-        }
         Log::info('QueueService sync to ecommerce success');
     }
 

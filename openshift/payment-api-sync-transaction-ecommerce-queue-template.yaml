@@ -264,4 +264,4 @@ objects:
               protocol: TCP
       podSelector:
         matchLabels:
-          app: 'tlsconnect-service-api'
+          app: 'tlspay-e-commerce-service'

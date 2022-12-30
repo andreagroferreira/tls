@@ -220,7 +220,7 @@ class RefundService
             ->groupBy('ri_xref_ti_id')
             ->toArray();
         $transaction = $this->getTransactionItemsWithRefund($transactionId, $refundItems);
-        if ($transaction && !empty($transaction['items'])) {
+        if ($transaction && !empty($transaction['t_items'])) {
             if (!empty($transaction['t_xref_fg_id'])) {
                 $ecommerceSyncStatus = $this->transactionService->syncTransactionToEcommerce($transaction, 'REFUND');
                 if (!empty($ecommerceSyncStatus['error_msg'])) {
@@ -280,7 +280,7 @@ class RefundService
             }
             $transactionItemsWithRefund[] = $items;
         }
-        $transaction['items'] = $transactionItemsWithRefund;
+        $transaction['t_items'] = $transactionItemsWithRefund;
 
         return $transaction;
     }

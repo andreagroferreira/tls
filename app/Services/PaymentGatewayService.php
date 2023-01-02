@@ -93,7 +93,6 @@ class PaymentGatewayService
         }
         $payment_gateway_config = [];
         foreach ($payment_gateway as $key => $values) {
-            $paymentServiceProviders = [];
             $paymentServiceProviders = $this->paymentServiceProvidersRepositories->fetch(['psp_id' => $values['pa_xref_psp_id']], ['psp_code', 'psp_name']);
             $payment_gateway[$key]['psp_code'] = $paymentServiceProviders['psp_code'];
             $payment_gateway[$key]['psp_name'] = $paymentServiceProviders['psp_name'];

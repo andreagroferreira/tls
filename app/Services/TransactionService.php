@@ -528,7 +528,7 @@ class TransactionService
 //                );
 //            }
 
-            $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'FREE');
+            $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'PAID');
             if (!empty($ecommerceSyncStatus['error_msg'])) {
                 Log::error(
                     'Transaction ERROR: transaction sync to ecommerce '.

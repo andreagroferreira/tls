@@ -69,19 +69,4 @@ class PaymentServiceProvidersRepositories
         }
         return $result->get();
     }
-    
-    /**
-     * @param  string $fieldName
-     * @param  array  $list
-     * @param  array  $field
-     * 
-     * @return object
-     */
-    public function fetchIn(string $fieldName, array $list, array $field = ['*']): object
-    {
-        return $this->paymentServiceProviders
-            ->select($field)
-            ->whereIn($fieldName, $list)
-            ->get();
-    }
 }

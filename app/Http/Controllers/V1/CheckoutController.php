@@ -4,7 +4,6 @@ namespace App\Http\Controllers\V1;
 
 use App\Services\GatewayService;
 use App\Services\TransactionService;
-use App\Services\PaymentAccountsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -13,20 +12,13 @@ class CheckoutController extends BaseController
 {
     private $transactionService;
     private $gatewayService;
-    
-    /**
-     * @param PaymentAccountsService $paymentAccountsService
-     */
-    private $paymentAccountsService;
 
     public function __construct(
         TransactionService $transactionService,
-        GatewayService $gatewayService,
-        PaymentAccountsService $paymentAccountsService
+        GatewayService $gatewayService
     ) {
         $this->transactionService = $transactionService;
         $this->gatewayService = $gatewayService;
-        $this->paymentAccountsService = $paymentAccountsService;
     }
 
     public function isSandBox()
@@ -134,10 +126,6 @@ class CheckoutController extends BaseController
             $getClientUseFile = $this->gatewayService->getClientUseFile();
             if ($getClientUseFile) {
                 $app_env = $this->isSandBox() ? 'sandbox' : 'production';
-
-                $pspCodes = array_keys($payment_gateways);
-                $paymentServiceProviders = $this->paymentAccountsService->fetchPaymentServiceProviderName($pspCodes);
-
                 foreach ($payment_gateways as $key => $value) {
                     if ($key !== 'pay_later') {
                         if (!array_key_exists($app_env, $value)) {
@@ -150,7 +138,6 @@ class CheckoutController extends BaseController
                         $payment_gateways_new[$key]['pa_id'] = '';
                         $payment_gateways_new[$key]['psp_code'] = $key;
                         $payment_gateways_new[$key]['type'] = $app_env;
-                        $payment_gateways_new[$key]['label'] = $paymentServiceProviders[$key];
                     }
                     $payment_gateways = $payment_gateways_new;
                 }

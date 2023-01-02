@@ -93,7 +93,10 @@ class PaymentGatewayService
         }
         $payment_gateway_config = [];
         foreach ($payment_gateway as $key => $values) {
-            $payment_gateway[$key]['psp_code'] = $this->paymentServiceProvidersRepositories->fetch(['psp_id' => $values['pa_xref_psp_id']], 'psp_code')['psp_code'];
+            $paymentServiceProviders = [];
+            $paymentServiceProviders = $this->paymentServiceProvidersRepositories->fetch(['psp_id' => $values['pa_xref_psp_id']], ['psp_code', 'psp_name']);
+            $payment_gateway[$key]['psp_code'] = $paymentServiceProviders['psp_code'];
+            $payment_gateway[$key]['psp_name'] = $paymentServiceProviders['psp_name'];
         }
         foreach ($payment_gateway as $k => $v) {
             $gateway = $v['psp_code'];
@@ -104,7 +107,7 @@ class PaymentGatewayService
             }
             $payment_gateway_config[$gateway_type]['pa_id'] = $v['pa_id'];
             $payment_gateway_config[$gateway_type]['psp_code'] = $gateway;
-            $payment_gateway_config[$gateway_type]['label'] = config("payment_gateway_accounts.$gateway.label");
+            $payment_gateway_config[$gateway_type]['label'] = $v['psp_name'];
             $payment_gateway_config[$gateway_type]['type'] = $v['pa_type'];
             $payment_gateway_config[$gateway_type]['common'] = config("payment_gateway_accounts.$gateway.common");
             $payment_gateway_config[$gateway_type][$v['pa_type']] = json_decode($v['pa_info'], true);

@@ -60,6 +60,7 @@ class RefundItemsService
 
         $refundItems = $this->refundItemRepository->fetchRefundItems($where->toArray())->toArray();
         $transactions = $this->getTransactionItems($transactionItems);
+
         if (empty($transactions)) {
             return [];
         }
@@ -100,52 +101,59 @@ class RefundItemsService
 
         return array_values($refundRequestArray);
     }
-
+    
     /**
-     * @param array $transactions
+     * @param array $transactionItems
      *
      * @return array
      */
-    private function getTransactionItems(array $transactions): array
+    private function getTransactionItems(array $transactionItems): array
     {
-        $transactionData = [];
-        foreach ($transactions as $transactionId => $services) {
-            $transaction = $this->transactionRepository->fetch([
-                't_transaction_id' => $transactionId,
-                't_status' => 'done',
-            ])->first();
-            if (empty($transaction)) {
-                break;
-            }
-            $items['f_id'] = current($services)['ti_xref_f_id'];
-            $items['skus'] = [];
-            foreach ($services as $service) {
-                $items['skus'][] = [
-                    'ti_id' => $service['ti_id'],
-                    'price_rule' => $service['ti_price_rule'],
-                    'sku' => $service['ti_fee_type'],
-                    'product_name' => $service['ti_fee_name'],
-                    'price' => $service['ti_amount'],
-                    'vat' => $service['ti_vat'],
-                    'quantity' => $service['ti_quantity'],
-                    'amount_gross' => ($service['ti_vat'] / 100 * $service['ti_amount']) + $service['ti_amount'],
+        return $this->transactionRepository
+            ->fetchDoneTransactionsByTransactionIds(array_keys($transactionItems))
+            ->map(function ($transaction) use ($transactionItems) {
+                return [
+                    't_id' => $transaction->t_id,
+                    'gateway' => $transaction->t_gateway,
+                    'agent_gateway' => $transaction->t_payment_method,
+                    'transaction_id' => $transaction->t_transaction_id,
+                    'gateway_transaction_id' => $transaction->t_gateway_transaction_id,
+                    'currency' => $transaction->t_currency,
+                    'status' => 'done',
+                    'service' => $transaction->t_service,
+                    'tech_creation' => $transaction->t_tech_creation,
+                    'tech_modification' => $transaction->t_tech_modification,
+                    'items' => $this->prepareTransactionItems($transactionItems[$transaction->t_transaction_id], $transaction),
                 ];
-            }
-            $transactionData[] = [
-                't_id' => $transaction->t_id,
-                'gateway' => $transaction->t_gateway,
-                'agent_gateway' => $transaction->t_payment_method,
-                'transaction_id' => $transactionId,
-                'gateway_transaction_id' => $transaction->t_gateway_transaction_id,
-                'currency' => $transaction->t_currency,
-                'status' => 'done',
-                'service' => $transaction->t_service,
-                'tech_creation' => $transaction->t_tech_creation,
-                'tech_modification' => $transaction->t_tech_modification,
-                'items' => $items,
+            })->toArray();
+    }
+
+    /*
+    * Prepares the transaction items for the response
+    * 
+    * @param array $services
+    * @param \App\Models\Transactions $transaction
+    *
+    * @return array
+    */
+    private function prepareTransactionItems(array $services, $transaction): array
+    {
+        $transactionItems = [];
+
+        foreach ($services as $service) {
+            $transactionItems['f_id'] = $service['ti_xref_f_id'];
+            $transactionItems['skus'][] = [
+                'ti_id' => $service['ti_id'],
+                'price_rule' => $service['ti_price_rule'],
+                'sku' => $service['ti_fee_type'],
+                'product_name' => $service['ti_fee_name'],
+                'price' => $service['ti_amount'],
+                'vat' => $service['ti_vat'],
+                'quantity' => $service['ti_quantity'],
+                'amount_gross' => ($service['ti_vat'] / 100 * $service['ti_amount']) + $service['ti_amount'],
             ];
         }
 
-        return $transactionData;
+        return $transactionItems;
     }
 }

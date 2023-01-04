@@ -48,6 +48,21 @@ class TransactionRepository
             ->get();
     }
 
+    /**
+     * Gets the done transactions based on an array of transaction ids
+     *
+     * @param array $transactionsIds
+     * @return Collection<Transactions>
+     */
+    public function fetchDoneTransactionsByTransactionIds(array $transactionsIds)
+    {
+        return $this->transactionModel
+            ->whereIn('t_transaction_id', $transactionsIds)
+            ->where('t_status', 'done')
+            ->orderBy('t_transaction_id')
+            ->get();
+    }
+
     public function fetchWithPage($where, $limit, $issuer = null)
     {
         return $this->transactionModel

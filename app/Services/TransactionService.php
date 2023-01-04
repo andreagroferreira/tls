@@ -755,7 +755,7 @@ class TransactionService
      *
      * @return bool
      */
-    private function areItemsChanged($items, $transItems): boolean
+    private function areItemsChanged($items, $transItems): bool
     {
         $isChanged = false;
         if (count($items) !== count($transItems)) {

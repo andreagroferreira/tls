@@ -304,7 +304,6 @@ class TransactionController extends BaseController
 
         try {
             $params = $validator->validated();
-
             if ($transaction = $this->transactionService->getOrCloseDuplicatedTransaction($params)) {
                 return $this->sendResponse($transaction);
             }

@@ -123,20 +123,20 @@ class RefundItemsService
                     'service' => $transaction->t_service,
                     'tech_creation' => $transaction->t_tech_creation,
                     'tech_modification' => $transaction->t_tech_modification,
-                    'items' => $this->prepareTransactionItems($transactionItems[$transaction->t_transaction_id], $transaction),
+                    'items' => $this->prepareTransactionItems($transactionItems[$transaction->t_transaction_id]),
                 ];
             })->toArray();
     }
 
     /*
-    * Prepares the transaction items for the response
+    * Prepares the transaction items for the response based on the services in the payload
     * 
     * @param array $services
     * @param \App\Models\Transactions $transaction
     *
     * @return array
     */
-    private function prepareTransactionItems(array $services, $transaction): array
+    private function prepareTransactionItems(array $services): array
     {
         $transactionItems = [];
 

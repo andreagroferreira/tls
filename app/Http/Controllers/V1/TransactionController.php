@@ -270,7 +270,7 @@ class TransactionController extends BaseController
             'payment_method' => 'nullable',
             'service' => 'nullable',
             'expiration' => 'nullable|integer|gt:0',
-            'agent_name'=>'nullable|string',
+            'agent_name' => 'nullable|string',
             'items' => [
                 'bail',
                 'required',

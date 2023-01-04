@@ -270,7 +270,7 @@ class TransactionController extends BaseController
             'payment_method' => 'nullable',
             'service' => 'nullable',
             'expiration' => 'nullable|integer|gt:0',
-            'agent_name'=>'nullable|string',
+            'agent_name' => 'nullable|string',
             'items' => [
                 'bail',
                 'required',
@@ -304,20 +304,23 @@ class TransactionController extends BaseController
 
         try {
             $params = $validator->validated();
-            $transaction = $this->transactionService->checkDuplicateCreation($params);
-            if (is_array($transaction)) {
+
+            if ($transaction = $this->transactionService->getOrCloseDuplicatedTransaction($params)) {
                 return $this->sendResponse($transaction);
             }
 
-            $res = $this->transactionService->create($params);
+            $newTransaction = $this->transactionService->create($params);
 
             $log_params = [];
             $log_params['queue_type'] = 'create_payment_order';
-            $log_params['t_id'] = $res['t_id'];
-            dispatch(new PaymentEauditorLogJob($log_params))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+            $log_params['t_id'] = $newTransaction['t_id'];
 
-            if ($res) {
-                return $this->sendResponse($res);
+            dispatch(new PaymentEauditorLogJob($log_params))
+                ->onConnection('payment_api_eauditor_log_queue')
+                ->onQueue('payment_api_eauditor_log_queue');
+
+            if ($newTransaction) {
+                return $this->sendResponse($newTransaction);
             }
 
             return $this->sendError('unknown_error', 'create failed');

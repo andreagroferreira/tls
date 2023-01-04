@@ -147,71 +147,61 @@ class TransactionService
         return $this->transactionRepository->fetch($where, $field);
     }
 
-    public function checkDuplicateCreation($attributes)
+    /**
+     * @param array $attributes
+     *
+     * @return null|array
+     */
+    public function getOrCloseDuplicatedTransaction($attributes): ?array
     {
         if (empty($attributes['service'])) {
             $attributes['service'] = 'tls';
         }
 
-        $transaction = $this->transactionRepository
-            ->fetch(
-                [
-                    't_xref_fg_id' => $attributes['fg_id'],
-                    't_status' => 'pending',
-                    't_service' => $attributes['service'],
-                    't_tech_deleted' => false,
-                ]
-            )
-            ->first();
-        if (blank($transaction)) {
-            return true;
+        $duplicatedTransaction = $this->transactionRepository
+            ->fetch([
+                't_xref_fg_id' => $attributes['fg_id'],
+                't_status' => 'pending',
+                't_service' => $attributes['service'],
+                't_tech_deleted' => false,
+            ])->first();
+
+        if (blank($duplicatedTransaction)) {
+            return null;
         }
 
         $now = Carbon::parse($this->dbConnectionService->getDbNowTime());
-        if (
-            (!is_null($transaction->t_expiration) && $now->gt($transaction->t_expiration))
-            || (!is_null($transaction->t_gateway_expiration) && $now->gt($transaction->t_gateway_expiration))
-        ) {
-            $this->transactionRepository->update(
-                ['t_id' => $transaction->t_id],
-                ['t_status' => 'close', 't_tech_modification' => $now]
-            );
 
-            return true;
+        if (!empty($attributes['agent_name']) && !empty($attributes['payment_method'])) {
+            if ($this->closeTransaction($duplicatedTransaction, $now)) {
+                return null;
+            }
         }
 
-        $is_change = false;
+        if ($this->canTransactionBeClosed($duplicatedTransaction, $now)) {
+            if ($this->closeTransaction($duplicatedTransaction, $now)) {
+                return null;
+            }
+        }
+
         $res = $this->convertItemsFieldToArray(
-            $transaction->t_transaction_id,
+            $duplicatedTransaction->t_transaction_id,
             $attributes['items'],
             ['ti_tech_deleted' => false]
         );
+
         $transItems = $this->transactionItemsService->fetch(
-            ['ti_xref_transaction_id' => $transaction->t_transaction_id, 'ti_tech_deleted' => false],
+            ['ti_xref_transaction_id' => $duplicatedTransaction->t_transaction_id, 'ti_tech_deleted' => false],
             ['ti_xref_f_id', 'ti_xref_transaction_id', 'ti_fee_type', 'ti_vat', 'ti_amount', 'ti_tech_deleted', 'ti_price_rule']
         )->toArray();
-        if (count($res) !== count($transItems)) {
-            $is_change = true;
-        } else {
-            foreach ($res as $key => $item) {
-                if ($this->transactionItemsService->fetch($item)->isEmpty()) {
-                    $is_change = true;
 
-                    break;
-                }
-                unset($res[$key]);
+        if ($this->areItemsChanged($res, $transItems) || filled($res)) {
+            if ($this->closeTransaction($duplicatedTransaction, $now)) {
+                return null;
             }
         }
-        if ($is_change || filled($res)) {
-            $this->transactionRepository->update(
-                ['t_id' => $transaction->t_id],
-                ['t_status' => 'close', 't_tech_modification' => $now]
-            );
 
-            return true;
-        }
-
-        return ['t_id' => $transaction->t_id, 'expire' => $transaction->t_expiration];
+        return ['t_id' => $duplicatedTransaction->t_id, 'expire' => $duplicatedTransaction->t_expiration];
     }
 
     public function create(array $attributes)
@@ -288,8 +278,10 @@ class TransactionService
             return false;
         }
 
-        return ['t_id' => $transaction->t_id,
-            'expire' => Carbon::parse($transaction->t_expiration)->toDateTimeString(), ];
+        return [
+            't_id' => $transaction->t_id,
+            'expire' => Carbon::parse($transaction->t_expiration)->toDateTimeString(),
+        ];
     }
 
     public function update($transaction_id, $attributes)
@@ -380,7 +372,7 @@ class TransactionService
 
         if (!empty($attributes['multi_search'])) {
             $issuer = array_get($attributes['multi_search'], 't_country').
-                      array_get($attributes['multi_search'], 't_city');
+                array_get($attributes['multi_search'], 't_city');
 
             unset($attributes['multi_search']['t_country'], $attributes['multi_search']['t_city']);
 
@@ -523,21 +515,21 @@ class TransactionService
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
-//            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
-//            if (!empty($workflowServiceSyncStatus['error_msg'])) {
-//                Log::error(
-//                    'Transaction ERROR: transaction sync to workflow service '.
-//                    $transaction['t_transaction_id'].' failed, because: '.
-//                    json_encode($workflowServiceSyncStatus, 256)
-//                );
-//            }
+            //            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
+            //            if (!empty($workflowServiceSyncStatus['error_msg'])) {
+            //                Log::error(
+            //                    'Transaction ERROR: transaction sync to workflow service '.
+            //                    $transaction['t_transaction_id'].' failed, because: '.
+            //                    json_encode($workflowServiceSyncStatus, 256)
+            //                );
+            //            }
 
             $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'PAID');
             if (!empty($ecommerceSyncStatus['error_msg'])) {
                 Log::error(
                     'Transaction ERROR: transaction sync to ecommerce '.
-                    $transaction['t_transaction_id'].' failed, because: '.
-                    json_encode($ecommerceSyncStatus, 256)
+                        $transaction['t_transaction_id'].' failed, because: '.
+                        json_encode($ecommerceSyncStatus, 256)
                 );
             }
         }
@@ -697,6 +689,24 @@ class TransactionService
         }
     }
 
+    /**
+     * Close the transaction if it is expired.
+     *
+     * This method marks a transaction 't_status' as closed and sets 't_tech_modification' to the current time.
+     *
+     * @param \App\Models\Transactions $transaction
+     * @param mixed                    $now
+     *
+     * @return bool
+     */
+    protected function closeTransaction($transaction, $now): bool
+    {
+        return (bool) $this->transactionRepository->update(
+            ['t_id' => $transaction->t_id],
+            ['t_status' => 'close', 't_tech_modification' => $now]
+        );
+    }
+
     protected function generateTransactionId($transaction_id_seq, $issuer)
     {
         $environment = env('APPLICATION_ENV') == 'prod' ? '' : strtoupper(env('APPLICATION_ENV')).date('Ymd').'-';
@@ -718,7 +728,7 @@ class TransactionService
                     'ti_amount' => $sku['price'],
                     'ti_price_rule' => $sku['price_rule'] ?? null,
                 ];
-                //agent receipt is used
+                // agent receipt is used
                 if (isset($sku['quantity'])) {
                     $res['ti_quantity'] = $sku['quantity'];
                 }
@@ -735,6 +745,49 @@ class TransactionService
         }
 
         return $response;
+    }
+
+    /**
+     * Check if the transaction items are changed.
+     *
+     * @param array $items
+     * @param array $transItems
+     *
+     * @return bool
+     */
+    private function areItemsChanged($items, $transItems): boolean
+    {
+        $isChanged = false;
+        if (count($items) !== count($transItems)) {
+            $isChanged = true;
+        } else {
+            foreach ($items as $key => $item) {
+                if ($this->transactionItemsService->fetch($item)->isEmpty()) {
+                    $isChanged = true;
+
+                    break;
+                }
+                unset($items[$key]);
+            }
+        }
+
+        return $isChanged;
+    }
+
+    /**
+     * Check if a transaction can be closed.
+     *
+     * @param \App\Models\Transactions $transaction
+     * @param mixed                    $now
+     *
+     * @return bool
+     */
+    private function canTransactionBeClosed($transaction, $now): bool
+    {
+        $isTransactionExpired = !is_null($transaction->t_expiration) && $now->gt($transaction->t_expiration);
+        $isGatewayExpired = !is_null($transaction->t_gateway_expiration) && $now->gt($transaction->t_gateway_expiration);
+
+        return $isTransactionExpired || $isGatewayExpired;
     }
 
     /**
@@ -836,8 +889,8 @@ class TransactionService
             'client' => $transaction['t_client'],
             'location' => substr($transaction['t_issuer'], 0, 5),
             'fg_id' => $transaction['t_xref_fg_id'],
-            //'date' => '2022-11-20', //TODO
-            //'time' => '08:00', //TODO
+            // 'date' => '2022-11-20', //TODO
+            // 'time' => '08:00', //TODO
             'order_id' => $transaction['t_transaction_id'],
             'payment_type' => $transaction['t_service'],
             'order_details' => $orderDetails,

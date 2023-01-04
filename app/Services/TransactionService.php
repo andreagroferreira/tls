@@ -165,13 +165,11 @@ class TransactionService
                 't_service' => $attributes['service'],
                 't_tech_deleted' => false,
             ])->first();
-
         if (blank($duplicatedTransaction)) {
             return null;
         }
 
         $now = Carbon::parse($this->dbConnectionService->getDbNowTime());
-
         if (!empty($attributes['agent_name']) && !empty($attributes['payment_method'])) {
             if ($this->closeTransaction($duplicatedTransaction, $now)) {
                 return null;
@@ -755,7 +753,7 @@ class TransactionService
      *
      * @return bool
      */
-    private function areItemsChanged($items, $transItems): bool
+    private function areItemsChanged(&$items, $transItems): bool
     {
         $isChanged = false;
         if (count($items) !== count($transItems)) {

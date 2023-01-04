@@ -147,6 +147,11 @@ class TransactionService
         return $this->transactionRepository->fetch($where, $field);
     }
 
+    /**
+     *
+     * @param array $attributes
+     * @return array|null
+     */
     public function getOrCloseDuplicatedTransaction($attributes): ?array
     {
         if (empty($attributes['service'])) {

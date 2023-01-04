@@ -128,7 +128,7 @@ class RefundItemsService
             })->toArray();
     }
 
-    /*
+    /**
     * Prepares the transaction items for the response based on the services in the payload
     * 
     * @param array $services

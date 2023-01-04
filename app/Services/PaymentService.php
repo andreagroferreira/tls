@@ -90,10 +90,10 @@ class PaymentService
                         $error_msg[] = $actionResult['error_msg'];
                     }
                 } else {
-//                    $workflowServiceSyncStatus = $this->transactionService->syncTransactionToWorkflow($transaction);
-//                    if (!empty($workflowServiceSyncStatus['error_msg'])) {
-//                        $error_msg[] = $workflowServiceSyncStatus['error_msg'];
-//                    }
+                    $workflowServiceSyncStatus = $this->transactionService->syncTransactionToWorkflow($transaction);
+                    if (!empty($workflowServiceSyncStatus['error_msg'])) {
+                        $error_msg[] = $workflowServiceSyncStatus['error_msg'];
+                    }
 
                     $ecommerceSyncStatus = $this->transactionService->syncTransactionToEcommerce($transaction, 'PAID');
                     if (!empty($ecommerceSyncStatus['error_msg'])) {

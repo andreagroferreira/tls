@@ -271,6 +271,8 @@ class TransactionController extends BaseController
             'service' => 'nullable',
             'expiration' => 'nullable|integer|gt:0',
             'agent_name'=>'nullable|string',
+            'appointment_date'=>'nullable|date_format:Y-m-d',
+            'appointment_time'=>'nullable|date_format:H:i',
             'items' => [
                 'bail',
                 'required',

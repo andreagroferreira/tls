@@ -114,10 +114,6 @@ class QueueService
             Log::error('QueueService sync to workflow failed');
             throw new \Exception("sync to workflow failed");
         }
-
-        foreach ($data['t_items'] as $item) {
-            $this->actionRepository->clearActionCache($item['f_id']);
-        }
         Log::info('QueueService sync to workflow success');
     }
 }

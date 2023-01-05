@@ -247,11 +247,8 @@ class TransactionService
             $transaction_data['t_agent_name'] = $attributes['agent_name'];
         }
 
-        if (!empty($attributes['appointment_date'])) {
+        if (!empty($attributes['appointment_date']) && !empty($attributes['appointment_time'])) {
             $transaction_data['t_appointment_date'] = $attributes['appointment_date'];
-        }
-
-        if (!empty($attributes['appointment_time'])) {
             $transaction_data['t_appointment_time'] = $attributes['appointment_time'];
         }
 

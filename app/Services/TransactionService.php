@@ -637,22 +637,23 @@ class TransactionService
     {
         $client = $transaction['t_client'];
         $location = substr($transaction['t_issuer'], 0, 5);
+        $fg_id = $transaction['t_xref_fg_id'];
         $data = $this->createWorkflowPayload($transaction);
 
-        Log::info('TransactionService syncTransactionToWorkflow start');
+        Log::info('TransactionService syncTransactionToWorkflow start: '.$fg_id);
 
         try {
             dispatch(new TransactionSyncToWorkflowJob($client, $location, $data))
                 ->onConnection('workflow_transaction_sync_queue')
                 ->onQueue('workflow_transaction_sync_queue');
 
-            Log::info('TransactionService syncTransactionToWorkflow:dispatch');
+            Log::info('TransactionService syncTransactionToWorkflow dispatch: '.$fg_id);
 
             return [
                 'error_msg' => [],
             ];
         } catch (\Exception $e) {
-            Log::info('TransactionService syncTransactionToWorkflow dispatch error_msg:'.$e->getMessage());
+            Log::info('TransactionService syncTransactionToWorkflow dispatch: '.$fg_id.' - error_msg:'.$e->getMessage());
 
             return [
                 'status' => 'error',

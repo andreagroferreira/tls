@@ -159,7 +159,7 @@ class TokenResolveService
     }
 
     /**
-     * @param array $transactionItems
+     * @param array  $transactionItems
      * @param string $transactionCurrency
      *
      * @return array
@@ -354,8 +354,12 @@ class TokenResolveService
         $hasCity = $numberOfCollections > 2;
 
         $collectionIndex = null;
+        $collectionGlobalIndex = null;
         foreach ($collections as $i => $collection) {
             $code = $collection['code'];
+            if ('ww' == $code) {
+                $collectionGlobalIndex = $i;
+            }
             if ($code == $this->city) {
                 $collectionIndex = $i;
 
@@ -370,7 +374,6 @@ class TokenResolveService
                 $collectionIndex = $i;
             }
         }
-
         if (null === $collectionIndex) {
             throw new \Exception('Correct collection index not found');
         }
@@ -378,7 +381,17 @@ class TokenResolveService
         $translation = $this->getActiveTranslation($collections[$collectionIndex]['translation']);
 
         if (empty($translation)) {
-            throw new \Exception('No active translation found');
+            if (null === $collectionGlobalIndex) {
+                throw new \Exception('Correct collection index not found');
+            }
+
+            $translationGlobal = $this->getActiveTranslation($collections[$collectionGlobalIndex]['translation']);
+
+            if (empty($translationGlobal)) {
+                throw new \Exception('No active translation found');
+            }
+
+            return $translationGlobal;
         }
 
         return $translation;
@@ -441,7 +454,6 @@ class TokenResolveService
             $filters,
             $options
         );
-
         if (empty($tokenCollections)) {
             throw new \Exception('No collections returned for token: '.$collection.'.'.$field);
         }

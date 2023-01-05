@@ -89,6 +89,8 @@ class TransactionService
                         'quantity' => $service['ti_quantity'],
                         'price_rule' => $service['ti_price_rule'],
                         'product_name' => $service['ti_fee_name'],
+                        'label' => $service['ti_label'],
+                        'tag' => $service['ti_tag'],
                     ];
                 }
                 $receipts[] = [
@@ -243,6 +245,11 @@ class TransactionService
 
         if (!empty($attributes['agent_name'])) {
             $transaction_data['t_agent_name'] = $attributes['agent_name'];
+        }
+
+        if (!empty($attributes['appointment_date']) && !empty($attributes['appointment_time'])) {
+            $transaction_data['t_appointment_date'] = $attributes['appointment_date'];
+            $transaction_data['t_appointment_time'] = $attributes['appointment_time'];
         }
 
         $transaction_data['t_transaction_id'] = $this->generateTransactionId(
@@ -513,14 +520,14 @@ class TransactionService
         }
 
         if ($transaction && !empty($transaction['t_items']) && !empty($transaction['t_xref_fg_id'])) {
-            //            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
-            //            if (!empty($workflowServiceSyncStatus['error_msg'])) {
-            //                Log::error(
-            //                    'Transaction ERROR: transaction sync to workflow service '.
-            //                    $transaction['t_transaction_id'].' failed, because: '.
-            //                    json_encode($workflowServiceSyncStatus, 256)
-            //                );
-            //            }
+            $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
+            if (!empty($workflowServiceSyncStatus['error_msg'])) {
+                Log::error(
+                    'Transaction ERROR: transaction sync to workflow service '.
+                    $transaction['t_transaction_id'].' failed, because: '.
+                    json_encode($workflowServiceSyncStatus, 256)
+                );
+            }
 
             $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'PAID');
             if (!empty($ecommerceSyncStatus['error_msg'])) {
@@ -738,6 +745,14 @@ class TransactionService
                     $res['ti_fee_name'] = trim($sku['product_name']);
                 }
 
+                if (!empty($sku['label'])) {
+                    $res['ti_label'] = trim($sku['label']);
+                }
+
+                if (!empty($sku['tag'])) {
+                    $res['ti_tag'] = implode(",", $sku['tag']);
+                }
+
                 $response[] = $res;
             }
         }
@@ -877,8 +892,8 @@ class TransactionService
                     'quantity' => $sku['quantity'],
                     'price' => $sku['price'],
                     'currency' => $transaction['t_currency'],
-                    // 'label' => $sku['label'], //TODO
-                    // 'stamp' => $sku['stamp'], //TODO
+                    'label' => $sku['label'],
+                    'stamp' => $sku['tag'],
                 ];
             }
         }
@@ -887,8 +902,8 @@ class TransactionService
             'client' => $transaction['t_client'],
             'location' => substr($transaction['t_issuer'], 0, 5),
             'fg_id' => $transaction['t_xref_fg_id'],
-            // 'date' => '2022-11-20', //TODO
-            // 'time' => '08:00', //TODO
+            'date' => $transaction['t_appointment_date'],
+            'time' => $transaction['t_appointment_time'],
             'order_id' => $transaction['t_transaction_id'],
             'payment_type' => $transaction['t_service'],
             'order_details' => $orderDetails,

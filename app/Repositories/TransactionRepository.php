@@ -206,6 +206,8 @@ class TransactionRepository
                 't_invoice_storage',
                 't_workflow',
                 't_status',
+                't_appointment_date',
+                't_appointment_time',
                 'ri_tech_modification AS modification_date',
                 'ti_id',
                 'ti_fee_type',
@@ -213,6 +215,8 @@ class TransactionRepository
                 'ti_vat',
                 'ti_price_rule',
                 'ti_fee_name',
+                'ti_label',
+                'ti_tag',
                 'rl_agent AS agent',
             ])
             ->selectRaw('ri_quantity*-1 AS quantity')
@@ -239,6 +243,8 @@ class TransactionRepository
                 't_invoice_storage',
                 't_workflow',
                 't_status',
+                't_appointment_date',
+                't_appointment_time',
                 't_tech_modification AS modification_date',
                 'ti_id',
                 'ti_fee_type',
@@ -246,6 +252,8 @@ class TransactionRepository
                 'ti_vat',
                 'ti_price_rule',
                 'ti_fee_name',
+                'ti_label',
+                'ti_tag',
                 't_agent_name as agent'
             ])
             ->selectRaw('ti_quantity AS quantity')

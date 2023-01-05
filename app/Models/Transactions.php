@@ -35,5 +35,7 @@ class Transactions extends Model
         't_service',
         't_invoice_storage',
         't_agent_name',
+        't_appointment_date',
+        't_appointment_time',
     ];
 }

@@ -262,8 +262,10 @@ class RefundService
 
         $transactionItems = $this->transactionItemsService
             ->fetch(['ti_xref_transaction_id' => $transactionId])
+            ->whereIn('ti_id', array_keys($refundItems))
             ->groupBy('ti_xref_f_id')
             ->toArray();
+
         foreach ($transactionItems as $formId => $services) {
             $items['f_id'] = $formId;
             $items['skus'] = [];

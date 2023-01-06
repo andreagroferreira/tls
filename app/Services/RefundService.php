@@ -262,7 +262,7 @@ class RefundService
 
         $transactionItems = $this->transactionItemsService
             ->fetch(['ti_xref_transaction_id' => $transactionId])
-            ->whereIn('ti_id', array_keys($refundItems)) # only transaction items that are marked for refund
+            ->whereIn('ti_id', array_keys($refundItems))
             ->groupBy('ti_xref_f_id')
             ->toArray();
 

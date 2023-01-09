@@ -750,8 +750,8 @@ class TransactionService
                     $res['ti_label'] = trim($sku['label']);
                 }
 
-                if (!empty($sku['tag'])) {
-                    $res['ti_tag'] = implode(",", $sku['tag']);
+                if (!empty($sku['tags'])) {
+                    $res['ti_tag'] = implode(",", $sku['tags']);
                 }
 
                 $response[] = $res;
@@ -904,7 +904,7 @@ class TransactionService
             'location' => substr($transaction['t_issuer'], 0, 5),
             'fg_id' => $transaction['t_xref_fg_id'],
             'date' => $transaction['t_appointment_date'],
-            'time' => $transaction['t_appointment_time'],
+            'time' => substr($transaction['t_appointment_time'], 0, 5),
             'order_id' => $transaction['t_transaction_id'],
             'payment_type' => $transaction['t_service'],
             'order_details' => $orderDetails,

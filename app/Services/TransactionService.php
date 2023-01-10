@@ -752,6 +752,8 @@ class TransactionService
 
                 if (!empty($sku['tags'])) {
                     $res['ti_tag'] = implode(",", $sku['tags']);
+                } else {
+                    $res['ti_tag'] = null;
                 }
 
                 $response[] = $res;

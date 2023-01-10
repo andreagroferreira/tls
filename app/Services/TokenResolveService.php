@@ -289,7 +289,7 @@ class TokenResolveService
     private function pregMatchTemplate(array $content): array
     {
         $pattern = '~({{\\w+:\\w+:\\w+}}|{{\\w+:\\w+}})~';
-
+        $tokens = [];
         preg_match_all($pattern, $content['email_content'], $email_tokens);
         preg_match_all($pattern, $content['invoice_content'], $invoice_tokens);
         if (count($email_tokens)) {
@@ -299,7 +299,7 @@ class TokenResolveService
             $tokens[] = array_unique($invoice_tokens, SORT_REGULAR)[0];
         }
         // will hold all tokens from email and invoice content
-        return array_unique($tokens, SORT_REGULAR)[0];
+        return array_unique(array_merge($tokens[0], $tokens[1]), SORT_REGULAR);
     }
 
     /**
@@ -374,11 +374,9 @@ class TokenResolveService
                 $collectionIndex = $i;
             }
         }
-        if (null === $collectionIndex) {
-            throw new \Exception('Correct collection index not found');
+        if (null != $collectionIndex) {
+            $translation = $this->getActiveTranslation($collections[$collectionIndex]['translation']);
         }
-
-        $translation = $this->getActiveTranslation($collections[$collectionIndex]['translation']);
 
         if (empty($translation)) {
             if (null === $collectionGlobalIndex) {

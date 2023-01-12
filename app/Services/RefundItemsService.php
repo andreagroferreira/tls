@@ -115,6 +115,7 @@ class RefundItemsService
             ->map(function ($transaction) use ($transactionItems) {
                 return [
                     't_id' => $transaction->t_id,
+                    'fg_id' => $transaction->t_xref_fg_id,
                     'gateway' => $transaction->t_gateway,
                     'agent_gateway' => $transaction->t_payment_method,
                     'transaction_id' => $transaction->t_transaction_id,

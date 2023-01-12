@@ -48,17 +48,18 @@ class RefundItemsService
      */
     public function getRefundTransactionItems(array $attributes): array
     {
-        $transactionItems = $this->transactionItemsService->fetch($attributes)
-            ->groupBy('ti_xref_transaction_id')->toArray();
+        $transactionItems = $this->transactionItemsService
+            ->fetch($attributes)
+            ->groupBy('ti_xref_transaction_id')
+            ->toArray();
 
         if (empty($transactionItems)) {
             return [];
         }
-        $where = collect([
-            ['transaction_items.ti_xref_f_id', '=', $attributes['ti_xref_f_id']],
-        ]);
 
-        $refundItems = $this->refundItemRepository->fetchRefundItems($where->toArray())->toArray();
+        $refundItems = $this->refundItemRepository->fetchRefundItems([
+            ['transaction_items.ti_xref_f_id', '=', $attributes['ti_xref_f_id']]
+        ])->toArray();
         $transactions = $this->getTransactionItems($transactionItems);
 
         if (empty($transactions)) {

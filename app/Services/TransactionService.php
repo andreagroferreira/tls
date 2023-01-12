@@ -838,10 +838,10 @@ class TransactionService
 
                 $summary[] = [
                     'currency' => $currency,
-                    'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
-                    'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
-                    'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
-                    'amount-total' => $totalAmount[$currency] ?? 0,
+                    'cash-amount-total' => number_format((float) $totalByPaymentMethod[$currency]['cash'] ?? 0, 2),
+                    'card-amount-total' => number_format((float) $totalByPaymentMethod[$currency]['card'] ?? 0, 2),
+                    'online-amount-total' => number_format((float) $totalByPaymentMethod[$currency]['online'] ?? 0, 2),
+                    'amount-total' => number_format((float) $totalAmount[$currency] ?? 0, 2),
                     'skus' => $skuSummary,
                 ];
             }
@@ -864,13 +864,13 @@ class TransactionService
             foreach ($skuDetails as $paymentMethod => $amount) {
                 $summary[] = [
                     'payment-type' => $paymentMethod,
-                    'amount' => $amount,
+                    'amount' => number_format((float) $amount, 2),
                 ];
                 $totalAmount += $amount;
             }
             $skus[] = [
                 'sku' => $sku,
-                'amount-total' => $totalAmount,
+                'amount-total' => number_format((float) $totalAmount, 2),
                 'summary' => $summary,
             ];
         }

@@ -58,7 +58,7 @@ class RefundItemsService
         }
 
         $refundItems = $this->refundItemRepository->fetchRefundItems([
-            ['transaction_items.ti_xref_f_id', '=', $attributes['ti_xref_f_id']]
+            ['transaction_items.ti_xref_f_id', '=', $attributes['ti_xref_f_id']],
         ])->toArray();
         $transactions = $this->getTransactionItems($transactionItems);
 
@@ -102,7 +102,7 @@ class RefundItemsService
 
         return array_values($refundRequestArray);
     }
-    
+
     /**
      * @param array $transactionItems
      *
@@ -131,17 +131,16 @@ class RefundItemsService
     }
 
     /**
-    * Prepares the transaction items for the response based on the services in the payload
-    * 
-    * @param array $services
-    * @param \App\Models\Transactions $transaction
-    *
-    * @return array
-    */
+     * Prepares the transaction items for the response based on the services in the payload.
+     *
+     * @param array                    $services
+     * @param \App\Models\Transactions $transaction
+     *
+     * @return array
+     */
     private function prepareTransactionItems(array $services): array
     {
         $transactionItems = [];
-
         foreach ($services as $service) {
             $transactionItems['f_id'] = $service['ti_xref_f_id'];
             $transactionItems['skus'][] = [

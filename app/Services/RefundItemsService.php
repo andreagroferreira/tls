@@ -85,7 +85,7 @@ class RefundItemsService
                 'ri_xref_ti_id' => $rItem['ri_xref_ti_id'],
                 'ri_id' => $rItem['ri_id'],
                 'ri_quantity' => $rItem['ri_quantity'],
-                'ri_amount' => (float) $rItem['ri_amount'],
+                'ri_amount' => number_format((float) $rItem['ri_amount'], 2),
                 'ri_reason_type' => $rItem['ri_reason_type'],
                 'ri_status' => $rItem['ri_status'],
                 'ri_invoice_path' => $rItem['ri_invoice_path'],
@@ -151,8 +151,8 @@ class RefundItemsService
                 'price' => number_format((float) $service['ti_amount'], 2),
                 'vat' => $service['ti_vat'],
                 'quantity' => $service['ti_quantity'],
-                'price_with_tax' => number_format(
-                    (float) (($service['ti_vat'] / 100 * $service['ti_amount']) + $service['ti_amount']),
+                'price_without_tax' => number_format(
+                    (float) $service['ti_amount'] - ($service['ti_vat'] / 100 * $service['ti_amount']),
                     2
                 ),
             ];

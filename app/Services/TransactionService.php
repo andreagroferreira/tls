@@ -676,17 +676,23 @@ class TransactionService
         Log::info('TransactionService syncTransactionToEcommerce start: '.$fg_id);
 
         try {
-            dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
-                ->onConnection('ecommerce_transaction_sync_queue')
-                ->onQueue('ecommerce_transaction_sync_queue');
-
-            Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id);
+            /** @var QueueService $queueService */
+            $queueService = app()->make('App\Services\QueueService');
+            $queueService->syncTransactionToEcommerce($fg_id, $data);
 
             return [
                 'error_msg' => [],
             ];
         } catch (\Exception $e) {
-            Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id.' - error_msg:'.$e->getMessage());
+            Log::info('TransactionService syncTransactionToEcommerce sync: '.$fg_id.' - error_code:'.$e->getCode().' - error_msg:'.$e->getMessage());
+
+            if (in_array((int) $e->getCode(), [404, 408])) {
+                dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
+                    ->onConnection('ecommerce_transaction_sync_queue')
+                    ->onQueue('ecommerce_transaction_sync_queue');
+
+                Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id);
+            }
 
             return [
                 'status' => 'error',

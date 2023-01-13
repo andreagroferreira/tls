@@ -175,11 +175,12 @@ class TokenResolveService
         foreach ($transactionItems as $item) {
             foreach ($item['skus'] as $service) {
                 $sku = $service['sku'];
+                $productName = $service['product_name'];
                 $quantity = $service['quantity'];
                 $price = $service['price'];
                 $vat = ($service['vat'] / 100 * $price);
 
-                $basketValues['services'][$sku]['sku'] = $sku;
+                $basketValues['services'][$sku]['sku'] = $productName;
                 $basketValues['services'][$sku]['currency'] = $transactionCurrency;
 
                 if (!array_key_exists('quantity', $basketValues['services'][$sku])) {

@@ -183,6 +183,9 @@ class InvoiceService
             'code' => [
                 'in' => [$city, $country, 'ww'],
             ],
+            'type' => [
+                'eq' => $service,
+            ],
         ];
         $select_fields = '*.*';
 
@@ -190,7 +193,8 @@ class InvoiceService
             $collection_name,
             $select_fields,
             $select_filters,
-            ['lang' => $lang, 'type' => $service]
+            ['lang' => $lang]
         );
     }
+
 }

@@ -148,10 +148,10 @@ class RefundItemsService
                 'price_rule' => $service['ti_price_rule'],
                 'sku' => $service['ti_fee_type'],
                 'product_name' => $service['ti_fee_name'],
-                'price_with_tax' => number_format((float) $service['ti_amount'], 2),
+                'price' => number_format((float) $service['ti_amount'], 2),
                 'vat' => $service['ti_vat'],
                 'quantity' => $service['ti_quantity'],
-                'price_without_tax' => number_format(
+                'price_with_tax' => number_format(
                     (float) (($service['ti_vat'] / 100 * $service['ti_amount']) + $service['ti_amount']),
                     2
                 ),

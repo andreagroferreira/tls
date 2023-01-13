@@ -151,8 +151,8 @@ class RefundItemsService
                 'price' => number_format((float) $service['ti_amount'], 2),
                 'vat' => $service['ti_vat'],
                 'quantity' => $service['ti_quantity'],
-                'price_with_tax' => number_format(
-                    (float) (($service['ti_vat'] / 100 * $service['ti_amount']) + $service['ti_amount']),
+                'price_without_tax' => number_format(
+                    (float) $service['ti_amount'] - ($service['ti_vat'] / 100 * $service['ti_amount']),
                     2
                 ),
             ];

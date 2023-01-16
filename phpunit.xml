@@ -18,7 +18,8 @@
         <env name="APP_ENV" value="testing"/>
         <env name="UNIT_TEST" value="testing"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="POSTGRES_PAYMENT_DB_DATABASE" value="postgres"/>
+        <env name="UNIT_TEST_PAYMENT_DB_DATABASE" value="postgres"/>
         <env name="UNIT_TEST_POSTGRES_DB_USERNAME" value="postgres"/>
         <env name="DB_CONNECTION" value="pgsql"/>
         <env name="PAYU_NGALL2BE_SANDBOX_APP_ID" value="com.tlscontact.payu-nigeria"/>

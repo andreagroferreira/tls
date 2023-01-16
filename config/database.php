@@ -110,6 +110,9 @@ return [
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
+            'options'   => array(
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+            ),
         ],
 
         'unit_test_payment_pgsql' => [
@@ -124,6 +127,9 @@ return [
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
+            'options'   => array(
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+            ),
         ],
 
         'sqlsrv' => [

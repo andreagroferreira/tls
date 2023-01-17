@@ -133,8 +133,7 @@ class RefundItemsService
     /**
      * Prepares the transaction items for the response based on the services in the payload.
      *
-     * @param array                    $services
-     * @param \App\Models\Transactions $transaction
+     * @param array $services
      *
      * @return array
      */

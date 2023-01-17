@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Repositories\refundItemRepository;
+use App\Repositories\RefundItemRepository;
 use App\Repositories\TransactionRepository;
 
 class RefundItemsService
 {
     /**
-     * @var refundItemRepository
+     * @var RefundItemRepository
      */
     protected $refundItemRepository;
 

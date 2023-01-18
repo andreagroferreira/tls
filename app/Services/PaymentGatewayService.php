@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PaymentAccounts;
 use App\Repositories\PaymentAccountsRepositories;
 use App\Repositories\PaymentConfigurationsRepositories;
 use App\Repositories\PaymentServiceProvidersRepositories;
@@ -32,9 +33,26 @@ class PaymentGatewayService
         $this->paymentServiceProvidersRepositories->setConnection($dbConnectionService->getConnection());
     }
 
-    public function getPaymentAccountConfig($gateway, $pa_id): array
-    {
-        $paymentAccounts = $this->paymentAccountsRepositories->fetchById($pa_id)->toArray();
+    /**
+     * @param string $gateway
+     * @param string $issuer
+     * @param string $service
+     * @param int $pa_id
+     *
+     * @return array
+     */
+    public function getPaymentAccountConfig(
+        string $gateway,
+        string $issuer,
+        int $pa_id,
+        string $service
+    ): array {
+        $paymentAccounts = $this->paymentAccountsRepositories->fetchById($pa_id);
+        if (empty($paymentAccounts)) {
+            $paymentAccounts = $this->findGatewayConfig($gateway, $issuer, $service);
+        }
+
+        $paymentAccounts = $paymentAccounts->toArray();
         if (empty($paymentAccounts['pa_info'])) {
             return [];
         }
@@ -48,6 +66,53 @@ class PaymentGatewayService
         $result['common']   = config("payment_gateway_accounts.$gateway.common");
         $result['config']   = $paymentAccounts;
         return $result;
+    }
+
+    /**
+     * @param string $gateway
+     * @param string $issuer
+     * @param string $service
+     *
+     * @return PaymentAccounts
+     */
+    public function findGatewayConfig(
+        string $gateway,
+        string $issuer,
+        string $service
+    ): PaymentAccounts {
+        $client = substr($issuer, -2);
+        $country = substr($issuer, 0, 2);
+        $city = substr($issuer, 2, 3);
+
+        $gatewayConfig = $this->paymentAccountsRepositories->findByPspCodeLocationAndService(
+            $gateway,
+            $client,
+            $country,
+            $city,
+            $service
+        );
+
+        if ($gatewayConfig === null) {
+            $gatewayConfig = $this->paymentAccountsRepositories->findByPspCodeLocationAndService(
+                $gateway,
+                $client,
+                $country,
+                'All',
+                $service
+            );
+        }
+
+        if ($gatewayConfig === null) {
+            $gatewayConfig = $this->paymentAccountsRepositories->findByPspCodeLocationAndService(
+                $gateway,
+                $client,
+                'all',
+                'All',
+                $service
+            );
+        }
+
+        return $gatewayConfig;
     }
 
     public function getConfig($client, $issuer, $service)

@@ -83,4 +83,35 @@ class PaymentAccountsRepositories
             ->where('pa_xref_psp_id', $psp_id)
             ->get();
     }
+
+    /**
+     * @param string $gateway
+     * @param string $client
+     * @param string $country
+     * @param string $city
+     * @param string $service
+     *
+     * @return PaymentAccounts|null
+     */
+    public function findByPspCodeLocationAndService(
+        string $gateway,
+        string $client,
+        string $country,
+        string $city,
+        string $service
+    ): ?PaymentAccounts {
+        $env = env('APP_ENV') === 'production' ? 'production' : 'sandbox';
+        return $this->paymentAccounts
+            ->select('payment_accounts.*')
+            ->join('payment_configurations', 'payment_configurations.pc_xref_pa_id', '=', 'payment_accounts.pa_id')
+            ->join('payment_service_providers', 'payment_service_providers.psp_id', '=', 'payment_accounts.pa_xref_psp_id')
+            ->where('psp_code', $gateway)
+            ->where('pa_type', $env)
+            ->where('pc_city', $city)
+            ->where('pc_country', $country)
+            ->where('pc_project', $client)
+            ->where('pc_service', $service)
+            ->where('pc_is_active', true)
+            ->first();
+    }
 }

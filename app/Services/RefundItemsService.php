@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Repositories\refundItemRepository;
+use App\Repositories\RefundItemRepository;
 use App\Repositories\TransactionRepository;
 
 class RefundItemsService
 {
     /**
-     * @var refundItemRepository
+     * @var RefundItemRepository
      */
     protected $refundItemRepository;
 
@@ -85,7 +85,7 @@ class RefundItemsService
                 'ri_xref_ti_id' => $rItem['ri_xref_ti_id'],
                 'ri_id' => $rItem['ri_id'],
                 'ri_quantity' => $rItem['ri_quantity'],
-                'ri_amount' => number_format((float) $rItem['ri_amount'], 2),
+                'ri_amount' => (float) number_format((float) $rItem['ri_amount'], 2, '.', ''),
                 'ri_reason_type' => $rItem['ri_reason_type'],
                 'ri_status' => $rItem['ri_status'],
                 'ri_invoice_path' => $rItem['ri_invoice_path'],
@@ -133,8 +133,7 @@ class RefundItemsService
     /**
      * Prepares the transaction items for the response based on the services in the payload.
      *
-     * @param array                    $services
-     * @param \App\Models\Transactions $transaction
+     * @param array $services
      *
      * @return array
      */
@@ -148,12 +147,14 @@ class RefundItemsService
                 'price_rule' => $service['ti_price_rule'],
                 'sku' => $service['ti_fee_type'],
                 'product_name' => $service['ti_fee_name'],
-                'price' => number_format((float) $service['ti_amount'], 2),
+                'price' => (float) number_format((float) $service['ti_amount'], 2, '.', ''),
                 'vat' => $service['ti_vat'],
                 'quantity' => $service['ti_quantity'],
-                'price_without_tax' => number_format(
+                'price_without_tax' => (float) number_format(
                     (float) $service['ti_amount'] - ($service['ti_vat'] / 100 * $service['ti_amount']),
-                    2
+                    2,
+                    '.',
+                    ''
                 ),
             ];
         }

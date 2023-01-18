@@ -27,19 +27,38 @@ class GatewayService
         }
     }
 
-    public function getGateway($client, $issuer, $gateway, $pa_id = null)
-    {
+    /**
+     * @param string $client
+     * @param string $issuer
+     * @param string $gateway
+     * @param int|null $pa_id
+     * @param string $service
+     *
+     * @return array
+     */
+    public function getGateway(
+        string $client,
+        string $issuer,
+        string $gateway,
+        ?int $pa_id = null,
+        string $service = 'tls'
+    ): array {
         $getClientUseFile = $this->getClientUseFile();
         if ($getClientUseFile) {
             return $this->getConfig($client, $issuer)[$gateway] ?? [];
-        } else {
-            $config = $this->paymentGatewayService->getPaymentAccountConfig($gateway, $pa_id);
-            $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $config['pa_type']), $config['config']);
-            foreach ($diff as $key => $value) {
-                $config['config'][$key] = $value;
-            }
-            return $config;
         }
+
+        $config = $this->paymentGatewayService->getPaymentAccountConfig(
+            $gateway,
+            $issuer,
+            $pa_id,
+            $service
+        );
+        $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $config['pa_type']), $config['config']);
+        foreach ($diff as $key => $value) {
+            $config['config'][$key] = $value;
+        }
+        return $config;
     }
 
     public function getClientUseFile(): bool

@@ -425,6 +425,8 @@ class TransactionService
             $transactions['data'][$k]['country'] = getCountryName($details['country_code']);
             $transactions['data'][$k]['city'] = getCityName($details['city_code']);
             $transactions['data'][$k]['receipt_url'] = getFilePath($details, $details['t_invoice_storage']);
+            $transactions['data'][$k]['amount'] = number_format((float) $details['amount'], 2);
+            $transactions['data'][$k]['amount_without_tax'] = number_format((float) $details['amount_without_tax'], 2);
         }
 
         return [
@@ -844,10 +846,10 @@ class TransactionService
 
                 $summary[] = [
                     'currency' => $currency,
-                    'cash-amount-total' => number_format((float) $totalByPaymentMethod[$currency]['cash'] ?? 0, 2),
-                    'card-amount-total' => number_format((float) $totalByPaymentMethod[$currency]['card'] ?? 0, 2),
-                    'online-amount-total' => number_format((float) $totalByPaymentMethod[$currency]['online'] ?? 0, 2),
-                    'amount-total' => number_format((float) $totalAmount[$currency] ?? 0, 2),
+                    'cash-amount-total' => number_format((float) ($totalByPaymentMethod[$currency]['cash'] ?? 0), 2),
+                    'card-amount-total' => number_format((float) ($totalByPaymentMethod[$currency]['card'] ?? 0), 2),
+                    'online-amount-total' => number_format((float) ($totalByPaymentMethod[$currency]['online'] ?? 0), 2),
+                    'amount-total' => number_format((float) ($totalAmount[$currency] ?? 0), 2),
                     'skus' => $skuSummary,
                 ];
             }

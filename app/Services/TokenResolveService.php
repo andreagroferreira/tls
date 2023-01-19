@@ -478,7 +478,7 @@ class TokenResolveService
     {
         $translations = [];
         $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/'.$this->client.'/forms_in_group/'.$fg_id);
-        if (200 != $applicationsResponse['status']) {
+        if ($applicationsResponse['status'] != 200 || empty($applicationsResponse['body'])) {
             throw new \Exception('No applicant details returned for token: '.$tokenDetails[1]);
         }
         foreach ($applicationsResponse['body'] as $applicant) {

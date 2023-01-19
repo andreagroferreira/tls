@@ -1,14 +1,18 @@
 <?php
+
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-  
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+
 class InvoiceMailJob implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * @var array
@@ -21,7 +25,7 @@ class InvoiceMailJob implements ShouldQueue
     protected $collection;
 
     /**
-     * @param array $transaction
+     * @param array  $transaction
      * @param string $collection
      */
     public function __construct(array $transaction, string $collection)
@@ -36,6 +40,24 @@ class InvoiceMailJob implements ShouldQueue
     public function handle()
     {
         $paymentService = app()->make('App\Services\PaymentService');
-        $paymentService->sendInvoice($this->transaction, $this->collection);
+        Log::info('InvoiceQueue - Generating invoice for transaction: '.json_encode($this->transaction['t_id']));
+
+        try {
+            $paymentService->sendInvoice($this->transaction, $this->collection);
+            Log::info('InvoiceQueue - Generation finished successfully for transaction: '.json_encode($this->transaction['t_id']));
+        } catch (\Exception $exception) {
+            Log::error('InvoiceQueue error - '.$exception->getMessage());
+            $error = [
+                'error_code' => $exception->getCode(),
+                'error_msg' => $exception->getMessage(),
+                'error_stack' => $exception->getTraceAsString(),
+            ];
+            $paymentService->saveTransactionLog(
+                $this->transaction['t_transaction_id'],
+                $error,
+                'invoice_queue_error'
+            );
+            $paymentService->PaymentTransationBeforeLog('invoice_queue', $error);
+        }
     }
 }

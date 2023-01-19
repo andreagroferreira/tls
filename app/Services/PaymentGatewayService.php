@@ -36,15 +36,15 @@ class PaymentGatewayService
     /**
      * @param string $gateway
      * @param string $issuer
+     * @param int|null $pa_id
      * @param string $service
-     * @param int $pa_id
      *
      * @return array
      */
     public function getPaymentAccountConfig(
         string $gateway,
         string $issuer,
-        int $pa_id,
+        ?int $pa_id,
         string $service
     ): array {
         $paymentAccounts = $this->paymentAccountsRepositories->fetchById($pa_id);

@@ -903,8 +903,8 @@ class TransactionService
                     'quantity' => $sku['quantity'],
                     'price' => $sku['price'],
                     'currency' => $transaction['t_currency'],
-                    'label' => $sku['label'],
-                    'stamp' => $sku['tag'],
+                    'label' => $sku['label'] ?? '',
+                    'stamp' => $sku['tag'] ?? '',
                 ];
             }
         }

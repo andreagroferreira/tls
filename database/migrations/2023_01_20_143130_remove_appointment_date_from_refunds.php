@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class MakeRefundFieldsNotRequired extends Migration
+class RemoveAppointmentDateFromRefunds extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class MakeRefundFieldsNotRequired extends Migration
     public function up()
     {
         Schema::connection('deploy_payment_pgsql')->table('refunds', function (Blueprint $table) {
-            $table->string('r_reason_type')->nullable()->change();
+            $table->dropColumn('r_appointment_date');
         });
     }
 
@@ -26,7 +26,7 @@ class MakeRefundFieldsNotRequired extends Migration
     public function down()
     {
         Schema::connection('deploy_payment_pgsql')->table('refunds', function (Blueprint $table) {
-            $table->string('r_reason_type')->nullable(false)->change();
+            $table->timestamp('r_appointment_date')->nullable();
         });
     }
 }

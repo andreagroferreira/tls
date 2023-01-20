@@ -1169,8 +1169,7 @@ class TransactionControllerTest extends TestCase
         $refunds = $this->generateRefund([
             'r_issuer' => 'dzALG2be',
             'r_reason_type' => 'other',
-            'r_status' => 'done',
-            'r_appointment_date' => '2022-11-14 12:00:00',
+            'r_status' => 'done'
         ]);
         $this->generateRefundItems($refunds->r_id, $transactionItemOne->ti_id, [
             'ri_xref_r_id' => $refunds->r_id,
@@ -1224,8 +1223,7 @@ class TransactionControllerTest extends TestCase
         $refunds = $this->generateRefund([
             'r_issuer' => 'dzALG2be',
             'r_reason_type' => 'other',
-            'r_status' => 'pending',
-            'r_appointment_date' => '2022-11-14 12:00:00',
+            'r_status' => 'pending'
         ]);
         $this->generateRefundItems($refunds->r_id, $transactionItemOne->ti_id, [
             'ri_xref_r_id' => $refunds->r_id,

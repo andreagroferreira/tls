@@ -31,7 +31,6 @@ class Refund extends Model
         'r_id',
         'r_issuer',
         'r_reason_type',
-        'r_status',
-        'r_appointment_date',
+        'r_status'
     ];
 }

@@ -45,13 +45,6 @@ class RefundController extends BaseController
      *          @OA\Schema(type="string", example="other"),
      *      ),
      *      @OA\Parameter(
-     *          name="appointment_date",
-     *          in="query",
-     *          description="date of appointment",
-     *          required=false,
-     *          @OA\Schema(type="string", example="2022-11-25 00:00:00"),
-     *      ),
-     *      @OA\Parameter(
      *          name="items",
      *          in="query",
      *          description="Refund items",
@@ -194,7 +187,6 @@ class RefundController extends BaseController
         return validator(array_merge(['items' => $items], $request), [
             'agent' => 'nullable',
             'reason' => 'nullable',
-            'appointment_date' => 'nullable|date_format:Y-m-d H:i:s',
             'items' => [
                 'bail',
                 'required',

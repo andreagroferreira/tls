@@ -95,7 +95,6 @@ class RefundItemsService
                 'r_issuer' => $rItem['r_issuer'],
                 'r_reason_type' => $rItem['r_reason_type'],
                 'r_status' => $rItem['r_status'],
-                'r_appointment_date' => $rItem['r_appointment_date'],
                 'r_items' => array_values($refundItemsArray[$rItem['r_id']]),
             ];
         }

@@ -88,8 +88,7 @@ class RefundService
         $refundData = [
             'r_issuer' => $attributes['r_issuer'],
             'r_reason_type' => $attributes['reason'] ?? '',
-            'r_status' => 'done',
-            'r_appointment_date' => $attributes['appointment_date'] ?? '',
+            'r_status' => 'done'
         ];
         $dbConnection = DB::connection($this->dbConnectionService->getConnection());
         $dbConnection->beginTransaction();

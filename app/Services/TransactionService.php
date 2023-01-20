@@ -754,14 +754,14 @@ class TransactionService
                     $res['ti_fee_name'] = trim($sku['product_name']);
                 }
 
+                $res['ti_label'] = null;
                 if (!empty($sku['label'])) {
                     $res['ti_label'] = trim($sku['label']);
                 }
 
+                $res['ti_tag'] = null;
                 if (!empty($sku['tags'])) {
                     $res['ti_tag'] = implode(',', $sku['tags']);
-                } else {
-                    $res['ti_tag'] = null;
                 }
 
                 $response[] = $res;

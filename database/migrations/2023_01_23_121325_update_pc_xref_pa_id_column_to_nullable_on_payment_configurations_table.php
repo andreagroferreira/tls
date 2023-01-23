@@ -27,7 +27,7 @@ class UpdatePcXrefPaIdColumnTypeOnPaymentConfigurationsTable extends Migration
     public function down()
     {
         Schema::connection('deploy_payment_pgsql')->table('payment_configurations', function (Blueprint $table) {
-            $table->integer('pc_xref_pa_id')->change();
+            $table->integer('pc_xref_pa_id')->nullable(false)->change();
         });
     }
 }

@@ -263,7 +263,11 @@ class TransactionService
         try {
             $transaction = $this->transactionRepository->create($transaction_data);
             $transactionItems = $this->convertItemsFieldToArray($transaction->t_transaction_id, $attributes['items']);
-            $totalAmount = array_sum(array_column($transactionItems, 'ti_amount'));
+
+            $totalAmount = 0;
+            foreach ($transactionItems as $item) {
+                $totalAmount += $item['ti_amount'] * Arr::get($item, 'ti_quantity', 1);
+            }
 
             $this->transactionItemsService->createMany(
                 $transactionItems
@@ -526,8 +530,8 @@ class TransactionService
             if (!empty($workflowServiceSyncStatus['error_msg'])) {
                 Log::error(
                     'Transaction ERROR: transaction sync to workflow service '.
-                    $transaction['t_transaction_id'].' failed, because: '.
-                    json_encode($workflowServiceSyncStatus, 256)
+                        $transaction['t_transaction_id'].' failed, because: '.
+                        json_encode($workflowServiceSyncStatus, 256)
                 );
             }
 

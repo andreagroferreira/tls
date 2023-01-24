@@ -311,7 +311,7 @@ class TransactionService
         $amount = 0;
         foreach ($transaction_items as $transaction_item) {
             foreach ($transaction_item['skus'] as $sku) {
-                $amount += $sku['price'];
+                $amount += $sku['price'] * Arr::get($sku, 'quantity', 1);
             }
         }
         $transaction['t_amount'] = $amount;

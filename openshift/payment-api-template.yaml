@@ -1834,3 +1834,23 @@ objects:
           ports:
             - protocol: TCP
               port: 8080
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-tlspay-e-commerce-service
+      labels:
+        app: "${APPLICATION_NAME}"
+    spec:
+      podSelector:
+        matchLabels:
+          app: tlspay-e-commerce-service
+      policyTypes:
+        - Ingress
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: "${APPLICATION_NAME}"
+          ports:
+            - port: 8443
+              protocol: TCP

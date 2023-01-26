@@ -6,6 +6,7 @@ use App\Repositories\RefundItemRepository;
 use App\Repositories\RefundLogRepository;
 use App\Repositories\RefundRepository;
 use App\Traits\FeatureVersionsTrait;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -114,8 +115,9 @@ class RefundService
                 )
             );
             $dbConnection->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $dbConnection->rollBack();
+            Log::error('Could not create refund.', [$e->getMessage()]);
 
             return [];
         }

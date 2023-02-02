@@ -83,7 +83,7 @@ class PayuPaymentGateway implements PaymentGatewayInterface
         $header = $this->getHeader($payu_config);
         // create payment
         $create_params = array(
-            'amount'   => $translationsData['t_amount'] * 100,
+            'amount'   => (int) ($translationsData['t_amount'] * 100),
             'currency' => $translationsData['t_currency'] ?? $payu_config['common']['currency'],
             'order'    => ['id' => $orderId],
             'customer' => ['id' => $orderId, 'email' => "$fg_id"]

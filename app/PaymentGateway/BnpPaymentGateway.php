@@ -68,7 +68,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         }
 
         $order_id = $translations_data['t_transaction_id'];
-        $bnp_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer'], $translations_data['t_xref_pa_id']);
+        $bnp_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer'], $pa_id);
 
         $get_data = [
             'userName' => array_get($bnp_config, 'current.user_name'),

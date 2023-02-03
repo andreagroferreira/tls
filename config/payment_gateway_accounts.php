@@ -70,8 +70,7 @@ return [
             'terminal_id' => null,
         ],
         'production' => [
-            // TODO: To be completed
-            'host' => 'test', // env('ENVPAY_BNP_PARIBAS_dzALL2fr_HOST')
+            'host' => 'https://cib.satim.dz',
             'user_name' => null,
             'password' => null,
             'terminal_id' => null,

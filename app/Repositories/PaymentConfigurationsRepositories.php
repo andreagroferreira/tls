@@ -53,7 +53,7 @@ class PaymentConfigurationsRepositories
         $PaymentConfigurationsInfo = $this->paymentConfigurations->where($where)->first();
         $pc_xref_pa_id = $where['pc_xref_pa_id'];
         if (!$PaymentConfigurationsInfo) {
-            $where['pc_xref_pa_id'] = '';
+            $where['pc_xref_pa_id'] = null;
             $PaymentConfigurationsInfo = $this->paymentConfigurations->where($where)->first();
             if (!$PaymentConfigurationsInfo) {
                 $where['pc_xref_pa_id'] = $pc_xref_pa_id;

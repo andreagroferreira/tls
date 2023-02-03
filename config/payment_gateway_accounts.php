@@ -120,6 +120,30 @@ return [
             'storeKey' => null
         ]
     ],
+    'cybersource' => [
+        'label' => 'Cybersource pay',
+        'active' => true,
+        'common' => [
+            'env' => 'live',
+            "currency" => "MGA",
+            "return_url" => "/cybersource/return",
+            "notify_url" => "/cybersource/notify"
+        ],
+        'sandbox' => [
+            "host" => " https://testsecureacceptance.cybersource.com/pay",
+            "access_key" => null,
+            "profile_id" => null,
+            "transaction_type" => null,
+            "secret_key" => null
+        ],
+        'production' => [
+            "host" => "https://secureacceptance.cybersource.com/pay",
+            "access_key" => null,
+            "profile_id" => null,
+            "transaction_type" => null,
+            "secret_key" => null
+        ]
+    ],
     'fawry' => [
         'label' => 'Fawry pay',
         'common' => [

@@ -1032,6 +1032,21 @@ objects:
                   value: ${WORKFLOW_SERVICE_DOMAIN}
                 - name: ECOMMERCE_SERVICE_DOMAIN
                   value: ${ECOMMERCE_SERVICE_DOMAIN}
+                - name: ECOMMERCE_POSTGRES_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: visa-uk2-dev-pgcluster-tlspay-e-commerce-service-db-secret
+                      key: username
+                - name: ECOMMERCE_POSTGRES_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: visa-uk2-dev-pgcluster-tlspay-e-commerce-service-db-secret
+                      key: password
+                - name: ECOMMERCE_POSTGRES_DB_DBNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: visa-uk2-dev-pgcluster-tlspay-e-commerce-service-db-secret
+                      key: database-name
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:

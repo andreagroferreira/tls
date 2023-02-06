@@ -181,7 +181,6 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'merchantRefNum' => $order_id,
                 'customerEmail' => $u_email,
                 'customerProfileId' => $profile_id,
-                'paymentExpiry' => $expiry,
                 'chargeItems' => $charge_items,
                 'returnUrl' => $return_url,
                 'authCaptureModePayment' => false,

@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Transactions extends Model
 {
     use HasFactory;
+    public $timestamps = false;
 
     protected $table = 'transactions';
     protected $primaryKey = 't_id';
-    public $timestamps = false;
+    protected $connection = 'payment_pgsql';
 
     protected $fillable = [
         't_id',

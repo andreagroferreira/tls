@@ -368,6 +368,17 @@ class TransactionService
             't_client',
             't_batch_id',
             'ti_quantity',
+            'ti_xref_f_id',
+            't_service',
+            'ti_fee_name',
+            't_payment_method',
+            't_transaction_id',
+            't_gateway_transaction_id',
+            't_gateway',
+            't_currency',
+            'ti_price_rule',
+            'ti_vat',
+            't_agent_name',
         ];
 
         $where = collect();
@@ -392,14 +403,18 @@ class TransactionService
                 }
 
                 if (in_array($column, $fullTextSearchColumn)) {
-                    $where->push([$column, 'LIKE', '%'.$value.'%']);
+                    $where->push([$column, 'ILIKE', '%'.$value.'%']);
                 } else {
-                    $where->push([$column, '=', $value]);
+                    $where->push([$column, 'ILIKE', $value]);
                 }
             }
 
             if (!empty($issuer)) {
-                $where->push(['t_issuer', 'LIKE', '%'.$issuer.'%']);
+                $where->push(['t_issuer', 'ILIKE', '%'.$issuer.'%']);
+            }
+
+            if (!empty(array_get($attributes['multi_search'], 't_agent_name'))) {
+                $where->push(['t_agent_name', 'ILIKE', '%'.array_get($attributes['multi_search'], 't_agent_name').'%']);
             }
         }
 

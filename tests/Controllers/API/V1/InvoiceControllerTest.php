@@ -20,6 +20,7 @@ class InvoiceControllerTest extends TestCase
 
     public function testInvoiceApiMethodIsGet(): void
     {
+        dd(env('CLIENT'));
         $this->post($this->invoiceApi.'/1234');
         $this->response->assertStatus(405);
     }

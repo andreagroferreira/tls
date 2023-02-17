@@ -70,8 +70,7 @@ return [
             'terminal_id' => null,
         ],
         'production' => [
-            // TODO: To be completed
-            'host' => 'test', // env('ENVPAY_BNP_PARIBAS_dzALL2fr_HOST')
+            'host' => 'https://cib.satim.dz',
             'user_name' => null,
             'password' => null,
             'terminal_id' => null,
@@ -119,6 +118,30 @@ return [
             'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
             'merchant_id' => null,
             'storeKey' => null
+        ]
+    ],
+    'cybersource' => [
+        'label' => 'Cybersource pay',
+        'active' => true,
+        'common' => [
+            'env' => 'live',
+            "currency" => "MGA",
+            "return_url" => "/cybersource/return",
+            "notify_url" => "/cybersource/notify"
+        ],
+        'sandbox' => [
+            "host" => " https://testsecureacceptance.cybersource.com/pay",
+            "access_key" => null,
+            "profile_id" => null,
+            "transaction_type" => null,
+            "secret_key" => null
+        ],
+        'production' => [
+            "host" => "https://secureacceptance.cybersource.com/pay",
+            "access_key" => null,
+            "profile_id" => null,
+            "transaction_type" => null,
+            "secret_key" => null
         ]
     ],
     'fawry' => [

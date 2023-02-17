@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Repositories\refundItemRepository;
+use App\Repositories\RefundItemRepository;
 use App\Repositories\TransactionRepository;
 
 class RefundItemsService
 {
     /**
-     * @var refundItemRepository
+     * @var RefundItemRepository
      */
     protected $refundItemRepository;
 
@@ -48,17 +48,18 @@ class RefundItemsService
      */
     public function getRefundTransactionItems(array $attributes): array
     {
-        $transactionItems = $this->transactionItemsService->fetch($attributes)
-            ->groupBy('ti_xref_transaction_id')->toArray();
+        $transactionItems = $this->transactionItemsService
+            ->fetch($attributes)
+            ->groupBy('ti_xref_transaction_id')
+            ->toArray();
 
         if (empty($transactionItems)) {
             return [];
         }
-        $where = collect([
-            ['transaction_items.ti_xref_f_id', '=', $attributes['ti_xref_f_id']],
-        ]);
 
-        $refundItems = $this->refundItemRepository->fetchRefundItems($where->toArray())->toArray();
+        $refundItems = $this->refundItemRepository->fetchRefundItems([
+            ['transaction_items.ti_xref_f_id', '=', $attributes['ti_xref_f_id']],
+        ])->toArray();
         $transactions = $this->getTransactionItems($transactionItems);
 
         if (empty($transactions)) {
@@ -84,7 +85,7 @@ class RefundItemsService
                 'ri_xref_ti_id' => $rItem['ri_xref_ti_id'],
                 'ri_id' => $rItem['ri_id'],
                 'ri_quantity' => $rItem['ri_quantity'],
-                'ri_amount' => (float) $rItem['ri_amount'],
+                'ri_amount' => number_format((float) $rItem['ri_amount'], 2, '.', ''),
                 'ri_reason_type' => $rItem['ri_reason_type'],
                 'ri_status' => $rItem['ri_status'],
                 'ri_invoice_path' => $rItem['ri_invoice_path'],
@@ -94,14 +95,13 @@ class RefundItemsService
                 'r_issuer' => $rItem['r_issuer'],
                 'r_reason_type' => $rItem['r_reason_type'],
                 'r_status' => $rItem['r_status'],
-                'r_appointment_date' => $rItem['r_appointment_date'],
                 'r_items' => array_values($refundItemsArray[$rItem['r_id']]),
             ];
         }
 
         return array_values($refundRequestArray);
     }
-    
+
     /**
      * @param array $transactionItems
      *
@@ -114,6 +114,7 @@ class RefundItemsService
             ->map(function ($transaction) use ($transactionItems) {
                 return [
                     't_id' => $transaction->t_id,
+                    'fg_id' => $transaction->t_xref_fg_id,
                     'gateway' => $transaction->t_gateway,
                     'agent_gateway' => $transaction->t_payment_method,
                     'transaction_id' => $transaction->t_transaction_id,
@@ -129,17 +130,15 @@ class RefundItemsService
     }
 
     /**
-    * Prepares the transaction items for the response based on the services in the payload
-    * 
-    * @param array $services
-    * @param \App\Models\Transactions $transaction
-    *
-    * @return array
-    */
+     * Prepares the transaction items for the response based on the services in the payload.
+     *
+     * @param array $services
+     *
+     * @return array
+     */
     private function prepareTransactionItems(array $services): array
     {
         $transactionItems = [];
-
         foreach ($services as $service) {
             $transactionItems['f_id'] = $service['ti_xref_f_id'];
             $transactionItems['skus'][] = [
@@ -147,10 +146,15 @@ class RefundItemsService
                 'price_rule' => $service['ti_price_rule'],
                 'sku' => $service['ti_fee_type'],
                 'product_name' => $service['ti_fee_name'],
-                'price' => $service['ti_amount'],
+                'price' => number_format((float) $service['ti_amount'], 2, '.', ''),
                 'vat' => $service['ti_vat'],
                 'quantity' => $service['ti_quantity'],
-                'amount_gross' => ($service['ti_vat'] / 100 * $service['ti_amount']) + $service['ti_amount'],
+                'price_without_tax' => number_format(
+                    (float) ($service['ti_amount'] * 100) / (100 + $service['ti_vat']),
+                    2,
+                    '.',
+                    ''
+                ),
             ];
         }
 

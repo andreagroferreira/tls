@@ -228,8 +228,7 @@ abstract class TestCase extends \TestCase
             $params = [
                 'r_issuer' => 'dzALG2be',
                 'r_reason_type' => 'other',
-                'r_status' => 'done',
-                'r_appointment_date' => '2022-11-14 12:00:00',
+                'r_status' => 'done'
             ];
         }
         $db_connection = DB::connection('unit_test_payment_pgsql')->table('refunds');

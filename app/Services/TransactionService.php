@@ -263,7 +263,11 @@ class TransactionService
         try {
             $transaction = $this->transactionRepository->create($transaction_data);
             $transactionItems = $this->convertItemsFieldToArray($transaction->t_transaction_id, $attributes['items']);
-            $totalAmount = array_sum(array_column($transactionItems, 'ti_amount'));
+
+            $totalAmount = 0;
+            foreach ($transactionItems as $item) {
+                $totalAmount += $item['ti_amount'] * Arr::get($item, 'ti_quantity', 1);
+            }
 
             $this->transactionItemsService->createMany(
                 $transactionItems
@@ -307,7 +311,7 @@ class TransactionService
         $amount = 0;
         foreach ($transaction_items as $transaction_item) {
             foreach ($transaction_item['skus'] as $sku) {
-                $amount += $sku['price'];
+                $amount += $sku['price'] * Arr::get($sku, 'quantity', 1);
             }
         }
         $transaction['t_amount'] = $amount;
@@ -425,6 +429,8 @@ class TransactionService
             $transactions['data'][$k]['country'] = getCountryName($details['country_code']);
             $transactions['data'][$k]['city'] = getCityName($details['city_code']);
             $transactions['data'][$k]['receipt_url'] = getFilePath($details, $details['t_invoice_storage']);
+            $transactions['data'][$k]['amount'] = number_format((float) $details['amount'], 2);
+            $transactions['data'][$k]['amount_without_tax'] = number_format((float) $details['amount_without_tax'], 2);
         }
 
         return [
@@ -524,8 +530,8 @@ class TransactionService
             if (!empty($workflowServiceSyncStatus['error_msg'])) {
                 Log::error(
                     'Transaction ERROR: transaction sync to workflow service '.
-                    $transaction['t_transaction_id'].' failed, because: '.
-                    json_encode($workflowServiceSyncStatus, 256)
+                        $transaction['t_transaction_id'].' failed, because: '.
+                        json_encode($workflowServiceSyncStatus, 256)
                 );
             }
 
@@ -676,17 +682,23 @@ class TransactionService
         Log::info('TransactionService syncTransactionToEcommerce start: '.$fg_id);
 
         try {
-            dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
-                ->onConnection('ecommerce_transaction_sync_queue')
-                ->onQueue('ecommerce_transaction_sync_queue');
-
-            Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id);
+            /** @var QueueService $queueService */
+            $queueService = app()->make('App\Services\QueueService');
+            $queueService->syncTransactionToEcommerce($fg_id, $data);
 
             return [
                 'error_msg' => [],
             ];
         } catch (\Exception $e) {
-            Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id.' - error_msg:'.$e->getMessage());
+            Log::info('TransactionService syncTransactionToEcommerce sync: '.$fg_id.' - error_code:'.$e->getCode().' - error_msg:'.$e->getMessage());
+
+            if (in_array((int) $e->getCode(), [404, 408])) {
+                dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
+                    ->onConnection('ecommerce_transaction_sync_queue')
+                    ->onQueue('ecommerce_transaction_sync_queue');
+
+                Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id);
+            }
 
             return [
                 'status' => 'error',
@@ -746,14 +758,14 @@ class TransactionService
                     $res['ti_fee_name'] = trim($sku['product_name']);
                 }
 
+                $res['ti_label'] = null;
                 if (!empty($sku['label'])) {
                     $res['ti_label'] = trim($sku['label']);
                 }
 
+                $res['ti_tag'] = null;
                 if (!empty($sku['tags'])) {
-                    $res['ti_tag'] = implode(",", $sku['tags']);
-                } else {
-                    $res['ti_tag'] = null;
+                    $res['ti_tag'] = implode(',', $sku['tags']);
                 }
 
                 $response[] = $res;
@@ -838,10 +850,10 @@ class TransactionService
 
                 $summary[] = [
                     'currency' => $currency,
-                    'cash-amount-total' => $totalByPaymentMethod[$currency]['cash'] ?? 0,
-                    'card-amount-total' => $totalByPaymentMethod[$currency]['card'] ?? 0,
-                    'online-amount-total' => $totalByPaymentMethod[$currency]['online'] ?? 0,
-                    'amount-total' => $totalAmount[$currency] ?? 0,
+                    'cash-amount-total' => number_format((float) ($totalByPaymentMethod[$currency]['cash'] ?? 0), 2),
+                    'card-amount-total' => number_format((float) ($totalByPaymentMethod[$currency]['card'] ?? 0), 2),
+                    'online-amount-total' => number_format((float) ($totalByPaymentMethod[$currency]['online'] ?? 0), 2),
+                    'amount-total' => number_format((float) ($totalAmount[$currency] ?? 0), 2),
                     'skus' => $skuSummary,
                 ];
             }
@@ -864,13 +876,13 @@ class TransactionService
             foreach ($skuDetails as $paymentMethod => $amount) {
                 $summary[] = [
                     'payment-type' => $paymentMethod,
-                    'amount' => $amount,
+                    'amount' => number_format((float) $amount, 2),
                 ];
                 $totalAmount += $amount;
             }
             $skus[] = [
                 'sku' => $sku,
-                'amount-total' => $totalAmount,
+                'amount-total' => number_format((float) $totalAmount, 2),
                 'summary' => $summary,
             ];
         }
@@ -895,8 +907,8 @@ class TransactionService
                     'quantity' => $sku['quantity'],
                     'price' => $sku['price'],
                     'currency' => $transaction['t_currency'],
-                    'label' => $sku['label'],
-                    'stamp' => $sku['tag'],
+                    'label' => $sku['label'] ?? '',
+                    'stamp' => $sku['tag'] ?? '',
                 ];
             }
         }

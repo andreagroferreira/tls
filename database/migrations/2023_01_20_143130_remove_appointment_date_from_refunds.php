@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddUniqueIndexForTransactionsTable extends Migration
+class RemoveAppointmentDateFromRefunds extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddUniqueIndexForTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('deploy_payment_pgsql')->table('transactions', function (Blueprint $table) {
-            $table->unique('t_transaction_id');
+        Schema::connection('deploy_payment_pgsql')->table('refunds', function (Blueprint $table) {
+            $table->dropColumn('r_appointment_date');
         });
     }
 
@@ -25,8 +25,8 @@ class AddUniqueIndexForTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::table('transactions', function (Blueprint $table) {
-           $table->dropUnique('transactions_t_transaction_id_unique');
+        Schema::connection('deploy_payment_pgsql')->table('refunds', function (Blueprint $table) {
+            $table->timestamp('r_appointment_date')->nullable();
         });
     }
 }

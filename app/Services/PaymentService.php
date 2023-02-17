@@ -298,17 +298,17 @@ class PaymentService
             throw new \Exception('Error Fetching Invoice Content');
         }
 
-        $resolved_content = $this->tokenResolveService->resolveTemplate(
+        $resolvedTemplate = $this->tokenResolveService->resolveTemplate(
             $content,
             $transaction,
             $lang
         );
 
-        if (empty($resolved_content)) {
+        if (empty($resolvedTemplate)) {
             throw new \Exception('Error Resolving Invoice Content');
         }
 
-        $response = $this->convertInvoiceContentToPdf($transaction, $resolved_content['invoice_content']);
+        $response = $this->convertInvoiceContentToPdf($transaction, $resolvedTemplate['invoice_content']);
 
         if (!$response) {
             throw new \Exception('Error Processing Invoice Upload Request');

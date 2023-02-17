@@ -143,6 +143,19 @@ return [
             'prefix' => env('DB_PREFIX', ''),
         ],
 
+        'ecommerce_pgsql' => [
+            'driver' => 'pgsql',
+            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
+            'port' => env('POSTGRES_DB_PORT', '5432'),
+            'database' => env('ECOMMERCE_POSTGRES_DB_DBNAME', 'tlspay-e-commerce-service-db'),
+            'username' => env('ECOMMERCE_POSTGRES_DB_USERNAME', 'tlspay-e-commerce-service-user'),
+            'password' => env('ECOMMERCE_POSTGRES_DB_PASSWORD', ''),
+            'charset' =>  env('DB_CHARSET', 'utf8'),
+            'prefix' => env('DB_PREFIX', ''),
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
     ],
 
     /*

@@ -6,6 +6,7 @@ use App\Repositories\RefundItemRepository;
 use App\Repositories\RefundLogRepository;
 use App\Repositories\RefundRepository;
 use App\Traits\FeatureVersionsTrait;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -88,8 +89,7 @@ class RefundService
         $refundData = [
             'r_issuer' => $attributes['r_issuer'],
             'r_reason_type' => $attributes['reason'] ?? '',
-            'r_status' => 'done',
-            'r_appointment_date' => $attributes['appointment_date'] ?? '',
+            'r_status' => 'done'
         ];
         $dbConnection = DB::connection($this->dbConnectionService->getConnection());
         $dbConnection->beginTransaction();
@@ -115,8 +115,9 @@ class RefundService
                 )
             );
             $dbConnection->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $dbConnection->rollBack();
+            Log::error('Could not create refund.', [$e->getMessage()]);
 
             return [];
         }

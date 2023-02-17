@@ -124,6 +124,11 @@ deploy-instance:
         echo "REDIS_HOST is not defined!"
         exit 1
       fi
+    - |
+      if ! ECOMMERCE_POSTGRES_SECRET=$(oc get secret ${PROJECT}-pgcluster-tlspay-e-commerce-service-db-secret); then
+        echo "ECOMMERCE_POSTGRES_SECRET is not defined!"
+        POSTGRES_ECOMMERCE_DB_USERNAME=""
+      fi
     - oc process -f ./openshift/payment-api-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"
@@ -143,9 +148,7 @@ deploy-instance:
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
       WORKFLOW_SERVICE_DOMAIN="${WORKFLOW_SERVICE_DOMAIN}"
       ECOMMERCE_SERVICE_DOMAIN="${ECOMMERCE_SERVICE_DOMAIN}"
-      ECOMMERCE_POSTGRES_DB_USERNAME="${ECOMMERCE_POSTGRES_DB_USERNAME}"
-      ECOMMERCE_POSTGRES_DB_PASSWORD="${ECOMMERCE_POSTGRES_DB_PASSWORD}"
-      ECOMMERCE_POSTGRES_DB_DBNAME="${ECOMMERCE_POSTGRES_DB_DBNAME}"
+      ECOMMERCE_POSTGRES_SECRET="${ECOMMERCE_POSTGRES_SECRET}"
       REDIS_HOST="tls://${REDIS_HOST}"
       CLIENT="${CLIENT}"
       KBANK_THBKK2BE_SANDBOX_API_KEY="${KBANK_THBKK2BE_SANDBOX_API_KEY}"

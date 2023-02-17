@@ -127,7 +127,7 @@ deploy-instance:
     - |
       if ! ECOMMERCE_POSTGRES_SECRET=$(oc get secret ${PROJECT}-pgcluster-tlspay-e-commerce-service-db-secret); then
         echo "ECOMMERCE_POSTGRES_SECRET is not defined!"
-        POSTGRES_ECOMMERCE_DB_USERNAME=""
+        ECOMMERCE_POSTGRES_SECRET=""
       fi
     - oc process -f ./openshift/payment-api-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"

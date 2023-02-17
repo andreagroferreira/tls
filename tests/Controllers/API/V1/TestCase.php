@@ -36,7 +36,7 @@ abstract class TestCase extends \TestCase
 
     public function runDatabaseMigrations()
     {
-        $this->artisan('migrate:fresh', ['--path' => 'database/migrations', '--database' => 'unit_test_payment_pgsql', '--force' => true]);
+        $this->artisan('migrate:fresh', ['--path' => 'database/migrations', '--database' => 'deploy_payment_pgsql', '--force' => true]);
     }
 
     public function getDbNowTime()

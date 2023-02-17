@@ -24,6 +24,7 @@ class PaymentAccountsControllerTest extends TestCase
             'bnp',
             'clictopay',
             'cmi',
+            'cybersource',
             'fawry',
             'globaliris',
             'k-bank',

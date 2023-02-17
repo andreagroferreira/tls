@@ -110,7 +110,7 @@ class RefundController extends BaseController
         ];
 
         $validator = validator($params, [
-            'ti_xref_f_id' => 'required',
+            'ti_xref_f_id' => 'numeric',
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());

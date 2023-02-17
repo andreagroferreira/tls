@@ -428,7 +428,7 @@ parameters:
     required: true
   - name: ECOMMERCE_SERVICE_DOMAIN
     required: true
-  - name: ECOMMERCE_POSTGRES_SECRET
+  - name: POSTGRES_ECOMMERCE_SECRET
     required: true
   - name: APPLICATION_ENV
     value: prod

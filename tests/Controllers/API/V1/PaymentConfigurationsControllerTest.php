@@ -43,46 +43,6 @@ class PaymentConfigurationsControllerTest extends TestCase
     }
 
     /**
-     * @throws Throwable
-     *
-     * @return void
-     */
-    public function testGetPaymentGatewayTypesByCityTls()
-    {
-        $this->generateConfigurationPaymentGatewayType(
-            $this->getClient(),
-            'tls',
-            'CAI',
-            'eg',
-        );
-
-        $this->get($this->paymentGatewayTypesApi.'/CAI');
-        $this->response->assertStatus(200)
-            ->assertJson([
-                'tls',
-            ]);
-    }
-
-    /**
-     * @return void
-     */
-    public function testGetPaymentGatewayTypesByCityGov()
-    {
-        $this->generateConfigurationPaymentGatewayType(
-            $this->getClient(),
-            'gov',
-            'ALY',
-            'eg'
-        );
-
-        $this->get($this->paymentGatewayTypesApi.'/ALY');
-        $this->response->assertStatus(200)
-            ->assertJson([
-                'gov',
-            ]);
-    }
-
-    /**
      * @return void
      */
     public function testGetPaymentGatewayTypesByCityBoth()

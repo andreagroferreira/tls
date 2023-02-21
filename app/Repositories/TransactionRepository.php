@@ -219,6 +219,7 @@ class TransactionRepository
                 'ti_tag',
                 'rl_agent AS agent',
             ])
+            ->selectRaw('ri_id')
             ->selectRaw('ri_quantity*-1 AS quantity')
             ->selectRaw('ri_amount-(ti_vat/100 * ri_amount) AS amount_without_tax')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
@@ -256,6 +257,7 @@ class TransactionRepository
                 'ti_tag',
                 't_agent_name as agent'
             ])
+            ->selectRaw('NULL AS ri_id')
             ->selectRaw('ti_quantity AS quantity')
             ->selectRaw('ti_amount-(ti_vat/100 * ti_amount) AS amount_without_tax')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')

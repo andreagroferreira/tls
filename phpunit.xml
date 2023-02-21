@@ -25,7 +25,7 @@
         <env name="UNIT_TEST_PAYMENT_DB_DATABASE" value="postgres"/>
         <env name="UNIT_TEST_POSTGRES_DB_USERNAME" value="postgres"/>
         <env name="POSTGRES_DEPLOY_DB_USERNAME" value="postgres"/>
-        <env name="DB_CONNECTION" value="deploy_payment_pgsql"/>
+        <env name="DB_CONNECTION" value="pgsql"/>
         <env name="PAYU_NGALL2BE_SANDBOX_APP_ID" value="com.tlscontact.payu-nigeria"/>
         <env name="PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY" value="8db81936-4da0-4dfa-ad63-d162f95e5286"/>
         <env name="PAYMENT_SERVICE_DOMAIN" value="https://ANY-HTTP-VALUE"/>

@@ -9,10 +9,15 @@ class PaymentAccountsControllerTest extends TestCase
 {
     protected $pa_id;
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        putenv('APP_ENV=testing');
+    }
+
     public function testGetPaymentGatewayFieldList()
     {
         putenv('PROJECT=de');
-        dd(env('APP_ENV'));
         $base_url = 'api/v1/payment-gateway-field-list';
         $this->get($base_url);
         $this->response->assertStatus(200);

@@ -18,7 +18,7 @@
         </report>
     </coverage>
     <php>
-        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_ENV" value="testing"/>
         <env name="UNIT_TEST" value="testing"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="POSTGRES_PAYMENT_DB_DATABASE" value="postgres"/>

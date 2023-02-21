@@ -18,6 +18,12 @@ class PaymentConfigurationsControllerTest extends TestCase
      */
     private $paymentGatewayTypesApi = 'api/v1/payment-gateway-types';
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        putenv('APP_ENV=testing');
+    }
+
     public function testPaymentConfigurationsList()
     {
         $base_url = $this->configurationListApi.'?client=de&type=sandbox';

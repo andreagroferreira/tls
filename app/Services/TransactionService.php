@@ -454,6 +454,7 @@ class TransactionService
             'current_page' => array_get($transactions, 'current_page', 1),
             'summary' => $summary ?? [],
         ];
+
     }
 
     /**

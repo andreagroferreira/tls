@@ -7,3 +7,4 @@ Homestead.yaml
 coverage-report.clover
 unittest-report.xml
 .php-cs-fixer.cache
+/storage/tests

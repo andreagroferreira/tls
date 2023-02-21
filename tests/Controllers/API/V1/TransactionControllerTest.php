@@ -964,7 +964,7 @@ class TransactionControllerTest extends TestCase
                     't_service' => $transactions->t_service,
                     'ti_fee_type' => $transactionItems->ti_fee_type,
                     'quantity' => $transactionItems->ti_quantity,
-                    'amount' => $transactionItems->ti_amount,
+                    'amount' => number_format((float) $transactionItems->ti_amount, 2, '.', ''),
                     'ti_id' => $transactionItems->ti_id,
                     'agent' => null,
                     'ti_xref_f_id' => $transactionItems->ti_xref_f_id,
@@ -979,12 +979,12 @@ class TransactionControllerTest extends TestCase
                     't_currency' => $transactions->t_currency,
                     't_invoice_storage' => $transactions->t_invoice_storage,
                     't_issuer' => $transactions->t_issuer,
-                    'amount_without_tax' => ($transactionItems->ti_amount-($transactionItems->ti_vat / 100 * $transactionItems->ti_amount)),
+                    'amount_without_tax' => (string) ($transactionItems->ti_amount-($transactionItems->ti_vat / 100 * $transactionItems->ti_amount)),
                     'country_code' => substr($transactions->t_issuer, 0, 2),
                     'city_code' => substr($transactions->t_issuer, 2, 3),
                     'country' => getCountryName(substr($transactions->t_issuer, 0, 2)),
                     'city' => getCityName(substr($transactions->t_issuer, 2, 3)),
-                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/'.$transactions->t_transaction_id.'.pdf'
+                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/tlspay_'.$transactions->t_transaction_id.'.pdf'
                 ],
             ],
             'current_page' => 1,
@@ -1385,7 +1385,7 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(array_get($transactionData[0], 'gateway'), 'free');
         $this->assertEquals(array_get($transactionData[0]['items'][0]['skus'][0], 'price'), 0);
         $this->seeInDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
-        $this->seeInDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
+        $this->seeInDatabase('jobs', ['queue' => 'workflow_transaction_sync_queue'], $this->dbConnection);
     }
 
     /**
@@ -1496,7 +1496,7 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(array_get($transactionData[0], 'gateway'), 'paybank');
         $this->assertEquals(array_get($transactionData[0], 'agent_gateway'), 'card');
         $this->seeInDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
-        $this->seeInDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
+        $this->seeInDatabase('jobs', ['queue' => 'workflow_transaction_sync_queue'], $this->dbConnection);
     }
 
     /**

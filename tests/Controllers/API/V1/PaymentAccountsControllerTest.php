@@ -9,12 +9,6 @@ class PaymentAccountsControllerTest extends TestCase
 {
     protected $pa_id;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        putenv('APP_ENV=testing');
-    }
-
     public function testGetPaymentGatewayFieldList()
     {
         putenv('PROJECT=de');

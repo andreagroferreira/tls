@@ -428,6 +428,8 @@ parameters:
     required: true
   - name: ECOMMERCE_SERVICE_DOMAIN
     required: true
+  - name: POSTGRES_ECOMMERCE_SECRET
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -1032,20 +1034,20 @@ objects:
                   value: ${WORKFLOW_SERVICE_DOMAIN}
                 - name: ECOMMERCE_SERVICE_DOMAIN
                   value: ${ECOMMERCE_SERVICE_DOMAIN}
-                - name: ECOMMERCE_POSTGRES_DB_USERNAME
+                - name: POSTGRES_ECOMMERCE_DB_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: visa-uk2-dev-pgcluster-tlspay-e-commerce-service-db-secret
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
                       key: username
-                - name: ECOMMERCE_POSTGRES_DB_PASSWORD
+                - name: POSTGRES_ECOMMERCE_DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: visa-uk2-dev-pgcluster-tlspay-e-commerce-service-db-secret
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
                       key: password
-                - name: ECOMMERCE_POSTGRES_DB_DBNAME
+                - name: POSTGRES_ECOMMERCE_DB_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: visa-uk2-dev-pgcluster-tlspay-e-commerce-service-db-secret
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
                       key: database-name
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:

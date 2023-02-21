@@ -30,8 +30,8 @@ abstract class TestCase extends \TestCase
 
     public function setUpConnections()
     {
-        config(['database.connections.payment_pgsql' => config('database.connections.unit_test_payment_pgsql')]);
-        config(['database.connections.deploy_payment_pgsql' => config('database.connections.unit_test_payment_pgsql')]);
+        config(['database.connections.payment_pgsql' => config('database.connections.pgsql')]);
+        config(['database.connections.deploy_payment_pgsql' => config('database.connections.pgsql')]);
     }
 
     public function runDatabaseMigrations()

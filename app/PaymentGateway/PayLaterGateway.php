@@ -148,7 +148,7 @@ class PayLaterGateway implements PaymentGatewayInterface
      */
     private function syncTransactionToWorkflowService(array $transaction): void
     {
-        $workflowServiceSyncStatus = $this->transactionService->syncTransactionToWorkflow($transaction, $transaction['t_gateway']);
+        $workflowServiceSyncStatus = $this->transactionService->syncTransactionToWorkflow($transaction);
         if (!empty($workflowServiceSyncStatus['error_msg'])) {
             Log::error(
                 'Transaction ERROR: transaction '.

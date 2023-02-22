@@ -656,12 +656,12 @@ class TransactionService
      *
      * @return array
      */
-    public function syncTransactionToWorkflow(array $transaction, string $paymentProvider = ''): array
+    public function syncTransactionToWorkflow(array $transaction): array
     {
         $client = $transaction['t_client'];
         $location = substr($transaction['t_issuer'], 0, 5);
         $fgId = $transaction['t_xref_fg_id'];
-        $data = $this->createWorkflowPayload($transaction, $paymentProvider);
+        $data = $this->createWorkflowPayload($transaction);
 
         Log::info('TransactionService syncTransactionToWorkflow start: '.$fgId);
 
@@ -913,7 +913,7 @@ class TransactionService
      *
      * @return array
      */
-    private function createWorkflowPayload(array $transaction, string $paymentProvider = ''): array
+    private function createWorkflowPayload(array $transaction): array
     {
         foreach ($transaction['t_items'] as $items) {
             foreach ($items['skus'] as $sku) {
@@ -940,7 +940,7 @@ class TransactionService
             'order_id' => $transaction['t_transaction_id'],
             'payment_type' => $transaction['t_service'],
             'order_details' => $orderDetails,
-            'payment_provider' => $paymentProvider,
+            'payment_provider' => $transaction['t_gateway'],
         ];
     }
 

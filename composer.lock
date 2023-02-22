@@ -1060,10 +1060,10 @@
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v2.0.2",
+            "version": "v2.0.3",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/dompdf/dompdf/v2.0.2/dompdf-dompdf-v2.0.2.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/dompdf/dompdf/v2.0.3/dompdf-dompdf-v2.0.3.zip",
                 "reference": "c5310df0e22c758c85ea5288175fc6cd777bc085",
                 "shasum": ""
             },

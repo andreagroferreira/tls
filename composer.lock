@@ -139,7 +139,7 @@
                 "shasum": ""
             },
             "require": {
-                "dompdf/dompdf": "^2",
+                "dompdf/dompdf": "^2.0.2",
                 "illuminate/support": "^6|^7|^8|^9",
                 "php": "^7.2 || ^8.0"
             },
@@ -1060,10 +1060,10 @@
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "dist": {
                 "type": "zip",
-                "url": "https://nexus.tlscontact.com/repository/composer-public/dompdf/dompdf/v2.0.1/dompdf-dompdf-v2.0.1.zip",
+                "url": "https://nexus.tlscontact.com/repository/composer-public/dompdf/dompdf/v2.0.2/dompdf-dompdf-v2.0.2.zip",
                 "reference": "c5310df0e22c758c85ea5288175fc6cd777bc085",
                 "shasum": ""
             },

@@ -208,7 +208,7 @@ class TransactionRepository
                 't_status',
                 't_appointment_date',
                 't_appointment_time',
-                't_tech_modification AS modification_date',
+                'ri_tech_modification AS modification_date',
                 'ti_id',
                 'ti_fee_type',
                 'ri_amount AS amount',

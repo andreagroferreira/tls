@@ -910,7 +910,7 @@ class TransactionService
      *
      * @return array
      */
-    public function createWorkflowPayload(array $transaction): array
+    private function createWorkflowPayload(array $transaction): array
     {
         foreach ($transaction['t_items'] as $items) {
             foreach ($items['skus'] as $sku) {                

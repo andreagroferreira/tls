@@ -279,7 +279,8 @@ class TransactionRepository
         )->toArray();
 
         $applicantQuery = $this->transactionModel
-            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('refund_items', 'refund_items.ri_xref_ti_id', '=', 'transaction_items.ti_id')
             ->where($condition)
             ->whereNotNull('transactions.t_xref_pa_id')
             ->whereNull('transactions.t_payment_method')
@@ -288,11 +289,20 @@ class TransactionRepository
                 DB::raw('\'online\' as payment_method'),
                 't_currency AS currency'
             ])
-            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) AS amount')
+            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) + 
+                        CAST(
+                            SUM(
+                                CASE
+                                    WHEN ri_id IS NOT NULL THEN (ri_amount*-1)
+                                    ELSE 0
+                                END
+                            ) AS DECIMAL
+                        ) AS amount')
             ->groupBY('ti_fee_type', 't_payment_method', 't_currency');
 
         $agentQuery = $this->transactionModel
-            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('refund_items', 'refund_items.ri_xref_ti_id', '=', 'transaction_items.ti_id')
             ->where($condition)
             ->whereNotNull('transactions.t_payment_method')
             ->select([
@@ -300,7 +310,15 @@ class TransactionRepository
                 't_payment_method AS payment_method',
                 't_currency AS currency'
             ])
-            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) AS amount')
+            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) + 
+                        CAST(
+                            SUM(
+                                CASE
+                                    WHEN ri_id IS NOT NULL THEN (ri_amount*-1)
+                                    ELSE 0
+                                END
+                            ) AS DECIMAL
+                        ) AS amount')
             ->groupBY('ti_fee_type', 't_payment_method', 't_currency');
 
         return $applicantQuery

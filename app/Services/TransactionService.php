@@ -651,7 +651,6 @@ class TransactionService
 
     /**
      * @param array $transaction
-     * @param string $paymentProvider
      *
      * @return array
      */
@@ -908,7 +907,6 @@ class TransactionService
 
     /**
      * @param array $transaction
-     * @param string $paymentProvider
      *
      * @return array
      */

@@ -910,21 +910,20 @@ class TransactionService
      *
      * @return array
      */
-    private function createWorkflowPayload(array $transaction): array
+    public function createWorkflowPayload(array $transaction): array
     {
         foreach ($transaction['t_items'] as $items) {
-            foreach ($items['skus'] as $sku) {
-                $orderDetails[] = [
-                    'f_id' => $items['f_id'],
-                    'sku' => $sku['sku'],
-                    'name' => $sku['product_name'],
-                    'vat' => $sku['vat'],
-                    'quantity' => $sku['quantity'],
-                    'price' => $sku['price'],
-                    'currency' => $transaction['t_currency'],
-                    'label' => $sku['label'] ?? '',
-                    'stamp' => $sku['tag'] ?? '',
-                ];
+            foreach ($items['skus'] as $sku) {                
+                $orderDetails[] = array_merge(
+                                    [
+                                        'f_id' => $items['f_id'],
+                                        'currency' => $transaction['t_currency'],
+                                        'name' => $sku['product_name'],
+                                        'label' => $sku['label'] ?? '',
+                                        'stamp' => $sku['tag'] ?? '',
+                                    ],
+                                    Arr::only($sku, ['sku', 'vat', 'quantity', 'price', ])
+                                );
             }
         }
 

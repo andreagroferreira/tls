@@ -265,7 +265,7 @@ class TransactionRepository
             ->union($refundQuery)
             ->orderBY($orderField, $order)
             ->paginate($limit)
-            ->toArray(); 
+            ->toArray();
     }
 
     /**

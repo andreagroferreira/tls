@@ -276,7 +276,7 @@ class TransactionRepository
         $condition = $where->push(
             ['t_tech_deleted', '=', false],
             ['t_status', '=', 'done'],
-        )->toArray(); 
+        )->toArray();
 
         $applicantQuery = $this->transactionModel
             ->leftJoin('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')

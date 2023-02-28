@@ -454,7 +454,6 @@ class TransactionService
             'current_page' => array_get($transactions, 'current_page', 1),
             'summary' => $summary ?? [],
         ];
-
     }
 
     /**
@@ -915,17 +914,16 @@ class TransactionService
     {
         foreach ($transaction['t_items'] as $items) {
             foreach ($items['skus'] as $sku) {
-                $orderDetails[] = [
-                    'f_id' => $items['f_id'],
-                    'sku' => $sku['sku'],
-                    'name' => $sku['product_name'],
-                    'vat' => $sku['vat'],
-                    'quantity' => $sku['quantity'],
-                    'price' => $sku['price'],
-                    'currency' => $transaction['t_currency'],
-                    'label' => $sku['label'] ?? '',
-                    'stamp' => $sku['tag'] ?? '',
-                ];
+                $orderDetails[] = array_merge(
+                    [
+                        'f_id' => $items['f_id'],
+                        'currency' => $transaction['t_currency'],
+                        'name' => $sku['product_name'],
+                        'label' => $sku['label'] ?? '',
+                        'stamp' => $sku['tag'] ?? '',
+                    ],
+                    Arr::only($sku, ['sku', 'vat', 'quantity', 'price'])
+                );
             }
         }
 
@@ -938,6 +936,7 @@ class TransactionService
             'order_id' => $transaction['t_transaction_id'],
             'payment_type' => $transaction['t_service'],
             'order_details' => $orderDetails,
+            'payment_provider' => $transaction['t_gateway'],
         ];
     }
 

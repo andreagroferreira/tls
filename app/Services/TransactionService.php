@@ -659,7 +659,7 @@ class TransactionService
         $client = $transaction['t_client'];
         $location = substr($transaction['t_issuer'], 0, 5);
         $fgId = $transaction['t_xref_fg_id'];
-        $data = $this->createWorkflowPayload($transaction);
+        $data = $this->createWorkflowPayload($this->getTransaction($transaction['t_id']));
 
         Log::info('TransactionService syncTransactionToWorkflow start: '.$fgId);
 

@@ -448,6 +448,13 @@ class TransactionService
             $transactions['data'][$k]['amount_without_tax'] = number_format((float) $details['amount_without_tax'], 2);
         }
 
+        if ($attributes['order_field'] == 'country' || $attributes['order_field'] == 'city') {
+            $attributes['order'] = $attributes['order'] == 'asc' ? SORT_ASC : SORT_DESC;
+
+            $keyValues = array_column($transactions['data'], $attributes['order_field']);
+            array_multisort($keyValues, $attributes['order'], $transactions['data']);
+        }
+
         return [
             'total' => array_get($transactions, 'total', 0),
             'data' => array_get($transactions, 'data', []),

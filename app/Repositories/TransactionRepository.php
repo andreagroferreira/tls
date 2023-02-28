@@ -180,6 +180,10 @@ class TransactionRepository
             ['t_status', '=', 'done'],
         )->toArray();
 
+        if ($orderField == 'country' || $orderField == 'city') {
+            $orderField = 't_id';
+        }
+
         $refundQuery = $this->refundItemModel
             ->leftJoin('transaction_items', 'transaction_items.ti_id', '=', 'refund_items.ri_xref_ti_id')
             ->leftJoin('transactions', 'transactions.t_transaction_id', '=', 'transaction_items.ti_xref_transaction_id')

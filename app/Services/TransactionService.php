@@ -382,11 +382,17 @@ class TransactionService
         ];
 
         $where = collect();
+        $dateConditionTransaction = collect();
+        $dateConditionRefund = collect();
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $where->push(
+            $dateConditionTransaction->push(
                 ['t_tech_modification', '>=', $attributes['start_date'].' 00:00:00'],
                 ['t_tech_modification', '<=', $attributes['end_date'].' 23:59:59']
+            );
+            $dateConditionRefund->push(
+                ['ri_tech_modification', '>=', $attributes['start_date'].' 00:00:00'],
+                ['ri_tech_modification', '<=', $attributes['end_date'].' 23:59:59']
             );
         }
 
@@ -421,18 +427,26 @@ class TransactionService
         if ($attributes['csv']) {
             $transactions = $this->transactionRepository->exportTransactionsToCsv(
                 $where,
+                $dateConditionTransaction,
+                $dateConditionRefund,
                 $attributes['order_field'],
                 $attributes['order']
             );
         } else {
             $transactions = $this->transactionRepository->listTransactions(
                 $where,
+                $dateConditionTransaction,
+                $dateConditionRefund,
                 $attributes['limit'],
                 $attributes['order_field'],
                 $attributes['order']
             );
             if (!empty($transactions['data'])) {
-                $summary = $this->listTransactionsSkuSummary($where);
+                $summary = $this->listTransactionsSkuSummary(
+                    $where,
+                    $dateConditionTransaction,
+                    $dateConditionRefund
+                );
             }
         }
 
@@ -835,12 +849,21 @@ class TransactionService
 
     /**
      * @param Collection $where
+     * @param Collection $dateConditionTransaction
+     * @param Collection $dateConditionRefund
      *
      * @return array
      */
-    private function listTransactionsSkuSummary(Collection $where): array
-    {
-        $data = $this->transactionRepository->listTransactionsSkuSummary($where);
+    private function listTransactionsSkuSummary(
+        Collection $where,
+        Collection $dateConditionTransaction,
+        Collection $dateConditionRefund
+    ): array {
+        $data = $this->transactionRepository->listTransactionsSkuSummary(
+            $where,
+            $dateConditionTransaction,
+            $dateConditionRefund
+        );
         if (!empty($data)) {
             foreach ($data as $skuDetails) {
                 $sku = $skuDetails['sku'];

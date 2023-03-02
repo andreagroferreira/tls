@@ -163,6 +163,8 @@ class TransactionRepository
 
     /**
      * @param Collection $where
+     * @param Collection $dateConditionTransaction
+     * @param Collection $dateConditionRefund
      * @param int        $limit
      * @param string     $orderField
      * @param string     $order
@@ -171,6 +173,8 @@ class TransactionRepository
      */
     public function listTransactions(
         Collection $where,
+        Collection $dateConditionTransaction,
+        Collection $dateConditionRefund,
         int $limit,
         string $orderField,
         string $order
@@ -189,6 +193,7 @@ class TransactionRepository
                 $join->on('refund_logs.rl_xref_r_id', '=', 'refund_items.ri_xref_r_id');
                 $join->where('refund_logs.rl_type', '=', 'status_change');
             })
+            ->where($dateConditionRefund->toArray())
             ->where($condition)
             ->where('refund_items.ri_status', 'done')
             ->select([
@@ -228,6 +233,7 @@ class TransactionRepository
         return $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
             ->leftJoin('payment_accounts', 'payment_accounts.pa_id', '=', 'transactions.t_xref_pa_id')
+            ->where($dateConditionTransaction->toArray())
             ->where($condition)
             ->select([
                 't_xref_fg_id',
@@ -270,11 +276,16 @@ class TransactionRepository
 
     /**
      * @param Collection $where
+     * @param Collection $dateConditionTransaction
+     * @param Collection $dateConditionRefund
      *
      * @return array
      */
-    public function listTransactionsSkuSummary(Collection $where): array
-    {
+    public function listTransactionsSkuSummary(
+        Collection $where,
+        Collection $dateConditionTransaction,
+        Collection $dateConditionRefund
+    ): array {
         $condition = $where->push(
             ['t_tech_deleted', '=', false],
             ['t_status', '=', 'done'],
@@ -286,6 +297,10 @@ class TransactionRepository
             ->where($condition)
             ->whereNotNull('transactions.t_xref_pa_id')
             ->whereNull('transactions.t_payment_method')
+            ->where(function($query) use($dateConditionTransaction, $dateConditionRefund) {
+                $query->where($dateConditionTransaction->toArray())
+                    ->orWhere($dateConditionRefund->toArray());
+            })
             ->select([
                 'ti_fee_type AS sku',
                 DB::raw('\'online\' as payment_method'),
@@ -307,6 +322,10 @@ class TransactionRepository
             ->leftJoin('refund_items', 'refund_items.ri_xref_ti_id', '=', 'transaction_items.ti_id')
             ->where($condition)
             ->whereNotNull('transactions.t_payment_method')
+            ->where(function($query) use($dateConditionTransaction, $dateConditionRefund) {
+                $query->where($dateConditionTransaction->toArray())
+                    ->orWhere($dateConditionRefund->toArray());
+            })
             ->select([
                 'ti_fee_type AS sku',
                 't_payment_method AS payment_method',
@@ -331,6 +350,8 @@ class TransactionRepository
 
     /**
      * @param Collection $where
+     * @param Collection $dateConditionTransaction
+     * @param Collection $dateConditionRefund
      * @param string     $orderField
      * @param string     $order
      *
@@ -338,10 +359,19 @@ class TransactionRepository
      */
     public function exportTransactionsToCsv(
         Collection $where,
+        Collection $dateConditionTransaction,
+        Collection $dateConditionRefund,
         string $orderField,
         string $order
     ): array {
-        return $this->listTransactions($where, $this->pageLimit, $orderField, $order);
+        return $this->listTransactions(
+            $where,
+            $dateConditionTransaction,
+            $dateConditionRefund,
+            $this->pageLimit,
+            $orderField,
+            $order
+        );
     }
 
     /**

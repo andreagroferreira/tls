@@ -389,5 +389,19 @@ return [
             'queryStatusHost'=> 'https://online.tingg.africa/v2/custom/requests/query-status',
         ]
     ],
+    'easypay' => [
+        'sandbox' => [
+            'host'          => '',
+            'accountNumber' => null,
+            'serviceCode'   => null,
+            'ivKey'         => null,
+            'secretKey'     => null,
+            'accessKey'     => null,
+            'clientID'      => null,
+            'clientSecret'  => null,
+            'oauthHost'     => '',
+            'queryStatusHost'=> '',
+        ],
+    ]
 
 ];

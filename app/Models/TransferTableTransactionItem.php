@@ -5,25 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TransactionItems extends Model
+class TransferTableTransactionItem extends Model
 {
     use HasFactory;
     public $timestamps = false;
 
-    protected $table = 'transaction_items';
-    protected $primaryKey = 'ti_id';
+    protected $table = 'transfer_table_transaction_items';
+    protected $primaryKey = 'tti_id';
 
     protected $fillable = [
         'ti_xref_f_id',
         'ti_xref_transaction_id',
-        'ti_fee_type',
-        'ti_vat',
-        'ti_amount',
-        'ti_quantity',
-        'ti_price_rule',
-        'ti_fee_name',
-        'ti_label',
-        'ti_tag',
+        'ti_transaction_item',
         'ti_tech_creation',
         'ti_tech_modification',
     ];

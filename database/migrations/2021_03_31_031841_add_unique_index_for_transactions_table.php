@@ -13,7 +13,7 @@ class AddUniqueIndexForTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::table('transactions', function (Blueprint $table) {
+        Schema::connection('deploy_payment_pgsql')->table('transactions', function (Blueprint $table) {
             $table->unique('t_transaction_id');
         });
     }

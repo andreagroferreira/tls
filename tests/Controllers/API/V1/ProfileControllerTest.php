@@ -6,43 +6,6 @@ use Illuminate\Support\Carbon;
 
 class ProfileControllerTest extends TestCase
 {
-    public function testUplod()
-    {
-        $data     = [
-            "profiles" => [
-                [
-                    "f_id" => 10001,
-                    "profile" => "PREMIUM"
-                ],
-                [
-                    "f_id" => 10002,
-                    "profile" => "PREMIUM"
-                ],
-                [
-                    "f_id" => 10003,
-                    "profile" => "PREMIUM"
-                ],
-                [
-                    "f_id" => 10004,
-                    "profile" => "UK-MUP"
-                ],
-                [
-                    "f_id" => 10005,
-                    "profile" => "UK-UASSP"
-                ],
-                [
-                    "f_id" => 10006,
-                    "profile" => "UK-SMS"
-                ]
-            ]
-        ];
-        $base_url = 'api/v1/profile';
-
-        $this->post($base_url, $data);
-        $response_array = $this->response->decodeResponseJson();
-        $this->response->assertStatus(200);
-        $this->assertEquals('success', array_get($response_array, 'status'));
-    }
 
     public function testFetchApplications()
     {

@@ -39,7 +39,7 @@ class RefundControllerTest extends TestCase
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The ti xref f id must be an integer.',
+                'message' => 'The ti xref f id must be a number.',
             ]);
     }
 

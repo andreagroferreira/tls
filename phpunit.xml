@@ -13,16 +13,23 @@
         <include>
             <directory suffix=".php">./app</directory>
         </include>
+        <report>
+            <html outputDirectory="./storage/tests/coverage/html"/>
+        </report>
     </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="UNIT_TEST" value="testing"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="POSTGRES_PAYMENT_DB_DATABASE" value="postgres"/>
+        <env name="UNIT_TEST_PAYMENT_DB_DATABASE" value="postgres"/>
         <env name="UNIT_TEST_POSTGRES_DB_USERNAME" value="postgres"/>
         <env name="DB_CONNECTION" value="pgsql"/>
         <env name="PAYU_NGALL2BE_SANDBOX_APP_ID" value="com.tlscontact.payu-nigeria"/>
         <env name="PAYU_NGALL2BE_SANDBOX_PRIVATE_KEY" value="8db81936-4da0-4dfa-ad63-d162f95e5286"/>
         <env name="PAYMENT_SERVICE_DOMAIN" value="https://ANY-HTTP-VALUE"/>
+        <env name="ECOMMERCE_SERVICE_DOMAIN" value="https://ANY-HTTP-VALUE"/>
+        <env name="TLSCONTACT_API" value="https://ANY-HTTP-VALUE"/>
+        <env name="XDEBUG_MODE" value="coverage"/>
     </php>
 </phpunit>

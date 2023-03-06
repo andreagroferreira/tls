@@ -163,6 +163,8 @@ class TransactionRepository
 
     /**
      * @param Collection $where
+     * @param Collection $dateConditionTransaction
+     * @param Collection $dateConditionRefund
      * @param int        $limit
      * @param string     $orderField
      * @param string     $order
@@ -171,6 +173,8 @@ class TransactionRepository
      */
     public function listTransactions(
         Collection $where,
+        Collection $dateConditionTransaction,
+        Collection $dateConditionRefund,
         int $limit,
         string $orderField,
         string $order
@@ -179,6 +183,10 @@ class TransactionRepository
             ['t_tech_deleted', '=', false],
             ['t_status', '=', 'done'],
         )->toArray();
+
+        if ($orderField == 'country' || $orderField == 'city') {
+            $orderField = 't_id';
+        }
 
         $refundQuery = $this->refundItemModel
             ->leftJoin('transaction_items', 'transaction_items.ti_id', '=', 'refund_items.ri_xref_ti_id')
@@ -189,6 +197,7 @@ class TransactionRepository
                 $join->on('refund_logs.rl_xref_r_id', '=', 'refund_items.ri_xref_r_id');
                 $join->where('refund_logs.rl_type', '=', 'status_change');
             })
+            ->where($dateConditionRefund->toArray())
             ->where($condition)
             ->where('refund_items.ri_status', 'done')
             ->select([
@@ -219,6 +228,7 @@ class TransactionRepository
                 'ti_tag',
                 'rl_agent AS agent',
             ])
+            ->selectRaw('ri_id')
             ->selectRaw('ri_quantity*-1 AS quantity')
             ->selectRaw('ri_amount-(ti_vat/100 * ri_amount) AS amount_without_tax')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
@@ -227,6 +237,7 @@ class TransactionRepository
         return $this->transactionModel
             ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
             ->leftJoin('payment_accounts', 'payment_accounts.pa_id', '=', 'transactions.t_xref_pa_id')
+            ->where($dateConditionTransaction->toArray())
             ->where($condition)
             ->select([
                 't_xref_fg_id',
@@ -256,6 +267,7 @@ class TransactionRepository
                 'ti_tag',
                 't_agent_name as agent'
             ])
+            ->selectRaw('NULL AS ri_id')
             ->selectRaw('ti_quantity AS quantity')
             ->selectRaw('ti_amount-(ti_vat/100 * ti_amount) AS amount_without_tax')
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
@@ -268,39 +280,70 @@ class TransactionRepository
 
     /**
      * @param Collection $where
+     * @param Collection $dateConditionTransaction
+     * @param Collection $dateConditionRefund
      *
      * @return array
      */
-    public function listTransactionsSkuSummary(Collection $where): array
-    {
+    public function listTransactionsSkuSummary(
+        Collection $where,
+        Collection $dateConditionTransaction,
+        Collection $dateConditionRefund
+    ): array {
         $condition = $where->push(
             ['t_tech_deleted', '=', false],
             ['t_status', '=', 'done'],
         )->toArray();
 
         $applicantQuery = $this->transactionModel
-            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('refund_items', 'refund_items.ri_xref_ti_id', '=', 'transaction_items.ti_id')
             ->where($condition)
             ->whereNotNull('transactions.t_xref_pa_id')
             ->whereNull('transactions.t_payment_method')
+            ->where(function($query) use($dateConditionTransaction, $dateConditionRefund) {
+                $query->where($dateConditionTransaction->toArray())
+                    ->orWhere($dateConditionRefund->toArray());
+            })
             ->select([
                 'ti_fee_type AS sku',
                 DB::raw('\'online\' as payment_method'),
                 't_currency AS currency'
             ])
-            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) AS amount')
+            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) + 
+                        CAST(
+                            SUM(
+                                CASE
+                                    WHEN ri_id IS NOT NULL THEN (ri_amount*-1)
+                                    ELSE 0
+                                END
+                            ) AS DECIMAL
+                        ) AS amount')
             ->groupBY('ti_fee_type', 't_payment_method', 't_currency');
 
         $agentQuery = $this->transactionModel
-            ->join('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('transaction_items', 'transactions.t_transaction_id', '=', 'ti_xref_transaction_id')
+            ->leftJoin('refund_items', 'refund_items.ri_xref_ti_id', '=', 'transaction_items.ti_id')
             ->where($condition)
             ->whereNotNull('transactions.t_payment_method')
+            ->where(function($query) use($dateConditionTransaction, $dateConditionRefund) {
+                $query->where($dateConditionTransaction->toArray())
+                    ->orWhere($dateConditionRefund->toArray());
+            })
             ->select([
                 'ti_fee_type AS sku',
                 't_payment_method AS payment_method',
                 't_currency AS currency'
             ])
-            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) AS amount')
+            ->selectRaw('CAST(SUM(ti_amount) AS DECIMAL) + 
+                        CAST(
+                            SUM(
+                                CASE
+                                    WHEN ri_id IS NOT NULL THEN (ri_amount*-1)
+                                    ELSE 0
+                                END
+                            ) AS DECIMAL
+                        ) AS amount')
             ->groupBY('ti_fee_type', 't_payment_method', 't_currency');
 
         return $applicantQuery
@@ -311,6 +354,8 @@ class TransactionRepository
 
     /**
      * @param Collection $where
+     * @param Collection $dateConditionTransaction
+     * @param Collection $dateConditionRefund
      * @param string     $orderField
      * @param string     $order
      *
@@ -318,10 +363,19 @@ class TransactionRepository
      */
     public function exportTransactionsToCsv(
         Collection $where,
+        Collection $dateConditionTransaction,
+        Collection $dateConditionRefund,
         string $orderField,
         string $order
     ): array {
-        return $this->listTransactions($where, $this->pageLimit, $orderField, $order);
+        return $this->listTransactions(
+            $where,
+            $dateConditionTransaction,
+            $dateConditionRefund,
+            $this->pageLimit,
+            $orderField,
+            $order
+        );
     }
 
     /**

@@ -368,14 +368,31 @@ class TransactionService
             't_client',
             't_batch_id',
             'ti_quantity',
+            'ti_xref_f_id',
+            't_service',
+            'ti_fee_name',
+            't_payment_method',
+            't_transaction_id',
+            't_gateway_transaction_id',
+            't_gateway',
+            't_currency',
+            'ti_price_rule',
+            'ti_vat',
+            't_agent_name',
         ];
 
         $where = collect();
+        $dateConditionTransaction = collect();
+        $dateConditionRefund = collect();
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $where->push(
+            $dateConditionTransaction->push(
                 ['t_tech_modification', '>=', $attributes['start_date'].' 00:00:00'],
                 ['t_tech_modification', '<=', $attributes['end_date'].' 23:59:59']
+            );
+            $dateConditionRefund->push(
+                ['ri_tech_modification', '>=', $attributes['start_date'].' 00:00:00'],
+                ['ri_tech_modification', '<=', $attributes['end_date'].' 23:59:59']
             );
         }
 
@@ -392,32 +409,44 @@ class TransactionService
                 }
 
                 if (in_array($column, $fullTextSearchColumn)) {
-                    $where->push([$column, 'LIKE', '%'.$value.'%']);
+                    $where->push([$column, 'ILIKE', '%'.$value.'%']);
                 } else {
-                    $where->push([$column, '=', $value]);
+                    $where->push([$column, 'ILIKE', $value]);
                 }
             }
 
             if (!empty($issuer)) {
-                $where->push(['t_issuer', 'LIKE', '%'.$issuer.'%']);
+                $where->push(['t_issuer', 'ILIKE', '%'.$issuer.'%']);
+            }
+
+            if (!empty(array_get($attributes['multi_search'], 't_agent_name'))) {
+                $where->push(['t_agent_name', 'ILIKE', '%'.array_get($attributes['multi_search'], 't_agent_name').'%']);
             }
         }
 
         if ($attributes['csv']) {
             $transactions = $this->transactionRepository->exportTransactionsToCsv(
                 $where,
+                $dateConditionTransaction,
+                $dateConditionRefund,
                 $attributes['order_field'],
                 $attributes['order']
             );
         } else {
             $transactions = $this->transactionRepository->listTransactions(
                 $where,
+                $dateConditionTransaction,
+                $dateConditionRefund,
                 $attributes['limit'],
                 $attributes['order_field'],
                 $attributes['order']
             );
             if (!empty($transactions['data'])) {
-                $summary = $this->listTransactionsSkuSummary($where);
+                $summary = $this->listTransactionsSkuSummary(
+                    $where,
+                    $dateConditionTransaction,
+                    $dateConditionRefund
+                );
             }
         }
 
@@ -431,6 +460,13 @@ class TransactionService
             $transactions['data'][$k]['receipt_url'] = getFilePath($details, $details['t_invoice_storage']);
             $transactions['data'][$k]['amount'] = number_format((float) $details['amount'], 2);
             $transactions['data'][$k]['amount_without_tax'] = number_format((float) $details['amount_without_tax'], 2);
+        }
+
+        if ($attributes['order_field'] == 'country' || $attributes['order_field'] == 'city') {
+            $attributes['order'] = $attributes['order'] == 'asc' ? SORT_ASC : SORT_DESC;
+
+            $keyValues = array_column($transactions['data'], $attributes['order_field']);
+            array_multisort($keyValues, $attributes['order'], $transactions['data']);
         }
 
         return [
@@ -644,7 +680,7 @@ class TransactionService
         $client = $transaction['t_client'];
         $location = substr($transaction['t_issuer'], 0, 5);
         $fgId = $transaction['t_xref_fg_id'];
-        $data = $this->createWorkflowPayload($transaction);
+        $data = $this->createWorkflowPayload($this->getTransaction($transaction['t_id']));
 
         Log::info('TransactionService syncTransactionToWorkflow start: '.$fgId);
 
@@ -820,12 +856,21 @@ class TransactionService
 
     /**
      * @param Collection $where
+     * @param Collection $dateConditionTransaction
+     * @param Collection $dateConditionRefund
      *
      * @return array
      */
-    private function listTransactionsSkuSummary(Collection $where): array
-    {
-        $data = $this->transactionRepository->listTransactionsSkuSummary($where);
+    private function listTransactionsSkuSummary(
+        Collection $where,
+        Collection $dateConditionTransaction,
+        Collection $dateConditionRefund
+    ): array {
+        $data = $this->transactionRepository->listTransactionsSkuSummary(
+            $where,
+            $dateConditionTransaction,
+            $dateConditionRefund
+        );
         if (!empty($data)) {
             foreach ($data as $skuDetails) {
                 $sku = $skuDetails['sku'];
@@ -899,17 +944,16 @@ class TransactionService
     {
         foreach ($transaction['t_items'] as $items) {
             foreach ($items['skus'] as $sku) {
-                $orderDetails[] = [
-                    'f_id' => $items['f_id'],
-                    'sku' => $sku['sku'],
-                    'name' => $sku['product_name'],
-                    'vat' => $sku['vat'],
-                    'quantity' => $sku['quantity'],
-                    'price' => $sku['price'],
-                    'currency' => $transaction['t_currency'],
-                    'label' => $sku['label'] ?? '',
-                    'stamp' => $sku['tag'] ?? '',
-                ];
+                $orderDetails[] = array_merge(
+                    [
+                        'f_id' => $items['f_id'],
+                        'currency' => $transaction['t_currency'],
+                        'name' => $sku['product_name'],
+                        'label' => $sku['label'] ?? '',
+                        'stamp' => $sku['tag'] ?? '',
+                    ],
+                    Arr::only($sku, ['sku', 'vat', 'quantity', 'price'])
+                );
             }
         }
 
@@ -922,6 +966,7 @@ class TransactionService
             'order_id' => $transaction['t_transaction_id'],
             'payment_type' => $transaction['t_service'],
             'order_details' => $orderDetails,
+            'payment_provider' => $transaction['t_gateway'],
         ];
     }
 

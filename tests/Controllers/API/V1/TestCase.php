@@ -19,6 +19,15 @@ abstract class TestCase extends \TestCase
         $this->client = $this->getClient();
     }
 
+    public function tearDown(): void
+    {
+        foreach ($this->app->make('db')->getConnections() as $connection) {
+            $connection->disconnect();
+        }
+
+        parent::tearDown();
+    }
+
     public function setUpConnections()
     {
         config(['database.connections.payment_pgsql' => config('database.connections.unit_test_payment_pgsql')]);
@@ -27,12 +36,7 @@ abstract class TestCase extends \TestCase
 
     public function runDatabaseMigrations()
     {
-        $db_connection = DB::connection('unit_test_pgsql');
-        $database = config('database.connections.unit_test_payment_pgsql.database');
-        if ($db_connection->table('pg_database')->whereRaw("datname='{$database}'")->count() === 0) {
-            $db_connection->statement("CREATE DATABASE {$database}");
-        }
-        $this->artisan('migrate:refresh', ['--path' => 'database/migrations', '--database' => 'unit_test_payment_pgsql', '--force' => true]);
+        $this->artisan('migrate:fresh', ['--path' => 'database/migrations', '--database' => 'deploy_payment_pgsql', '--force' => true]);
     }
 
     public function getDbNowTime()

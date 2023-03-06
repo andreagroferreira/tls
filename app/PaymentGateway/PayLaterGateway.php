@@ -73,12 +73,12 @@ class PayLaterGateway implements PaymentGatewayInterface
     {
         $transaction = $this->transactionService->getTransaction($params['t_id']);
 
+        $this->updatePayLaterTransactionStatus($transaction);
+
         if (!$this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
             $this->syncTransactionToWorkflowService($transaction);
             $this->syncTransactionToEcommerce($transaction);
         }
-
-        $this->updatePayLaterTransactionStatus($transaction);
 
         return [
             'lang' => $params['lang'],

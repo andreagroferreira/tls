@@ -3,53 +3,54 @@
 namespace App\PaymentGateway\V2\Gateways;
 
 use App\Contracts\PaymentGateway\V2\PaymentGatewayInterface;
-use App\Models\PaymentAccounts;
-use App\Models\PaymentConfigurations;
-use App\Models\PaymentServiceProviders;
+use App\Models\Transactions;
 use App\PaymentGateway\V2\PaymentGateway;
-use App\Repositories\PaymentAccountsRepositories;
-use App\Repositories\PaymentConfigurationsRepositories;
-use App\Repositories\PaymentServiceProvidersRepositories;
-use App\Services\ApiService;
-use App\Services\DbConnectionService;
 use App\Services\GatewayService;
-use App\Services\PaymentGatewayService;
-use GuzzleHttp\Client;
+use App\Services\PaymentService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Request;
 
 class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInterface
 {
+    /**
+     * @var array
+     */
+    protected $headers;
+
+    /**
+     * @var array
+     */
     protected $config;
+
+    /**
+     * @var string
+     */
     protected $appToken;
+
+    /**
+     * @var string
+     */
     protected $pageToken;
-    protected $environment;
-    protected $headers = [];
+
+    /**
+     * @var GatewayService
+     */
+    protected $gatewayService;
+
+    /**
+     * @var PaymentService
+     */
+    protected $paymentService;
 
     /**
      * EasypayPaymentGateway constructor.
      */
-    public function __construct()
+    public function __construct(GatewayService $gatewayService, PaymentService $paymentService)
     {
-        // Set the config for this payment gateway probably should go to another class/method
-        // $this->config = config('payment_gateway.pl.uaAll2pl.easypay'); // TODO: Use GatewayService::getGateways() instead
-        $this->environment = app()->environment();
-
-        $this->config = current((new GatewayService(
-            new PaymentGatewayService(
-                new ApiService(new Client()),
-                new PaymentAccountsRepositories(new PaymentAccounts()),
-                new DbConnectionService(),
-                new PaymentConfigurationsRepositories(new PaymentConfigurations()),
-                new PaymentServiceProvidersRepositories(new PaymentServiceProviders())
-            )
-        ))->getGateways('de', 'keNBO2de'));
-
-        $this->headers = [
-            'PartnerKey' => $this->config[$this->environment]['partnerKey'],
-            'locale' => $this->config[$this->environment]['locale'],
-        ];
+        $this->gatewayService = $gatewayService;
+        $this->paymentService = $paymentService;
     }
 
     /**
@@ -58,14 +59,99 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      * @param float $amount
      * @param array $options
      *
-     * @return mixed
+     * @return array
      */
-    public function charge(float $amount, array $options = [])
+    public function charge(float $amount, array $options = []): array
     {
+        /** @var Transactions $transaction */
+        $transaction = $options['transaction'];
+
+        $this->config = $this->gatewayService->getGateway(
+            $transaction->t_client,
+            $transaction->t_issuer,
+            $transaction->t_gateway,
+            $transaction->t_xref_pa_id,
+            $transaction->t_service
+        );
+        $this->headers = [
+            'PartnerKey' => $this->config['config']['partnerKey'],
+            'locale' => $this->config['config']['locale'],
+        ];
+
         $this->checkOrCreateAppToken();
         $this->refreshPageToken();
 
         return $this->createOrder($amount, $options);
+    }
+
+    /**
+     * @param Transactions $transaction
+     * @param array        $transactionItems
+     * @param float        $amount
+     * @param Request      $request
+     *
+     * @throws \Exception
+     *
+     * @return array
+     */
+    public function callback(
+        Transactions $transaction,
+        array $transactionItems,
+        float $amount,
+        Request $request
+    ): array {
+        $this->config = $this->gatewayService->getGateway(
+            $transaction->t_client,
+            $transaction->t_issuer,
+            $transaction->t_gateway,
+            $transaction->t_xref_pa_id,
+            $transaction->t_service
+        );
+        $this->headers = [
+            'PartnerKey' => $this->config['config']['partnerKey'],
+            'locale' => $this->config['config']['locale'],
+        ];
+
+        if (!$this->isRequestSignValid($transaction, $amount, $request)) {
+            throw new \Exception('[PaymentGateway\V2\Gateways\EasypayPaymentGateway] - Invalid Request Sign');
+        }
+
+        $paymentDetails = json_decode($request->get('details'));
+        $transactionData = array_merge($transaction->toArray(), [
+            't_items' => $transactionItems,
+            't_amount' => $amount,
+        ]);
+
+        return $this->paymentService->confirm($transactionData, [
+            'gateway' => $transaction->t_gateway,
+            'amount' => $paymentDetails->amount,
+            'currency' => $transaction->t_currency,
+            'gateway_transaction_id' => $paymentDetails->payment_id,
+            'gateway_transaction_reference' => $paymentDetails->payment_id,
+        ]);
+    }
+
+    /**
+     * @param Transactions $transaction
+     * @param float        $amount
+     * @param Request      $request
+     *
+     * @return bool
+     */
+    protected function isRequestSignValid(
+        Transactions $transaction,
+        float $amount,
+        Request $request
+    ): bool {
+        $headerSign = $request->headers->get('sign');
+
+        $sign = $this->generateSign($this->generateRequestBody($transaction, $amount));
+
+        if ($headerSign === $sign) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -92,7 +178,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     protected function refreshAppToken(): string
     {
         $response = Http::withHeaders($this->headers)
-            ->post($this->config[$this->environment]['host'].'/system/createApp')
+            ->post($this->config['config']['host'].'/system/createApp')
             ->json();
 
         $this->pageToken = $response['pageId'];
@@ -111,7 +197,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     protected function refreshPageToken(): string
     {
         $response = Http::withHeaders($this->headers)
-            ->post($this->config[$this->environment]['host'].'/system/createPage')
+            ->post($this->config['config']['host'].'/system/createPage')
             ->json();
 
         if ($this->hasErrors($response)) {
@@ -122,12 +208,18 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         return $response['pageId'] ?? $this->pageToken;
     }
 
-    protected function createOrder(float $amount, array $options): array
+    /**
+     * @param Transactions $transaction
+     * @param float        $amount
+     *
+     * @return array
+     */
+    protected function generateRequestBody(Transactions $transaction, float $amount): array
     {
-        $body = [
+        return [
             'order' => [
-                'serviceKey' => $this->config[$this->environment]['serviceKey'],
-                'orderId' => $options['transaction_id'],
+                'serviceKey' => $this->config['config']['serviceKey'],
+                'orderId' => $transaction->t_transaction_id,
                 'description' => 'Generic description',
                 'amount' => $this->isSandbox() ? 1.0 : $amount,
                 'additionalItems' => [
@@ -135,13 +227,29 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
                 ],
             ],
         ];
+    }
 
+    /**
+     * @param float $amount
+     * @param array $options
+     *
+     * @return array
+     */
+    protected function createOrder(float $amount, array $options): array
+    {
+        /** @var Transactions $transaction */
+        $transaction = $options['transaction'];
+
+        $body = $this->generateRequestBody($transaction, $amount);
+
+        $sign = $this->generateSign($body);
+        Log::info($sign);
         $response = Http::withHeaders(
             $this->updateHeaders([
-                'Sign' => $this->generateSign($body),
+                'Sign' => $sign,
             ])
         )
-            ->post($this->config[$this->environment]['host'].'/merchant/createOrder', $body)
+            ->post($this->config['config']['host'].'/merchant/createOrder', $body)
             ->json();
 
         if ($this->hasErrors($response)) {
@@ -225,7 +333,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         return base64_encode(
             hash(
                 'sha256',
-                $this->config[$this->environment]['secretKey'].json_encode($requestBody),
+                $this->config['config']['secretKey'].json_encode($requestBody),
                 true
             )
         );

@@ -19,12 +19,32 @@ class PaymentController extends Controller
 
     public function notify(Request $request)
     {
-        return $this->resolveService($request->gatewayName)->callback($request);
+        $result = $this->resolveService($request->gatewayName)->callback($request);
+
+        if ($result['is_success'] == 'ok') {
+            return response()->json($result, 200);
+        }
+
+        return response()->json([
+            'status' => 'fail',
+            'message' => $result['message'],
+            'href' => $result['href'],
+        ], 400);
     }
 
     public function return(Request $request)
     {
-        return $this->resolveService($request->gatewayName)->callback($request);
+        $result = $this->resolveService($request->gatewayName)->callback($request);
+
+        if ($result['is_success'] == 'ok') {
+            return response()->json($result, 200);
+        }
+
+        return response()->json([
+            'status' => 'fail',
+            'message' => $result['message'],
+            'href' => $result['href'],
+        ], 400);
     }
 
     /**

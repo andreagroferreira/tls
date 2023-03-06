@@ -401,10 +401,10 @@ return [
         ],
         'sandbox' => [
             'host' => env('ENVPAY_EASYPAY_BASE_URL', 'https://merchantapi.easypay.ua/api'),
-            'partnerKey' => env('ENVPAY_EASYPAY_PARTNER_KEY', 'easypay-test'),
-            'locale' => env('ENVPAY_EASYPAY_LOCALE', 'ua'),
-            'serviceKey' => 'MERCHANT-TEST',
-            'secretKey' => 'test',
+            'partnerKey' => null,
+            'locale' => null,
+            'serviceKey' => null,
+            'secretKey' => null,
         ],
         'production' => [
             'host' => env('ENVPAY_EASYPAY_BASE_URL', 'https://merchantapi.easypay.ua/api'),

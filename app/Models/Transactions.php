@@ -37,6 +37,7 @@ class Transactions extends Model
         't_payment_method',
         't_service',
         't_invoice_storage',
+        't_xref_pa_id',
         't_agent_name',
         't_appointment_date',
         't_appointment_time',

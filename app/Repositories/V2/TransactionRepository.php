@@ -7,14 +7,26 @@ use App\Models\Transactions;
 class TransactionRepository
 {
     /**
-     * Retreives a single transaction by transaction_id.
+     * Retreives a single transaction by t_id.
      *
-     * @param int $transactionId
+     * @param int $id
      *
      * @return null|\App\Models\Transactions
      */
-    public function getById(int $transactionId): ?Transactions
+    public function getById(int $id): ?Transactions
     {
-        return Transactions::where('t_id', $transactionId)->first();
+        return Transactions::where('t_id', $id)->first();
+    }
+
+    /**
+     * Retreives a single transaction by t_transaction_id.
+     *
+     * @param string $transactionId
+     *
+     * @return null|\App\Models\Transactions
+     */
+    public function getByTransactionId(string $transactionId): ?Transactions
+    {
+        return Transactions::where('t_transaction_id', $transactionId)->first();
     }
 }

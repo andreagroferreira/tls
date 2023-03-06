@@ -132,7 +132,6 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
             ->post($this->config['base_url'].'/merchant/createOrder', $body)
             ->json();
 
-        dd($response);
     }
 
     /**

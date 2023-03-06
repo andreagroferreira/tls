@@ -179,10 +179,6 @@ class BingaPaymentGateway implements PaymentGatewayInterface
             Log::info("binga notify done");
             return '100;' . $nowDate;
         }
-        if (strtolower($transaction['t_status']) == 'close') {
-            $msg = 'transaction_cancelled';
-            return $msg;
-        }
 
         $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $pay_config = $this->getPaySecret($payfort_config);
@@ -190,7 +186,6 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         $store_private_key = $pay_config['store_private_key'];
         $sign_string = "PAY" . $amount . $store_id . $order_id . "TLS Contact" . $store_private_key;
         $hash_sign = md5($sign_string);
-        //var_dump($hash_sign);exit;
         //$orderCheckSum
         if ($orderCheckSum == $hash_sign) {
             ##check amount
@@ -207,25 +202,24 @@ class BingaPaymentGateway implements PaymentGatewayInterface
                 $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
                 return '000;' . $nowDate;
             }
-            if ($transaction['t_status'] == 'pending') {
-                // confirm the elements of the payment
-                $confirm_params = [
-                    'gateway' => $this->getPaymentGatewayName(),
-                    'amount' => floatval($transaction['t_amount']),
-                    'currency' => $transaction['t_currency'],
-                    'transaction_id' => $transaction['t_transaction_id'],
-                    'gateway_transaction_id' => $code,
-                ];
-                $response = $this->paymentService->confirm($transaction, $confirm_params);
-                Log::info('binga notify $response:' . json_encode($response));
-                if ($response['is_success'] == 'ok') {
-                    Log::info('binga notify payment succeed, status updated！');
-                } else {
-                    Log::info('binga notify payment succeed, failed to update status！');
-                }
-                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
-                return '100;' . $nowDate;
+
+            // confirm the elements of the payment
+            $confirm_params = [
+                'gateway' => $this->getPaymentGatewayName(),
+                'amount' => floatval($transaction['t_amount']),
+                'currency' => $transaction['t_currency'],
+                'transaction_id' => $transaction['t_transaction_id'],
+                'gateway_transaction_id' => $code,
+            ];
+            $response = $this->paymentService->confirm($transaction, $confirm_params);
+            Log::info('binga notify $response:' . json_encode($response));
+            if ($response['is_success'] == 'ok') {
+                Log::info('binga notify payment succeed, status updated！');
+            } else {
+                Log::info('binga notify payment succeed, failed to update status！');
             }
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
+            return '100;' . $nowDate;
         } else {
             Log::warning("binga notify: digital orderCheckSum failed : " . json_encode($notify_params, JSON_UNESCAPED_UNICODE));
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');

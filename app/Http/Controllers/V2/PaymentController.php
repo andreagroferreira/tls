@@ -12,26 +12,19 @@ use Laravel\Lumen\Routing\Controller;
 
 class PaymentController extends Controller
 {
-    /**
-     * Undocumented function.
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    public function redirTo(Request $request): array
+    public function redirTo(Request $request): ?array
     {
         return $this->resolveService($request->gatewayName)->handle($request);
     }
 
-    public function notify()
+    public function notify(Request $request)
     {
-        return 'notify';
+        return $this->resolveService($request->gatewayName)->callback($request);
     }
 
-    public function return()
+    public function return(Request $request)
     {
-        return 'return';
+        return $this->resolveService($request->gatewayName)->callback($request);
     }
 
     /**
@@ -43,18 +36,20 @@ class PaymentController extends Controller
      *
      * @throws EntryNotFoundException|\Exception
      */
-    public function resolveService(string $gatewayName): PaymentGatewayServiceInterface
+    public function resolveService(string $gatewayName): ?PaymentGatewayServiceInterface
     {
         try {
             return app('App\\Services\\PaymentGateways\\'.Str::ucfirst($gatewayName));
         } catch (BindingResolutionException $e) {
             throw new EntryNotFoundException('Payment Controller Error. Service class not found.', 404, $e);
         } catch (\Exception $e) {
-            Log::error('General Payment Controller Error', [
+            Log::error('[PaymentController] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile().':'.$e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }
+
+        return null;
     }
 }

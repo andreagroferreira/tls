@@ -7,7 +7,9 @@ use App\PaymentGateway\V2\Gateways\EasypayPaymentGateway;
 use App\Services\V2\TransactionItemService;
 use App\Services\V2\TransactionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Exception;
 
 class Easypay implements PaymentGatewayServiceInterface
 {
@@ -16,34 +18,55 @@ class Easypay implements PaymentGatewayServiceInterface
      *
      * @param Request $request
      *
-     * @return ?array
+     * @return array|false
      */
-    public function handle(Request $request): ?array
+    public function handle(Request $request)
     {
         if (!$this->isValid($request)) {
-            return null;
+            return false;
         }
+
+        $payment = [];
 
         try {
-            $transaction = TransactionService::get($request->t_id);
-            $items = TransactionItemService::getAllByTransactionId($transaction->t_transaction_id);
-            (new EasypayPaymentGateway())->charge(1043.23, [
+            $transaction = (new TransactionService)->get($request->t_id);
+            $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
+
+            $payment = (new EasypayPaymentGateway)->charge($transactionItemsService->getAmount(), [
                 'transaction_id' => $transaction->t_transaction_id,
-                'items' => $items,
+                'items' => $transactionItemsService->getItems(),
             ]);
-        } catch (\Exception $e) {
-            dd($e->getMessage());
+        } catch (Exception $e) {
+            Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile().':'.$e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
+
+        return $payment;
     }
 
-    public function notify()
+    public function callback()
     {
-        // ...
-    }
-
-    public function return()
-    {
-        // ...
+        /**
+         * Get transaction and validate status
+         *
+         * If it is done return
+         * If it is closed or pending
+         *     Verify the sign
+         *     Check if payment status is success
+         *     If so, call PaymentService::confirm()
+         *
+         * Needs to return
+         * [
+            'status' => 'success',
+            'orderId' => $orderId,
+            'message' => 'The transaction paid successfully.',
+            'href' => $transaction['t_redirect_url'],
+            ]
+         */
+        return '/v2/return';
     }
 
     /**
@@ -53,12 +76,13 @@ class Easypay implements PaymentGatewayServiceInterface
      *
      * @return bool
      *
-     * @throws \Illuminate\Validation\ValidationException
      */
     private function isValid(Request $request): bool
     {
         return Validator::make($request->all(), [
             't_id' => 'required|int',
+//            'pa_id' => 'required|int',
+//            'lang' => 'required|string',
         ])->passes();
     }
 }

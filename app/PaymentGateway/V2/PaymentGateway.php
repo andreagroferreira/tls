@@ -5,6 +5,13 @@ namespace App\PaymentGateway\V2;
 abstract class PaymentGateway
 {
     /**
+     * It can be 'sandbox' or 'production'.
+     *
+     * @var string
+     */
+    protected $environment;
+
+    /**
      * Charge a customer's credit card.
      *
      * @param float $amount
@@ -14,22 +21,8 @@ abstract class PaymentGateway
      */
     abstract public function charge(float $amount, array $options = []);
 
-    /**
-     * Refund a charged credit card.
-     *
-     * @param float  $amount
-     * @param string $transactionId
-     *
-     * @return mixed
-     */
-    abstract public function refund(float $amount, $transactionId);
-
-    /**
-     * Cancel a pending charge.
-     *
-     * @param string $transactionId
-     *
-     * @return mixed
-     */
-    abstract public function cancel($transactionId);
+    public function isSandbox(): bool
+    {
+        return $this->environment == 'sandbox';
+    }
 }

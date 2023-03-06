@@ -14,22 +14,4 @@ interface PaymentGatewayInterface
      */
     public function charge(float $amount, array $options = []);
 
-    /**
-     * Refund a charged credit card.
-     *
-     * @param float  $amount
-     * @param string $transactionId
-     *
-     * @return mixed
-     */
-    public function refund(float $amount, string $transactionId);
-
-    /**
-     * Cancel a pending charge.
-     *
-     * @param string $transactionId
-     *
-     * @return mixed
-     */
-    public function cancel(string $transactionId);
 }

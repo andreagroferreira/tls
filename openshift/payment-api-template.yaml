@@ -21,6 +21,8 @@ parameters:
     required: true
   - name: POSTGRES_DB_HOST
     required: true
+  - name: POSTGRES_TLSCONNECT_DB_DATABASE
+    required: true
   - name: POSTGRES_PAYMENT_DB_DATABASE
     required: true
   - name: TLSCONTACT_API
@@ -632,6 +634,8 @@ objects:
                     secretKeyRef:
                       name: ${POSTGRES_SECRET_NAME}
                       key: password
+                - name: POSTGRES_TLSCONNECT_DB_DATABASE
+                  value: ${POSTGRES_TLSCONNECT_DB_DATABASE}
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
                 - name: KEYCLOAK_BASE_URL
@@ -1132,6 +1136,8 @@ objects:
                     secretKeyRef:
                       name: ${POSTGRES_ADMIN_SECRET_NAME}
                       key: password
+                - name: POSTGRES_TLSCONNECT_DB_DATABASE
+                  value: ${POSTGRES_TLSCONNECT_DB_DATABASE}
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
                 - name: ENVPAY_SWITCH_COMMON_SANDBOX_HOST
@@ -1530,6 +1536,21 @@ objects:
                   value: ${WORKFLOW_SERVICE_DOMAIN}
                 - name: ECOMMERCE_SERVICE_DOMAIN
                   value: ${ECOMMERCE_SERVICE_DOMAIN}
+                - name: POSTGRES_ECOMMERCE_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: username
+                - name: POSTGRES_ECOMMERCE_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: password
+                - name: POSTGRES_ECOMMERCE_DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: database-name
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT

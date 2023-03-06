@@ -155,6 +155,20 @@ return [
             'schema' => 'public',
             'sslmode' => 'prefer',
         ],
+
+        'tlsconnect_pgsql' => [
+            'driver' => 'pgsql',
+            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
+            'port' => env('POSTGRES_DB_PORT', '5432'),
+            'database' => env('POSTGRES_TLSCONNECT_DB_DATABASE', ''),
+            'username' => env('POSTGRES_DB_USERNAME', 'forge'),
+            'password' => env('POSTGRES_DB_PASSWORD', ''),
+            'charset' =>  env('DB_CHARSET', 'utf8'),
+            'prefix' => env('DB_PREFIX', ''),
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
     ],
 
     /*

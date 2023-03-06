@@ -139,6 +139,7 @@ deploy-instance:
       POSTGRES_DB_HOST="pgbouncer"
       POSTGRES_SECRET_NAME="${PROJECT}-pgcluster-common-secret"
       POSTGRES_ADMIN_SECRET_NAME="${PROJECT}-pgsql-master"
+      POSTGRES_TLSCONNECT_DB_DATABASE="${DATABASE}"
       POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://${PAYMENT_SERVICE_URL}"

@@ -7,10 +7,10 @@ use App\Models\Transactions;
 use App\PaymentGateway\V2\PaymentGateway;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Request;
 
 class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInterface
 {
@@ -116,7 +116,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
             throw new \Exception('[PaymentGateway\V2\Gateways\EasypayPaymentGateway] - Invalid Request Sign');
         }
 
-        $paymentDetails = json_decode($request->get('details'));
+        $paymentDetails = $request->get('details');
         $transactionData = array_merge($transaction->toArray(), [
             't_items' => $transactionItems,
             't_amount' => $amount,
@@ -124,10 +124,10 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
 
         return $this->paymentService->confirm($transactionData, [
             'gateway' => $transaction->t_gateway,
-            'amount' => $paymentDetails->amount,
+            'amount' => $paymentDetails['amount'],
             'currency' => $transaction->t_currency,
-            'gateway_transaction_id' => $paymentDetails->payment_id,
-            'gateway_transaction_reference' => $paymentDetails->payment_id,
+            'gateway_transaction_id' => $paymentDetails['payment_id'],
+            'gateway_transaction_reference' => $paymentDetails['payment_id'],
         ]);
     }
 
@@ -140,7 +140,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     {
         $headerSign = $request->headers->get('sign');
 
-        $sign = $this->generateSign($request->toArray());
+        $sign = $this->generateSign($request->all());
 
         return $headerSign === $sign;
     }
@@ -217,6 +217,10 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
                     'Merchant.UrlNotify' => get_callback_url($this->config['common']['successRedirectUrl']),
                 ],
             ],
+            'urls' => [
+                'success' => get_callback_url($this->config['common']['successRedirectUrl']),
+                'failed' => get_callback_url($this->config['common']['successRedirectUrl']),
+            ]
         ];
     }
 

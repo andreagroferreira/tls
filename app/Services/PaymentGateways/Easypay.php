@@ -92,7 +92,6 @@ class Easypay implements PaymentGatewayServiceInterface
             return [
                 'is_success' => 'fail',
                 'message' => '[Services\PaymentGateways\Easypay] - Invalid callback action',
-                'orderid' => '[null]',
             ];
         }
 
@@ -132,9 +131,33 @@ class Easypay implements PaymentGatewayServiceInterface
                 'is_success' => 'fail',
                 'message' => $e->getMessage(),
                 'href' => $transaction->t_onerror_url,
-                'orderid' => $transaction->t_transaction_id,
             ];
         }
+    }
+
+    public function validateTransactionStatus(Request $request) {
+        $transaction = $this->transactionService->getByTransactionId($request->orderId);
+
+        if ($transaction === null) {
+            return [
+                'is_success' => 'fail',
+                'message' => 'Transaction not found for id: '.$request->t_id,
+            ];
+        }
+
+        $message = 'Transaction OK: transaction has been confirmed';
+        $result = 'ok';
+        if ($transaction->t_status !== 'done') {
+            $result = 'fail';
+            $message = 'Transaction PENDING: waiting for confirmation from payment provider';
+        }
+
+        return [
+            'is_success' => $result,
+            'message' => $message,
+            'orderid' => $transaction->t_transaction_id,
+            'href' => $transaction->t_redirect_url,
+        ];
     }
 
     /**

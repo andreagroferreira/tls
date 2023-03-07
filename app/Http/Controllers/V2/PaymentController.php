@@ -34,7 +34,7 @@ class PaymentController extends Controller
 
     public function return(Request $request)
     {
-        $result = $this->resolveService($request->gatewayName)->callback($request);
+        $result = $this->resolveService($request->gatewayName)->validateTransactionStatus($request);
 
         if ($result['is_success'] === 'ok') {
             return response()->json($result, 200);

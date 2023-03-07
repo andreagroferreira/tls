@@ -86,30 +86,30 @@ class Easypay implements PaymentGatewayServiceInterface
 
     public function callback(Request $request)
     {
+        $transaction = $this->transactionService->getByTransactionId($request->order_id);
+
         if ($request->action !== 'payment') {
             return [
-                'is_success' => 'ok',
+                'is_success' => 'fail',
                 'message' => '[Services\PaymentGateways\Easypay] - Invalid callback action',
                 'orderid' => '[null]',
             ];
         }
 
-        $transaction = $this->transactionService->getByTransactionId($request->order_id);
-
         try {
             if ($transaction === null) {
                 return [
-                    'is_success' => 'ok',
+                    'is_success' => 'fail',
                     'message' => 'Transaction not found for id: '.$request->t_id,
-                    'orderid' => $transaction->t_transaction_id,
                 ];
             }
 
             if ($transaction->t_status === 'done') {
                 return [
                     'is_success' => 'ok',
-                    'message' => 'Transaction '.$request->t_id. ' has already been processed',
+                    'message' => 'Transaction OK: transaction has been confirmed',
                     'orderid' => $transaction->t_transaction_id,
+                    'href' => $transaction->t_redirect_url,
                 ];
             }
 

@@ -187,6 +187,11 @@ class TransactionRepository
         if ($orderField == 'country' || $orderField == 'city') {
             $orderField = 't_id';
         }
+        if ($order == 'asc') {
+            $orderByRaw = $orderField.' '.$order.' NULLS FIRST';
+        } else {
+            $orderByRaw = $orderField.' '.$order.' NULLS LAST';
+        }
 
         $refundQuery = $this->refundItemModel
             ->leftJoin('transaction_items', 'transaction_items.ti_id', '=', 'refund_items.ri_xref_ti_id')
@@ -273,7 +278,7 @@ class TransactionRepository
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
             ->union($refundQuery)
-            ->orderBY($orderField, $order)
+            ->orderByRaw($orderByRaw)
             ->paginate($limit)
             ->toArray();
     }

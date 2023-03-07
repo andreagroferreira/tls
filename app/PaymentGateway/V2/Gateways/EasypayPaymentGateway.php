@@ -214,12 +214,12 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
                 'description' => 'Generic description',
                 'amount' => $this->isSandbox() ? 1.0 : $amount,
                 'additionalItems' => [
-                    'Merchant.UrlNotify' => get_callback_url($this->config['common']['successRedirectUrl']),
+                    'Merchant.UrlNotify' => get_callback_url($this->config['common']['notifyUrl']),
                 ],
             ],
             'urls' => [
                 'success' => get_callback_url($this->config['common']['successRedirectUrl']),
-                'failed' => get_callback_url($this->config['common']['successRedirectUrl']),
+                'failed' => get_callback_url($this->config['common']['failedRedirectUrl']),
             ]
         ];
     }

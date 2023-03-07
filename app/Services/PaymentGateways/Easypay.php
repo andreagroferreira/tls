@@ -89,7 +89,8 @@ class Easypay implements PaymentGatewayServiceInterface
         if ($request->action !== 'payment') {
             return [
                 'is_success' => 'ok',
-                'message' => '[Services\PaymentGateways\Easypay] - Invalid callback action'
+                'message' => '[Services\PaymentGateways\Easypay] - Invalid callback action',
+                'orderid' => '[null]',
             ];
         }
 
@@ -100,6 +101,7 @@ class Easypay implements PaymentGatewayServiceInterface
                 return [
                     'is_success' => 'ok',
                     'message' => 'Transaction not found for id: '.$request->t_id,
+                    'orderid' => $transaction->t_transaction_id,
                 ];
             }
 
@@ -107,6 +109,7 @@ class Easypay implements PaymentGatewayServiceInterface
                 return [
                     'is_success' => 'ok',
                     'message' => 'Transaction '.$request->t_id. ' has already been processed',
+                    'orderid' => $transaction->t_transaction_id,
                 ];
             }
 
@@ -128,7 +131,8 @@ class Easypay implements PaymentGatewayServiceInterface
             return [
                 'is_success' => 'fail',
                 'message' => $e->getMessage(),
-                'href' => $transaction->t_onerror_url
+                'href' => $transaction->t_onerror_url,
+                'orderid' => $transaction->t_transaction_id,
             ];
         }
     }

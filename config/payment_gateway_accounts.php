@@ -394,8 +394,9 @@ return [
         'label' => 'EasyPay',
         'active' => true,
         'common' => [
+            'notifyUrl' => '/easypay/notify',
             'successRedirectUrl' => '/easypay/return',
-            'failRedirectUrl' => '/easypay/return',
+            'failedRedirectUrl' => '/easypay/return',
             'pendingRedirectUrl' => '/easypay/return',
             'paymentWebhookUrl' => '/easypay/return',
         ],

@@ -155,7 +155,7 @@ class Easypay implements PaymentGatewayServiceInterface
 
         $message = 'Transaction OK: transaction has been confirmed';
         $result = 'ok';
-        if ($transaction->t_status === 'done') {
+        if ($transaction->t_status !== 'done') {
             $result = 'fail';
             $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
         }

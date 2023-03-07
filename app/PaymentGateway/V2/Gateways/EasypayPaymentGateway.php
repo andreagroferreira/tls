@@ -112,7 +112,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
             'locale' => $this->config['config']['locale'],
         ];
 
-        if (!$this->isRequestSignValid($transaction, $amount, $request)) {
+        if (!$this->isRequestSignValid($request)) {
             throw new \Exception('[PaymentGateway\V2\Gateways\EasypayPaymentGateway] - Invalid Request Sign');
         }
 
@@ -132,26 +132,17 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     }
 
     /**
-     * @param Transactions $transaction
-     * @param float        $amount
-     * @param Request      $request
+     * @param Request $request
      *
      * @return bool
      */
-    protected function isRequestSignValid(
-        Transactions $transaction,
-        float $amount,
-        Request $request
-    ): bool {
+    protected function isRequestSignValid(Request $request): bool
+    {
         $headerSign = $request->headers->get('sign');
 
-        $sign = $this->generateSign($this->generateRequestBody($transaction, $amount));
+        $sign = $this->generateSign($request->toArray());
 
-        if ($headerSign === $sign) {
-            return true;
-        }
-
-        return false;
+        return $headerSign === $sign;
     }
 
     /**
@@ -243,7 +234,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         $body = $this->generateRequestBody($transaction, $amount);
 
         $sign = $this->generateSign($body);
-        Log::info($sign);
+
         $response = Http::withHeaders(
             $this->updateHeaders([
                 'Sign' => $sign,

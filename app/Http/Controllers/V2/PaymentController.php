@@ -21,7 +21,7 @@ class PaymentController extends Controller
     {
         $result = $this->resolveService($request->gatewayName)->callback($request);
 
-        if ($result['is_success'] == 'ok') {
+        if ($result['is_success'] === 'ok') {
             return response()->json($result, 200);
         }
 
@@ -36,7 +36,7 @@ class PaymentController extends Controller
     {
         $result = $this->resolveService($request->gatewayName)->callback($request);
 
-        if ($result['is_success'] == 'ok') {
+        if ($result['is_success'] === 'ok') {
             return response()->json($result, 200);
         }
 

@@ -12,6 +12,7 @@ class TransactionItems extends Model
 
     protected $table = 'transaction_items';
     protected $primaryKey = 'ti_id';
+    protected $connection = 'payment_pgsql';
 
     protected $fillable = [
         'ti_xref_f_id',

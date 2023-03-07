@@ -136,6 +136,14 @@ class Easypay implements PaymentGatewayServiceInterface
     }
 
     public function validateTransactionStatus(Request $request) {
+        $error = $request->get('error');
+        if ($error !== null) {
+            return [
+                'is_success' => 'fail',
+                'message' => 'Payment Error: '.$error['errorMessage'],
+            ];
+        }
+
         $transaction = $this->transactionService->getByTransactionId($request->orderId);
 
         if ($transaction === null) {
@@ -147,9 +155,9 @@ class Easypay implements PaymentGatewayServiceInterface
 
         $message = 'Transaction OK: transaction has been confirmed';
         $result = 'ok';
-        if ($transaction->t_status !== 'done') {
+        if ($transaction->t_status === 'done') {
             $result = 'fail';
-            $message = 'Transaction PENDING: waiting for confirmation from payment provider';
+            $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
         }
 
         return [

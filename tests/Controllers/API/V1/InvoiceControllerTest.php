@@ -58,7 +58,7 @@ class InvoiceControllerTest extends TestCase
 
         $country = substr($transaction->t_issuer, 0, 2);
         $city = substr($transaction->t_issuer, 2, 3);
-        $expectedFilePath = 'invoice/WW/'.$country.'/'.$city.'/'.$transaction->t_xref_fg_id.'/tlspay_'.$transaction->t_transaction_id.'.pdf';
+        $expectedFilePath = 'invoice/WW/'.$country.'/'.$city.'/'.$transaction->t_xref_fg_id.'/'.$transaction->t_transaction_id.'.pdf';
 
         $filePath = getFilePath((array) $transaction, $transaction->t_invoice_storage);
 

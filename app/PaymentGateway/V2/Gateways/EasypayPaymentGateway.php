@@ -90,9 +90,9 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      * @param float        $amount
      * @param Request      $request
      *
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     public function callback(
         Transactions $transaction,
@@ -220,7 +220,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
             'urls' => [
                 'success' => get_callback_url($this->config['common']['successRedirectUrl']),
                 'failed' => get_callback_url($this->config['common']['failedRedirectUrl']),
-            ]
+            ],
         ];
     }
 
@@ -232,16 +232,15 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      */
     protected function createOrder(float $amount, array $options): array
     {
-        /** @var Transactions $transaction */
-        $transaction = $options['transaction'];
+        $body = $this->generateRequestBody($options['transaction'], $amount);
 
-        $body = $this->generateRequestBody($transaction, $amount);
+        $signature = $this->generateSign($body);
 
-        $sign = $this->generateSign($body);
+        Log::info('[PaymentGateway\EasypayPaymentGateway] Signature - ', [$signature]);
 
         $response = Http::withHeaders(
             $this->updateHeaders([
-                'Sign' => $sign,
+                'Sign' => $signature,
             ])
         )
             ->post($this->config['config']['host'].'/merchant/createOrder', $body)
@@ -317,7 +316,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     }
 
     /**
-     * Generate the sign for the request.
+     * Generate the signature for the request.
      *
      * @param array $requestBody the body of the request
      *

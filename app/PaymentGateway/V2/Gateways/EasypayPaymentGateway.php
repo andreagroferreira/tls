@@ -192,7 +192,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
             ->json();
 
         if ($this->hasErrors($response)) {
-            $this->handle($response['error']['errorCode']);
+            $this->handled($response['error']['errorCode']);
         }
         $this->updateHeaders(['PageId' => $response['pageId'] ?? $this->pageToken]);
 
@@ -247,17 +247,21 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
             ->json();
 
         if ($this->hasErrors($response)) {
+            if ($this->handled($response['error']['errorCode'])) {
+                Log::warning('[PaymentGateway\EasypayPaymentGateway] - Problem invalid token prevented order creation, retrying...', [
+                    'error' => $response['error'],
+                    'requestBody' => $body,
+                ]);
+
+                return $this->createOrder($amount, $options);
+            }
+
             Log::error('[PaymentGateway\EasypayPaymentGateway] - Error while creating an order.', [
                 'error' => $response['error'],
                 'requestBody' => $body,
             ]);
 
             return [];
-            // TODO: Error handling
-            /*
-             * PROVIDER_ERROR_DUBLICATED_ORDER_ID
-             * AMOUNT_VALIDATION_BY_SERVICE_EXCEPTION
-             */
         }
 
         return [
@@ -268,23 +272,27 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     }
 
     /**
-     * Handle errors regarding the provider response.
+     * Handles response errors and returns true if the error was handled.
      *
      * @param string $errorCode
+     *
+     * @return bool
      */
-    protected function handle(string $errorCode): void
+    protected function handled(string $errorCode): bool
     {
         switch ($errorCode) {
             case 'APPID_NOT_FOUND':
                 $this->refreshAppToken();
 
-                break;
+                return true;
 
             case 'PAGE_NOT_FOUND':
                 $this->refreshPageToken();
 
-                break;
+                return true;
         }
+
+        return false;
     }
 
     /**

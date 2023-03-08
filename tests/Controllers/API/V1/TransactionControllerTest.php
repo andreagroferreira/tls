@@ -984,7 +984,7 @@ class TransactionControllerTest extends TestCase
                     'city_code' => substr($transactions->t_issuer, 2, 3),
                     'country' => getCountryName(substr($transactions->t_issuer, 0, 2)),
                     'city' => getCityName(substr($transactions->t_issuer, 2, 3)),
-                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/tlspay_'.$transactions->t_transaction_id.'.pdf'
+                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/'.$transactions->t_transaction_id.'.pdf'
                 ],
             ],
             'current_page' => 1,

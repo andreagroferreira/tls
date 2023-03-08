@@ -12,7 +12,6 @@ class PaymentAccountsControllerTest extends TestCase
     public function testGetPaymentGatewayFieldList()
     {
         putenv('PROJECT=de');
-
         $base_url = 'api/v1/payment-gateway-field-list';
         $this->get($base_url);
         $this->response->assertStatus(200);

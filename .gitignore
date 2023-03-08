@@ -8,3 +8,5 @@ coverage-report.clover
 unittest-report.xml
 .php-cs-fixer.cache
 /storage/tests
+.DS_Store
+/storage/.DS_Store

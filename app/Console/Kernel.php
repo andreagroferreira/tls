@@ -14,6 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\GetPayuReference::class,
+        Commands\ImportTransactionsFromTlsConnect::class,
+        Commands\GetTransactionsToMigrate::class,
     ];
 
     /**

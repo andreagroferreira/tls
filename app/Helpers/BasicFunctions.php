@@ -230,5 +230,5 @@ function getFilePath(array $transaction, string $storageService = 'file-library'
     $country = substr($transaction['t_issuer'], 0, 2);
     $city = substr($transaction['t_issuer'], 2, 3);
 
-    return 'invoice/WW/'.$country.'/'.$city.'/'.array_get($transaction, 't_xref_fg_id').'/tlspay_'.array_get($transaction, 't_transaction_id').'.pdf';
+    return 'invoice/WW/'.$country.'/'.$city.'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
 }

@@ -77,6 +77,20 @@ class PaymentService
             $error_msg[] = 'payment_amount_incorrect';
         }
 
+        $update_fields = [
+            't_gateway' => $payment_gateway,
+            't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
+            't_gateway_transaction_reference' => $confirm_params['gateway_transaction_reference'] ?? null,
+            't_status' => 'done',
+            't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
+            't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,
+        ];
+
+        $this->transactionService->updateById($transaction['t_id'], $update_fields);
+        foreach ($update_fields as $field_key => $field_val) {
+            $transaction[$field_key] = $field_val;
+        }
+
         if ($transaction && !empty($transaction['t_items'])) {
             if (!empty($transaction['t_xref_fg_id'])) {
                 if ($this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
@@ -101,20 +115,6 @@ class PaymentService
                     }
                 }
             }
-        }
-
-        $update_fields = [
-            't_gateway' => $payment_gateway,
-            't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
-            't_gateway_transaction_reference' => $confirm_params['gateway_transaction_reference'] ?? null,
-            't_status' => 'done',
-            't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
-            't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,
-        ];
-
-        $this->transactionService->updateById($transaction['t_id'], $update_fields);
-        foreach ($update_fields as $field_key => $field_val) {
-            $transaction[$field_key] = $field_val;
         }
 
         if ($this->isVersion(1, $transaction['t_issuer'], 'invoice')) {

@@ -30,13 +30,18 @@ abstract class TestCase extends \TestCase
 
     public function setUpConnections()
     {
-        config(['database.connections.payment_pgsql' => config('database.connections.pgsql')]);
-        config(['database.connections.deploy_payment_pgsql' => config('database.connections.pgsql')]);
-        config(['database.connections.unit_test_payment_pgsql' => config('database.connections.pgsql')]);
+        config(['database.connections.payment_pgsql' => config('database.connections.unit_test_payment_pgsql')]);
+        config(['database.connections.deploy_payment_pgsql' => config('database.connections.unit_test_payment_pgsql')]);
     }
 
     public function runDatabaseMigrations()
     {
+        $db_connection = DB::connection('unit_test_pgsql');
+        $database = config('database.connections.unit_test_payment_pgsql.database');
+        if ($db_connection->table('pg_database')->whereRaw("datname='$database'")->count() === 0) {
+            $db_connection->statement("CREATE DATABASE $database");
+        }
+
         $this->artisan('migrate:fresh', ['--path' => 'database/migrations', '--database' => 'deploy_payment_pgsql', '--force' => true]);
     }
 

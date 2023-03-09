@@ -187,11 +187,7 @@ class TransactionRepository
         if ($orderField == 'country' || $orderField == 'city') {
             $orderField = 't_id';
         }
-        if ($order == 'asc') {
-            $orderByRaw = $orderField.' '.$order.' NULLS FIRST';
-        } else {
-            $orderByRaw = $orderField.' '.$order.' NULLS LAST';
-        }
+        $orderByRaw = $orderField.' '.$order.' NULLS LAST';
 
         $refundQuery = $this->refundItemModel
             ->leftJoin('transaction_items', 'transaction_items.ti_id', '=', 'refund_items.ri_xref_ti_id')

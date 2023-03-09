@@ -273,7 +273,7 @@ class TransactionRepository
             ->selectRaw('SUBSTR(t_issuer, 1, 2) AS country_code')
             ->selectRaw('SUBSTR(t_issuer, 3, 3) AS city_code')
             ->union($refundQuery)
-            ->orderBY($orderField, $order)
+            ->orderByRaw($orderField.' '.$order.' NULLS LAST')
             ->paginate($limit)
             ->toArray();
     }

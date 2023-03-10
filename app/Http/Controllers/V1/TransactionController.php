@@ -585,8 +585,8 @@ class TransactionController extends BaseController
         $params = [
             'page' => $request->input('page', 1),
             'limit' => $request->input('limit', 20),
-            'start_date' => $request->input('start_date', Carbon::today()->toDateString()),
-            'end_date' => $request->input('end_date', Carbon::today()->toDateString()),
+            'start_date' => $request->input('start_date', Carbon::today()->toDateTimeString()),
+            'end_date' => $request->input('end_date', Carbon::today()->toDateTimeString()),
             'order_field' => $request->input('order_field', 't_id'),
             'order' => $request->input('order', 'desc'),
             'multi_search' => $request->input('multi_search'),
@@ -596,8 +596,8 @@ class TransactionController extends BaseController
         $validator = validator($params, [
             'page' => 'required|integer',
             'limit' => 'required|integer',
-            'start_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d',
-            'end_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d|after_or_equal:start_date',
+            'start_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d H:i:s',
+            'end_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d H:i:s|after_or_equal:start_date',
             'order_field' => 'required|string',
             'order' => [
                 'required',

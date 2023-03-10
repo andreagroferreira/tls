@@ -387,12 +387,12 @@ class TransactionService
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
             $dateConditionTransaction->push(
-                ['t_tech_modification', '>=', $attributes['start_date'].' 00:00:00'],
-                ['t_tech_modification', '<=', $attributes['end_date'].' 23:59:59']
+                ['t_tech_modification', '>=', $attributes['start_date']],
+                ['t_tech_modification', '<=', $attributes['end_date']]
             );
             $dateConditionRefund->push(
-                ['ri_tech_modification', '>=', $attributes['start_date'].' 00:00:00'],
-                ['ri_tech_modification', '<=', $attributes['end_date'].' 23:59:59']
+                ['ri_tech_modification', '>=', $attributes['start_date']],
+                ['ri_tech_modification', '<=', $attributes['end_date']]
             );
         }
 

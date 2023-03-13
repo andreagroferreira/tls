@@ -15,7 +15,7 @@ default:
 variables:
   APPLICATION_NAME: "payment-api"
   ENV: "IET2"
-  APP_ENV: "test"
+  APP_ENV: "testing"
   PROJECT: "visa-be-dev"
   CLIENT: "schengen-be"
   DATABASE: $DATABASE
@@ -89,9 +89,9 @@ test-unit:
       when: never
     - if: $APP_ENV == "production"
       when: manual
-      allow_failure: true
+      allow_failure: false
     - when: on_success
-      allow_failure: true
+      allow_failure: false
 
 deploy-instance:
   stage: deploy

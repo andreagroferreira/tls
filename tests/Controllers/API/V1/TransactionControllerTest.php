@@ -840,11 +840,11 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsWithStartDateFilterValidation(): void
     {
-        $this->get($this->listTransactionsApi.'?start_date=2022-01-35');
+        $this->get($this->listTransactionsApi.'?start_date=2022-01-35 11:00:00');
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The start date does not match the format Y-m-d.',
+                'message' => 'The start date does not match the format Y-m-d H:i:s.',
             ]);
     }
 
@@ -855,11 +855,11 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsWithEndDateFilterValidation(): void
     {
-        $this->get($this->listTransactionsApi.'?start_date=2022-01-01&end_date=2022-12-35');
+        $this->get($this->listTransactionsApi.'?start_date=2022-01-01 11:00:00&end_date=2022-12-35 11:00:00');
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
-                'message' => 'The end date does not match the format Y-m-d.',
+                'message' => 'The end date does not match the format Y-m-d H:i:s.',
             ]);
     }
 
@@ -871,7 +871,7 @@ class TransactionControllerTest extends TestCase
     public function testListTransactionsWithDatesFilterWithNoResult(): void
     {
         $today = Carbon::today();
-        $this->get($this->listTransactionsApi.'?start_date='.$today->toDateString().'&end_date='.$today->addDay()->toDateString());
+        $this->get($this->listTransactionsApi.'?start_date='.$today->toDateTimeString().'&end_date='.$today->addDay()->toDateTimeString());
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 0,
@@ -984,7 +984,7 @@ class TransactionControllerTest extends TestCase
                     'city_code' => substr($transactions->t_issuer, 2, 3),
                     'country' => getCountryName(substr($transactions->t_issuer, 0, 2)),
                     'city' => getCityName(substr($transactions->t_issuer, 2, 3)),
-                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/tlspay_'.$transactions->t_transaction_id.'.pdf'
+                    'receipt_url' => 'invoice/WW/'.substr($transactions->t_issuer, 0, 2).'/'.substr($transactions->t_issuer, 2, 3).'/'.$transactions->t_xref_fg_id.'/'.$transactions->t_transaction_id.'.pdf'
                 ],
             ],
             'current_page' => 1,
@@ -992,7 +992,7 @@ class TransactionControllerTest extends TestCase
 
         $today = Carbon::today();
         $tomorrow = Carbon::today()->addDay(1);
-        $this->get($this->listTransactionsApi.'?page=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
+        $this->get($this->listTransactionsApi.'?page=1&start_date='.$today->toDateTimeString().'&end_date='.$tomorrow->toDateTimeString());
         $this->response->assertStatus(200)->assertJson($expectedResult);
     }
 
@@ -1027,7 +1027,7 @@ class TransactionControllerTest extends TestCase
 
         $today = Carbon::today();
         $tomorrow = Carbon::today()->addDay(1);
-        $this->get($this->listTransactionsApi.'?page=1&limit=1&start_date='.$today->toDateString().'&end_date='.$tomorrow->toDateString());
+        $this->get($this->listTransactionsApi.'?page=1&limit=1&start_date='.$today->toDateTimeString().'&end_date='.$tomorrow->toDateTimeString());
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,
@@ -1059,7 +1059,7 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsWithStartDateAndEndDateValidation(): void
     {
-        $this->get($this->listTransactionsApi.'?start_date=2022-10-01&end_date=2022-09-12');
+        $this->get($this->listTransactionsApi.'?start_date=2022-10-01 11:00:00&end_date=2022-09-12 11:00:00');
         $this->response->assertStatus(400)
             ->assertJson([
                 'error' => 'params error',
@@ -1127,7 +1127,9 @@ class TransactionControllerTest extends TestCase
             'ti_price_rule' => 'discount',
         ]);
 
-        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=dz&multi_search[t_city]=ALG&multi_search[ti_fee_type]=service');
+        $today = Carbon::today();
+        $tomorrow = Carbon::today()->addDay(1);
+        $this->get($this->listTransactionsApi.'?page=1&start_date='.$today->toDateTimeString().'&end_date='.$tomorrow->toDateTimeString().'&multi_search[t_country]=dz&multi_search[t_city]=ALG&multi_search[ti_fee_type]=service');
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();
@@ -1181,7 +1183,9 @@ class TransactionControllerTest extends TestCase
             'ri_invoice_path' => 'file-library',
         ]);
 
-        $this->get($this->listTransactionsApi);
+        $today = Carbon::today();
+        $tomorrow = Carbon::today()->addDay(1);
+        $this->get($this->listTransactionsApi.'?page=1&start_date='.$today->toDateTimeString().'&end_date='.$tomorrow->toDateTimeString());
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();
@@ -1278,7 +1282,9 @@ class TransactionControllerTest extends TestCase
         $refunds = $this->generateRefund();
         $this->generateRefundItems($refunds->r_id, $transactionItems->ti_id);
 
-        $this->get($this->listTransactionsApi.'?page=1&multi_search[t_country]=dz&multi_search[t_city]=ALG&multi_search[ti_fee_type]=service');
+        $today = Carbon::today();
+        $tomorrow = Carbon::today()->addDay(1);
+        $this->get($this->listTransactionsApi.'?page=1&start_date='.$today->toDateTimeString().'&end_date='.$tomorrow->toDateTimeString().'&multi_search[t_country]=dz&multi_search[t_city]=ALG&multi_search[ti_fee_type]=service');
         $this->response->assertStatus(200);
 
         $transactionsList = $this->response->decodeResponseJson();
@@ -1322,8 +1328,8 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsWithAllowedDaysExceededForCsvValidation(): void
     {
-        $today = Carbon::today()->toDateString();
-        $end = Carbon::today()->addDay(100)->toDateString();
+        $today = Carbon::today()->toDateTimeString();
+        $end = Carbon::today()->addDay(100)->toDateTimeString();
 
         $this->get($this->listTransactionsApi.'?start_date='.$today.'&end_date='.$end.'&csv=1');
         $this->response->assertStatus(400)
@@ -1340,8 +1346,8 @@ class TransactionControllerTest extends TestCase
      */
     public function testListTransactionsIfCsvDownloadSuccessful(): void
     {
-        $today = Carbon::today()->toDateString();
-        $tomorrow = Carbon::today()->addDay(1)->toDateString();
+        $today = Carbon::today()->toDateTimeString();
+        $tomorrow = Carbon::today()->addDay(1)->toDateTimeString();
 
         $this->get($this->listTransactionsApi.'?start_date='.$today.'&end_date='.$tomorrow.'&csv=1');
         $this->response->assertStatus(200);

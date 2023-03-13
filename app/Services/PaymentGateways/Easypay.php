@@ -3,10 +3,7 @@
 namespace App\Services\PaymentGateways;
 
 use App\Contracts\Services\PaymentGatewayServiceInterface;
-use App\Models\TransactionLogs;
 use App\PaymentGateway\V2\Gateways\EasypayPaymentGateway;
-use App\Repositories\TransactionLogsRepository;
-use App\Services\DbConnectionService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionLogsService;
@@ -33,22 +30,21 @@ class Easypay implements PaymentGatewayServiceInterface
      */
     protected $paymentService;
 
+    /**
+     * @var TransactionLogsService
+     */
     protected $transactionLogsService;
 
     public function __construct(
         GatewayService $gatewayService,
         TransactionService $transactionService,
-        PaymentService $paymentService
+        PaymentService $paymentService,
+        TransactionLogsService $transactionLogsService
     ) {
         $this->gatewayService = $gatewayService;
         $this->transactionService = $transactionService;
         $this->paymentService = $paymentService;
-        $this->transactionLogsService = new TransactionLogsService(
-            new TransactionLogsRepository(
-                new TransactionLogs()
-            ),
-            new DbConnectionService()
-        );
+        $this->transactionLogsService = $transactionLogsService;
     }
 
     /**
@@ -101,6 +97,11 @@ class Easypay implements PaymentGatewayServiceInterface
         return $payment;
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
     public function callback(Request $request)
     {
         $transaction = $this->transactionService->getByTransactionId($request->order_id);
@@ -152,6 +153,11 @@ class Easypay implements PaymentGatewayServiceInterface
         }
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
     public function validateTransactionStatus(Request $request)
     {
         $error = $request->get('error');

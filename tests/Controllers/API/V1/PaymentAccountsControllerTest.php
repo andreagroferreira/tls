@@ -34,6 +34,7 @@ class PaymentAccountsControllerTest extends TestCase
             'payu',
             'switch',
             'tingg',
+            'easypay',
         ];
         $this->assertEquals($responses, array_keys($this->response->json()));
     }

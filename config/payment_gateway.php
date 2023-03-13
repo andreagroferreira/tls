@@ -759,6 +759,23 @@ return [
                     'signature_secret_key' => env('ENVPAY_PAYSOFT_uaKBP2pl_SIGNATURE_SECRET_KEY'),
                 ]
             ],
+            'easypay' => [
+                'base_url' => env('ENVPAY_EASYPAY_BASE_URL', 'https://merchantapi.easypay.ua/api'),
+                'partner_key' => env('ENVPAY_EASYPAY_PARTNER_KEY', 'easypay-test'),
+                'locale' => env('ENVPAY_EASYPAY_LOCALE', 'ua'),
+                'production' => [
+                    'service_key' => 'MERCHANT-TEST',
+                    'secret_key' => 'test',
+                ],
+                'sandbox' => [
+                    'service_key' => 'MERCHANT-TEST',
+                    'secret_key' => 'test',
+                ],
+                'local' => [
+                    'service_key' => 'MERCHANT-TEST',
+                    'secret_key' => 'test',
+                ],
+            ],
         ],
     ],
     'fr' => [

@@ -276,16 +276,7 @@ class PaymentService
      */
     public function sendInvoice(array $transaction, string $collection_name): void
     {
-        $callback_url = $transaction['t_callback_url'];
         $lang = 'en-us';
-        if ($callback_url) {
-            $url_query_string = parse_url($callback_url, PHP_URL_QUERY);
-            parse_str($url_query_string, $url_query_string_to_array);
-
-            if (!empty($url_query_string_to_array['lang'])) {
-                $lang = $url_query_string_to_array['lang'];
-            }
-        }
 
         $content = $this->invoiceService->getInvoiceContent(
             $collection_name,
@@ -307,9 +298,9 @@ class PaymentService
         if (empty($resolvedTemplate)) {
             throw new \Exception('Error Resolving Invoice Content');
         }
-
+        
         $response = $this->convertInvoiceContentToPdf($transaction, $resolvedTemplate['invoice_content']);
-
+        
         if (!$response) {
             throw new \Exception('Error Processing Invoice Upload Request');
         }

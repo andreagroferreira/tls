@@ -6,12 +6,12 @@ use App\Contracts\Services\PaymentGatewayServiceInterface;
 use App\PaymentGateway\V2\Gateways\EasypayPaymentGateway;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
+use App\Services\TransactionLogsService;
 use App\Services\V2\TransactionItemService;
 use App\Services\V2\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Exception;
 
 class Easypay implements PaymentGatewayServiceInterface
 {
@@ -30,14 +30,21 @@ class Easypay implements PaymentGatewayServiceInterface
      */
     protected $paymentService;
 
+    /**
+     * @var TransactionLogsService
+     */
+    protected $transactionLogsService;
+
     public function __construct(
         GatewayService $gatewayService,
         TransactionService $transactionService,
-        PaymentService $paymentService
+        PaymentService $paymentService,
+        TransactionLogsService $transactionLogsService
     ) {
         $this->gatewayService = $gatewayService;
         $this->transactionService = $transactionService;
         $this->paymentService = $paymentService;
+        $this->transactionLogsService = $transactionLogsService;
     }
 
     /**
@@ -56,13 +63,19 @@ class Easypay implements PaymentGatewayServiceInterface
         $payment = [];
 
         try {
-            $transaction = $this->transactionService->get($request->t_id);
+            if ($transaction = $this->transactionService->get($request->t_id)) {
+                $this->transactionLogsService->create([
+                    'tl_xref_transaction_id' => $transaction['t_transaction_id'],
+                    'tl_content' => json_encode($request->all()),
+                ]);
+            }
+
             if ($transaction === null) {
-                throw new Exception('Transaction not found for id: '.$request->t_id);
+                throw new \Exception('Transaction not found for id: '.$request->t_id);
             }
 
             if ($transaction->t_status !== 'pending') {
-                throw new Exception('Transaction '.$request->t_id. ' is not pending');
+                throw new \Exception('Transaction '.$request->t_id.' is not pending');
             }
 
             $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
@@ -73,7 +86,7 @@ class Easypay implements PaymentGatewayServiceInterface
                 'transaction' => $transaction,
                 'items' => $transactionItemsService->getItems(),
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile().':'.$e->getLine(),
@@ -84,6 +97,11 @@ class Easypay implements PaymentGatewayServiceInterface
         return $payment;
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
     public function callback(Request $request)
     {
         $transaction = $this->transactionService->getByTransactionId($request->order_id);
@@ -120,7 +138,7 @@ class Easypay implements PaymentGatewayServiceInterface
                 $transactionItemsService->getAmount(),
                 $request
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile().':'.$e->getLine(),
@@ -135,7 +153,13 @@ class Easypay implements PaymentGatewayServiceInterface
         }
     }
 
-    public function validateTransactionStatus(Request $request) {
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function validateTransactionStatus(Request $request)
+    {
         $error = $request->get('error');
         if ($error !== null) {
             return [
@@ -174,7 +198,6 @@ class Easypay implements PaymentGatewayServiceInterface
      * @param Request $request
      *
      * @return bool
-     *
      */
     private function isValid(Request $request): bool
     {

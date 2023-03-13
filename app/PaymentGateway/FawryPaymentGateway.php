@@ -181,7 +181,6 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'merchantRefNum' => $order_id,
                 'customerEmail' => $u_email,
                 'customerProfileId' => $profile_id,
-                'paymentExpiry' => $expiry,
                 'chargeItems' => $charge_items,
                 'returnUrl' => $return_url,
                 'authCaptureModePayment' => false,
@@ -323,15 +322,6 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             $return_content = $response->getBody()->getContents();
             $result         = json_decode($return_content, true);
             if ($status_code == 200 && !empty($result)) {
-                if ($result['statusCode'] !== 200) {
-                    Log::warning('Request API: ' . $verify_url . ', response content: ' . $return_content);
-                    return [
-                        'is_success' => 'fail',
-                        'orderid'    => $order_id,
-                        'message'    => $result['statusDescription'],
-                        'href'       => $transaction['t_redirect_url']
-                    ];
-                }
                 $order_status       = $result['paymentStatus'];
                 $received_amount    = number_format($result['paymentAmount'], 2, '.', '');
                 $transaction_amount = number_format($transaction['t_amount'], 2, '.', '');
@@ -387,7 +377,6 @@ class FawryPaymentGateway implements PaymentGatewayInterface
 
     private function returnV2($params)
     {
-        $status_code  = $params['statusCode'] ?? '';
         $order_status = $params['orderStatus'] ?? '';
         $order_id     = $params['merchantRefNumber'] ?? '';
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
@@ -407,7 +396,11 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             ];
         }
 
-        if (strtolower($transaction['t_status']) == 'pending' && $transaction['t_transaction_id'] == $order_id && $status_code == 200 && $order_status == 'PAID') {
+        if (
+            strtolower($transaction['t_status']) == 'pending'
+            && $transaction['t_transaction_id'] == $order_id
+            && $order_status == 'PAID'
+        ) {
             // update transaction
             $confirm_params = [
                 'gateway'        => $this->getPaymentGatewayName(),

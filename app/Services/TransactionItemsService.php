@@ -30,7 +30,17 @@ class TransactionItemsService
     {
         $items = $this->transactionItemsRepository->fetch(
             ['ti_xref_transaction_id' => $transaction_id, 'ti_tech_deleted' => false],
-            ['ti_xref_f_id AS f_id', 'ti_fee_type AS sku', 'ti_amount AS price', 'ti_vat AS vat', 'ti_quantity AS quantity']
+            [
+                'ti_xref_f_id AS f_id',
+                'ti_fee_type AS sku',
+                'ti_amount AS price',
+                'ti_vat AS vat',
+                'ti_quantity AS quantity',
+                'ti_price_rule AS price_rule',
+                'ti_fee_name AS product_name',
+                'ti_label AS label',
+                'ti_tag AS tag'
+            ]
         );
 
         if ($items->isEmpty()) {
@@ -41,7 +51,10 @@ class TransactionItemsService
             ->transform(function ($item, $key) {
                 $skus = [];
                 foreach ($item as $value) {
-                    $skus[] = collect($value)->only(['sku', 'price', 'vat', 'quantity'])->toArray();
+                    $skus[] = collect($value)->only(
+                        ['sku', 'price', 'vat', 'quantity', 'price_rule', 'product_name', 'label', 'tag']
+                    )
+                    ->toArray();
                 }
 
                 return ['f_id' => $key, 'skus' => $skus];
@@ -49,9 +62,23 @@ class TransactionItemsService
             ->values();
     }
 
-    public function fetchByTransactionId($transaction_id) {
+    public function fetchByTransactionId($transaction_id)
+    {
         return $this->transactionItemsRepository->findBy([
             'ti_xref_transaction_id' => $transaction_id,
+            'ti_tech_deleted' => false,
+        ])->first();
+    }
+
+    /**
+     * @param int $transactionItemId
+     *
+     * @return object
+     */
+    public function fetchByTransactionItemId(int $transactionItemId): object
+    {
+        return $this->transactionItemsRepository->fetchByTransactionItemId([
+            'ti_id' => $transactionItemId,
             'ti_tech_deleted' => false,
         ])->first();
     }

@@ -17,12 +17,19 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->group(['prefix' => 'api/v2', 'namespace' => 'V2'], function () use ($router) {
+    $router->post('{gatewayName}/redirto', 'PaymentController@redirTo');
+    $router->post('{gatewayName}/notify', 'PaymentController@notify');
+    $router->post('{gatewayName}/return', 'PaymentController@return');
+});
+
 $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($router) {
     // transaction api
     $router->get('transaction/{fg_id}', 'TransactionController@fetch');
     $router->get('form_transaction/{f_id}', 'TransactionController@fetchByForm');
     $router->post('transaction', 'TransactionController@create');
     $router->get('transactions', 'TransactionController@fetchAll');
+    $router->get('list_transactions', 'TransactionController@listTransactions');
 
     // form group api
     $router->get('form_group/{fg_id}', 'FormGroupController@fetch');
@@ -36,7 +43,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     // recommendation avs api
     $router->get('avs_recommendation/{f_id}', 'AvsRecommendationController@fetch');
 
-    //recommendation result api
+    // recommendation result api
     $router->post('rcd_result', 'RecommendationResultController@create');
     $router->get('rcd_result/{f_id}', 'RecommendationResultController@fetchAll');
     $router->delete('rcd_result/{rcd_id}', 'RecommendationResultController@delete');
@@ -101,7 +108,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('switch/redirto', 'SwitchController@redirto');
     $router->post('switch/return', 'SwitchController@return');
 
-    //get transaction sync fail job or resend fail job
+    // get transaction sync fail job or resend fail job
     $router->get('/retry_failed_queue/{queue_name}', 'QueueController@resend');
     $router->get('/health', 'QueueController@health');
 
@@ -145,4 +152,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('payment-configurations', ['uses' => 'PaymentConfigurationsController@create', 'middleware' => 'auth:dev,manager']);
     $router->delete('payment-configuration/{pc_id}', ['uses' => 'PaymentConfigurationsController@delete', 'middleware' => 'auth:dev,manager']);
     $router->get('location-available-accounts', ['uses' => 'PaymentConfigurationsController@getPaymentAccounts', 'middleware' => 'auth:dev,manager']);
+    $router->get('payment-gateway-types/{city}', ['uses' => 'PaymentConfigurationsController@getPaymentGatewayTypesByCity']);
+
+    // refund apis
+    $router->post('refund', 'RefundController@create');
+    $router->get('transaction_items_and_refunds/{ti_xref_f_id}', 'RefundController@getRefundTransactionItems');
+    $router->get('refund/{r_id}', 'RefundController@getRefundRequest');
 });

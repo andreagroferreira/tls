@@ -60,7 +60,7 @@ class InvoiceControllerTest extends TestCase
         $city = substr($transaction->t_issuer, 2, 3);
         $expectedFilePath = 'invoice/WW/'.$country.'/'.$city.'/'.$transaction->t_xref_fg_id.'/'.$transaction->t_transaction_id.'.pdf';
 
-        $filePath = $this->getFilePath((array) $transaction);
+        $filePath = getFilePath((array) $transaction, $transaction->t_invoice_storage);
 
         $this->assertEquals($expectedFilePath, $filePath);
     }
@@ -86,7 +86,7 @@ class InvoiceControllerTest extends TestCase
 
         $expectedFilePath = $transaction->t_client.'/'.$transaction->t_xref_fg_id.'/'.$transaction->t_transaction_id.'.pdf';
 
-        $filePath = $this->getFilePath((array) $transaction);
+        $filePath = getFilePath((array) $transaction, $transaction->t_invoice_storage);
 
         $this->assertEquals($expectedFilePath, $filePath);
     }
@@ -103,17 +103,5 @@ class InvoiceControllerTest extends TestCase
         $this->app->instance(InvoiceService::class, $mockInvoiceService);
 
         return $mockInvoiceService;
-    }
-
-    private function getFilePath(array $transaction): string
-    {
-        $mockInvoiceService = $this->mockInvoiceService();
-
-        // set protected method getFilePath() accessible and return filePath.
-        $invoiceReflectionClass = new \ReflectionClass(InvoiceService::class);
-        $method = $invoiceReflectionClass->getMethod('getFilePath');
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($mockInvoiceService, [$transaction, $transaction['t_invoice_storage']]);
     }
 }

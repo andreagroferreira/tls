@@ -93,6 +93,8 @@ objects:
       replicas: 1
       template:
         metadata:
+          annotations:
+            central-logging: "true"
           labels:
             app: ${APPLICATION_NAME}-sync-transaction-queue
             deploymentconfig: ${APPLICATION_NAME}-sync-transaction-queue

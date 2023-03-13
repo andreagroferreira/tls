@@ -1,0 +1,10 @@
+#codeowners
+
+.gitlab-ci.yml @dev_tls/gitlab
+openshift/ @dev_tls/gitlab
+
+*.env @dev_tls/gitlab
+*.env.* @dev_tls/gitlab
+*tsconfig.json @dev_tls/gitlab
+*prettier.config.js @dev_tls/gitlab
+*vue.config.js @dev_tls/gitlab

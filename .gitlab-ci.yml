@@ -15,7 +15,7 @@ default:
 variables:
   APPLICATION_NAME: "payment-api"
   ENV: "IET2"
-  APP_ENV: "test"
+  APP_ENV: "testing"
   PROJECT: "visa-be-dev"
   CLIENT: "schengen-be"
   DATABASE: $DATABASE
@@ -24,6 +24,8 @@ variables:
   TLSCONNECT_API_URL: "https://tlsconnect-service-api.${PROJECT}.svc:8443"
   EMAIL_SERVICE_DOMAIN: "https://tlsconnect-email-service.${PROJECT}.svc:8443"
   FILE_LIBRARY_API_DOMAIN: "https://file-library-api.${PROJECT}.svc:8443"
+  WORKFLOW_SERVICE_DOMAIN: "https://workflow-service.${PROJECT}.svc:8443"
+  ECOMMERCE_SERVICE_DOMAIN: "https://tlspay-e-commerce-service.${PROJECT}.svc:8443"
   ENABLE_DAST: "true"
   IMAGE_TAG: ""
 
@@ -41,10 +43,10 @@ prepare-instance:
     - composer install -o
   after_script:
     - rm -rf composer.*
+  extends: .job_dependencies_artifacts_expire_in
   artifacts:
     paths:
       - ./
-    expire_in: 1 hour
   environment:
     name: $ENV
   rules:
@@ -74,6 +76,7 @@ test-unit:
   script:
     - export XDEBUG_MODE="coverage"
     - ./vendor/bin/phpunit --coverage-clover=coverage-report.clover --log-junit unittest-report.xml
+  extends: .artifacts_expire_in
   artifacts:
     when: always
     reports:
@@ -81,15 +84,14 @@ test-unit:
         - unittest-report.xml
     paths:
       - "./"
-    expire_in: 3 days
   rules:
     - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TAG
       when: never
     - if: $APP_ENV == "production"
       when: manual
-      allow_failure: true
+      allow_failure: false
     - when: on_success
-      allow_failure: true
+      allow_failure: false
 
 deploy-instance:
   stage: deploy
@@ -122,6 +124,10 @@ deploy-instance:
         echo "REDIS_HOST is not defined!"
         exit 1
       fi
+    - oc get secret $PROJECT-pgcluster-tlspay-e-commerce-service-db-secret || oc create secret generic $PROJECT-pgcluster-tlspay-e-commerce-service-db-secret
+        --from-literal=database-name=""
+        --from-literal=username=""
+        --from-literal=password=""
     - oc process -f ./openshift/payment-api-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"
@@ -133,12 +139,16 @@ deploy-instance:
       POSTGRES_DB_HOST="pgbouncer"
       POSTGRES_SECRET_NAME="${PROJECT}-pgcluster-common-secret"
       POSTGRES_ADMIN_SECRET_NAME="${PROJECT}-pgsql-master"
+      POSTGRES_TLSCONNECT_DB_DATABASE="${DATABASE}"
       POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
       AWS_ACCOUNT_S3="tlspay-s3-account"
       PAYMENT_SERVICE_DOMAIN="https://${PAYMENT_SERVICE_URL}"
       KEYCLOAK_BASE_URL="https://${KEYCLOAK_BASE_URL}/auth"
       DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
+      WORKFLOW_SERVICE_DOMAIN="${WORKFLOW_SERVICE_DOMAIN}"
+      ECOMMERCE_SERVICE_DOMAIN="${ECOMMERCE_SERVICE_DOMAIN}"
+      POSTGRES_ECOMMERCE_SECRET="${PROJECT}-pgcluster-tlspay-e-commerce-service-db-secret"
       REDIS_HOST="tls://${REDIS_HOST}"
       CLIENT="${CLIENT}"
       KBANK_THBKK2BE_SANDBOX_API_KEY="${KBANK_THBKK2BE_SANDBOX_API_KEY}"
@@ -339,7 +349,7 @@ deploy-instance:
       FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY=$FAW_egAll2de_LEGALIZATION_SANDBOX_SECURITY_KEY
       FAW_egAll2de_LEGALIZATION_MERCHANT_ID=$FAW_egAll2de_LEGALIZATION_MERCHANT_ID
       FAW_egAll2de_LEGALIZATION_SECURITY_KEY=$FAW_egAll2de_LEGALIZATION_SECURITY_KEY
-      HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" 
+      HOSTNAME_HTTPS="${HOSTNAME_HTTPS}"
       CI_COMMIT_SHORT_SHA="${CI_COMMIT_SHORT_SHA}" | oc apply -f -
     - oc start-build ${APPLICATION_NAME} --from-dir=. --follow -w
     - oc rollout status dc/${APPLICATION_NAME} -w
@@ -586,6 +596,48 @@ deploy-instance:
       DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
       REDIS_HOST="tls://${REDIS_HOST}"
       TLSCONTACT_API="${TLSCONNECT_API_URL}"
+      CLIENT="${CLIENT}"
+      HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
+    - oc process -f ./openshift/payment-api-sync-transaction-ecommerce-queue-template.yaml
+      APPLICATION_NAME="${APPLICATION_NAME}"
+      PROJECT="${INSTANCE}"
+      NAMESPACE="${PROJECT}"
+      APP_ENV="${APP_ENV}"
+      OPENSHIFT_ENV="${ENV}"
+      ROUTE_IP_WHITE_LIST="${ROUTE_IP_WHITE_LIST}"
+      POSTGRES_DB_HOST="pgbouncer"
+      POSTGRES_SECRET_NAME="${PROJECT}-pgcluster-common-secret"
+      POSTGRES_ADMIN_SECRET_NAME="${PROJECT}-pgsql-master"
+      POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
+      AWS_ACCOUNT_S3="tlspay-s3-account"
+      MEMORY_REQUEST="${MEMORY_REQUEST}"
+      MEMORY_LIMIT="${MEMORY_LIMIT}"
+      CPU_REQUEST="${CPU_REQUEST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
+      REDIS_HOST="tls://${REDIS_HOST}"
+      TLSCONTACT_API="${TLSCONNECT_API_URL}"
+      ECOMMERCE_SERVICE_DOMAIN="${ECOMMERCE_SERVICE_DOMAIN}"
+      CLIENT="${CLIENT}"
+      HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
+    - oc process -f ./openshift/payment-api-sync-transaction-workflow-queue-template.yaml
+      APPLICATION_NAME="${APPLICATION_NAME}"
+      PROJECT="${INSTANCE}"
+      NAMESPACE="${PROJECT}"
+      APP_ENV="${APP_ENV}"
+      OPENSHIFT_ENV="${ENV}"
+      ROUTE_IP_WHITE_LIST="${ROUTE_IP_WHITE_LIST}"
+      POSTGRES_DB_HOST="pgbouncer"
+      POSTGRES_SECRET_NAME="${PROJECT}-pgcluster-common-secret"
+      POSTGRES_ADMIN_SECRET_NAME="${PROJECT}-pgsql-master"
+      POSTGRES_PAYMENT_DB_DATABASE="payment-${DATABASE}"
+      AWS_ACCOUNT_S3="tlspay-s3-account"
+      MEMORY_REQUEST="${MEMORY_REQUEST}"
+      MEMORY_LIMIT="${MEMORY_LIMIT}"
+      CPU_REQUEST="${CPU_REQUEST}"
+      DIRECTUS_DOMAIN="http://${DIRECTUS_HOST}"
+      REDIS_HOST="tls://${REDIS_HOST}"
+      TLSCONTACT_API="${TLSCONNECT_API_URL}"
+      WORKFLOW_SERVICE_DOMAIN="${WORKFLOW_SERVICE_DOMAIN}"
       CLIENT="${CLIENT}"
       HOSTNAME_HTTPS="${HOSTNAME_HTTPS}" | oc apply -f -
     - oc process -f ./openshift/payment-api-invoice-mail-queue-template.yaml

@@ -1,18 +1,19 @@
 <?php
+
 return [
     'pay_later' => [
-        'label'   => 'pay_later',
+        'label' => 'pay_later',
         'return_url' => '/pay_later/return',
     ],
     'alipay' => [
-        'label'   => 'Alipay pay',
-        'common'  => [
+        'label' => 'Alipay pay',
+        'common' => [
             'env' => 'live',
             'activated' => true,
             'product_code' => 'FAST_INSTANT_TRADE_PAY',
             'method' => 'alipay.trade.page.pay',
-            'return_url'  => '/alipay/return',
-            'notify_url'  => '/alipay/notify',
+            'return_url' => '/alipay/return',
+            'notify_url' => '/alipay/notify',
         ],
         'sandbox' => [
             'app_id' => null,
@@ -20,12 +21,12 @@ return [
             'private_key' => null,
             'public_key' => null,
         ],
-        'production'    => [
+        'production' => [
             'app_id' => null,
             'gateway' => null,
             'private_key' => null,
             'public_key' => null,
-        ]
+        ],
     ],
     'binga' => [
         'label' => 'BINGA pay',
@@ -34,7 +35,7 @@ return [
             'currency' => 'MAD',
             'cash_url' => '/binga/cash',
             'return_url' => '/binga/return',
-            'notify_url' => '/binga/notify'
+            'notify_url' => '/binga/notify',
         ],
         'sandbox' => [
             'host' => 'http://preprod.binga.ma:8080/v1.2/api/orders',
@@ -49,7 +50,7 @@ return [
             'merchant_password' => null,
             'store_id' => null,
             'store_private_key' => null,
-        ]
+        ],
     ],
     'bnp' => [
         'label' => 'BNP Paribas pay',
@@ -74,28 +75,28 @@ return [
             'user_name' => null,
             'password' => null,
             'terminal_id' => null,
-        ]
+        ],
     ],
     'clictopay' => [
-        'label'   => 'clictopay pay',
-        'active'  => true,
-        'common'  => [
-            'env'         => 'live',
-            'activated'   => true,
-            'currency'    => 'TND',
-            'language'    => 'en',
-            'return_url'  => '/clictopay/return'
+        'label' => 'clictopay pay',
+        'active' => true,
+        'common' => [
+            'env' => 'live',
+            'activated' => true,
+            'currency' => 'TND',
+            'language' => 'en',
+            'return_url' => '/clictopay/return',
         ],
         'sandbox' => [
-            'host'      => 'https://test.clictopay.com/payment/rest',
+            'host' => 'https://test.clictopay.com/payment/rest',
             'user_name' => null,
-            'password'  => null
+            'password' => null,
         ],
-        'production'    => [
-            'host'      => 'https://ipay.clictopay.com/payment/rest',
+        'production' => [
+            'host' => 'https://ipay.clictopay.com/payment/rest',
             'user_name' => null,
-            'password'  => null
-        ]
+            'password' => null,
+        ],
     ],
     'cmi' => [
         'label' => 'CMI pay',
@@ -117,32 +118,32 @@ return [
         'production' => [
             'host' => 'https://payment.cmi.co.ma/fim/est3Dgate',
             'merchant_id' => null,
-            'storeKey' => null
-        ]
+            'storeKey' => null,
+        ],
     ],
     'cybersource' => [
         'label' => 'Cybersource pay',
         'active' => true,
         'common' => [
             'env' => 'live',
-            "currency" => "MGA",
-            "return_url" => "/cybersource/return",
-            "notify_url" => "/cybersource/notify"
+            'currency' => 'MGA',
+            'return_url' => '/cybersource/return',
+            'notify_url' => '/cybersource/notify',
         ],
         'sandbox' => [
-            "host" => " https://testsecureacceptance.cybersource.com/pay",
-            "access_key" => null,
-            "profile_id" => null,
-            "transaction_type" => null,
-            "secret_key" => null
+            'host' => ' https://testsecureacceptance.cybersource.com/pay',
+            'access_key' => null,
+            'profile_id' => null,
+            'transaction_type' => null,
+            'secret_key' => null,
         ],
         'production' => [
-            "host" => "https://secureacceptance.cybersource.com/pay",
-            "access_key" => null,
-            "profile_id" => null,
-            "transaction_type" => null,
-            "secret_key" => null
-        ]
+            'host' => 'https://secureacceptance.cybersource.com/pay',
+            'access_key' => null,
+            'profile_id' => null,
+            'transaction_type' => null,
+            'secret_key' => null,
+        ],
     ],
     'fawry' => [
         'label' => 'Fawry pay',
@@ -159,7 +160,7 @@ return [
             'return_url' => '/fawry/return',
             'notify_url' => '/fawry/notify',
             'txn_fee_rate' => 0,
-            'txn_fee_extra' => 0
+            'txn_fee_extra' => 0,
         ],
         'sandbox' => [
             'host' => 'https://atfawry.fawrystaging.com',
@@ -170,7 +171,7 @@ return [
             'host' => 'https://www.atfawry.com',
             'merchant_id' => null,
             'secret_key' => null,
-        ]
+        ],
     ],
     'globaliris' => [
         'label' => 'GLOBALIRIS pay',
@@ -181,44 +182,44 @@ return [
             'min_fraction_digits' => '2',
             'txn_fee_rate' => '0',
             'txn_fee_extra' => '0',
-            'return_url' => '/globaliris/return'
+            'return_url' => '/globaliris/return',
         ],
         'sandbox' => [
             'host' => 'https://pay.sandbox.realexpayments.com/pay',
             'merchant_id' => null,
             'secret' => null,
-            'account' => null
+            'account' => null,
         ],
         'production' => [
             'host' => 'https://pay.realexpayments.com/pay',
             'merchant_id' => null,
             'secret' => null,
-            'account' => null
-        ]
+            'account' => null,
+        ],
     ],
     'k-bank' => [
-        'label'   => 'k-bank pay',
-        'active'  => true,
-        'common'  => [
-            'env'         => 'live',
-            'activated'   => true,
-            'return_url'  => '/k-bank/return',
-            'notify_url'  => '/k-bank/notify'
+        'label' => 'k-bank pay',
+        'active' => true,
+        'common' => [
+            'env' => 'live',
+            'activated' => true,
+            'return_url' => '/k-bank/return',
+            'notify_url' => '/k-bank/notify',
         ],
         'sandbox' => [
-            'host'          => 'https://dev-kpaymentgateway-services.kasikornbank.com',
+            'host' => 'https://dev-kpaymentgateway-services.kasikornbank.com',
             'redirect_host' => 'https://dev-kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
-            'apikey'        => null,
-            'secret'        => null,
-            'mid'           => null
+            'apikey' => null,
+            'secret' => null,
+            'mid' => null,
         ],
-        'production'    => [
-            'host'          => 'https://kpaymentgateway-services.kasikornbank.com',
+        'production' => [
+            'host' => 'https://kpaymentgateway-services.kasikornbank.com',
             'redirect_host' => 'https://kpaymentgateway.kasikornbank.com/ui/v2/kpayment.min.js',
-            'apikey'        => null,
-            'secret'        => null,
-            'mid'           => null
-        ]
+            'apikey' => null,
+            'secret' => null,
+            'mid' => null,
+        ],
     ],
     'payfort' => [
         'label' => 'payfort pay',
@@ -230,19 +231,19 @@ return [
             'notify_url' => '/payfort/notify',
         ],
         'sandbox' => [
-            'host'            => 'https://sbcheckout.payfort.com/FortAPI/paymentPage',
-            'merchant_id'     => null,
-            'access_code'     => null,
-            'request_phrase'  => null,
-            'response_phrase' => null
+            'host' => 'https://sbcheckout.payfort.com/FortAPI/paymentPage',
+            'merchant_id' => null,
+            'access_code' => null,
+            'request_phrase' => null,
+            'response_phrase' => null,
         ],
         'production' => [
-            'host'            => 'https://checkout.payfort.com/FortAPI/paymentPage',
-            'merchant_id'     => null,
-            'access_code'     => null,
-            'request_phrase'  => null,
-            'response_phrase' => null
-        ]
+            'host' => 'https://checkout.payfort.com/FortAPI/paymentPage',
+            'merchant_id' => null,
+            'access_code' => null,
+            'request_phrase' => null,
+            'response_phrase' => null,
+        ],
     ],
     'paygate' => [
         'label' => 'Paygate pay',
@@ -280,16 +281,16 @@ return [
             'txn_fee_rate' => '0',
             'txn_fee_extra' => '0',
             'return_url' => '/paypal/return',
-            'notify_url' => '/paypal/notify'
+            'notify_url' => '/paypal/notify',
         ],
         'sandbox' => [
             'host' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
-            'account' => null
+            'account' => null,
         ],
         'production' => [
             'host' => 'https://www.paypal.com/cgi-bin/webscr',
-            'account' => null
-        ]
+            'account' => null,
+        ],
     ],
     'paysoft' => [
         'label' => 'Paysoft pay',
@@ -310,30 +311,30 @@ return [
             'merchant_id' => null,
             'signature_algorithm' => null,
             'signature_secret_key' => null,
-        ]
+        ],
     ],
     'payu' => [
         'label' => 'payu pay',
         'common' => [
             'env' => 'live',
             'activated' => true,
-            'currency'  => 'USD',
-            'payment_method'  => 'CREDITCARD',
+            'currency' => 'USD',
+            'payment_method' => 'CREDITCARD',
             'paymentsos_host' => 'https://api.paymentsos.com/payments',
-            'return_url' => '/payu/return'
+            'return_url' => '/payu/return',
         ],
         'sandbox' => [
-            'app_id'      => null,
+            'app_id' => null,
             'private_key' => null,
             'api_version' => '1.3.0',
-            'payments_os_env' => 'test'
+            'payments_os_env' => 'test',
         ],
         'production' => [
-            'app_id'      => null,
+            'app_id' => null,
             'private_key' => null,
             'api_version' => '1.3.0',
-            'payments_os_env' => 'live'
-        ]
+            'payments_os_env' => 'live',
+        ],
     ],
     'switch' => [
         'label' => 'Switch pay',
@@ -346,48 +347,72 @@ return [
         'sandbox' => [
             'host' => 'https://test.oppwa.com',
             'entity_id' => null,
-            'access_token' => null
+            'access_token' => null,
         ],
         'production' => [
             // TODO: To be completed
             'host' => 'test', // env('ENVPAY_SWITCH_iqAll2be_HOST')
             'entity_id' => null,
-            'access_token' => null
-        ]
+            'access_token' => null,
+        ],
     ],
     'tingg' => [
-        'label'   => 'Tingg pay',
-        'active'  => true,
-        'common'  => [
+        'label' => 'Tingg pay',
+        'active' => true,
+        'common' => [
             'successRedirectUrl' => '/tingg/return',
-            'failRedirectUrl'    => '/checkout/',
+            'failRedirectUrl' => '/checkout/',
             'pendingRedirectUrl' => '/checkout/',
-            'paymentWebhookUrl'  => '/tingg/notify'
+            'paymentWebhookUrl' => '/tingg/notify',
         ],
         'sandbox' => [
-            'host'          => 'https://developer.tingg.africa/checkout/v2/express/',
+            'host' => 'https://developer.tingg.africa/checkout/v2/express/',
             'accountNumber' => null,
-            'serviceCode'   => null,
-            'ivKey'         => null,
-            'secretKey'     => null,
-            'accessKey'     => null,
-            'clientID'      => null,
-            'clientSecret'  => null,
-            'oauthHost'     => 'https://developer.tingg.africa/checkout/v2/custom/oauth/token',
-            'queryStatusHost'=> 'https://developer.tingg.africa/checkout/v2/custom/requests/query-status',
+            'serviceCode' => null,
+            'ivKey' => null,
+            'secretKey' => null,
+            'accessKey' => null,
+            'clientID' => null,
+            'clientSecret' => null,
+            'oauthHost' => 'https://developer.tingg.africa/checkout/v2/custom/oauth/token',
+            'queryStatusHost' => 'https://developer.tingg.africa/checkout/v2/custom/requests/query-status',
         ],
-        'production'    => [
-            'host'          => 'https://online.tingg.africa/v2/express/',
+        'production' => [
+            'host' => 'https://online.tingg.africa/v2/express/',
             'accountNumber' => null,
-            'serviceCode'   => null,
-            'ivKey'         => null,
-            'secretKey'     => null,
-            'accessKey'     => null,
-            'clientID'      => null,
-            'clientSecret'  => null,
-            'oauthHost'     => 'https://online.tingg.africa/v2/custom/oauth/token',
-            'queryStatusHost'=> 'https://online.tingg.africa/v2/custom/requests/query-status',
-        ]
+            'serviceCode' => null,
+            'ivKey' => null,
+            'secretKey' => null,
+            'accessKey' => null,
+            'clientID' => null,
+            'clientSecret' => null,
+            'oauthHost' => 'https://online.tingg.africa/v2/custom/oauth/token',
+            'queryStatusHost' => 'https://online.tingg.africa/v2/custom/requests/query-status',
+        ],
     ],
-
+    'easypay' => [
+        'label' => 'EasyPay',
+        'active' => true,
+        'common' => [
+            'notifyUrl' => '/easypay/notify',
+            'successRedirectUrl' => '/easypay/return',
+            'failedRedirectUrl' => '/easypay/return',
+            'pendingRedirectUrl' => '/easypay/return',
+            'paymentWebhookUrl' => '/easypay/return',
+        ],
+        'sandbox' => [
+            'host' => env('ENVPAY_EASYPAY_BASE_URL', 'https://merchantapi.easypay.ua/api'),
+            'partnerKey' => null,
+            'locale' => null,
+            'serviceKey' => null,
+            'secretKey' => null,
+        ],
+        'production' => [
+            'host' => env('ENVPAY_EASYPAY_BASE_URL', 'https://merchantapi.easypay.ua/api'),
+            'partnerKey' => null,
+            'locale' => null,
+            'serviceKey' => null,
+            'secretKey' => null,
+        ],
+    ],
 ];

@@ -55,7 +55,7 @@ class TransactionController extends BaseController
     {
         $params = [
             'fg_id' => $request->route('fg_id'),
-            'order' => $request->input('order', 'desc')
+            'order' => $request->input('order', 'desc'),
         ];
         $validator = validator($params, [
             'fg_id' => 'required|integer',
@@ -63,7 +63,7 @@ class TransactionController extends BaseController
                 'required',
                 'string',
                 Rule::in(['desc', 'asc']),
-            ]
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -74,14 +74,13 @@ class TransactionController extends BaseController
             $res = $this->transactionService->fetch($validator->validated());
             if ($res) {
                 return $this->sendResponse($res);
-            } else {
-                return $this->sendEmptyResponse(204);
             }
+
+            return $this->sendEmptyResponse(204);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }
-
 
     /**
      * @OA\Get(
@@ -121,7 +120,7 @@ class TransactionController extends BaseController
     {
         $params = [
             'f_id' => $request->route('f_id'),
-            'order' => $request->input('order', 'desc')
+            'order' => $request->input('order', 'desc'),
         ];
         $validator = validator($params, [
             'f_id' => 'required|integer',
@@ -129,7 +128,7 @@ class TransactionController extends BaseController
                 'required',
                 'string',
                 Rule::in(['desc', 'asc']),
-            ]
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -140,9 +139,9 @@ class TransactionController extends BaseController
             $res = $this->transactionService->fetchByForm($validator->validated());
             if ($res) {
                 return $this->sendResponse($res);
-            } else {
-                return $this->sendEmptyResponse(204);
             }
+
+            return $this->sendEmptyResponse(204);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
@@ -223,6 +222,20 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Schema(type="string", example="card"),
      *      ),
+     *      @OA\Parameter(
+     *          name="expiration",
+     *          in="query",
+     *          description="tls citizen appointment booking expiration time(timestamp)",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="1669123675"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="agent_name",
+     *          in="query",
+     *          description="agent name",
+     *          required=false,
+     *          @OA\Schema(type="string", example="test"),
+     *      ),
      *     @OA\Parameter(
      *          name="items",
      *          in="query",
@@ -256,6 +269,10 @@ class TransactionController extends BaseController
             'workflow' => 'required|string',
             'payment_method' => 'nullable',
             'service' => 'nullable',
+            'expiration' => 'nullable|integer|gt:0',
+            'agent_name'=>'nullable|string',
+            'appointment_date'=>'nullable|date_format:Y-m-d',
+            'appointment_time'=>'nullable|date_format:H:i',
             'items' => [
                 'bail',
                 'required',
@@ -263,7 +280,7 @@ class TransactionController extends BaseController
                 function ($attribute, $value, $fail) {
                     $array = json_decode($value, true);
                     foreach ($array as $item) {
-                        $item_array = (array)$item;
+                        $item_array = (array) $item;
                         $f_id = array_get($item_array, 'f_id', '');
                         if (!is_numeric($f_id)) {
                             $fail('The items.f_id must be an integer.');
@@ -273,13 +290,13 @@ class TransactionController extends BaseController
                             $fail('The items.skus field is required.');
                         }
                         foreach ($skus as $sku) {
-                            $diff = array_diff(['sku', 'price', 'vat'], array_keys((array)$sku));
+                            $diff = array_diff(['sku', 'price', 'vat'], array_keys((array) $sku));
                             if (filled($diff)) {
-                                $fail('The items.skus.' . implode(', ', $diff) . ' field is required.');
+                                $fail('The items.skus.'.implode(', ', $diff).' field is required.');
                             }
                         }
                     }
-                }
+                },
             ],
         ]);
 
@@ -289,23 +306,25 @@ class TransactionController extends BaseController
 
         try {
             $params = $validator->validated();
-            $transaction = $this->transactionService->checkDuplicateCreation($params);
-            if (is_array($transaction)) {
+            if ($transaction = $this->transactionService->getOrCloseDuplicatedTransaction($params)) {
                 return $this->sendResponse($transaction);
             }
 
-            $res = $this->transactionService->create($params);
+            $newTransaction = $this->transactionService->create($params);
 
-            $log_params = array();
-            $log_params['queue_type']   = 'create_payment_order';
-            $log_params['t_id']         = $res['t_id'];
-            dispatch(new PaymentEauditorLogJob($log_params))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
+            $log_params = [];
+            $log_params['queue_type'] = 'create_payment_order';
+            $log_params['t_id'] = $newTransaction['t_id'];
 
-            if ($res) {
-                return $this->sendResponse($res);
-            } else {
-                return $this->sendError('unknown_error', 'create failed');
+            dispatch(new PaymentEauditorLogJob($log_params))
+                ->onConnection('payment_api_eauditor_log_queue')
+                ->onQueue('payment_api_eauditor_log_queue');
+
+            if ($newTransaction) {
+                return $this->sendResponse($newTransaction);
             }
+
+            return $this->sendError('unknown_error', 'create failed');
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
@@ -375,7 +394,7 @@ class TransactionController extends BaseController
             'page' => $request->input('page', 1),
             'limit' => $request->input('limit', 20),
             'start_date' => $request->input('start_date', Carbon::today()->toDateString()),
-            'end_date' => $request->input('end_date', Carbon::tomorrow()->toDateString())
+            'end_date' => $request->input('end_date', Carbon::tomorrow()->toDateString()),
         ];
 
         if ($request->has('issuer')) {
@@ -391,15 +410,15 @@ class TransactionController extends BaseController
             'status' => [
                 'sometimes',
                 'required',
-                Rule::in(['pending', 'waiting', 'close', 'done'])
+                Rule::in(['pending', 'waiting', 'close', 'done']),
             ],
             'service' => [
                 'sometimes',
                 'required',
-                Rule::in(['tls', 'gov'])
-            ]
+                Rule::in(['tls', 'gov']),
+            ],
         ], [
-            'issuer.*.regex' => 'The issuer format is invalid.'
+            'issuer.*.regex' => 'The issuer format is invalid.',
         ]);
 
         if ($validator->fails()) {
@@ -412,7 +431,212 @@ class TransactionController extends BaseController
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
+        }
+    }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/list_transactions",
+     *     tags={"Payment API"},
+     *     description="get all transactions for Accounting Journal",
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          description="page, default 1",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="1"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          description="number of result per page",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="20"),
+     *      ),
+     *     @OA\Parameter(
+     *          name="start_date",
+     *          in="query",
+     *          description="start date",
+     *          required=false,
+     *          @OA\Schema(type="date", example="2022-01-01"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="end_date",
+     *          in="query",
+     *          description="end date",
+     *          required=false,
+     *          @OA\Schema(type="date", example="2022-12-31"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="csv",
+     *          in="query",
+     *          description="CSV download (0 or 1)",
+     *          required=false,
+     *          @OA\Schema(type="integer", example="0"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_country]",
+     *          in="query",
+     *          description="search country",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="gb"),
+     *
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_city]",
+     *          in="query",
+     *          description="search city",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="LON"),
+     *
+     *      ),
+     *     @OA\Parameter(
+     *          name="multi_search[ti_fee_type]",
+     *          in="query",
+     *          description="search fee type",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="service"),
+     *
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_reference_id]",
+     *          in="query",
+     *          description="search reference id",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="GWP123456"),
+     *
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_comment]",
+     *          in="query",
+     *          description="search comment",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="test"),
+     *
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_xref_fg_id]",
+     *          in="query",
+     *          description="search group id",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="123"),
+     *
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_client]",
+     *          in="query",
+     *          description="search client",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="de"),
+     *
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[t_batch_id]",
+     *          in="query",
+     *          description="search batch id",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="B123"),
+     *
+     *      ),
+     *      @OA\Parameter(
+     *          name="multi_search[ti_quantity]",
+     *          in="query",
+     *          description="search quantity",
+     *          required=false,
+     *          @OA\Items(type="array"),
+     *          @OA\Schema(example="B123"),
+     *
+     *      ),
+     *      @OA\Parameter(
+     *          name="order_field",
+     *          in="query",
+     *          description="sort order field",
+     *          required=false,
+     *          @OA\Schema(type="string", example="t_xref_fg_id"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="order",
+     *          in="query",
+     *          description="sort order",
+     *          required=false,
+     *          @OA\Schema(type="string", example="desc"),
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="get the transaction",
+     *          @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Error: bad request"
+     *      ),
+     * )
+     */
+    public function listTransactions(Request $request)
+    {
+        $params = [
+            'page' => $request->input('page', 1),
+            'limit' => $request->input('limit', 20),
+            'start_date' => $request->input('start_date', Carbon::today()->toDateTimeString()),
+            'end_date' => $request->input('end_date', Carbon::today()->toDateTimeString()),
+            'order_field' => $request->input('order_field', 't_id'),
+            'order' => $request->input('order', 'desc'),
+            'multi_search' => $request->input('multi_search'),
+            'csv' => $request->input('csv', false),
+        ];
+
+        $validator = validator($params, [
+            'page' => 'required|integer',
+            'limit' => 'required|integer',
+            'start_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d H:i:s',
+            'end_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d H:i:s|after_or_equal:start_date',
+            'order_field' => 'required|string',
+            'order' => [
+                'required',
+                'string',
+                Rule::in(['desc', 'asc']),
+            ],
+            'multi_search' => 'nullable|array',
+            'csv' => 'nullable|bool',
+        ], [
+            'start_date.required_if' => 'The start date field is required when csv is 1 or true.',
+            'end_date.required_if' => 'The end date field is required when csv is 1 or true.',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('params error', $validator->errors()->first());
+        }
+
+        $csvRequired = $validator->validated()['csv'];
+        if ($csvRequired) {
+            $maxAllowedDays = 90;
+            $numberOfDays = round((strtotime($validator->validated()['end_date']) - strtotime($validator->validated()['start_date'])) / (60 * 60 * 24));
+
+            if ($numberOfDays > $maxAllowedDays) {
+                return $this->sendError('date-range selection error', 'Exceeds max allowed days of '.$maxAllowedDays);
+            }
+        }
+
+        try {
+            $res = $this->transactionService->listTransactions($validator->validated());
+
+            if ($csvRequired) {
+                $return = $this->transactionService->writeTransactionsToCsv($res['data']);
+
+                return response()->stream($return['callback'], 200, $return['headers']);
+            }
+
+            return $this->sendResponse($res);
+        } catch (\Exception $e) {
+            return $this->sendError('unknown_error', $e->getMessage());
         }
     }
 }

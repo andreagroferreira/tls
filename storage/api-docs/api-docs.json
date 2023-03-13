@@ -502,6 +502,83 @@
                 }
             }
         },
+        "/api/v1/cybersource/redirto": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from Cybersource",
+                "operationId": "0df7e2cbb4086bf068e3400dc6c0264a",
+                "parameters": [
+                    {
+                        "name": "t_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/cybersource/notify": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from Cybersource",
+                "operationId": "b012762af83e7fbe52ac76421cb347a2",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/cybersource/return": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "return reqeust from Cybersource",
+                "responses": {
+                    "200": {
+                        "description": "transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/fawry/redirto": {
             "post": {
                 "tags": [
@@ -1278,6 +1355,31 @@
                 }
             }
         },
+        "/api/v1/payment-gateway-field-list": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get field details for all payment accounts.",
+                "operationId": "45c70dacf7d2aa210a543f5ba2934f6d",
+                "responses": {
+                    "200": {
+                        "description": "get the payment_accounts information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    },
+                    "404": {
+                        "description": "payment_accounts not found"
+                    }
+                }
+            }
+        },
         "/api/v1/payment-account/{pa_id}": {
             "get": {
                 "tags": [
@@ -1377,6 +1479,93 @@
                         "description": "Error: bad request"
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "add exists payment account",
+                "operationId": "632c1fd8cfb6135ed76757ab1be46ece",
+                "parameters": [
+                    {
+                        "name": "pa_xref_psp_id",
+                        "in": "query",
+                        "description": "payment_service_providers id",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "example": "2"
+                        }
+                    },
+                    {
+                        "name": "pa_name",
+                        "in": "query",
+                        "description": "payment_accounts name",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "alipay cnBSJ2be prod"
+                        }
+                    },
+                    {
+                        "name": "pa_type",
+                        "in": "query",
+                        "description": "payment_type option",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "prod, sandbox"
+                        }
+                    },
+                    {
+                        "name": "pa_info",
+                        "in": "query",
+                        "description": "payment_accounts pa_info.",
+                        "required": true,
+                        "schema": {
+                            "type": "json",
+                            "example": ""
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "return upload success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-service-providers": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get the payment_service_providers details",
+                "operationId": "c9cbb956343dc66f71b80b5a215d106b",
+                "responses": {
+                    "200": {
+                        "description": "get the payment_service_providers  information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    },
+                    "404": {
+                        "description": "payment_service_providers not found"
+                    }
+                }
             }
         },
         "/api/v1/payment-configurations-list": {
@@ -1410,7 +1599,251 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "payment_accounts update success",
+                        "description": "payment_configurations update success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/location-config": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get the issuer exists payment-config",
+                "operationId": "abddb96e23194a1cd426ae5c052bd187",
+                "parameters": [
+                    {
+                        "name": "pc_id",
+                        "in": "query",
+                        "description": "payment_configurations",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the paymentgateway result list",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-gateway-types/{city}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get types (gov,tls) of payment gateway by city, used by eCommerce to show multiple baskets",
+                "operationId": "5c2029b70ea1f8347f7147c83f1ff724",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "Unique 3 letters City code per client",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "CAI"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the paymentgateway list types (tls,gov)",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-config": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "add exists payment config",
+                "operationId": "b398b51f7e88b5a97506b7f2d4c0ac03",
+                "parameters": [
+                    {
+                        "name": "pc_id",
+                        "in": "query",
+                        "description": "payment_configurations id",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "example": "123"
+                        }
+                    },
+                    {
+                        "name": "pa_id",
+                        "in": "query",
+                        "description": "payment_accounts id",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "example": "123"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "return upload success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-configurations": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "create a payment_configurations",
+                "operationId": "374f58df9bdcdefc30683484766d4aea",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "query",
+                        "description": "define which client you want to fetch",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "de"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "query",
+                        "description": "define which country you want to fetch",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "eg"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "define which city you want to fetch",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "CAI"
+                        }
+                    },
+                    {
+                        "name": "service",
+                        "in": "query",
+                        "description": "payment_configurations pc_service",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "tls"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "payment_configurations create success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/location-available-accounts": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get the paymentgateway list",
+                "operationId": "b4d03e00386f990f575d09d9ebe7b279",
+                "parameters": [
+                    {
+                        "name": "pc_id",
+                        "in": "query",
+                        "description": "payment_configurations",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the paymentgateway result list",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-configurations/{pc_id}": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "delete a payment_configuration",
+                "operationId": "49ebe6dc80880315f433c56147648153",
+                "parameters": [
+                    {
+                        "name": "pc_id",
+                        "in": "path",
+                        "description": "the payment_configurations pc_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "payment_configuration delete success",
                         "content": {
                             "application/json": {
                                 "schema": {}
@@ -1766,7 +2199,7 @@
                 "tags": [
                     "Payment API"
                 ],
-                "description": "upload csv file to table recommendataion_config",
+                "description": "upload csv file to table recommendation_config",
                 "operationId": "955fb9f69169335389f3b82c3516bb2f",
                 "parameters": [
                     {
@@ -1776,7 +2209,7 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "example": "recommendataion_config.csv"
+                            "example": "recommendation_config.csv"
                         }
                     },
                     {
@@ -1826,7 +2259,7 @@
                     {
                         "name": "limit",
                         "in": "query",
-                        "description": "number of recommendataion_config, default for 10",
+                        "description": "number of recommendation_config, default for 10",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -2199,6 +2632,130 @@
                 }
             }
         },
+        "/api/v1/refund": {
+            "post": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "create a new refund request",
+                "operationId": "2cb41394b31d9c58ad95db0fd38babd1",
+                "parameters": [
+                    {
+                        "name": "agent",
+                        "in": "query",
+                        "description": "agent email ID",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "test@test.com"
+                        }
+                    },
+                    {
+                        "name": "reason",
+                        "in": "query",
+                        "description": "the reason for refund",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "other"
+                        }
+                    },
+                    {
+                        "name": "appointment_date",
+                        "in": "query",
+                        "description": "date of appointment",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2022-11-25 00:00:00"
+                        }
+                    },
+                    {
+                        "name": "items",
+                        "in": "query",
+                        "description": "Refund items",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": ""
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Refund Request created",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/transaction_items_and_refunds/{ti_xref_f_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": " Get all Refund Transaction Items",
+                "operationId": "24ff0f241df8ffda0d9313971d558adc",
+                "parameters": [
+                    {
+                        "name": "ti_xref_f_id",
+                        "in": "path",
+                        "description": "Form ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "10000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/refund/{r_id}": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Get Refund request details with Transaction & Refund Items",
+                "operationId": "8243a7f3cd86ac66c6dd589b51014f15",
+                "parameters": [
+                    {
+                        "name": "r_id",
+                        "in": "path",
+                        "description": "Refund ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Got Refund request details with Transaction & Refund Items",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
         "/api/v1/switch/redirto": {
             "post": {
                 "tags": [
@@ -2544,6 +3101,26 @@
                         }
                     },
                     {
+                        "name": "expiration",
+                        "in": "query",
+                        "description": "tls citizen appointment booking expiration time(timestamp)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1669123675"
+                        }
+                    },
+                    {
+                        "name": "agent_name",
+                        "in": "query",
+                        "description": "agent name",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "test"
+                        }
+                    },
+                    {
                         "name": "items",
                         "in": "query",
                         "description": "transaction items. ",
@@ -2635,6 +3212,181 @@
                         "schema": {
                             "type": "string",
                             "example": "pending"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the transaction",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    }
+                }
+            }
+        },
+        "/api/v1/list_transactions": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "get all transactions for Accounting Journal",
+                "operationId": "fbd6ee7ea6371dd1c466fc666d344c0e",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page, default 1",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "number of result per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "20"
+                        }
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start date",
+                        "required": false,
+                        "schema": {
+                            "type": "date",
+                            "example": "2022-01-01"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end date",
+                        "required": false,
+                        "schema": {
+                            "type": "date",
+                            "example": "2022-12-31"
+                        }
+                    },
+                    {
+                        "name": "csv",
+                        "in": "query",
+                        "description": "CSV download (0 or 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": "0"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_country]",
+                        "in": "query",
+                        "description": "search country",
+                        "required": false,
+                        "schema": {
+                            "example": "gb"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_city]",
+                        "in": "query",
+                        "description": "search city",
+                        "required": false,
+                        "schema": {
+                            "example": "LON"
+                        }
+                    },
+                    {
+                        "name": "multi_search[ti_fee_type]",
+                        "in": "query",
+                        "description": "search fee type",
+                        "required": false,
+                        "schema": {
+                            "example": "service"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_reference_id]",
+                        "in": "query",
+                        "description": "search reference id",
+                        "required": false,
+                        "schema": {
+                            "example": "GWP123456"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_comment]",
+                        "in": "query",
+                        "description": "search comment",
+                        "required": false,
+                        "schema": {
+                            "example": "test"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_xref_fg_id]",
+                        "in": "query",
+                        "description": "search group id",
+                        "required": false,
+                        "schema": {
+                            "example": "123"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_client]",
+                        "in": "query",
+                        "description": "search client",
+                        "required": false,
+                        "schema": {
+                            "example": "de"
+                        }
+                    },
+                    {
+                        "name": "multi_search[t_batch_id]",
+                        "in": "query",
+                        "description": "search batch id",
+                        "required": false,
+                        "schema": {
+                            "example": "B123"
+                        }
+                    },
+                    {
+                        "name": "multi_search[ti_quantity]",
+                        "in": "query",
+                        "description": "search quantity",
+                        "required": false,
+                        "schema": {
+                            "example": "B123"
+                        }
+                    },
+                    {
+                        "name": "order_field",
+                        "in": "query",
+                        "description": "sort order field",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "t_xref_fg_id"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "sort order",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "desc"
                         }
                     }
                 ],

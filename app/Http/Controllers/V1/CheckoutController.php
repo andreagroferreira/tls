@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\V1;
-
 
 use App\Services\GatewayService;
 use App\Services\TransactionService;
@@ -59,6 +57,7 @@ class CheckoutController extends BaseController
     {
         $lang = $request->get('lang');
         $t_id = $request->route('t_id');
+
         try {
             $transaction = $this->transactionService->getTransaction($t_id);
 
@@ -74,13 +73,13 @@ class CheckoutController extends BaseController
             }
             if ($transaction['t_status'] == 'done') {
                 // transaction already done
-                return $this->sendError('P0003',[
+                return $this->sendError('P0003', [
                     'href' => $transaction['t_redirect_url'],
                 ], 400);
             }
             if ($transaction['t_status'] == 'waiting') {
                 // The deal was not completed or delay
-                return $this->sendError('P0022',[
+                return $this->sendError('P0022', [
                     'transaction_id' => $transaction['t_transaction_id'],
                 ]);
             }
@@ -108,23 +107,24 @@ class CheckoutController extends BaseController
             $is_pay_onsite = $transaction['t_gateway'] == 'pay_later';
             if ($is_pay_onsite) {
                 $result = [
-                    'transaction'  => $transaction,
-                    'lang'         => $lang,
-                    'redirect_url' => $transaction['t_redirect_url']
+                    'transaction' => $transaction,
+                    'lang' => $lang,
+                    'redirect_url' => $transaction['t_redirect_url'],
                 ];
+
                 return $this->sendResponse($result, 200);
             }
             // forbidden to modify the gateway
             $selected_gateway = $transaction['t_gateway'];
             if ($transaction['t_gateway'] == 'pay_later') {
                 $payment_gateways = [];
-            } else if (in_array($selected_gateway, array_keys($payment_gateways))) {
+            } elseif (in_array($selected_gateway, array_keys($payment_gateways))) {
                 $payment_gateways = [
-                    $selected_gateway => $payment_gateways[$selected_gateway]
+                    $selected_gateway => $payment_gateways[$selected_gateway],
                 ];
             }
             $getClientUseFile = $this->gatewayService->getClientUseFile();
-            if($getClientUseFile){
+            if ($getClientUseFile) {
                 $app_env = $this->isSandBox() ? 'sandbox' : 'production';
                 foreach ($payment_gateways as $key => $value) {
                     if ($key !== 'pay_later') {
@@ -132,20 +132,15 @@ class CheckoutController extends BaseController
                             unset($payment_gateways[$key]);
                         }
                     }
-                }
-                $payment_gateways_new = [];
-                foreach ($payment_gateways as $key => $value) {
-                    if ($key !== 'pay_later') {
-                        $payment_type = $key . '_' . $app_env;
-                    } else {
-                        $payment_type = $key;
+                    $payment_gateways_new = [];
+                    foreach ($payment_gateways as $key => $value) {
+                        $payment_gateways_new[$key] = $value;
+                        $payment_gateways_new[$key]['pa_id'] = '';
+                        $payment_gateways_new[$key]['psp_code'] = $key;
+                        $payment_gateways_new[$key]['type'] = $app_env;
                     }
-                    $payment_gateways_new[$payment_type] = $value;
-                    $payment_gateways_new[$payment_type]['pa_id'] = '';
-                    $payment_gateways_new[$payment_type]['psp_code'] = $key;
-                    $payment_gateways_new[$payment_type]['type'] = $app_env;
+                    $payment_gateways = $payment_gateways_new;
                 }
-                $payment_gateways = $payment_gateways_new;
             }
             $left_time = $expiration_time - $now_time;
             $data = [
@@ -153,12 +148,14 @@ class CheckoutController extends BaseController
                 'payment_gateways' => $payment_gateways,
                 'left_time' => $left_time,
                 'is_postal' => $is_postal,
-                'lang' => $lang
+                'lang' => $lang,
             ];
+
             return $this->sendResponse($data, 200);
         } catch (\Exception $e) {
-            Log::error('An error occurred: ' . $e->getMessage());
-            return $this->sendError('P0006',$e->getMessage(), 400);
+            Log::error('An error occurred: '.$e->getMessage());
+
+            return $this->sendError('P0006', $e->getMessage(), 400);
         }
     }
 }

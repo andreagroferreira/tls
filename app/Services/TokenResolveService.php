@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use Illuminate\Support\Facades\Log;
 
 class TokenResolveService
 {
@@ -50,7 +51,7 @@ class TokenResolveService
      * @param string $lang
      *
      * @throws \Exception
-     *
+     * 
      * @return array
      */
     public function resolveTemplate(
@@ -66,9 +67,9 @@ class TokenResolveService
         if (empty($template)) {
             return $data;
         }
-        $data = $this->getCorrectCollectionTranslation($template);
+        $data = $this->getCorrectCollectionTranslation($template,'tlspay_email_invoice');
 
-        if (empty($data['email_content']) && empty($data['invoice_content'])) {
+        if (empty($data['invoice_content'])) {
             return $data;
         }
 
@@ -89,7 +90,6 @@ class TokenResolveService
         }
 
         foreach ($resolvedTokens as $token => $value) {
-            $data['email_content'] = str_replace($token, $value, $data['email_content']);
             $data['invoice_content'] = str_replace($token, $value, $data['invoice_content']);
         }
 
@@ -143,8 +143,8 @@ class TokenResolveService
         $basketValues = [
             'currency' => $transactionCurrency,
             'amount' => $transaction['t_amount'],
-            'total_with_tax' => $this->formatDecimalNumber((float) $basketServiceValues['price_vat']),
-            'total_without_tax' => $this->formatDecimalNumber((float) $transaction['t_amount']),
+            'total_with_tax' => $this->formatDecimalNumber((float) $transaction['t_amount']),
+            'total_without_tax' => $this->formatDecimalNumber((float) $basketServiceValues['price_without_vat']),
             'tax' => $this->formatDecimalNumber((float) $basketServiceValues['vat']),
         ];
 
@@ -159,7 +159,7 @@ class TokenResolveService
     }
 
     /**
-     * @param array $transactionItems
+     * @param array  $transactionItems
      * @param string $transactionCurrency
      *
      * @return array
@@ -169,17 +169,18 @@ class TokenResolveService
         $basketValues = [
             'services' => [],
             'vat' => 0,
-            'price_vat' => 0,
+            'price_without_vat' => 0,
         ];
 
         foreach ($transactionItems as $item) {
             foreach ($item['skus'] as $service) {
                 $sku = $service['sku'];
+                $productName = $service['product_name'];
                 $quantity = $service['quantity'];
                 $price = $service['price'];
                 $vat = ($service['vat'] / 100 * $price);
 
-                $basketValues['services'][$sku]['sku'] = $sku;
+                $basketValues['services'][$sku]['product_name'] = $productName;
                 $basketValues['services'][$sku]['currency'] = $transactionCurrency;
 
                 if (!array_key_exists('quantity', $basketValues['services'][$sku])) {
@@ -193,7 +194,7 @@ class TokenResolveService
                 $basketValues['services'][$sku]['price'] += $price;
 
                 $basketValues['vat'] += $vat;
-                $basketValues['price_vat'] += ($vat + $price);
+                $basketValues['price_without_vat'] += ($price - $vat);
             }
         }
 
@@ -289,17 +290,13 @@ class TokenResolveService
     private function pregMatchTemplate(array $content): array
     {
         $pattern = '~({{\\w+:\\w+:\\w+}}|{{\\w+:\\w+}})~';
-
-        preg_match_all($pattern, $content['email_content'], $email_tokens);
+        $tokens = [];
         preg_match_all($pattern, $content['invoice_content'], $invoice_tokens);
-        if (count($email_tokens)) {
-            $tokens[] = array_unique($email_tokens, SORT_REGULAR)[0];
-        }
         if (count($invoice_tokens)) {
-            $tokens[] = array_unique($invoice_tokens, SORT_REGULAR)[0];
+            $tokens = array_unique($invoice_tokens, SORT_REGULAR)[0];
         }
-        // will hold all tokens from email and invoice content
-        return array_unique($tokens, SORT_REGULAR)[0];
+        // will hold all tokens from invoice content
+        return array_unique($tokens, SORT_REGULAR);
     }
 
     /**
@@ -342,20 +339,25 @@ class TokenResolveService
 
     /**
      * @param array $collections
+     * @param string $collectionName
      *
      * @throws \Exception
      *
      * @return array
      */
-    private function getCorrectCollectionTranslation(array $collections): array
+    private function getCorrectCollectionTranslation(array $collections, string $collectionName): array
     {
         $numberOfCollections = count($collections);
         $globalOnly = 1 === $numberOfCollections;
         $hasCity = $numberOfCollections > 2;
 
         $collectionIndex = null;
+        $collectionGlobalIndex = null;
         foreach ($collections as $i => $collection) {
             $code = $collection['code'];
+            if ('ww' == $code) {
+                $collectionGlobalIndex = $i;
+            }
             if ($code == $this->city) {
                 $collectionIndex = $i;
 
@@ -370,15 +372,22 @@ class TokenResolveService
                 $collectionIndex = $i;
             }
         }
-
-        if (null === $collectionIndex) {
-            throw new \Exception('Correct collection index not found');
+        if (null != $collectionIndex) {
+            $translation = $this->getActiveTranslation($collections[$collectionIndex]['translation']);
         }
 
-        $translation = $this->getActiveTranslation($collections[$collectionIndex]['translation']);
-
         if (empty($translation)) {
-            throw new \Exception('No active translation found');
+            if (null === $collectionGlobalIndex) {
+                throw new \Exception('Correct collection index not found for collection: '.$collectionName.' - code:'.$code);
+            }
+
+            $translationGlobal = $this->getActiveTranslation($collections[$collectionGlobalIndex]['translation']);
+
+            if (empty($translationGlobal)) {
+                throw new \Exception('No active translation found for collection: '.$collectionName.' - code: '.$code);
+            }
+
+            return $translationGlobal;
         }
 
         return $translation;
@@ -441,17 +450,16 @@ class TokenResolveService
             $filters,
             $options
         );
-
         if (empty($tokenCollections)) {
             throw new \Exception('No collections returned for token: '.$collection.'.'.$field);
         }
-
+        
         if (count($tokenCollections) > 1) {
-            $translation = $this->getCorrectCollectionTranslation($tokenCollections);
+            $translation = $this->getCorrectCollectionTranslation($tokenCollections, $tokenDetails[1]);
         } else {
             $translation = $this->getActiveTranslation(array_first($tokenCollections)['translation']);
         }
-
+        
         return array_first($translation);
     }
 
@@ -467,16 +475,15 @@ class TokenResolveService
     {
         $translations = [];
         $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/'.$this->client.'/forms_in_group/'.$fg_id);
-        if (200 != $applicationsResponse['status']) {
-            throw new \Exception('No applicant details returned for token: '.$tokenDetails[1]);
+        if ($applicationsResponse['status'] != 200 || empty($applicationsResponse['body'])) {
+            Log::error('No applicant details returned from TLS API for token: '.$tokenDetails[1].'- form group :'.$fg_id);
+            return '';
         }
+        
         foreach ($applicationsResponse['body'] as $applicant) {
             $translations[] = $applicant[$tokenDetails[1]];
         }
-        if (empty($translations)) {
-            return '';
-        }
-
+        
         return implode(', ', array_unique($translations, SORT_REGULAR));
     }
 

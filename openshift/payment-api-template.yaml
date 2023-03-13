@@ -21,6 +21,8 @@ parameters:
     required: true
   - name: POSTGRES_DB_HOST
     required: true
+  - name: POSTGRES_TLSCONNECT_DB_DATABASE
+    required: true
   - name: POSTGRES_PAYMENT_DB_DATABASE
     required: true
   - name: TLSCONTACT_API
@@ -424,6 +426,12 @@ parameters:
     required: true
   - name: FILE_LIBRARY_API_DOMAIN
     required: true
+  - name: WORKFLOW_SERVICE_DOMAIN
+    required: true
+  - name: ECOMMERCE_SERVICE_DOMAIN
+    required: true
+  - name: POSTGRES_ECOMMERCE_SECRET
+    required: true
   - name: APPLICATION_ENV
     value: prod
     required: true
@@ -626,6 +634,8 @@ objects:
                     secretKeyRef:
                       name: ${POSTGRES_SECRET_NAME}
                       key: password
+                - name: POSTGRES_TLSCONNECT_DB_DATABASE
+                  value: ${POSTGRES_TLSCONNECT_DB_DATABASE}
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
                 - name: KEYCLOAK_BASE_URL
@@ -1024,6 +1034,25 @@ objects:
                   value: ${EMAIL_SERVICE_DOMAIN}
                 - name: FILE_LIBRARY_API_DOMAIN
                   value: ${FILE_LIBRARY_API_DOMAIN}
+                - name: WORKFLOW_SERVICE_DOMAIN
+                  value: ${WORKFLOW_SERVICE_DOMAIN}
+                - name: ECOMMERCE_SERVICE_DOMAIN
+                  value: ${ECOMMERCE_SERVICE_DOMAIN}
+                - name: POSTGRES_ECOMMERCE_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: username
+                - name: POSTGRES_ECOMMERCE_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: password
+                - name: POSTGRES_ECOMMERCE_DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: database-name
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -1107,6 +1136,8 @@ objects:
                     secretKeyRef:
                       name: ${POSTGRES_ADMIN_SECRET_NAME}
                       key: password
+                - name: POSTGRES_TLSCONNECT_DB_DATABASE
+                  value: ${POSTGRES_TLSCONNECT_DB_DATABASE}
                 - name: POSTGRES_PAYMENT_DB_DATABASE
                   value: ${POSTGRES_PAYMENT_DB_DATABASE}
                 - name: ENVPAY_SWITCH_COMMON_SANDBOX_HOST
@@ -1501,6 +1532,25 @@ objects:
                   value: ${EMAIL_SERVICE_DOMAIN}
                 - name: FILE_LIBRARY_API_DOMAIN
                   value: ${FILE_LIBRARY_API_DOMAIN}
+                - name: WORKFLOW_SERVICE_DOMAIN
+                  value: ${WORKFLOW_SERVICE_DOMAIN}
+                - name: ECOMMERCE_SERVICE_DOMAIN
+                  value: ${ECOMMERCE_SERVICE_DOMAIN}
+                - name: POSTGRES_ECOMMERCE_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: username
+                - name: POSTGRES_ECOMMERCE_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: password
+                - name: POSTGRES_ECOMMERCE_DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${POSTGRES_ECOMMERCE_SECRET}
+                      key: database-name
                 - name: TLSCONTACT_API
                   value: ${TLSCONTACT_API}
                 - name: CLIENT
@@ -1822,3 +1872,23 @@ objects:
           ports:
             - protocol: TCP
               port: 8080
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-tlspay-e-commerce-service
+      labels:
+        app: "${APPLICATION_NAME}"
+    spec:
+      podSelector:
+        matchLabels:
+          app: tlspay-e-commerce-service
+      policyTypes:
+        - Ingress
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: "${APPLICATION_NAME}"
+          ports:
+            - port: 8443
+              protocol: TCP

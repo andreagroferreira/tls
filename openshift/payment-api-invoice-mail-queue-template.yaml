@@ -97,6 +97,8 @@ objects:
       replicas: 1
       template:
         metadata:
+          annotations:
+            central-logging: "true"
           labels:
             app: ${APPLICATION_NAME}-invoice-mail-queue
             deploymentconfig: ${APPLICATION_NAME}-invoice-mail-queue
@@ -327,3 +329,39 @@ objects:
       podSelector:
         matchLabels:
           app: 'tlsconnect-service-api'
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-invoice-mail-queue-directus-cms
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}-invoice-mail-queue
+          ports:
+            - port: 8080
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: 'directus-cms'
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-${APPLICATION_NAME}-invoice-mail-queue-file-library-api
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: ${APPLICATION_NAME}-invoice-mail-queue
+          ports:
+            - port: 8443
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: 'file-library-api'

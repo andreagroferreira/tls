@@ -110,6 +110,9 @@ return [
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
+            'options'   => array(
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+            ),
         ],
 
         'unit_test_payment_pgsql' => [
@@ -124,6 +127,9 @@ return [
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
+            'options'   => array(
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+            ),
         ],
 
         'sqlsrv' => [
@@ -137,6 +143,32 @@ return [
             'prefix' => env('DB_PREFIX', ''),
         ],
 
+        'ecommerce_pgsql' => [
+            'driver' => 'pgsql',
+            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
+            'port' => env('POSTGRES_DB_PORT', '5432'),
+            'database' => env('POSTGRES_ECOMMERCE_DB_DATABASE', 'tlspay-e-commerce-service-db'),
+            'username' => env('POSTGRES_ECOMMERCE_DB_USERNAME', 'tlspay-e-commerce-service-user'),
+            'password' => env('POSTGRES_ECOMMERCE_DB_PASSWORD', ''),
+            'charset' =>  env('DB_CHARSET', 'utf8'),
+            'prefix' => env('DB_PREFIX', ''),
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
+        'tlsconnect_pgsql' => [
+            'driver' => 'pgsql',
+            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
+            'port' => env('POSTGRES_DB_PORT', '5432'),
+            'database' => env('POSTGRES_TLSCONNECT_DB_DATABASE', ''),
+            'username' => env('POSTGRES_DB_USERNAME', 'forge'),
+            'password' => env('POSTGRES_DB_PASSWORD', ''),
+            'charset' =>  env('DB_CHARSET', 'utf8'),
+            'prefix' => env('DB_PREFIX', ''),
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
     ],
 
     /*

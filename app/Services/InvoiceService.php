@@ -60,6 +60,51 @@ class InvoiceService
     }
 
     /**
+     * generate.
+     *
+     * @param mixed $transaction
+     *
+     * @return void
+     */
+    public function generate(array $transaction)
+    {
+        if (empty($transaction['t_callback_url'])) {
+            Log::warning('Transaction Error: empty callback url');
+
+            return false;
+        }
+
+        $callback_url = $transaction['t_callback_url'];
+        $data = [
+            't_id' => $transaction['t_id'],
+            'transaction_id' => $transaction['t_transaction_id'],
+            'gateway_transaction_id' => $transaction['t_gateway_transaction_id'],
+            'gateway' => $transaction['t_gateway'],
+            'currency' => $transaction['t_currency'],
+            'status' => $transaction['t_status'],
+            'tech_creation' => $transaction['t_tech_creation'],
+            'tech_modification' => $transaction['t_tech_modification'],
+            'items' => $transaction['t_items'],
+        ];
+
+        try {
+            $response = $this->apiService->callInvoiceApi($callback_url, $data);
+        } catch (\Exception $e) {
+            Log::warning('Transaction Error: error callback url "'.$transaction['t_callback_url'].'"');
+
+            return false;
+        }
+
+        if ($response['status'] != 200) {
+            Log::warning('Transaction Error: generate receipt failed');
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @param Transactions $transaction
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
@@ -73,7 +118,7 @@ class InvoiceService
         }
 
         $storage = Storage::disk($this->invoiceDisk);
-        $file = $this->getFilePath($transaction->toArray(), 's3');
+        $file = getFilePath($transaction->toArray(), 's3');
 
         if (!$storage->exists($file)) {
             return null;
@@ -93,7 +138,7 @@ class InvoiceService
      */
     public function getFileLibraryInvoiceFileContent(Transactions $transaction): ?object
     {
-        $file = $this->getFilePath($transaction->toArray());
+        $file = getFilePath($transaction->toArray());
 
         $queryParams = 'path='.$file;
 
@@ -138,6 +183,9 @@ class InvoiceService
             'code' => [
                 'in' => [$city, $country, 'ww'],
             ],
+            'type' => [
+                'eq' => $service,
+            ],
         ];
         $select_fields = '*.*';
 
@@ -145,94 +193,8 @@ class InvoiceService
             $collection_name,
             $select_fields,
             $select_filters,
-            ['lang' => $lang, 'type' => $service]
+            ['lang' => $lang]
         );
-    }
-
-    /**
-     * @param int    $fg_id
-     * @param string $client
-     * @param array  $resolved_content
-     * @param string $invoice_file_name
-     *
-     * @return void
-     */
-    public function sendInvoice(
-        int $fg_id,
-        string $client,
-        array $resolved_content
-    ): void {
-        $form_group = $this->formGroupService->fetch($fg_id, $client);
-        $form_user_email = $form_group['u_email'] ?? '';
-
-        if (empty($form_user_email)) {
-            return;
-        }
-
-        if (!empty($resolved_content['email_content']) && !empty($resolved_content['invoice_content'])) {
-            $email_content = [
-                'to' => $form_user_email,
-                'subject' => $resolved_content['email_title'],
-                'body' => $resolved_content['email_content'],
-                'html2pdf' => [
-                    $resolved_content['invoice_file_name'] => $resolved_content['invoice_content'],
-                ],
-            ];
-
-            $this->apiService->callEmailApi('POST', 'send_email', $email_content);
-        }
-    }
-
-    /**
-     * @param array  $transaction
-     * @param string $storageService
-     *
-     * @return string
-     */
-    protected function getFilePath(array $transaction, string $storageService = 'file-library'): string
-    {
-        if ($storageService === 's3') {
-            return array_get($transaction, 't_client').'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
-        }
-
-        $country = substr($transaction['t_issuer'], 0, 2);
-        $city = substr($transaction['t_issuer'], 2, 3);
-
-        return 'invoice/WW/'.$country.'/'.$city.'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
-    }
-
-    public function generate($transaction)
-    {
-        if (empty($transaction['t_callback_url'])) {
-            Log::warning('Transaction Error: empty callback url');
-            return false;
-        }
-
-        $callback_url = $transaction['t_callback_url'];
-        $data         = [
-            't_id'                   => $transaction['t_id'],
-            'transaction_id'         => $transaction['t_transaction_id'],
-            'gateway_transaction_id' => $transaction['t_gateway_transaction_id'],
-            'gateway'                => $transaction['t_gateway'],
-            'currency'               => $transaction['t_currency'],
-            'status'                 => $transaction['t_status'],
-            'tech_creation'          => $transaction['t_tech_creation'],
-            'tech_modification'      => $transaction['t_tech_modification'],
-            'items'                  => $transaction['t_items']
-        ];
-
-        try{
-            $response = $this->apiService->callInvoiceApi($callback_url, $data);
-        } catch (\Exception $e) {
-            Log::warning('Transaction Error: error callback url "' . $transaction['t_callback_url'] . '"');
-            return false;
-        }
-
-        if ($response['status'] != 200) {
-            Log::warning('Transaction Error: generate receipt failed');
-            return false;
-        }
-        return true;
     }
 
 }

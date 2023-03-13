@@ -4,13 +4,15 @@ namespace App\Services;
 
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\PaymentEauditorLogJob;
-use App\Jobs\TransactionSyncJob;
+use App\Traits\FeatureVersionsTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class PaymentService
 {
+    use FeatureVersionsTrait;
+
     protected $transactionService;
     protected $transactionLogsService;
     protected $formGroupService;
@@ -75,15 +77,6 @@ class PaymentService
             $error_msg[] = 'payment_amount_incorrect';
         }
 
-        if ($transaction && !empty($transaction['t_items'])) {
-            if (!empty($transaction['t_xref_fg_id'])) {
-                $actionResult = $this->syncAction($transaction, $payment_gateway);
-                if (!empty($actionResult['error_msg'])) {
-                    $error_msg[] = $actionResult['error_msg'];
-                }
-            }
-        }
-
         $update_fields = [
             't_gateway' => $payment_gateway,
             't_gateway_transaction_id' => $confirm_params['gateway_transaction_id'],
@@ -91,7 +84,6 @@ class PaymentService
             't_status' => 'done',
             't_gateway_account' => $confirm_params['t_gateway_account'] ?? null,
             't_gateway_subaccount' => $confirm_params['t_gateway_subaccount'] ?? null,
-            't_invoice_storage' => $confirm_params['t_invoice_storage'] ?? 'file-library',
         ];
 
         $this->transactionService->updateById($transaction['t_id'], $update_fields);
@@ -99,9 +91,38 @@ class PaymentService
             $transaction[$field_key] = $field_val;
         }
 
-        $this->invoiceService->generate($transaction);
-        //dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
-        //    ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        if ($transaction && !empty($transaction['t_items'])) {
+            if (!empty($transaction['t_xref_fg_id'])) {
+                if ($this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                    $actionResult = $this->transactionService->syncTransaction(
+                        $transaction,
+                        $payment_gateway,
+                        $this->agent_name,
+                        $this->force_pay_for_not_online_payment_avs
+                    );
+                    if (!empty($actionResult['error_msg'])) {
+                        $error_msg[] = $actionResult['error_msg'];
+                    }
+                } else {
+                    $workflowServiceSyncStatus = $this->transactionService->syncTransactionToWorkflow($transaction);
+                    if (!empty($workflowServiceSyncStatus['error_msg'])) {
+                        $error_msg[] = $workflowServiceSyncStatus['error_msg'];
+                    }
+
+                    $ecommerceSyncStatus = $this->transactionService->syncTransactionToEcommerce($transaction, 'PAID');
+                    if (!empty($ecommerceSyncStatus['error_msg'])) {
+                        $error_msg[] = $ecommerceSyncStatus['error_msg'];
+                    }
+                }
+            }
+        }
+
+        if ($this->isVersion(1, $transaction['t_issuer'], 'invoice')) {
+            $this->invoiceService->generate($transaction);
+        } else {
+            dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
+                ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        }
 
         if (!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($error_msg, 256));
@@ -255,16 +276,7 @@ class PaymentService
      */
     public function sendInvoice(array $transaction, string $collection_name): void
     {
-        $callback_url = $transaction['t_callback_url'];
         $lang = 'en-us';
-        if ($callback_url) {
-            $url_query_string = parse_url($callback_url, PHP_URL_QUERY);
-            parse_str($url_query_string, $url_query_string_to_array);
-
-            if (!empty($url_query_string_to_array['lang'])) {
-                $lang = $url_query_string_to_array['lang'];
-            }
-        }
 
         $content = $this->invoiceService->getInvoiceContent(
             $collection_name,
@@ -277,69 +289,20 @@ class PaymentService
             throw new \Exception('Error Fetching Invoice Content');
         }
 
-        $resolved_content = $this->tokenResolveService->resolveTemplate(
+        $resolvedTemplate = $this->tokenResolveService->resolveTemplate(
             $content,
             $transaction,
             $lang
         );
 
-        if (empty($resolved_content)) {
+        if (empty($resolvedTemplate)) {
             throw new \Exception('Error Resolving Invoice Content');
         }
-
-        $response = $this->convertInvoiceContentToPdf($transaction, $resolved_content['invoice_content']);
-
+        
+        $response = $this->convertInvoiceContentToPdf($transaction, $resolvedTemplate['invoice_content']);
+        
         if (!$response) {
             throw new \Exception('Error Processing Invoice Upload Request');
-        }
-
-        $this->invoiceService->sendInvoice(
-            $transaction['t_xref_fg_id'],
-            $transaction['t_client'],
-            $resolved_content
-        );
-    }
-
-    private function syncAction($transaction, $gateway)
-    {
-        $client = $transaction['t_client'];
-        $formGroupInfo = $this->formGroupService->fetch($transaction['t_xref_fg_id'], $client);
-        if (empty($formGroupInfo)) {
-            return [
-                'status' => 'error',
-                'error_msg' => 'form_group_not_found',
-            ];
-        }
-        $data = [
-            'gateway' => $gateway,
-            'u_id' => !empty($formGroupInfo['fg_xref_u_id']) ? $formGroupInfo['fg_xref_u_id'] : 0,
-            't_items' => $transaction['t_items'],
-            't_transaction_id' => $transaction['t_transaction_id'],
-            't_issuer' => $transaction['t_issuer'],
-            't_currency' => $transaction['t_currency'],
-        ];
-        if ($this->agent_name) {
-            $data['agent_name'] = $this->agent_name;
-        }
-        if ($this->force_pay_for_not_online_payment_avs === 'yes') {
-            $data['force_pay_for_not_online_payment_avs'] = $this->force_pay_for_not_online_payment_avs;
-        }
-        Log::info('paymentservice syncAction start');
-
-        try {
-            dispatch(new TransactionSyncJob($client, $data))->onConnection('tlscontact_transaction_sync_queue')->onQueue('tlscontact_transaction_sync_queue');
-            Log::info('paymentservice syncAction:dispatch');
-
-            return [
-                'error_msg' => [],
-            ];
-        } catch (\Exception $e) {
-            Log::info('paymentservice syncAction dispatch error_msg:'.$e->getMessage());
-
-            return [
-                'status' => 'error',
-                'error_msg' => $e->getMessage(),
-            ];
         }
     }
 

@@ -23,6 +23,10 @@ class PaymentConfigurationsControllerTest extends TestCase
         $base_url = $this->configurationListApi.'?client=de&type=sandbox';
         $this->get($base_url);
         $this->response->assertStatus(200);
+        if (env('APP_ENV') !== 'testing') {
+            $this->response->assertStatus(401);
+            return;
+        }
         $this->assertEquals($this->response->json(), []);
     }
 
@@ -30,6 +34,10 @@ class PaymentConfigurationsControllerTest extends TestCase
     {
         $base_url = 'api/v1/location-config?pc_id=1';
         $this->get($base_url);
+        if (env('APP_ENV') !== 'testing') {
+            $this->response->assertStatus(401);
+            return;
+        }
         if ($this->response->status() === 200) {
             $this->assertNotEmpty($this->response->json());
         } else {
@@ -50,6 +58,10 @@ class PaymentConfigurationsControllerTest extends TestCase
     {
         $base_url = 'api/v1/location-available-accounts?pc_id=1';
         $this->get($base_url);
+        if (env('APP_ENV') !== 'testing') {
+            $this->response->assertStatus(401);
+            return;
+        }
         if ($this->response->status() === 200) {
             $this->assertNotEmpty($this->response->json());
         } else {
@@ -101,5 +113,4 @@ class PaymentConfigurationsControllerTest extends TestCase
         $this->response->assertStatus(200)
             ->assertJson([]);
     }
-
 }

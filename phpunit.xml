@@ -30,6 +30,5 @@
         <env name="ECOMMERCE_SERVICE_DOMAIN" value="https://ANY-HTTP-VALUE"/>
         <env name="TLSCONTACT_API" value="https://ANY-HTTP-VALUE"/>
         <env name="XDEBUG_MODE" value="coverage"/>
-        <env name="CLIENT" value="schengen-pl"/>
     </php>
 </phpunit>

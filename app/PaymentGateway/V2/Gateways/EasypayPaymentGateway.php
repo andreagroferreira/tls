@@ -90,9 +90,9 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      * @param float        $amount
      * @param Request      $request
      *
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     public function callback(
         Transactions $transaction,
@@ -132,6 +132,46 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     }
 
     /**
+     * Checks the order status on the gateway.
+     *
+     * @param Transactions $transaction
+     *
+     * @return null|string
+     */
+    public function checkOrderStatus(Transactions $transaction): ?string
+    {
+        $body = [
+            'serviceKey' => $this->config['config']['serviceKey'],
+            'orderId' => $transaction->t_transaction_id,
+        ];
+
+        $signature = $this->generateSign($body);
+
+        $response = Http::withHeaders(
+            $this->updateHeaders([
+                'Sign' => $signature,
+            ])
+        )
+            ->post($this->config['config']['host'].'/merchant/orderState', $body)
+            ->json();
+
+        if ($this->hasErrors($response)) {
+            if ($this->handled($response['error']['errorCode'])) {
+                return $this->checkOrderStatus();
+            }
+
+            Log::error('[PaymentGateway\EasypayPaymentGateway] - Error while verifying order status.', [
+                'error' => $response['error'],
+                'requestBody' => $body,
+            ]);
+
+            return null;
+        }
+
+        return $response['paymentState'];
+    }
+
+    /**
      * @param Request $request
      *
      * @return bool
@@ -144,7 +184,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
 
         Log::info('[PaymentGateway\EasypayPaymentGateway] Signature Validation: '.$headerSign.' == '.$sign, $request->all());
 
-        return true; //$headerSign === $sign;
+        return true; // $headerSign === $sign;
     }
 
     /**

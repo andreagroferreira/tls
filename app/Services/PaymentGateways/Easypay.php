@@ -35,6 +35,11 @@ class Easypay implements PaymentGatewayServiceInterface
      */
     protected $transactionLogsService;
 
+    /**
+     * @var EasypayPaymentGateway
+     */
+    protected $gateway;
+
     public function __construct(
         GatewayService $gatewayService,
         TransactionService $transactionService,
@@ -45,6 +50,7 @@ class Easypay implements PaymentGatewayServiceInterface
         $this->transactionService = $transactionService;
         $this->paymentService = $paymentService;
         $this->transactionLogsService = $transactionLogsService;
+        $this->gateway = new EasypayPaymentGateway($this->gatewayService, $this->paymentService);
     }
 
     /**
@@ -82,7 +88,7 @@ class Easypay implements PaymentGatewayServiceInterface
 
             $transaction->update(['t_gateway' => 'easypay', 't_xref_pa_id' => (int) $request->pa_id]);
 
-            $payment = (new EasypayPaymentGateway($this->gatewayService, $this->paymentService))->charge($transactionItemsService->getAmount(), [
+            $payment = $this->gateway->charge($transactionItemsService->getAmount(), [
                 'transaction' => $transaction,
                 'items' => $transactionItemsService->getItems(),
             ]);
@@ -132,7 +138,7 @@ class Easypay implements PaymentGatewayServiceInterface
 
             $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
 
-            return (new EasypayPaymentGateway($this->gatewayService, $this->paymentService))->callback(
+            return $this->gateway->callback(
                 $transaction,
                 $transactionItemsService->getItems(),
                 $transactionItemsService->getAmount(),
@@ -179,9 +185,23 @@ class Easypay implements PaymentGatewayServiceInterface
 
         $message = 'Transaction OK: transaction has been confirmed';
         $result = 'ok';
+
         if ($transaction->t_status !== 'done') {
-            $result = 'fail';
-            $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
+            $orderStatus = $this->gateway->checkOrderStatus($transaction);
+
+            switch ($orderStatus) {
+                case 'declined':
+                    $result = 'fail';
+                    $message = 'Transaction DECLINED: transaction was declined';
+
+                    break;
+
+                case 'pending':
+                    $result = 'fail';
+                    $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
+
+                    break;
+            }
         }
 
         return [

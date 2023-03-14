@@ -60,8 +60,8 @@ abstract class TestCase extends \TestCase
             $params = [
                 't_xref_fg_id' => 10000,
                 't_transaction_id' => str_random(10),
-                't_client' => 'be',
-                't_issuer' => 'dzALG2be',
+                't_client' => $this->client,
+                't_issuer' => 'dzALG2'.$this->client,
                 't_gateway_transaction_id' => str_random(10),
                 't_gateway' => 'cmi',
                 't_currency' => 'MAD',
@@ -73,6 +73,9 @@ abstract class TestCase extends \TestCase
                 't_workflow' => 'vac',
                 't_invoice_storage' => 'file-library',
             ];
+        } else {
+            $params['t_client'] = $this->client;
+            $params['t_issuer'] = substr($params['t_issuer'], 0, 6) . $this->client;
         }
 
         $db_connection = DB::connection('unit_test_payment_pgsql')->table('transactions');
@@ -232,10 +235,12 @@ abstract class TestCase extends \TestCase
     {
         if (blank($params)) {
             $params = [
-                'r_issuer' => 'dzALG2be',
+                'r_issuer' => 'dzALG2'.$this->client,
                 'r_reason_type' => 'other',
                 'r_status' => 'done'
             ];
+        } else {
+            $params['r_issuer'] = 'dzALG2'.$this->client;
         }
         $db_connection = DB::connection('unit_test_payment_pgsql')->table('refunds');
         $r_id = $db_connection->insertGetId($params, 'r_id');
@@ -354,5 +359,34 @@ abstract class TestCase extends \TestCase
         $pc_id = $db_connection->insertGetId($params, 'pc_id');
 
         return $db_connection->where('pc_id', $pc_id)->first();
+    }
+
+    /**
+     * @param int $version
+     * @param string $feature
+     *
+     * @return void
+     */
+    public function setFeatureVersions(int $version, string $feature): void
+    {
+        $dbConnection = DB::connection('unit_test_payment_pgsql');
+
+        if ($feature === 'invoice') {
+            $fvcId = 1;
+        } else if ($feature === 'transaction_sync') {
+            $fvcId = 2;
+        } else {
+            $fvcId = null;
+        }
+
+        if ($fvcId !== null) {
+            $featureVersion = $dbConnection->table('feature_versions')
+                ->where(['fv_type' => $feature, 'fv_version' => $version])
+                ->first();
+
+            $dbConnection->table('feature_version_configurations')
+                ->where(['fvc_id' => $fvcId])
+                ->update(['fvc_xref_fv_id' => $featureVersion->fv_id]);
+        }
     }
 }

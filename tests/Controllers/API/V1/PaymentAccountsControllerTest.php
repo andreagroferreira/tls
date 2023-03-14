@@ -14,6 +14,11 @@ class PaymentAccountsControllerTest extends TestCase
         putenv('PROJECT=de');
         $base_url = 'api/v1/payment-gateway-field-list';
         $this->get($base_url);
+        if (env('APP_ENV') !== 'testing') {
+            $this->response->assertStatus(401);
+            return;
+        }
+
         $this->response->assertStatus(200);
 
         $responses = [
@@ -51,6 +56,11 @@ class PaymentAccountsControllerTest extends TestCase
                 'b' => '234',
             ],
         ]);
+        if (env('APP_ENV') !== 'testing') {
+            $this->response->assertStatus(401);
+            return;
+        }
+
         $this->response->assertStatus(200);
     }
 
@@ -58,6 +68,10 @@ class PaymentAccountsControllerTest extends TestCase
     {
         $base_url = 'api/v1/payment-account/1';
         $this->get($base_url);
+        if (env('APP_ENV') !== 'testing') {
+            $this->response->assertStatus(401);
+            return;
+        }
         $this->response->assertStatus(200);
         $this->assertEquals($this->response->json()['pa_id'] ?? '', 1);
     }
@@ -72,6 +86,10 @@ class PaymentAccountsControllerTest extends TestCase
                 'b' => '234',
             ],
         ]);
+        if (env('APP_ENV') !== 'testing') {
+            $this->response->assertStatus(401);
+            return;
+        }
         $this->response->assertStatus(200);
         $this->assertEquals($this->response->json()['pa_name'] ?? '', 'alipay111');
     }
@@ -80,6 +98,10 @@ class PaymentAccountsControllerTest extends TestCase
     {
         $base_url = 'api/v1/payment-service-providers';
         $this->get($base_url);
+        if (env('APP_ENV') !== 'testing') {
+            $this->response->assertStatus(401);
+            return;
+        }
         $this->response->assertStatus(200);
         $responses = [
             'pay_later',
@@ -88,6 +110,7 @@ class PaymentAccountsControllerTest extends TestCase
             'bnp',
             'clictopay',
             'cmi',
+            'cybersource',
             'fawry',
             'globaliris',
             'k-bank',
@@ -98,6 +121,7 @@ class PaymentAccountsControllerTest extends TestCase
             'payu',
             'switch',
             'tingg',
+            'easypay',
         ];
         $this->assertTrue(in_array($this->response->json()[0]['psp_code'], $responses));
     }

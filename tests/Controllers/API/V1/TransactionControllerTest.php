@@ -518,7 +518,7 @@ class TransactionControllerTest extends TestCase
     {
         $transaction = $this->generateTransaction();
 
-        $this->get($this->transactionsApi.'?issuer=dzALG2be');
+        $this->get($this->transactionsApi.'?issuer=dzALG2'.$this->getClient());
         $this->response->assertStatus(200)
             ->assertJson([
                 'total' => 1,
@@ -1365,6 +1365,8 @@ class TransactionControllerTest extends TestCase
      */
     public function testTransactionWithFreeBasketItems(array $defaultPayload): void
     {
+        $this->setFeatureVersions(2, 'transaction_sync');
+
         //set items skus price to 0
         $defaultPayload['items'][0]['skus'][0]['price'] = 0;
 
@@ -1475,6 +1477,8 @@ class TransactionControllerTest extends TestCase
      */
     public function testTransactionWithAgentNameAndPaymentMethod(array $defaultPayload): void
     {
+        $this->setFeatureVersions(2, 'transaction_sync');
+
         //set agentName and paymentMethod
         $defaultPayload['agent_name'] = 'test';
         $defaultPayload['payment_method'] = 'card';
@@ -1585,8 +1589,8 @@ class TransactionControllerTest extends TestCase
             [
                 [
                     'fg_id' => 10001,
-                    'client' => 'be',
-                    'issuer' => 'dzALG2fr',
+                    'client' => $this->getClient(),
+                    'issuer' => 'dzALG2'.$this->getClient(),
                     'currency' => 'EUR',
                     'redirect_url' => 'onSuccess_tlsweb_url?lang=fr-fr',
                     'onerror_url' => 'onError_tlsweb_url?lang=fr-fr',

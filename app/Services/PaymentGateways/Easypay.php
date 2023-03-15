@@ -30,7 +30,8 @@ class Easypay implements PaymentGatewayServiceInterface
 
     public function __construct(
         EasypayPaymentGateway $gateway,
-        TransactionService $transactionService
+        TransactionService $transactionService,
+        TransactionLogsService $transactionLogsService
     ) {
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;

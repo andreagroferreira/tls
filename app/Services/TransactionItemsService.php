@@ -82,4 +82,16 @@ class TransactionItemsService
             'ti_tech_deleted' => false,
         ])->first();
     }
+
+    /**
+     * @param string $transaction_id
+     * @param array $attributes
+     *
+     * @return mixed
+     */
+    public function update(string $transaction_id, array $attributes)
+    {
+        return $this->transactionItemsRepository->update($transaction_id, $attributes);
+    }
+
 }

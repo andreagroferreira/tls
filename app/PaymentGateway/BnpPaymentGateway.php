@@ -7,6 +7,7 @@ use App\Services\CurrencyCodeService;
 use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
+use App\Services\TransactionItemsService;
 use App\Services\TransactionService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,7 @@ use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 class BnpPaymentGateway implements PaymentGatewayInterface
 {
     protected $transactionService;
+    protected $transactionItemsService;
     protected $gatewayService;
     protected $paymentService;
     protected $formGroupService;
@@ -23,6 +25,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
 
     public function __construct(
         TransactionService  $transactionService,
+        TransactionItemsService $transactionItemsService,
         GatewayService      $gatewayService,
         PaymentService      $paymentService,
         FormGroupService    $formGroupService,
@@ -31,6 +34,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
     )
     {
         $this->transactionService = $transactionService;
+        $this->transactionItemsService = $transactionItemsService;
         $this->gatewayService = $gatewayService;
         $this->paymentService = $paymentService;
         $this->formGroupService = $formGroupService;
@@ -57,8 +61,8 @@ class BnpPaymentGateway implements PaymentGatewayInterface
     {
         $t_id = $params['t_id'];
         $pa_id = $params['pa_id'] ?? '';
-        $translations_data = $this->transactionService->getTransaction($t_id);
-        if (blank($translations_data)) {
+        $transactionData = $this->transactionService->getTransaction($t_id);
+        if (blank($transactionData)) {
             return [
                 'status' => 'error',
                 'message' => 'Transaction ERROR: transaction not found'
@@ -67,26 +71,31 @@ class BnpPaymentGateway implements PaymentGatewayInterface
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
 
-        $order_id = $translations_data['t_transaction_id'];
-        $bnp_config = $this->getConfig($translations_data['t_client'], $translations_data['t_issuer'], $pa_id);
+        $issuer = $transactionData['t_issuer'];
+        $oldTransactionId = $transactionData['t_transaction_id'];
+        $newTransactionId = substr($issuer, 0, 2) . str_pad($t_id, 8, '0', STR_PAD_LEFT);
+        $this->transactionService->updateById($t_id, ['t_transaction_id' => $newTransactionId]);
+        $this->transactionItemsService->update($oldTransactionId, ['ti_xref_transaction_id' => $newTransactionId]);
+
+        $bnp_config = $this->getConfig($transactionData['t_client'], $issuer, $pa_id);
 
         $get_data = [
             'userName' => array_get($bnp_config, 'current.user_name'),
             'password' => array_get($bnp_config, 'current.password'),
-            'orderNumber' => $order_id,
-            'amount' => $this->amountFormat($translations_data['t_amount'], array_get($bnp_config, 'common.min_fraction_digits')),
+            'orderNumber' => $newTransactionId,
+            'amount' => $this->amountFormat($transactionData['t_amount'], array_get($bnp_config, 'common.min_fraction_digits')),
             'currency' => $this->currencyCodeService->getCurrencyCode(array_get($bnp_config, 'common.currency')),
             'returnUrl' => get_callback_url(array_get($bnp_config, 'common.return_url')),
             'language' => array_get($bnp_config, 'common.language'),
             'jsonParams' => json_encode([
                 'force_terminal_id' => array_get($bnp_config, 'current.terminal_id'),
-                'udf1' => $translations_data['t_xref_fg_id']
+                'udf1' => $transactionData['t_xref_fg_id']
             ]),
         ];
 
-        $this->paymentService->saveTransactionLog($order_id, $get_data, $this->getPaymentGatewayName());
+        $this->paymentService->saveTransactionLog($newTransactionId, $get_data, $this->getPaymentGatewayName());
         $response = $this->apiService->callGeneralApi('GET', array_get($bnp_config, 'current.host') . '/payment/rest/register.do?' . http_build_query($get_data));
-        $this->paymentService->saveTransactionLog($order_id, $response, $this->getPaymentGatewayName());
+        $this->paymentService->saveTransactionLog($newTransactionId, $response, $this->getPaymentGatewayName());
 
         $payment_order_id = array_get($response, 'body.orderId');
         $payment_form_url = array_get($response, 'body.formUrl');
@@ -100,7 +109,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
 
         $this->transactionService->updateById($t_id, ['t_gateway_transaction_id' => $payment_order_id]);
 
-        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+        $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transactionData);
 
         return [
             'form_method' => 'post',

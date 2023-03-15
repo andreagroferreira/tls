@@ -40,6 +40,7 @@ class Easypay implements PaymentGatewayServiceInterface
     /**
      * Handles the payment request.
      *
+     * [redirTo]
      * @param Request $request
      *
      * @return array|false
@@ -88,6 +89,9 @@ class Easypay implements PaymentGatewayServiceInterface
     }
 
     /**
+     * Receives a request from the payment gateway and manages a transaction based on the request.
+     * 
+     * [notify]
      * @param Request $request
      *
      * @return array
@@ -144,6 +148,9 @@ class Easypay implements PaymentGatewayServiceInterface
     }
 
     /**
+     * Receives a request from the payment gateway and returns the status of the transation to the UI.
+     * 
+     * [return]
      * @param Request $request
      *
      * @return array

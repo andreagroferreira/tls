@@ -179,19 +179,17 @@ class Easypay implements PaymentGatewayServiceInterface
 
             switch ($orderStatus) {
                 case 'accepted':
-                    $message = 'Transaction OK: transaction has been confirmed';
                     $result = 'ok';
+                    $message = 'Transaction OK: transaction has been confirmed';
 
                     break;
 
                 case 'declined':
-                    $result = 'fail';
                     $message = 'Transaction DECLINED: transaction was declined';
 
                     break;
 
                 case 'pending':
-                    $result = 'fail';
                     $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
 
                     break;

@@ -16,19 +16,9 @@ use Illuminate\Support\Facades\Validator;
 class Easypay implements PaymentGatewayServiceInterface
 {
     /**
-     * @var GatewayService
-     */
-    protected $gatewayService;
-
-    /**
      * @var TransactionService
      */
     protected $transactionService;
-
-    /**
-     * @var PaymentService
-     */
-    protected $paymentService;
 
     /**
      * @var TransactionLogsService
@@ -197,6 +187,12 @@ class Easypay implements PaymentGatewayServiceInterface
                 case 'pending':
                     $result = 'fail';
                     $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
+
+                    break;
+
+                case null:
+                    $result = 'fail';
+                    $message = 'Unknown error: an unexpected error occurred, please try again';
 
                     break;
             }

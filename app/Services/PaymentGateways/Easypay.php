@@ -4,8 +4,6 @@ namespace App\Services\PaymentGateways;
 
 use App\Contracts\Services\PaymentGatewayServiceInterface;
 use App\PaymentGateway\V2\Gateways\EasypayPaymentGateway;
-use App\Services\GatewayService;
-use App\Services\PaymentService;
 use App\Services\TransactionLogsService;
 use App\Services\V2\TransactionItemService;
 use App\Services\V2\TransactionService;
@@ -16,40 +14,34 @@ use Illuminate\Support\Facades\Validator;
 class Easypay implements PaymentGatewayServiceInterface
 {
     /**
-     * @var GatewayService
-     */
-    protected $gatewayService;
-
-    /**
      * @var TransactionService
      */
     protected $transactionService;
-
-    /**
-     * @var PaymentService
-     */
-    protected $paymentService;
 
     /**
      * @var TransactionLogsService
      */
     protected $transactionLogsService;
 
+    /**
+     * @var EasypayPaymentGateway
+     */
+    protected $gateway;
+
     public function __construct(
-        GatewayService $gatewayService,
+        EasypayPaymentGateway $gateway,
         TransactionService $transactionService,
-        PaymentService $paymentService,
         TransactionLogsService $transactionLogsService
     ) {
-        $this->gatewayService = $gatewayService;
         $this->transactionService = $transactionService;
-        $this->paymentService = $paymentService;
         $this->transactionLogsService = $transactionLogsService;
+        $this->gateway = $gateway;
     }
 
     /**
      * Handles the payment request.
      *
+     * [redirTo]
      * @param Request $request
      *
      * @return array|false
@@ -82,7 +74,7 @@ class Easypay implements PaymentGatewayServiceInterface
 
             $transaction->update(['t_gateway' => 'easypay', 't_xref_pa_id' => (int) $request->pa_id]);
 
-            $payment = (new EasypayPaymentGateway($this->gatewayService, $this->paymentService))->charge($transactionItemsService->getAmount(), [
+            $payment = $this->gateway->charge($transactionItemsService->getAmount(), [
                 'transaction' => $transaction,
                 'items' => $transactionItemsService->getItems(),
             ]);
@@ -98,6 +90,9 @@ class Easypay implements PaymentGatewayServiceInterface
     }
 
     /**
+     * Receives a request from the payment gateway and manages a transaction based on the request.
+     * 
+     * [notify]
      * @param Request $request
      *
      * @return array
@@ -132,7 +127,7 @@ class Easypay implements PaymentGatewayServiceInterface
 
             $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
 
-            return (new EasypayPaymentGateway($this->gatewayService, $this->paymentService))->callback(
+            return $this->gateway->callback(
                 $transaction,
                 $transactionItemsService->getItems(),
                 $transactionItemsService->getAmount(),
@@ -154,6 +149,9 @@ class Easypay implements PaymentGatewayServiceInterface
     }
 
     /**
+     * Receives a request from the payment gateway and returns the status of the transation to the UI.
+     * 
+     * [return]
      * @param Request $request
      *
      * @return array
@@ -177,19 +175,47 @@ class Easypay implements PaymentGatewayServiceInterface
             ];
         }
 
-        $message = 'Transaction OK: transaction has been confirmed';
-        $result = 'ok';
+        $returnParams = [
+            'is_success' => 'fail',
+            'message' => 'Unknown error: an unexpected error occurred, please try again',
+            'orderid' => $transaction->t_transaction_id,
+            'href' => $transaction->t_onerror_url,
+        ];
+
         if ($transaction->t_status !== 'done') {
-            $result = 'fail';
-            $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
+            $orderStatus = $this->gateway->checkOrderStatus($transaction);
+
+            switch ($orderStatus) {
+                case 'accepted':
+                    $returnParams['is_success'] = 'ok';
+                    $returnParams['message'] = 'Transaction OK';
+                    $returnParams['href'] = $transaction->t_redirect_url;
+
+                    break;
+
+                case 'pending':
+                    $returnParams['is_success'] = 'ok';
+                    $returnParams['message'] = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
+                    $returnParams['href'] = $transaction->t_redirect_url;
+
+                    break;
+
+                case 'declined':
+                    $returnParams['message'] = 'Transaction DECLINED';
+
+                    break;
+
+                default:
+                    Log::error('[Services\PaymentGateways\Easypay] - Unexpected error occurred while checking the order status.', [
+                        'transaction' => $transaction,
+                        'orderStatus' => $orderStatus
+                    ]);
+
+                    break;
+            }
         }
 
-        return [
-            'is_success' => $result,
-            'message' => $message,
-            'orderid' => $transaction->t_transaction_id,
-            'href' => $transaction->t_redirect_url,
-        ];
+        return $returnParams;
     }
 
     /**

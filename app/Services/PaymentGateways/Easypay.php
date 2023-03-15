@@ -4,8 +4,6 @@ namespace App\Services\PaymentGateways;
 
 use App\Contracts\Services\PaymentGatewayServiceInterface;
 use App\PaymentGateway\V2\Gateways\EasypayPaymentGateway;
-use App\Services\GatewayService;
-use App\Services\PaymentService;
 use App\Services\TransactionLogsService;
 use App\Services\V2\TransactionItemService;
 use App\Services\V2\TransactionService;
@@ -31,14 +29,12 @@ class Easypay implements PaymentGatewayServiceInterface
     protected $gateway;
 
     public function __construct(
-        GatewayService $gatewayService,
-        TransactionService $transactionService,
-        PaymentService $paymentService,
-        TransactionLogsService $transactionLogsService
+        EasypayPaymentGateway $gateway,
+        TransactionService $transactionService
     ) {
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
-        $this->gateway = new EasypayPaymentGateway($gatewayService, $paymentService);
+        $this->gateway = $gateway;
     }
 
     /**
@@ -171,37 +167,46 @@ class Easypay implements PaymentGatewayServiceInterface
             ];
         }
 
-        $result = 'fail';
-        $message = 'Unknown error: an unexpected error occurred, please try again';
+        $returnParams = [
+            'is_success' => 'fail',
+            'message' => 'Unknown error: an unexpected error occurred, please try again',
+            'orderid' => $transaction->t_transaction_id,
+            'href' => $transaction->t_onerror_url,
+        ];
 
         if ($transaction->t_status !== 'done') {
             $orderStatus = $this->gateway->checkOrderStatus($transaction);
 
             switch ($orderStatus) {
                 case 'accepted':
-                    $result = 'ok';
-                    $message = 'Transaction OK: transaction has been confirmed';
-
-                    break;
-
-                case 'declined':
-                    $message = 'Transaction DECLINED: transaction was declined';
+                    $returnParams['is_success'] = 'ok';
+                    $returnParams['message'] = 'Transaction OK: transaction has been confirmed';
+                    $returnParams['href'] = $transaction->t_redirect_url;
 
                     break;
 
                 case 'pending':
-                    $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
+                    $returnParams['is_success'] = 'ok';
+                    $returnParams['message'] = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
+                    $returnParams['href'] = $transaction->t_redirect_url;
+
+                    break;
+
+                case 'declined':
+                    $returnParams['message'] = 'Transaction DECLINED: transaction was declined';
+
+                    break;
+
+                default:
+                    Log::error('[Services\PaymentGateways\Easypay] - Unexpected error occurred while checking the order status.', [
+                        'transaction' => $transaction,
+                    ]);
 
                     break;
             }
         }
 
-        return [
-            'is_success' => $result,
-            'message' => $message,
-            'orderid' => $transaction->t_transaction_id,
-            'href' => $transaction->t_redirect_url,
-        ];
+        return $returnParams;
     }
 
     /**

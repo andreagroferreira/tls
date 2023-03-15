@@ -188,7 +188,7 @@ class Easypay implements PaymentGatewayServiceInterface
             switch ($orderStatus) {
                 case 'accepted':
                     $returnParams['is_success'] = 'ok';
-                    $returnParams['message'] = 'Transaction OK: transaction has been confirmed';
+                    $returnParams['message'] = 'Transaction OK';
                     $returnParams['href'] = $transaction->t_redirect_url;
 
                     break;
@@ -201,13 +201,14 @@ class Easypay implements PaymentGatewayServiceInterface
                     break;
 
                 case 'declined':
-                    $returnParams['message'] = 'Transaction DECLINED: transaction was declined';
+                    $returnParams['message'] = 'Transaction DECLINED';
 
                     break;
 
                 default:
                     Log::error('[Services\PaymentGateways\Easypay] - Unexpected error occurred while checking the order status.', [
                         'transaction' => $transaction,
+                        'orderStatus' => $orderStatus
                     ]);
 
                     break;

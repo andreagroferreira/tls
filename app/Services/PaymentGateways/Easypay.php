@@ -42,6 +42,7 @@ class Easypay implements PaymentGatewayServiceInterface
      * Handles the payment request.
      *
      * [redirTo]
+     *
      * @param Request $request
      *
      * @return array|false
@@ -63,11 +64,11 @@ class Easypay implements PaymentGatewayServiceInterface
             }
 
             if ($transaction === null) {
-                throw new \Exception('Transaction not found for id: '.$request->t_id);
+                throw new \Exception('Transaction not found for id: ' . $request->t_id);
             }
 
             if ($transaction->t_status !== 'pending') {
-                throw new \Exception('Transaction '.$request->t_id.' is not pending');
+                throw new \Exception('Transaction ' . $request->t_id . ' is not pending');
             }
 
             $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
@@ -81,7 +82,7 @@ class Easypay implements PaymentGatewayServiceInterface
         } catch (\Exception $e) {
             Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }
@@ -91,8 +92,9 @@ class Easypay implements PaymentGatewayServiceInterface
 
     /**
      * Receives a request from the payment gateway and manages a transaction based on the request.
-     * 
+     *
      * [notify]
+     *
      * @param Request $request
      *
      * @return array
@@ -112,7 +114,7 @@ class Easypay implements PaymentGatewayServiceInterface
             if ($transaction === null) {
                 return [
                     'is_success' => 'fail',
-                    'message' => 'Transaction not found for id: '.$request->t_id,
+                    'message' => 'Transaction not found for id: ' . $request->t_id,
                 ];
             }
 
@@ -136,7 +138,7 @@ class Easypay implements PaymentGatewayServiceInterface
         } catch (\Exception $e) {
             Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -150,8 +152,9 @@ class Easypay implements PaymentGatewayServiceInterface
 
     /**
      * Receives a request from the payment gateway and returns the status of the transation to the UI.
-     * 
+     *
      * [return]
+     *
      * @param Request $request
      *
      * @return array
@@ -162,7 +165,7 @@ class Easypay implements PaymentGatewayServiceInterface
         if ($error !== null) {
             return [
                 'is_success' => 'fail',
-                'message' => 'Payment Error: '.$error['errorMessage'],
+                'message' => 'Payment Error: ' . $error['errorMessage'],
             ];
         }
 
@@ -171,7 +174,7 @@ class Easypay implements PaymentGatewayServiceInterface
         if ($transaction === null) {
             return [
                 'is_success' => 'fail',
-                'message' => 'Transaction not found for id: '.$request->t_id,
+                'message' => 'Transaction not found for id: ' . $request->t_id,
             ];
         }
 
@@ -208,7 +211,7 @@ class Easypay implements PaymentGatewayServiceInterface
                 default:
                     Log::error('[Services\PaymentGateways\Easypay] - Unexpected error occurred while checking the order status.', [
                         'transaction' => $transaction,
-                        'orderStatus' => $orderStatus
+                        'orderStatus' => $orderStatus,
                     ]);
 
                     break;

@@ -3,7 +3,8 @@
 namespace App\Services\V2;
 
 use App\Repositories\V2\TransactionItemsRepository;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 class TransactionItemService
 {
@@ -34,8 +35,37 @@ class TransactionItemService
         return $this->getAll()->toArray();
     }
 
+    public function getItemsPreparedToSync(): array
+    {
+        return $this->getAll()
+            ->map(function ($transactionItem) {
+                return [
+                    'f_id' => $transactionItem->ti_xref_f_id,
+                    'sku' => $transactionItem->ti_fee_type,
+                    'price' => $transactionItem->ti_amount,
+                    'vat' => $transactionItem->ti_vat,
+                    'quantity' => $transactionItem->ti_quantity,
+                    'price_rule' => $transactionItem->ti_price_rule,
+                    'product_name' => $transactionItem->ti_fee_name,
+                    'label' => $transactionItem->ti_label,
+                    'tag' => $transactionItem->ti_tag,
+                ];
+            })
+            ->groupBy('f_id')
+            ->transform(function ($items, $formId) {
+                return [
+                    'f_id' => $formId,
+                    'skus' => $items->map(function ($item) {
+                        return Arr::except($item, ['f_id']);
+                    })->toArray(),
+                ];
+            })
+            ->values()
+            ->toArray();
+    }
+
     /**
-     * Retreives a single transaction by transaction_id.
+     * Retreives all transaction items by transaction_id.
      *
      * @param string $transactionId
      *
@@ -43,6 +73,6 @@ class TransactionItemService
      */
     private function getAll(): ?Collection
     {
-        return TransactionItemsRepository::getAllByTransactionId($this->transactionId);
+        return TransactionItemsRepository::getAvailableByTransactionId($this->transactionId);
     }
 }

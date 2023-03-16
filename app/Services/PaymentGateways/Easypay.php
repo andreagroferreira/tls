@@ -42,6 +42,7 @@ class Easypay implements PaymentGatewayServiceInterface
      * Handles the payment request.
      *
      * [redirTo]
+     *
      * @param Request $request
      *
      * @return array|false
@@ -91,8 +92,9 @@ class Easypay implements PaymentGatewayServiceInterface
 
     /**
      * Receives a request from the payment gateway and manages a transaction based on the request.
-     * 
+     *
      * [notify]
+     *
      * @param Request $request
      *
      * @return array
@@ -100,7 +102,6 @@ class Easypay implements PaymentGatewayServiceInterface
     public function callback(Request $request)
     {
         $transaction = $this->transactionService->getByTransactionId($request->order_id);
-
         if ($request->action !== 'payment') {
             return [
                 'is_success' => 'fail',
@@ -129,7 +130,7 @@ class Easypay implements PaymentGatewayServiceInterface
 
             return $this->gateway->callback(
                 $transaction,
-                $transactionItemsService->getItems(),
+                $transactionItemsService->getItemsPreparedToSync(),
                 $transactionItemsService->getAmount(),
                 $request
             );
@@ -150,8 +151,9 @@ class Easypay implements PaymentGatewayServiceInterface
 
     /**
      * Receives a request from the payment gateway and returns the status of the transation to the UI.
-     * 
+     *
      * [return]
+     *
      * @param Request $request
      *
      * @return array
@@ -208,7 +210,7 @@ class Easypay implements PaymentGatewayServiceInterface
                 default:
                     Log::error('[Services\PaymentGateways\Easypay] - Unexpected error occurred while checking the order status.', [
                         'transaction' => $transaction,
-                        'orderStatus' => $orderStatus
+                        'orderStatus' => $orderStatus,
                     ]);
 
                     break;

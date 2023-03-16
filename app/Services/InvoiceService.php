@@ -74,11 +74,11 @@ class InvoiceService
             return false;
         }
 
-        $callback_url = $transaction['t_callback_url'];
+        $gatewayReference = !empty($transaction['t_gateway_transaction_reference']) ? $transaction['t_gateway_transaction_reference'] : $transaction['t_gateway_transaction_id'];
         $data = [
             't_id' => $transaction['t_id'],
             'transaction_id' => $transaction['t_transaction_id'],
-            'gateway_transaction_id' => $transaction['t_gateway_transaction_id'],
+            'gateway_transaction_id' => $gatewayReference,
             'gateway' => $transaction['t_gateway'],
             'currency' => $transaction['t_currency'],
             'status' => $transaction['t_status'],
@@ -88,7 +88,7 @@ class InvoiceService
         ];
 
         try {
-            $response = $this->apiService->callInvoiceApi($callback_url, $data);
+            $response = $this->apiService->callInvoiceApi($transaction['t_callback_url'], $data);
         } catch (\Exception $e) {
             Log::warning('Transaction Error: error callback url "'.$transaction['t_callback_url'].'"');
 

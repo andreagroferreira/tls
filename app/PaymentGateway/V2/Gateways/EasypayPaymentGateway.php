@@ -374,21 +374,26 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      */
     protected function generateSign(array $requestBody): string
     {
-        if (isset($requestBody['details']['amount'])) {
-            $jsonBody = json_encode($requestBody, JSON_UNESCAPED_SLASHES);
-            $jsonBody = str_replace(
-                '"amount":' . $requestBody['details']['amount'],
-                '"amount":' . number_format($requestBody['details']['amount'], 2),
-                $jsonBody
+        if (!isset($requestBody['details']['amount'])) {
+            return base64_encode(
+                hash(
+                    'sha256',
+                    $this->config['config']['secretKey'] . json_encode($requestBody),
+                    true
+                )
             );
-        } else {
-            $jsonBody = json_encode($requestBody);
         }
+
+        $formattedJson = str_replace(
+            '"amount":' . $requestBody['details']['amount'],
+            '"amount":' . number_format($requestBody['details']['amount'], 2),
+            json_encode($requestBody, JSON_UNESCAPED_SLASHES)
+        );
 
         return base64_encode(
             hash(
                 'sha256',
-                $this->config['config']['secretKey'] . $jsonBody,
+                $this->config['config']['secretKey'] . $formattedJson,
                 true
             )
         );

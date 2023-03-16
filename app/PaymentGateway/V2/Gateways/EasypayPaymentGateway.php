@@ -184,7 +184,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
 
         Log::info('[PaymentGateway\EasypayPaymentGateway] Signature Validation: '.$headerSign.' == '.$sign, $request->all());
 
-        return true; // $headerSign === $sign;
+        return $headerSign === $sign;
     }
 
     /**

@@ -206,6 +206,10 @@ class TransactionService
 
     public function create(array $attributes)
     {
+        $invoiceStorage = env('INVOICE_STORAGE', 's3');
+        if ($this->isVersion(2, $attributes['issuer'], 'invoice')) {
+            $invoiceStorage = 'file-library';
+        }
         $transaction_data = [
             't_id' => $this->transactionRepository->getTransactionIdSeq(),
             't_xref_fg_id' => $attributes['fg_id'],
@@ -217,7 +221,7 @@ class TransactionService
             't_callback_url' => $attributes['callback_url'],
             't_currency' => $attributes['currency'],
             't_workflow' => $attributes['workflow'],
-            't_invoice_storage' => env('INVOICE_STORAGE', 's3'),
+            't_invoice_storage' => $invoiceStorage,
         ];
 
         if (!empty($attributes['expiration'])) {

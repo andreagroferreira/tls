@@ -15,6 +15,12 @@ class TransactionItemService
         $this->transactionId = $transactionId;
     }
 
+    /**
+     * Returns the total amount of the transaction given a transactionId.
+     * Which is the sum of all transaction items.
+     *
+     * @return float
+     */
     public function getAmount(): float
     {
         if ($transactionItems = $this->getAll()) {
@@ -30,11 +36,22 @@ class TransactionItemService
         return 0;
     }
 
+    /**
+     * Returns an array of all of the transaction items given a transactionId.
+     *
+     * @return array
+     */
     public function getItems(): array
     {
         return $this->getAll()->toArray();
     }
 
+    /**
+     * Returns an array of the transaction items given a transactionId.
+     * Prepared to be synced with the Ecommerce side.
+     * 
+     * @return array
+     */
     public function getItemsPreparedToSync(): array
     {
         return $this->getAll()

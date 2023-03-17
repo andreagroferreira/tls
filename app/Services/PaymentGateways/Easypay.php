@@ -102,7 +102,6 @@ class Easypay implements PaymentGatewayServiceInterface
     public function callback(Request $request)
     {
         $transaction = $this->transactionService->getByTransactionId($request->order_id);
-
         if ($request->action !== 'payment') {
             return [
                 'is_success' => 'fail',
@@ -131,7 +130,7 @@ class Easypay implements PaymentGatewayServiceInterface
 
             return $this->gateway->callback(
                 $transaction,
-                $transactionItemsService->getItems(),
+                $transactionItemsService->getItemsPreparedToSync(),
                 $transactionItemsService->getAmount(),
                 $request
             );

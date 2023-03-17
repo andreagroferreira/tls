@@ -3,7 +3,8 @@
 namespace App\Services\V2;
 
 use App\Repositories\V2\TransactionItemsRepository;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 class TransactionItemService
 {
@@ -14,6 +15,12 @@ class TransactionItemService
         $this->transactionId = $transactionId;
     }
 
+    /**
+     * Returns the total amount of the transaction given a transactionId.
+     * Which is the sum of all transaction items.
+     *
+     * @return float
+     */
     public function getAmount(): float
     {
         if ($transactionItems = $this->getAll()) {
@@ -29,13 +36,53 @@ class TransactionItemService
         return 0;
     }
 
+    /**
+     * Returns an array of all of the transaction items given a transactionId.
+     *
+     * @return array
+     */
     public function getItems(): array
     {
         return $this->getAll()->toArray();
     }
 
     /**
-     * Retreives a single transaction by transaction_id.
+     * Returns an array of the transaction items given a transactionId.
+     * Prepared to be synced with the Ecommerce side.
+     * 
+     * @return array
+     */
+    public function getItemsPreparedToSync(): array
+    {
+        return $this->getAll()
+            ->map(function ($transactionItem) {
+                return [
+                    'f_id' => $transactionItem->ti_xref_f_id,
+                    'sku' => $transactionItem->ti_fee_type,
+                    'price' => $transactionItem->ti_amount,
+                    'vat' => $transactionItem->ti_vat,
+                    'quantity' => $transactionItem->ti_quantity,
+                    'price_rule' => $transactionItem->ti_price_rule,
+                    'product_name' => $transactionItem->ti_fee_name,
+                    'label' => $transactionItem->ti_label,
+                    'tag' => $transactionItem->ti_tag,
+                ];
+            })
+            ->groupBy('f_id')
+            ->transform(function ($items, $formId) {
+                return [
+                    'f_id' => $formId,
+                    'skus' => $items->map(function ($item) {
+                        return Arr::except($item, ['f_id']);
+                    })->toArray(),
+                ];
+            })
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * Retreives all transaction items by transaction_id.
      *
      * @param string $transactionId
      *
@@ -43,6 +90,6 @@ class TransactionItemService
      */
     private function getAll(): ?Collection
     {
-        return TransactionItemsRepository::getAllByTransactionId($this->transactionId);
+        return TransactionItemsRepository::getAvailableByTransactionId($this->transactionId);
     }
 }

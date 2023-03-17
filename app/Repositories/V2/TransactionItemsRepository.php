@@ -8,14 +8,16 @@ use Illuminate\Database\Eloquent\Collection;
 class TransactionItemsRepository
 {
     /**
-     * Retreives a single transaction by transaction_id.
+     * Retreives all not deleted transaction items by transaction id.
      *
      * @param string $transactionId
      *
      * @return null|Collection
      */
-    public function getAllByTransactionId(string $transactionId): ?Collection
+    public function getAvailableByTransactionId(string $transactionId): ?Collection
     {
-        return TransactionItems::where('ti_xref_transaction_id', $transactionId)->get();
+        return TransactionItems::where('ti_xref_transaction_id', $transactionId)
+            ->where('ti_tech_deleted', false)
+            ->get();
     }
 }

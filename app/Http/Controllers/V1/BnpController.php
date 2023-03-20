@@ -141,6 +141,7 @@ class BnpController extends BaseController
         try {
             $validator = validator($request->all(), [
                 'order_id' => 'required',
+                'requester_email' => 'required|email',
                 'action' => [
                     'required',
                     Rule::in(['show', 'download', 'send'])
@@ -153,6 +154,11 @@ class BnpController extends BaseController
             }
 
             $params = $validator->validated();
+
+            if (!$this->paymentGateway->isTransactionOwner($params['order_id'], $params['requester_email'])) {
+                return $this->sendError('', 'The requested receipt does not belong your transaction.');
+            }
+
             $res = $this->invoiceService->getInvoiceFileContent($params['order_id']);
             $res = $res ? base64_encode($res) : '';
 

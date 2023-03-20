@@ -56,6 +56,10 @@ class InvoiceService
             return $this->getS3InvoiceFileContent($transaction);
         }
 
+        if ($transaction->t_invoice_storage === 'minio') {
+            return $this->getMinioInvoiceFileContent($transaction);
+        }
+
         return $this->getFileLibraryInvoiceFileContent($transaction);
     }
 
@@ -125,6 +129,36 @@ class InvoiceService
         }
 
         return $storage->get($file);
+    }
+
+    /**
+     * @param Transactions $transaction
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return string|null
+     */
+    public function getMinioInvoiceFileContent(Transactions $transaction): ?string
+    {
+        $path = getFilePath($transaction->toArray(), 'minio');
+
+        try {
+            $response = $this->apiService->callCustomerServiceInvoiceDownloadApi($path);
+        } catch (\Exception $e) {
+            Log::warning('Transaction Error: error customer-service api "'.$e->getMessage().'"');
+
+            return null;
+        }
+
+        if ($response['status'] != 200) {
+            Log::warning('Transaction Error: receipt download failed');
+
+            return null;
+        }
+
+        return $response['body'];
     }
 
     /**

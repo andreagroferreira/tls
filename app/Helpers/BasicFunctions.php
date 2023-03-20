@@ -223,7 +223,7 @@ function convertUrlQuery($query): array
  */
 function getFilePath(array $transaction, string $storageService = 'file-library'): string
 {
-    if ($storageService === 's3') {
+    if ($storageService === 's3' || $storageService === 'minio') {
         return array_get($transaction, 't_client').'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
     }
 

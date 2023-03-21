@@ -206,9 +206,9 @@ class TransactionService
 
     public function create(array $attributes)
     {
-        $invoiceStorage = env('INVOICE_STORAGE', 's3');
-        if ($this->isVersion(2, $attributes['issuer'], 'invoice')) {
-            $invoiceStorage = 'file-library';
+        $invoiceStorage = 'file-library';
+        if ($this->isVersion(1, $attributes['issuer'], 'invoice')) {
+            $invoiceStorage = env('INVOICE_STORAGE', 's3');
         }
         $transaction_data = [
             't_id' => $this->transactionRepository->getTransactionIdSeq(),

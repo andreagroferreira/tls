@@ -264,20 +264,26 @@ class TransactionService
             $transaction = $this->transactionRepository->create($transaction_data);
             $transactionItems = $this->convertItemsFieldToArray($transaction->t_transaction_id, $attributes['items']);
 
-            $totalAmount = 0;
+            $totalAmount = 0.00;
             foreach ($transactionItems as $item) {
-                $totalAmount += $item['ti_amount'] * Arr::get($item, 'ti_quantity', 1);
+                $totalAmount += (float) $item['ti_amount'] * Arr::get($item, 'ti_quantity', 1);
             }
 
             $this->transactionItemsService->createMany(
                 $transactionItems
             );
 
-            if (!$this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
-                if ($totalAmount === 0 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
-                    $transactionData = $this->getTransaction($transaction->t_id);
-                    $this->confirmTransaction($transactionData);
-                }
+            $transactionData = $this->getTransaction($transaction->t_id);
+            if ($totalAmount === 0.00 && $this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                PaymentService::confirmTransaction($transactionData, [
+                    'gateway' => 'free',
+                    'amount' => $transactionData['t_amount'],
+                    'currency' => $transactionData['t_currency'],
+                    'transaction_id' => $transactionData['t_transaction_id'],
+                    'gateway_transaction_id' => $transactionData['t_transaction_id'],
+                ]);
+            } else if ($totalAmount === 0.00 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
+                $this->confirmTransaction($transactionData);
             }
 
             $db_connection->commit();
@@ -590,8 +596,12 @@ class TransactionService
             ]
         );
 
-        dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
-            ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        if ($this->isVersion(1, $transaction['t_issuer'], 'invoice')) {
+            InvoiceService::generateInvoice($transaction);
+        } else {
+            dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
+                ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        }
 
         $result = [
             'is_success' => 'ok',

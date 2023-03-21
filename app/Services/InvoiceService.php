@@ -68,7 +68,7 @@ class InvoiceService
      *
      * @param mixed $transaction
      *
-     * @return void
+     * @return bool
      */
     public function generate(array $transaction)
     {
@@ -106,6 +106,16 @@ class InvoiceService
         }
 
         return true;
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @return bool
+     */
+    public static function generateInvoice(array $transaction): bool
+    {
+        return app(self::class)->generate($transaction);
     }
 
     /**

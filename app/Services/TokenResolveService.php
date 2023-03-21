@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use Illuminate\Support\Facades\Log;
 
 class TokenResolveService
@@ -51,7 +52,7 @@ class TokenResolveService
      * @param string $lang
      *
      * @throws \Exception
-     * 
+     *
      * @return array
      */
     public function resolveTemplate(
@@ -67,7 +68,7 @@ class TokenResolveService
         if (empty($template)) {
             return $data;
         }
-        $data = $this->getCorrectCollectionTranslation($template,'tlspay_email_invoice');
+        $data = $this->getCorrectCollectionTranslation($template, 'tlspay_email_invoice');
 
         if (empty($data['invoice_content'])) {
             return $data;
@@ -327,8 +328,10 @@ class TokenResolveService
             $tokenPrefixRule = $tokenDetails[0];
             if ($tokenPrefixRule === 'c') {
                 $resolvedTokens[$token] = $this->getTokenTranslationFromDirectus($tokenDetails, $lang);
-            } elseif ($tokenPrefixRule === 'a') {
+            } elseif ($tokenPrefixRule === 'a' && $tokenDetails[1] === 'f_pers_surnames') {
                 $resolvedTokens[$token] = $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+            } elseif ($tokenPrefixRule === 'a' && $tokenDetails[1] === 'qr_code') {
+                $resolvedTokens[$token] = $this->getQrCodeFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
             } elseif ($tokenPrefixRule === 'basket') {
                 $resolvedTokens[$token] = $this->getTokenTranslationForPurchasedServices($transaction);
             }
@@ -338,7 +341,7 @@ class TokenResolveService
     }
 
     /**
-     * @param array $collections
+     * @param array  $collections
      * @param string $collectionName
      *
      * @throws \Exception
@@ -453,21 +456,19 @@ class TokenResolveService
         if (empty($tokenCollections)) {
             throw new \Exception('No collections returned for token: '.$collection.'.'.$field);
         }
-        
+
         if (count($tokenCollections) > 1) {
             $translation = $this->getCorrectCollectionTranslation($tokenCollections, $tokenDetails[1]);
         } else {
             $translation = $this->getActiveTranslation(array_first($tokenCollections)['translation']);
         }
-        
+
         return array_first($translation);
     }
 
     /**
      * @param array  $tokenDetails
      * @param string $fg_id
-     *
-     * @throws \Exception
      *
      * @return string
      */
@@ -477,14 +478,32 @@ class TokenResolveService
         $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/'.$this->client.'/forms_in_group/'.$fg_id);
         if ($applicationsResponse['status'] != 200 || empty($applicationsResponse['body'])) {
             Log::error('No applicant details returned from TLS API for token: '.$tokenDetails[1].'- form group :'.$fg_id);
+
             return '';
         }
-        
         foreach ($applicationsResponse['body'] as $applicant) {
             $translations[] = $applicant[$tokenDetails[1]];
         }
-        
+
         return implode(', ', array_unique($translations, SORT_REGULAR));
+    }
+
+    /**
+     * @param array  $tokenDetails
+     * @param string $fg_id
+     *
+     * @return string
+     */
+    private function getQrCodeFromApplication(array $tokenDetails, string $fg_id): string
+    {
+        $response = $this->apiService->callTlsApi('GET', '/tls/v1/'.$this->client.'/receipt_qrcode?fg_id='.$fg_id.'&type=all_receipts&occurence=1&scale=5');
+        if ($response['status'] != 200) {
+            Log::error('No QrCode details returned from TLS API for token: '.$tokenDetails[1].'- form group :'.$fg_id);
+
+            return '';
+        }
+
+        return 'data:image/png;base64,'.base64_encode($response['body']->getContents()) ?? '';
     }
 
     /**

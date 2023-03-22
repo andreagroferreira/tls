@@ -445,6 +445,21 @@ class ApiService
     }
 
     /**
+     * @param $queryParams
+     *
+     * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callCustomerServiceInvoiceDownloadApi(string $path)
+    {
+        $url = env('CUSTOMER_SERVICE_DOMAIN').'/api/tls/invoice_pdf/' . $path;
+        return $this->getStreamApi($url, [], 'get');
+    }
+
+    /**
      * @return string
      */
     private function getWorkflowApiDomain(): string

@@ -16,4 +16,5 @@ return $config->setRules([
     'phpdoc_line_span' => true,
     'array_syntax' => ['syntax' => 'short'],
     'yoda_style' => false,
+    'concat_space' => ['spacing' => 'one'],
 ])->setFinder($finder);

@@ -132,6 +132,46 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     }
 
     /**
+     * Checks the order status on the gateway.
+     *
+     * @param Transactions $transaction
+     *
+     * @return null|string
+     */
+    public function checkOrderStatus(Transactions $transaction): ?string
+    {
+        $body = [
+            'serviceKey' => $this->config['config']['serviceKey'],
+            'orderId' => $transaction->t_transaction_id,
+        ];
+
+        $signature = $this->generateSign($body);
+
+        $response = Http::withHeaders(
+            $this->updateHeaders([
+                'Sign' => $signature,
+            ])
+        )
+            ->post($this->config['config']['host'] . '/merchant/orderState', $body)
+            ->json();
+
+        if ($this->hasErrors($response)) {
+            if ($this->handled($response['error']['errorCode'])) {
+                return $this->checkOrderStatus();
+            }
+
+            Log::error('[PaymentGateway\EasypayPaymentGateway] - Error while verifying order status.', [
+                'error' => $response['error'],
+                'requestBody' => $body,
+            ]);
+
+            return null;
+        }
+
+        return $response['paymentState'];
+    }
+
+    /**
      * @param Request $request
      *
      * @return bool
@@ -142,9 +182,9 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
 
         $sign = $this->generateSign($request->all());
 
-        Log::info('[PaymentGateway\EasypayPaymentGateway] Signature Validation: '.$headerSign.' == '.$sign, $request->all());
+        Log::info('[PaymentGateway\EasypayPaymentGateway] Signature Validation: ' . $headerSign . ' == ' . $sign, $request->all());
 
-        return true; //$headerSign === $sign;
+        return $headerSign === $sign;
     }
 
     /**
@@ -171,7 +211,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     protected function refreshAppToken(): string
     {
         $response = Http::withHeaders($this->headers)
-            ->post($this->config['config']['host'].'/system/createApp')
+            ->post($this->config['config']['host'] . '/system/createApp')
             ->json();
 
         $this->pageToken = $response['pageId'];
@@ -190,7 +230,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     protected function refreshPageToken(): string
     {
         $response = Http::withHeaders($this->headers)
-            ->post($this->config['config']['host'].'/system/createPage')
+            ->post($this->config['config']['host'] . '/system/createPage')
             ->json();
 
         if ($this->hasErrors($response)) {
@@ -245,7 +285,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
                 'Sign' => $signature,
             ])
         )
-            ->post($this->config['config']['host'].'/merchant/createOrder', $body)
+            ->post($this->config['config']['host'] . '/merchant/createOrder', $body)
             ->json();
 
         if ($this->hasErrors($response)) {
@@ -334,10 +374,26 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      */
     protected function generateSign(array $requestBody): string
     {
+        if (!isset($requestBody['details']['amount'])) {
+            return base64_encode(
+                hash(
+                    'sha256',
+                    $this->config['config']['secretKey'] . json_encode($requestBody),
+                    true
+                )
+            );
+        }
+
+        $formattedJson = str_replace(
+            '"amount":' . $requestBody['details']['amount'],
+            '"amount":' . number_format($requestBody['details']['amount'], 2),
+            json_encode($requestBody, JSON_UNESCAPED_SLASHES)
+        );
+
         return base64_encode(
             hash(
                 'sha256',
-                $this->config['config']['secretKey'].json_encode($requestBody),
+                $this->config['config']['secretKey'] . $formattedJson,
                 true
             )
         );

@@ -4,8 +4,6 @@ namespace App\Services\PaymentGateways;
 
 use App\Contracts\Services\PaymentGatewayServiceInterface;
 use App\PaymentGateway\V2\Gateways\EasypayPaymentGateway;
-use App\Services\GatewayService;
-use App\Services\PaymentService;
 use App\Services\TransactionLogsService;
 use App\Services\V2\TransactionItemService;
 use App\Services\V2\TransactionService;
@@ -16,39 +14,34 @@ use Illuminate\Support\Facades\Validator;
 class Easypay implements PaymentGatewayServiceInterface
 {
     /**
-     * @var GatewayService
-     */
-    protected $gatewayService;
-
-    /**
      * @var TransactionService
      */
     protected $transactionService;
-
-    /**
-     * @var PaymentService
-     */
-    protected $paymentService;
 
     /**
      * @var TransactionLogsService
      */
     protected $transactionLogsService;
 
+    /**
+     * @var EasypayPaymentGateway
+     */
+    protected $gateway;
+
     public function __construct(
-        GatewayService $gatewayService,
+        EasypayPaymentGateway $gateway,
         TransactionService $transactionService,
-        PaymentService $paymentService,
         TransactionLogsService $transactionLogsService
     ) {
-        $this->gatewayService = $gatewayService;
         $this->transactionService = $transactionService;
-        $this->paymentService = $paymentService;
         $this->transactionLogsService = $transactionLogsService;
+        $this->gateway = $gateway;
     }
 
     /**
      * Handles the payment request.
+     *
+     * [redirTo]
      *
      * @param Request $request
      *
@@ -71,25 +64,25 @@ class Easypay implements PaymentGatewayServiceInterface
             }
 
             if ($transaction === null) {
-                throw new \Exception('Transaction not found for id: '.$request->t_id);
+                throw new \Exception('Transaction not found for id: ' . $request->t_id);
             }
 
             if ($transaction->t_status !== 'pending') {
-                throw new \Exception('Transaction '.$request->t_id.' is not pending');
+                throw new \Exception('Transaction ' . $request->t_id . ' is not pending');
             }
 
             $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
 
             $transaction->update(['t_gateway' => 'easypay', 't_xref_pa_id' => (int) $request->pa_id]);
 
-            $payment = (new EasypayPaymentGateway($this->gatewayService, $this->paymentService))->charge($transactionItemsService->getAmount(), [
+            $payment = $this->gateway->charge($transactionItemsService->getAmount(), [
                 'transaction' => $transaction,
                 'items' => $transactionItemsService->getItems(),
             ]);
         } catch (\Exception $e) {
             Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }
@@ -98,6 +91,10 @@ class Easypay implements PaymentGatewayServiceInterface
     }
 
     /**
+     * Receives a request from the payment gateway and manages a transaction based on the request.
+     *
+     * [notify]
+     *
      * @param Request $request
      *
      * @return array
@@ -105,7 +102,6 @@ class Easypay implements PaymentGatewayServiceInterface
     public function callback(Request $request)
     {
         $transaction = $this->transactionService->getByTransactionId($request->order_id);
-
         if ($request->action !== 'payment') {
             return [
                 'is_success' => 'fail',
@@ -117,7 +113,7 @@ class Easypay implements PaymentGatewayServiceInterface
             if ($transaction === null) {
                 return [
                     'is_success' => 'fail',
-                    'message' => 'Transaction not found for id: '.$request->t_id,
+                    'message' => 'Transaction not found for id: ' . $request->t_id,
                 ];
             }
 
@@ -132,16 +128,16 @@ class Easypay implements PaymentGatewayServiceInterface
 
             $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
 
-            return (new EasypayPaymentGateway($this->gatewayService, $this->paymentService))->callback(
+            return $this->gateway->callback(
                 $transaction,
-                $transactionItemsService->getItems(),
+                $transactionItemsService->getItemsPreparedToSync(),
                 $transactionItemsService->getAmount(),
                 $request
             );
         } catch (\Exception $e) {
             Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -154,6 +150,10 @@ class Easypay implements PaymentGatewayServiceInterface
     }
 
     /**
+     * Receives a request from the payment gateway and returns the status of the transation to the UI.
+     *
+     * [return]
+     *
      * @param Request $request
      *
      * @return array
@@ -164,7 +164,7 @@ class Easypay implements PaymentGatewayServiceInterface
         if ($error !== null) {
             return [
                 'is_success' => 'fail',
-                'message' => 'Payment Error: '.$error['errorMessage'],
+                'message' => 'Payment Error: ' . $error['errorMessage'],
             ];
         }
 
@@ -173,23 +173,53 @@ class Easypay implements PaymentGatewayServiceInterface
         if ($transaction === null) {
             return [
                 'is_success' => 'fail',
-                'message' => 'Transaction not found for id: '.$request->t_id,
+                'message' => 'Transaction not found for id: ' . $request->t_id,
             ];
         }
 
-        $message = 'Transaction OK: transaction has been confirmed';
-        $result = 'ok';
-        if ($transaction->t_status !== 'done') {
-            $result = 'fail';
-            $message = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
-        }
-
-        return [
-            'is_success' => $result,
-            'message' => $message,
+        $returnParams = [
+            'is_success' => 'ok',
+            'message' => 'Transaction OK',
             'orderid' => $transaction->t_transaction_id,
             'href' => $transaction->t_redirect_url,
         ];
+
+        if ($transaction->t_status !== 'done') {
+            $orderStatus = $this->gateway->checkOrderStatus($transaction);
+
+            switch ($orderStatus) {
+                case 'accepted':
+                    break;
+
+                case 'pending':
+                    $returnParams['is_success'] = 'ok';
+                    $returnParams['message'] = 'Transaction PENDING: transaction is being processed, but not yet confirmed, please wait';
+                    $returnParams['href'] = $transaction->t_redirect_url;
+
+                    break;
+
+                case 'declined':
+                    $returnParams['is_success'] = 'fail';
+                    $returnParams['message'] = 'Transaction DECLINED';
+                    $returnParams['href'] = $transaction->t_onerror_url;
+
+                    break;
+
+                default:
+                    $returnParams['is_success'] = 'fail';
+                    $returnParams['message'] = 'Unknown error: an unexpected error occurred, please try again';
+                    $returnParams['href'] = $transaction->t_onerror_url;
+
+                    Log::error('[Services\PaymentGateways\Easypay] - Unexpected error occurred while checking the order status.', [
+                        'transaction' => $transaction,
+                        'orderStatus' => $orderStatus,
+                    ]);
+
+                    break;
+            }
+        }
+
+        return $returnParams;
     }
 
     /**

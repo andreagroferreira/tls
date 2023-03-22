@@ -56,6 +56,10 @@ class InvoiceService
             return $this->getS3InvoiceFileContent($transaction);
         }
 
+        if ($transaction->t_invoice_storage === 'minio') {
+            return $this->getMinioInvoiceFileContent($transaction);
+        }
+
         return $this->getFileLibraryInvoiceFileContent($transaction);
     }
 
@@ -64,7 +68,7 @@ class InvoiceService
      *
      * @param mixed $transaction
      *
-     * @return void
+     * @return bool
      */
     public function generate(array $transaction)
     {
@@ -74,11 +78,11 @@ class InvoiceService
             return false;
         }
 
-        $callback_url = $transaction['t_callback_url'];
+        $gatewayReference = !empty($transaction['t_gateway_transaction_reference']) ? $transaction['t_gateway_transaction_reference'] : $transaction['t_gateway_transaction_id'];
         $data = [
             't_id' => $transaction['t_id'],
             'transaction_id' => $transaction['t_transaction_id'],
-            'gateway_transaction_id' => $transaction['t_gateway_transaction_id'],
+            'gateway_transaction_id' => $gatewayReference,
             'gateway' => $transaction['t_gateway'],
             'currency' => $transaction['t_currency'],
             'status' => $transaction['t_status'],
@@ -88,7 +92,7 @@ class InvoiceService
         ];
 
         try {
-            $response = $this->apiService->callInvoiceApi($callback_url, $data);
+            $response = $this->apiService->callInvoiceApi($transaction['t_callback_url'], $data);
         } catch (\Exception $e) {
             Log::warning('Transaction Error: error callback url "'.$transaction['t_callback_url'].'"');
 
@@ -102,6 +106,16 @@ class InvoiceService
         }
 
         return true;
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @return bool
+     */
+    public static function generateInvoice(array $transaction): bool
+    {
+        return app(self::class)->generate($transaction);
     }
 
     /**
@@ -125,6 +139,36 @@ class InvoiceService
         }
 
         return $storage->get($file);
+    }
+
+    /**
+     * @param Transactions $transaction
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return string|null
+     */
+    public function getMinioInvoiceFileContent(Transactions $transaction): ?string
+    {
+        $path = getFilePath($transaction->toArray(), 'minio');
+
+        try {
+            $response = $this->apiService->callCustomerServiceInvoiceDownloadApi($path);
+        } catch (\Exception $e) {
+            Log::warning('Transaction Error: error customer-service api "'.$e->getMessage().'"');
+
+            return null;
+        }
+
+        if ($response['status'] != 200) {
+            Log::warning('Transaction Error: receipt download failed');
+
+            return null;
+        }
+
+        return $response['body'];
     }
 
     /**

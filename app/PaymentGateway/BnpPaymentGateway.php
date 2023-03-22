@@ -217,6 +217,38 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         return $amount;
     }
 
+    /**
+     * @param string $transactionId
+     * @param string $requestedEmail
+     *
+     * @return bool
+     */
+    public function isTransactionOwner(string $transactionId, string $requestedEmail): bool
+    {
+        $transaction = $this->transactionService
+            ->fetchByWhere([
+                't_transaction_id' => $transactionId,
+                't_status' => 'done',
+                't_tech_deleted' => false,
+            ])
+            ->first();
+
+        if (blank($transaction)) {
+            return false;
+        }
+
+        $formGroup = $this->formGroupService->fetch($transaction->t_xref_fg_id, $transaction->t_client);
+
+        if (blank($formGroup)) {
+            return false;
+        }
+
+        $formUserEmail = strtolower($formGroup['u_email'] ?? env('DUMMY_TRANSACTION_ACCOUNT', 'dummy.transaction@tlscontact.com'));
+        $formUserRelativeEmail = strtolower($formGroup['u_relative_email'] ?? env('DUMMY_TRANSACTION_ACCOUNT', 'dummy.transaction@tlscontact.com'));
+
+        return in_array(strtolower($requestedEmail), [$formUserEmail, $formUserRelativeEmail], true);
+    }
+
     protected function logWarning($message, $params)
     {
         Log::warning('ONLINE PAYMENT, ' . $this->getPaymentGatewayName() . ' ' . $message);

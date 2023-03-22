@@ -14,11 +14,11 @@ default:
 
 variables:
   APPLICATION_NAME: "payment-api"
-  ENV: "IET2"
+  ENV: "SET1"
   APP_ENV: "testing"
-  PROJECT: "visa-be-dev"
-  CLIENT: "schengen-be"
-  DATABASE: $DATABASE
+  PROJECT: "visa-uk-dev"
+  CLIENT: "ukvi-uk"
+  DATABASE: "ukvi-uk"
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   DIRECTUS_ROUTE: "directus"
   TLSCONNECT_API_URL: "https://tlsconnect-service-api.${PROJECT}.svc:8443"
@@ -667,12 +667,12 @@ deploy-instance:
   environment:
     name: $ENV
   rules:
-    - if: $ENV == null || $PROJECT == null || $ROLLBACK != null || $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $ENV == null || $PROJECT == null || $ROLLBACK != null || $MAINTENANCE_MODE != "false" || $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - if: $AUTODEPLOY == "true"
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "staging"
-    - when: manual
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_TAG == null && $FORCE_BUILD != "true"
+      when: manual
       allow_failure: true
+    - when: on_success
 
 rollback:
   extends: .rollback

@@ -66,13 +66,8 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         /** @var Transactions $transaction */
         $transaction = $options['transaction'];
 
-        $this->config = $this->gatewayService->getGateway(
-            $transaction->t_client,
-            $transaction->t_issuer,
-            $transaction->t_gateway,
-            $transaction->t_xref_pa_id,
-            $transaction->t_service
-        );
+        $this->getGatewayConfig($transaction);
+
         $this->headers = [
             'PartnerKey' => $this->config['config']['partnerKey'],
             'locale' => $this->config['config']['locale'],
@@ -90,9 +85,9 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      * @param float        $amount
      * @param Request      $request
      *
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     public function callback(
         Transactions $transaction,
@@ -100,13 +95,8 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         float $amount,
         Request $request
     ): array {
-        $this->config = $this->gatewayService->getGateway(
-            $transaction->t_client,
-            $transaction->t_issuer,
-            $transaction->t_gateway,
-            $transaction->t_xref_pa_id,
-            $transaction->t_service
-        );
+        $this->getGatewayConfig($transaction);
+
         $this->headers = [
             'PartnerKey' => $this->config['config']['partnerKey'],
             'locale' => $this->config['config']['locale'],
@@ -140,6 +130,8 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      */
     public function checkOrderStatus(Transactions $transaction): ?string
     {
+        $this->getGatewayConfig($transaction);
+
         $body = [
             'serviceKey' => $this->config['config']['serviceKey'],
             'orderId' => $transaction->t_transaction_id,
@@ -396,6 +388,28 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
                 $this->config['config']['secretKey'] . $formattedJson,
                 true
             )
+        );
+    }
+
+    /**
+     * Set the config for the gateway if it is not already set.
+     *
+     * @param Transactions $transaction
+     *
+     * @return void
+     */
+    protected function getGatewayConfig(Transactions $transaction): void
+    {
+        if ($this->config) {
+            return;
+        }
+
+        $this->config = $this->gatewayService->getGateway(
+            $transaction->t_client,
+            $transaction->t_issuer,
+            $transaction->t_gateway,
+            $transaction->t_xref_pa_id,
+            $transaction->t_service
         );
     }
 }

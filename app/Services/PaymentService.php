@@ -142,6 +142,17 @@ class PaymentService
         return $result;
     }
 
+    /**
+     * @param array $transaction
+     * @param array $params
+     *
+     * @return array
+     */
+    public static function confirmTransaction(array $transaction, array $params): array
+    {
+        return app(self::class)->confirm($transaction, $params);
+    }
+
     public function sendEAuditorProfileLogs($data): bool
     {
         $eauditor_log_content = $this->formatProfileData($data);
@@ -286,7 +297,7 @@ class PaymentService
         );
 
         if (empty($content)) {
-            throw new \Exception('Error Fetching Invoice Content');
+            throw new \Exception('Error Fetching Invoice Content for Collection:'.$collection_name.' - Issuer:'.$transaction['t_issuer'].' - Type:'.$transaction['t_service']);
         }
 
         $resolvedTemplate = $this->tokenResolveService->resolveTemplate(
@@ -296,13 +307,13 @@ class PaymentService
         );
 
         if (empty($resolvedTemplate)) {
-            throw new \Exception('Error Resolving Invoice Content');
+            throw new \Exception('Error Resolving Invoice Content for Collection:'.$collection_name.' - Issuer:'.$transaction['t_issuer'].' - Type:'.$transaction['t_service']);
         }
-        
+
         $response = $this->convertInvoiceContentToPdf($transaction, $resolvedTemplate['invoice_content']);
-        
+
         if (!$response) {
-            throw new \Exception('Error Processing Invoice Upload Request');
+            throw new \Exception('Error Processing Invoice Upload Request for Collection:'.$collection_name.' - Issuer:'.$transaction['t_issuer'].' - Type:'.$transaction['t_service']);
         }
     }
 

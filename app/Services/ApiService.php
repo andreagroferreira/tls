@@ -205,9 +205,10 @@ class ApiService
                 'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
             ],
         ]);
+        $responseHeaders = $response->getHeaders();
         $response = [
             'status' => $response->getStatusCode(),
-            'body' => json_decode($response->getBody(), true)
+            'body' => (array_first($responseHeaders['Content-Type']) === 'image/png') ? $response->getBody() : json_decode($response->getBody(), true)
         ];
         if ($response['status'] != 200) {
             Log::error(sprintf("Request api fail: %s [GET] | Api Return: %s", $url, json_encode($response, 256)));
@@ -440,6 +441,21 @@ class ApiService
     public function callFileLibraryDownloadApi($queryParams): array
     {
         $url = $this->getFileLibraryApiDomain().'/api/'.$this->getFileLibraryApiVersion().'/file-library/download?'.$queryParams;
+        return $this->getStreamApi($url, [], 'get');
+    }
+
+    /**
+     * @param $queryParams
+     *
+     * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callCustomerServiceInvoiceDownloadApi(string $path)
+    {
+        $url = env('CUSTOMER_SERVICE_DOMAIN').'/api/tls/invoice_pdf/' . $path;
         return $this->getStreamApi($url, [], 'get');
     }
 

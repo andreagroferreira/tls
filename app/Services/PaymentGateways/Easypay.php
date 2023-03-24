@@ -64,11 +64,11 @@ class Easypay implements PaymentGatewayServiceInterface
             }
 
             if ($transaction === null) {
-                throw new \Exception('Transaction not found for id: '.$request->t_id);
+                throw new \Exception('Transaction not found for id: ' . $request->t_id);
             }
 
             if ($transaction->t_status !== 'pending') {
-                throw new \Exception('Transaction '.$request->t_id.' is not pending');
+                throw new \Exception('Transaction ' . $request->t_id . ' is not pending');
             }
 
             $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
@@ -82,7 +82,7 @@ class Easypay implements PaymentGatewayServiceInterface
         } catch (\Exception $e) {
             Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }
@@ -113,7 +113,7 @@ class Easypay implements PaymentGatewayServiceInterface
             if ($transaction === null) {
                 return [
                     'is_success' => 'fail',
-                    'message' => 'Transaction not found for id: '.$request->t_id,
+                    'message' => 'Transaction not found for id: ' . $request->t_id,
                 ];
             }
 
@@ -137,7 +137,7 @@ class Easypay implements PaymentGatewayServiceInterface
         } catch (\Exception $e) {
             Log::error('[Services\PaymentGateways\Easypay] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -164,7 +164,7 @@ class Easypay implements PaymentGatewayServiceInterface
         if ($error !== null) {
             return [
                 'is_success' => 'fail',
-                'message' => 'Payment Error: '.$error['errorMessage'],
+                'message' => 'Payment Error: ' . $error['errorMessage'],
             ];
         }
 
@@ -173,15 +173,15 @@ class Easypay implements PaymentGatewayServiceInterface
         if ($transaction === null) {
             return [
                 'is_success' => 'fail',
-                'message' => 'Transaction not found for id: '.$request->t_id,
+                'message' => 'Transaction not found for id: ' . $request->t_id,
             ];
         }
 
         $returnParams = [
-            'is_success' => 'fail',
-            'message' => 'Unknown error: an unexpected error occurred, please try again',
+            'is_success' => 'ok',
+            'message' => 'Transaction OK',
             'orderid' => $transaction->t_transaction_id,
-            'href' => $transaction->t_onerror_url,
+            'href' => $transaction->t_redirect_url,
         ];
 
         if ($transaction->t_status !== 'done') {
@@ -189,10 +189,6 @@ class Easypay implements PaymentGatewayServiceInterface
 
             switch ($orderStatus) {
                 case 'accepted':
-                    $returnParams['is_success'] = 'ok';
-                    $returnParams['message'] = 'Transaction OK';
-                    $returnParams['href'] = $transaction->t_redirect_url;
-
                     break;
 
                 case 'pending':
@@ -203,11 +199,17 @@ class Easypay implements PaymentGatewayServiceInterface
                     break;
 
                 case 'declined':
+                    $returnParams['is_success'] = 'fail';
                     $returnParams['message'] = 'Transaction DECLINED';
+                    $returnParams['href'] = $transaction->t_onerror_url;
 
                     break;
 
                 default:
+                    $returnParams['is_success'] = 'fail';
+                    $returnParams['message'] = 'Unknown error: an unexpected error occurred, please try again';
+                    $returnParams['href'] = $transaction->t_onerror_url;
+
                     Log::error('[Services\PaymentGateways\Easypay] - Unexpected error occurred while checking the order status.', [
                         'transaction' => $transaction,
                         'orderStatus' => $orderStatus,

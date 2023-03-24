@@ -33,6 +33,10 @@ parameters:
     required: true
   - name: REDIS_HOST
     required: true
+  - name: CUSTOMER_SERVICE_DOMAIN
+    required: true
+  - name: INVOICE_STORAGE
+    required: true
   - name: AWS_ACCOUNT_S3
     required: true
   - name: ENVPAY_SWITCH_COMMON_SANDBOX_HOST
@@ -1053,6 +1057,10 @@ objects:
                     secretKeyRef:
                       name: ${POSTGRES_ECOMMERCE_SECRET}
                       key: database-name
+                - name: CUSTOMER_SERVICE_DOMAIN
+                  value: ${CUSTOMER_SERVICE_DOMAIN}
+                - name: INVOICE_STORAGE
+                  value: ${INVOICE_STORAGE}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
@@ -1565,6 +1573,10 @@ objects:
                   value: ${APP_ENV}
                 - name: PROJECT
                   value: ${NAMESPACE}
+                - name: CUSTOMER_SERVICE_DOMAIN
+                  value: ${CUSTOMER_SERVICE_DOMAIN}
+                - name: INVOICE_STORAGE
+                  value: ${INVOICE_STORAGE}
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:

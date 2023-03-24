@@ -227,6 +227,10 @@ function getFilePath(array $transaction, string $storageService = 'file-library'
         return array_get($transaction, 't_client').'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
     }
 
+    if ($storageService === 'minio') {
+        return array_get($transaction, 't_client').'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id');
+    }
+
     $country = substr($transaction['t_issuer'], 0, 2);
     $city = substr($transaction['t_issuer'], 2, 3);
 

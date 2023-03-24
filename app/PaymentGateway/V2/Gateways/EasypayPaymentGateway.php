@@ -66,13 +66,8 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         /** @var Transactions $transaction */
         $transaction = $options['transaction'];
 
-        $this->config = $this->gatewayService->getGateway(
-            $transaction->t_client,
-            $transaction->t_issuer,
-            $transaction->t_gateway,
-            $transaction->t_xref_pa_id,
-            $transaction->t_service
-        );
+        $this->refreshConfig($transaction);
+
         $this->headers = [
             'PartnerKey' => $this->config['config']['partnerKey'],
             'locale' => $this->config['config']['locale'],
@@ -100,13 +95,8 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         float $amount,
         Request $request
     ): array {
-        $this->config = $this->gatewayService->getGateway(
-            $transaction->t_client,
-            $transaction->t_issuer,
-            $transaction->t_gateway,
-            $transaction->t_xref_pa_id,
-            $transaction->t_service
-        );
+        $this->refreshConfig($transaction);
+
         $this->headers = [
             'PartnerKey' => $this->config['config']['partnerKey'],
             'locale' => $this->config['config']['locale'],
@@ -140,6 +130,8 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      */
     public function checkOrderStatus(Transactions $transaction): ?string
     {
+        $this->refreshConfig($transaction);
+
         $body = [
             'serviceKey' => $this->config['config']['serviceKey'],
             'orderId' => $transaction->t_transaction_id,
@@ -380,6 +372,28 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
                 $this->config['config']['secretKey'].json_encode($requestBody),
                 true
             )
+        );
+    }
+
+    /**
+     * Refresh the config.
+     *
+     * @param Transactions $transaction
+     *
+     * @return null|array
+     */
+    protected function refreshConfig(Transactions $transaction): array
+    {
+        if ($this->config) {
+            return null;
+        }
+
+        return $this->config = $this->gatewayService->getGateway(
+            $transaction->t_client,
+            $transaction->t_issuer,
+            $transaction->t_gateway,
+            $transaction->t_xref_pa_id,
+            $transaction->t_service
         );
     }
 }

@@ -66,7 +66,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         /** @var Transactions $transaction */
         $transaction = $options['transaction'];
 
-        $this->refreshConfig($transaction);
+        $this->getGatewayConfig($transaction);
 
         $this->headers = [
             'PartnerKey' => $this->config['config']['partnerKey'],
@@ -85,9 +85,9 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      * @param float        $amount
      * @param Request      $request
      *
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     public function callback(
         Transactions $transaction,
@@ -95,7 +95,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
         float $amount,
         Request $request
     ): array {
-        $this->refreshConfig($transaction);
+        $this->getGatewayConfig($transaction);
 
         $this->headers = [
             'PartnerKey' => $this->config['config']['partnerKey'],
@@ -130,7 +130,7 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
      */
     public function checkOrderStatus(Transactions $transaction): ?string
     {
-        $this->refreshConfig($transaction);
+        $this->getGatewayConfig($transaction);
 
         $body = [
             'serviceKey' => $this->config['config']['serviceKey'],
@@ -392,19 +392,19 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
     }
 
     /**
-     * Refresh the config.
+     * Set the config for the gateway if it is not already set.
      *
      * @param Transactions $transaction
      *
-     * @return null|array
+     * @return void
      */
-    protected function refreshConfig(Transactions $transaction): array
+    protected function getGatewayConfig(Transactions $transaction): void
     {
         if ($this->config) {
-            return null;
+            return;
         }
 
-        return $this->config = $this->gatewayService->getGateway(
+        $this->config = $this->gatewayService->getGateway(
             $transaction->t_client,
             $transaction->t_issuer,
             $transaction->t_gateway,

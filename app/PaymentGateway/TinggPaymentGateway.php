@@ -134,7 +134,7 @@ class TinggPaymentGateway implements PaymentGatewayInterface
             'currencyCode'          => $transaction['t_currency'],
             'accountNumber'         => $fg_id,
             'serviceCode'           => $tingg_config['serviceCode'],
-            'dueDate'               => Carbon::now()->addMinutes(30)->format('Y-m-d H:i:s'),
+            'dueDate'               => $transaction['t_expiration'],
             'requestDescription'    => 'Tlscontact fees for group ' . $fg_id,
             'countryCode'           => strtoupper(substr($issuer, 0, 2)),
             'languageCode'          => 'en',

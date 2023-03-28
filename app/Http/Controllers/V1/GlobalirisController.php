@@ -86,7 +86,7 @@ class GlobalirisController extends BaseController
         } else if ($message == '205') {
             return $this->sendError('P10020', ['message' => 'Sorry, there has been a communications error, please try again later.', 'href' => array_get($result, 'href')], 400);
         } else {
-            return $this->sendError('P10006', ['message' => 'unknown_error', 'href' => array_get($result, 'href')], 400);
+            return $this->sendError('P10006', ['message' => $result['gatewayMessage'] ?? 'unknown_error' , 'href' => array_get($result, 'href')], 400);
         }
     }
     /**

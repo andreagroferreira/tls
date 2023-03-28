@@ -13,8 +13,8 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->get('/', function () {
+    return response(null, 204);
 });
 
 $router->group(['prefix' => 'api/v2', 'namespace' => 'V2'], function () use ($router) {

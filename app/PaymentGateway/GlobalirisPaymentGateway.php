@@ -135,7 +135,6 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             'HPP_REMOVE_SHIPPING' => true,
             'HPP_DO_NOT_RETURN_ADDRESS' => true
         ];
-
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
 
         return [
@@ -153,21 +152,20 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $authcode   = $params['AUTHCODE'] ?? '';
         $pasref     = $params['PASREF'] ?? '';
         $realexsha1 = $params['SHA1HASH'] ?? '';
-
         $translationsData =  $this->transactionService->fetchTransaction(['t_transaction_id' => $orderId]);
-        $client = $translationsData['t_client'];
-        $issuer = $translationsData['t_issuer'];
         if (empty($translationsData)) {
             Log::warning("ONLINE PAYMENT,". strtoupper($this->getPaymentGatewayName()) . " : No transaction found in the database for " . $orderId . "\n" .
                 json_encode($_POST, JSON_UNESCAPED_UNICODE));
             return [
                 'is_success' => 'error',
                 'orderid' => $orderId,
-                'issuer' => $issuer,
-                'href' => $translationsData['t_redirect_url'],
+                'issuer' =>'',
+                'href' => '',
                 'message' => 'transaction_id_not_exists'
             ];
         }
+        $client = $translationsData['t_client'];
+        $issuer = $translationsData['t_issuer'];
         $received_amount   = $params['AMOUNT'] ?? '';
         if ($this->gatewayService->getClientUseFile()) {
             $config = $this->gatewayService->getConfig($client, $issuer);
@@ -205,19 +203,6 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         } else {
             $flag = false;
             $msg = $result;
-//            if ($result == "101") {
-//                $flag = false;
-//                $msg = 'Sorry, the transaction has been declined and was not successful.';
-//            } elseif ($result == "103") {
-//                $flag = false;
-//                $msg = 'Sorry, this card has been reported lost or stolen, please contact your bank.';
-//            } elseif ($result == "205") {
-//                $flag = false;
-//                $msg = 'Sorry, there has been a communications error, please try again later.';
-//            } else {
-//                $flag = false;
-//                $msg = 'Unknown error, please try again.';
-//            }
         }
         if ($sha1hash != $realexsha1) {
             $flag = false;
@@ -249,7 +234,8 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                 'orderid' => $orderId,
                 'issuer' => $issuer,
                 'message' => $msg,
-                'href' => $translationsData['t_redirect_url']
+                'gatewayMessage' => $message,
+                'href' => $translationsData['t_onerror_url']
             ];
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$translationsData, $params,'fail');
             $this->transactionLogsService->create(['tl_xref_transaction_id' => $translationsData['t_transaction_id'], 'tl_content' =>json_encode($result)]);

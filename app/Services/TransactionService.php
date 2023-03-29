@@ -977,6 +977,7 @@ class TransactionService
             'payment_type' => $transaction['t_service'],
             'order_details' => $orderDetails,
             'payment_provider' => $transaction['t_gateway'],
+            'timestamp' => $transaction['t_tech_modification'],
         ];
     }
 

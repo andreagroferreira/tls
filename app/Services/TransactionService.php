@@ -320,7 +320,7 @@ class TransactionService
                 $amount += $sku['price'] * Arr::get($sku, 'quantity', 1);
             }
         }
-        $transaction['t_amount'] = number_format($amount, 2);
+        $transaction['t_amount'] = $amount;
         $transaction['t_items'] = $transaction_items;
 
         return $transaction;

@@ -50,13 +50,15 @@ class TransactionItemsRepository
 
     public function update($transaction_id, $attributes)
     {
-        $result = $this->transactionItemsModel->where('ti_xref_transaction_id', '=', $transaction_id)->first();
-        foreach ($attributes as $key => $value) {
-            $result->{$key} = $value;
+        $items = $this->transactionItemsModel->where('ti_xref_transaction_id', '=', $transaction_id)->get();
+        foreach ($items as $item) {
+            foreach ($attributes as $key => $value) {
+                $item->{$key} = $value;
+            }
+            $item->save();
         }
-        $result->save();
 
-        return $result;
+        return $items;
     }
 
     /**

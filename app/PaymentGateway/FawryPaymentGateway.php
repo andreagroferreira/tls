@@ -450,13 +450,6 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'message' => "transaction_id_not_exists",
             ];
         }
-        if (strtolower($transaction['t_status']) == 'close') {
-            Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : the transaction number $order_id has been canceled");
-            return [
-                'status' => 'fail',
-                'message' => "transaction_cancelled",
-            ];
-        }
         if (strtolower($transaction['t_status']) == 'done') {
             return [
                 'status' => 'success',

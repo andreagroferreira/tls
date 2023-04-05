@@ -357,8 +357,11 @@ class TokenResolveService
         $collectionIndex = null;
         $collectionGlobalIndex = null;
         foreach ($collections as $i => $collection) {
+            if (empty($collection['translation'])) {
+                continue;
+            }
             $code = $collection['code'];
-            if ('ww' == $code) {
+            if ('ww' == $code || $this->issuer == $code) {
                 $collectionGlobalIndex = $i;
             }
             if ($code == $this->city) {
@@ -381,13 +384,17 @@ class TokenResolveService
 
         if (empty($translation)) {
             if (null === $collectionGlobalIndex) {
-                throw new \Exception('Correct collection index not found for collection: '.$collectionName.' - code:'.$code);
+                Log::error('Correct collection index not found for collection: '.$collectionName.' - code:'.$code);
+
+                return '';
             }
 
             $translationGlobal = $this->getActiveTranslation($collections[$collectionGlobalIndex]['translation']);
 
             if (empty($translationGlobal)) {
-                throw new \Exception('No active translation found for collection: '.$collectionName.' - code: '.$code);
+                Log::error('No active translation found for collection: '.$collectionName.' - code: '.$code);
+
+                return '';
             }
 
             return $translationGlobal;
@@ -454,12 +461,19 @@ class TokenResolveService
             $options
         );
         if (empty($tokenCollections)) {
-            throw new \Exception('No collections returned for token: '.$collection.'.'.$field);
+            Log::error('No collections returned for token with issuer:'.$this->issuer.' - '.$collection.'.'.$field);
+            
+            return '';
         }
 
         if (count($tokenCollections) > 1) {
             $translation = $this->getCorrectCollectionTranslation($tokenCollections, $tokenDetails[1]);
         } else {
+            if(empty(array_first($tokenCollections)['translation'])){
+                Log::error('No Translation found for token with issuer:'.$this->issuer.' - '.$collection.'.'.$field);
+                
+                return '';
+            }
             $translation = $this->getActiveTranslation(array_first($tokenCollections)['translation']);
         }
 

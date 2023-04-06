@@ -396,11 +396,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             ];
         }
 
-        if (
-            strtolower($transaction['t_status']) == 'pending'
-            && $transaction['t_transaction_id'] == $order_id
-            && $order_status == 'PAID'
-        ) {
+        if ($transaction['t_transaction_id'] == $order_id && $order_status == 'PAID') {
             // update transaction
             $confirm_params = [
                 'gateway'        => $this->getPaymentGatewayName(),

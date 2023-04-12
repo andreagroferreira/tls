@@ -38,8 +38,8 @@ abstract class TestCase extends \TestCase
     {
         $db_connection = DB::connection('unit_test_pgsql');
         $database = config('database.connections.unit_test_payment_pgsql.database');
-        if ($db_connection->table('pg_database')->whereRaw("datname='$database'")->count() === 0) {
-            $db_connection->statement("CREATE DATABASE $database");
+        if ($db_connection->table('pg_database')->whereRaw("datname='{$database}'")->count() === 0) {
+            $db_connection->statement("CREATE DATABASE {$database}");
         }
 
         $this->artisan('migrate:fresh', ['--path' => 'database/migrations', '--database' => 'deploy_payment_pgsql', '--force' => true]);
@@ -61,7 +61,7 @@ abstract class TestCase extends \TestCase
                 't_xref_fg_id' => 10000,
                 't_transaction_id' => str_random(10),
                 't_client' => $this->client,
-                't_issuer' => 'dzALG2'.$this->client,
+                't_issuer' => 'dzALG2' . $this->client,
                 't_gateway_transaction_id' => str_random(10),
                 't_gateway' => 'cmi',
                 't_currency' => 'MAD',
@@ -235,12 +235,12 @@ abstract class TestCase extends \TestCase
     {
         if (blank($params)) {
             $params = [
-                'r_issuer' => 'dzALG2'.$this->client,
+                'r_issuer' => 'dzALG2' . $this->client,
                 'r_reason_type' => 'other',
-                'r_status' => 'done'
+                'r_status' => 'done',
             ];
         } else {
-            $params['r_issuer'] = 'dzALG2'.$this->client;
+            $params['r_issuer'] = 'dzALG2' . $this->client;
         }
         $db_connection = DB::connection('unit_test_payment_pgsql')->table('refunds');
         $r_id = $db_connection->insertGetId($params, 'r_id');
@@ -326,7 +326,7 @@ abstract class TestCase extends \TestCase
             $params = [
                 'pa_type' => 'sandbox',
                 'pa_xref_psp_id' => $this->generateConfigurationPaymentGatewayServiceProvider()->psp_id,
-                'pa_name' => 'test-'.rand(1, 999),
+                'pa_name' => 'test-' . rand(1, 999),
                 'pa_info' => 'test',
             ];
         }
@@ -362,7 +362,7 @@ abstract class TestCase extends \TestCase
     }
 
     /**
-     * @param int $version
+     * @param int    $version
      * @param string $feature
      *
      * @return void
@@ -371,13 +371,12 @@ abstract class TestCase extends \TestCase
     {
         $dbConnection = DB::connection('unit_test_payment_pgsql');
 
-        if ($feature === 'invoice') {
-            $fvcId = 1;
-        } else if ($feature === 'transaction_sync') {
-            $fvcId = 2;
-        } else {
-            $fvcId = null;
-        }
+        $fvcId = $dbConnection
+            ->table('feature_version_configurations')
+            ->select('fvc_id')
+            ->join('feature_versions', 'fv_id', '=', 'fvc_xref_fv_id')
+            ->where('fv_type', $feature)
+            ->first();
 
         if ($fvcId !== null) {
             $featureVersion = $dbConnection->table('feature_versions')

@@ -274,18 +274,19 @@ class TransactionService
             );
 
             $transactionData = $this->getTransaction($transaction->t_id);
-            if ($totalAmount === 0.00 && $this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
-                PaymentService::confirmTransaction($transactionData, [
-                    'gateway' => 'free',
-                    'amount' => $transactionData['t_amount'],
-                    'currency' => $transactionData['t_currency'],
-                    'transaction_id' => $transactionData['t_transaction_id'],
-                    'gateway_transaction_id' => $transactionData['t_transaction_id'],
-                ]);
-            } else if ($totalAmount === 0.00 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
-                $this->confirmTransaction($transactionData);
+            if ($this->isVersion(2, $transaction['t_issuer'], 'free_transaction')) {
+                if ($totalAmount === 0.00 && $this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                    PaymentService::confirmTransaction($transactionData, [
+                        'gateway' => 'free',
+                        'amount' => $transactionData['t_amount'],
+                        'currency' => $transactionData['t_currency'],
+                        'transaction_id' => $transactionData['t_transaction_id'],
+                        'gateway_transaction_id' => $transactionData['t_transaction_id'],
+                    ]);
+                } else if ($totalAmount === 0.00 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
+                    $this->confirmTransaction($transactionData);
+                }
             }
-
             $db_connection->commit();
         } catch (\Exception $e) {
             $db_connection->rollBack();

@@ -134,13 +134,15 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
     {
         $order_id    = $return_params['order_id'];
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
+        $isTransactionDone = $transaction['t_status'] === 'done';
+        $message = !$isTransactionDone && $transaction['t_status'] === 'pending' ? 'Processing payment, please wait.' : 'Payment failed.';
         $internet_online_payment_result = array(
-            'is_success' => 'ok',
+            'is_success' => $isTransactionDone ? 'ok' : 'fail',
             'orderid'    => $transaction['t_transaction_id'],
             'issuer'     => $transaction['t_issuer'],
             'amount'     => $transaction['t_amount'],
-            'message'    => 'Request was processed successfully.',
-            'href'       => $transaction['t_redirect_url']
+            'message'    => $isTransactionDone ? 'Payment done.' : $message,
+            'href'       => $isTransactionDone ? $transaction['t_redirect_url'] : $transaction['t_onerror_url']
         );
         return $internet_online_payment_result;
     }
@@ -149,9 +151,24 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
     {
         $order_id           = $notify_params['req_reference_number'];
         $transaction        = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
-        $client             = $transaction['t_client'];
-        $issuer             = $transaction['t_issuer'];
-        $cybersource_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+
+        if ($notify_params['reason_code'] != 100) {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
+            Log::warning("ONLINE PAYMENT, Cybersource: Payment authorization check failed : ". json_encode($notify_params, JSON_UNESCAPED_UNICODE));
+            return [
+                'is_success' => 'fail',
+                'message' => $notify_params['message'],
+                'href' => $transaction['t_onerror_url']
+            ];
+        }
+
+        $cybersource_config = $this->gatewayService->getGateway(
+            $transaction['t_client'],
+            $transaction['t_issuer'],
+            $this->getPaymentGatewayName(),
+            $transaction['t_xref_pa_id']
+        );
+
         $is_live            = $cybersource_config['common']['env'] == 'live' ? true : false;
         $app_env            = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
@@ -172,7 +189,7 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
             $transaction_type = $cybersource_config['sandbox']['transaction_type'];
             $secretKey        = $cybersource_config['sandbox']['secret_key'];
         }
-        // signature
+
         $notify_params['req_access_key']       = $access_key;
         $notify_params['req_profile_id']       = $profile_id;
         $notify_params['req_transaction_type'] = $transaction_type;
@@ -185,32 +202,25 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
             $dataToSign[] = $field . "=" . $notify_params[$field];
         }
         $signature = base64_encode(hash_hmac('sha256', implode(',', $dataToSign), $secretKey, true));
-        // 验证数字签名
+
         if($notify_params['signature'] != $signature){
             Log::warning("ONLINE PAYMENT, Cybersource: digital signature check failed : ". json_encode($_POST, JSON_UNESCAPED_UNICODE));
-            return "APPROVED";
+            return [
+                'is_success' => 'fail',
+                'message' => 'Signature validation failed',
+                'href' => $transaction['t_onerror_url']
+            ];
         }
 
-        // 交易成功 修改数据库
         $confirm_params = [
             'gateway'        => $this->getPaymentGatewayName(),
             'amount'         => $notify_params['req_amount'],
             'currency'       => $notify_params['req_currency'],
             'transaction_id' => $order_id,
-            'gateway_transaction_id' => $notify_params['transaction_id'],
+            'gateway_transaction_id' => $notify_params['t_transaction_id'],
         ];
+
         $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
-        $response = $this->paymentService->confirm($transaction, $confirm_params);
-        if($response['is_success'] != 'ok') {
-            exit;
-        }
-        //核对支付授权状态
-        if ($notify_params['reason_code'] == 100) {
-            return "OK";
-        } else {
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
-            Log::warning("ONLINE PAYMENT, Cybersource: Payment authorization check failed : ". json_encode($notify_params, JSON_UNESCAPED_UNICODE));
-            return "ERROR";
-        }
+        return $this->paymentService->confirm($transaction, $confirm_params);
     }
 }

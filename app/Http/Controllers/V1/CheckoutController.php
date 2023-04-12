@@ -115,7 +115,8 @@ class CheckoutController extends BaseController
                 return $this->sendResponse($result, 200);
             }
             // forbidden to modify the gateway
-            $selected_gateway = $transaction['t_gateway'];
+            $app_env = $this->isSandBox() ? 'sandbox' : 'production';
+            $selected_gateway = $transaction['t_gateway'] . '_' . $app_env;
             if ($transaction['t_gateway'] == 'pay_later') {
                 $payment_gateways = [];
             } elseif (in_array($selected_gateway, array_keys($payment_gateways))) {
@@ -125,7 +126,6 @@ class CheckoutController extends BaseController
             }
             $getClientUseFile = $this->gatewayService->getClientUseFile();
             if ($getClientUseFile) {
-                $app_env = $this->isSandBox() ? 'sandbox' : 'production';
                 foreach ($payment_gateways as $key => $value) {
                     if ($key !== 'pay_later') {
                         if (!array_key_exists($app_env, $value)) {

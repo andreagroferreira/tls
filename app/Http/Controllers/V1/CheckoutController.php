@@ -115,7 +115,7 @@ class CheckoutController extends BaseController
                 return $this->sendResponse($result, 200);
             }
             // forbidden to modify the gateway
-            $selected_gateway = $transaction['t_gateway'];
+            $selected_gateway = $this->isSandBox() ?  $transaction['t_gateway'] . '_sandbox' : $transaction['t_gateway'];
             if ($transaction['t_gateway'] == 'pay_later') {
                 $payment_gateways = [];
             } elseif (in_array($selected_gateway, array_keys($payment_gateways))) {

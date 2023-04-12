@@ -134,17 +134,42 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
     {
         $order_id    = $return_params['order_id'];
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
-        $isTransactionDone = $transaction['t_status'] === 'done';
-        $message = !$isTransactionDone && $transaction['t_status'] === 'pending' ? 'Processing payment, please wait.' : 'Payment failed.';
-        $internet_online_payment_result = array(
-            'is_success' => $isTransactionDone ? 'ok' : 'fail',
+
+        if ($transaction['t_status'] === 'closed') {
+            $transactionLog = $this->transactionLogsService->fetchByTransactionId($order_id);
+            $message = str_replace(
+                $this->getPaymentGatewayName() . ' postback:',
+                '',
+                $transactionLog->tl_content ?? ''
+            );
+
+            return [
+                'is_success' => 'fail',
+                'orderid'    => $transaction['t_transaction_id'],
+                'issuer'     => $transaction['t_issuer'],
+                'amount'     => $transaction['t_amount'],
+                'message'    => json_decode($message, true)['error_msg'] ?? 'Payment failed.',
+                'href'       => $transaction['t_onerror_url'],
+            ];
+        } else if ($transaction['t_status'] === 'pending') {
+            return [
+                'is_success' => 'fail',
+                'orderid'    => $transaction['t_transaction_id'],
+                'issuer'     => $transaction['t_issuer'],
+                'amount'     => $transaction['t_amount'],
+                'message'    => 'Payment is being processed, please wait.',
+                'href'       => $transaction['t_redirect_url'],
+            ];
+        }
+
+        return [
+            'is_success' => 'ok',
             'orderid'    => $transaction['t_transaction_id'],
             'issuer'     => $transaction['t_issuer'],
             'amount'     => $transaction['t_amount'],
-            'message'    => $isTransactionDone ? 'Payment done.' : $message,
-            'href'       => $isTransactionDone ? $transaction['t_redirect_url'] : $transaction['t_onerror_url']
-        );
-        return $internet_online_payment_result;
+            'message'    => 'Payment done.',
+            'href'       => $transaction['t_redirect_url'],
+        ];
     }
 
     public function notify($notify_params)
@@ -155,6 +180,13 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
         if ($notify_params['reason_code'] != 100) {
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
             Log::warning("ONLINE PAYMENT, Cybersource: Payment authorization check failed : ". json_encode($notify_params, JSON_UNESCAPED_UNICODE));
+            $this->transactionService->updateById($transaction['t_id'], ['t_status' => 'closed']);
+
+            $this->paymentService->saveTransactionLog(
+                $order_id,
+                ['error_msg' => $notify_params['message']],
+                $this->getPaymentGatewayName(),
+            );
             return [
                 'is_success' => 'fail',
                 'message' => $notify_params['message'],
@@ -204,6 +236,7 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
         $signature = base64_encode(hash_hmac('sha256', implode(',', $dataToSign), $secretKey, true));
 
         if($notify_params['signature'] != $signature){
+            $this->transactionService->updateById($transaction['t_id'], ['t_status' => 'closed']);
             Log::warning("ONLINE PAYMENT, Cybersource: digital signature check failed : ". json_encode($_POST, JSON_UNESCAPED_UNICODE));
             return [
                 'is_success' => 'fail',

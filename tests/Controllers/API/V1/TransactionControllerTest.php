@@ -1481,7 +1481,7 @@ class TransactionControllerTest extends TestCase
     {
         $this->setFeatureVersions(2, 'transaction_sync');
         $this->setFeatureVersions(2, 'invoice');
-        $this->setFeatureVersions(2, 'agent_name');
+        $this->setFeatureVersions(2, 'agent_transaction');
 
         //set agentName and paymentMethod
         $defaultPayload['agent_name'] = 'test';

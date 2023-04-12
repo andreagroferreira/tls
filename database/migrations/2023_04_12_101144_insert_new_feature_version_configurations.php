@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class InsertFreeTransactionOnFeatureVersionConfigurationsTable extends Migration
+class InsertNewFeatureVersionConfigurations extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class InsertFreeTransactionOnFeatureVersionConfigurationsTable extends Migration
         try {
             DB::connection('deploy_payment_pgsql')->beginTransaction();
             $client = $this->getProjectId();
-            $types = [3 => 'free_transaction'];
+            $types = [5 => 'free_transaction', 6 => 'agent_transaction'];
             foreach ($types as $key => $type) {
                 $projectFeatureVersionConfigData = [
                     'fvc_project' => $client,

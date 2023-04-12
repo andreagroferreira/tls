@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class InsertFreeTransactionOnFeatureVersionsTable extends Migration
+class InsertNewFeatureVersions extends Migration
 {
     /**
      * Run the migrations.
@@ -22,6 +22,13 @@ class InsertFreeTransactionOnFeatureVersionsTable extends Migration
                 ];
 
                 $this->createFeatureVersions($versionFreeTransaction);
+
+                $versionAgentTransaction = [
+                    'fv_type' => 'agent_transaction',
+                    'fv_version' => $version,
+                ];
+
+                $this->createFeatureVersions($versionAgentTransaction);
             }
             DB::connection('deploy_payment_pgsql')->commit();
         } catch (\Exception $e) {

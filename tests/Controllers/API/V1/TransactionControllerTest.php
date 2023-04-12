@@ -1367,6 +1367,7 @@ class TransactionControllerTest extends TestCase
     {
         $this->setFeatureVersions(2, 'transaction_sync');
         $this->setFeatureVersions(2, 'invoice');
+        $this->setFeatureVersions(2, 'free_transaction');
 
         //set items skus price to 0
         $defaultPayload['items'][0]['skus'][0]['price'] = 0;
@@ -1480,6 +1481,7 @@ class TransactionControllerTest extends TestCase
     {
         $this->setFeatureVersions(2, 'transaction_sync');
         $this->setFeatureVersions(2, 'invoice');
+        $this->setFeatureVersions(2, 'agent_name');
 
         //set agentName and paymentMethod
         $defaultPayload['agent_name'] = 'test';

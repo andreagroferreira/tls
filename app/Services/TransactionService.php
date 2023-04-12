@@ -274,8 +274,8 @@ class TransactionService
             );
 
             $transactionData = $this->getTransaction($transaction->t_id);
-            if ($this->isVersion(2, $transaction['t_issuer'], 'free_transaction')) {
-                if ($totalAmount === 0.00 && $this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+            if ($this->validateFreeTransactionFeature($totalAmount, $transaction['t_issuer'])) {
+                if ($this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
                     PaymentService::confirmTransaction($transactionData, [
                         'gateway' => 'free',
                         'amount' => $transactionData['t_amount'],
@@ -283,7 +283,22 @@ class TransactionService
                         'transaction_id' => $transactionData['t_transaction_id'],
                         'gateway_transaction_id' => $transactionData['t_transaction_id'],
                     ]);
-                } else if ($totalAmount === 0.00 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
+                } else {
+                    $this->confirmTransaction($transactionData);
+                }
+            }
+
+            if ($this->validateAgentTransactionFeature($attributes, $transaction['t_issuer'])) {
+                if ($this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                    PaymentService::confirmTransaction($transactionData, [
+                        'gateway' => $attributes['payment_method'],
+                        'agent_name' => $attributes['agent_name'],
+                        'amount' => $transactionData['t_amount'],
+                        'currency' => $transactionData['t_currency'],
+                        'transaction_id' => $transactionData['t_transaction_id'],
+                        'gateway_transaction_id' => $transactionData['t_transaction_id'],
+                    ]);
+                } else {
                     $this->confirmTransaction($transactionData);
                 }
             }
@@ -298,6 +313,28 @@ class TransactionService
             't_id' => $transaction->t_id,
             'expire' => Carbon::parse($transaction->t_expiration)->toDateTimeString(),
         ];
+    }
+
+    /**
+     * @param float $amount
+     * @param string $issuer
+     *
+     * @return bool
+     */
+    private function validateFreeTransactionFeature(float $amount, string $issuer): bool
+    {
+        return $amount === 0.00 && $this->isVersion(2, $issuer, 'free_transaction');
+    }
+
+    /**
+     * @param array $payload
+     * @param string $issuer
+     *
+     * @return bool
+     */
+    private function validateAgentTransactionFeature(array $payload, string $issuer): bool {
+        return (!empty($payload['agent_name']) && !empty($payload['payment_method'])) &&
+            $this->isVersion(2, $issuer, 'agent_transaction');
     }
 
     public function update($transaction_id, $attributes)

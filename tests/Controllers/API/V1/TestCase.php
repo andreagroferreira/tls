@@ -371,20 +371,20 @@ abstract class TestCase extends \TestCase
     {
         $dbConnection = DB::connection('unit_test_payment_pgsql');
 
-        $fvcId = $dbConnection
+        $result = $dbConnection
             ->table('feature_version_configurations')
-            ->select('fvc_id')
             ->join('feature_versions', 'fv_id', '=', 'fvc_xref_fv_id')
             ->where('fv_type', $feature)
+            ->select('fvc_id')
             ->first();
 
-        if ($fvcId !== null) {
+        if ($result->fvc_id !== null) {
             $featureVersion = $dbConnection->table('feature_versions')
                 ->where(['fv_type' => $feature, 'fv_version' => $version])
                 ->first();
 
             $dbConnection->table('feature_version_configurations')
-                ->where(['fvc_id' => $fvcId])
+                ->where(['fvc_id' => $result->fvc_id])
                 ->update(['fvc_xref_fv_id' => $featureVersion->fv_id]);
         }
     }

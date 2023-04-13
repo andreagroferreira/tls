@@ -17,4 +17,13 @@ class TransactionLogsService
     public function create($attributes) {
         return $this->transactionLogsRepository->insert($attributes);
     }
+
+    /**
+     * @param string $transactionId
+     *
+     * @return mixed
+     */
+    public function fetchByTransactionId(string $transactionId) {
+        return $this->transactionLogsRepository->fetch(['tl_xref_transaction_id' => $transactionId])->first();
+    }
 }

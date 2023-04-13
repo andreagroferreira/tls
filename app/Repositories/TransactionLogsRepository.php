@@ -20,4 +20,11 @@ class TransactionLogsRepository
     public function insert($attributes) {
         return $this->transactionLogsModel->newInstance()->create($attributes);
     }
+
+    public function fetch($where, $field = '*') {
+        return $this->transactionLogsModel
+            ->select($field)
+            ->where($where)
+            ->get();
+    }
 }

@@ -74,10 +74,11 @@ class CybersourceController extends BaseController
         }
         try {
             $result = $this->paymentGateway->notify($params);
-            if ($result) {
-                return $this->sendResponse($result);
+            $status = $result['is_success'] ?? '';
+            if ($status == 'ok') {
+                return $this->sendResponse($result, 200);
             } else {
-                return $this->sendError('', '');
+                return $this->sendError('P0006', ['message' => array_get($result, 'message', 'unknown_error'), 'href' => array_get($result, 'href')], 400);
             }
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);

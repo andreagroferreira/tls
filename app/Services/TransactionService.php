@@ -274,18 +274,34 @@ class TransactionService
             );
 
             $transactionData = $this->getTransaction($transaction->t_id);
-            if ($totalAmount === 0.00 && $this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
-                PaymentService::confirmTransaction($transactionData, [
-                    'gateway' => 'free',
-                    'amount' => $transactionData['t_amount'],
-                    'currency' => $transactionData['t_currency'],
-                    'transaction_id' => $transactionData['t_transaction_id'],
-                    'gateway_transaction_id' => $transactionData['t_transaction_id'],
-                ]);
-            } else if ($totalAmount === 0.00 || (!empty($attributes['agent_name']) && !empty($attributes['payment_method']))) {
-                $this->confirmTransaction($transactionData);
+            if ($this->validateFreeTransactionFeature($totalAmount, $transaction['t_issuer'])) {
+                if ($this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                    PaymentService::confirmTransaction($transactionData, [
+                        'gateway' => 'free',
+                        'amount' => $transactionData['t_amount'],
+                        'currency' => $transactionData['t_currency'],
+                        'transaction_id' => $transactionData['t_transaction_id'],
+                        'gateway_transaction_id' => $transactionData['t_transaction_id'],
+                    ]);
+                } else {
+                    $this->confirmTransaction($transactionData);
+                }
             }
 
+            if ($this->validateAgentTransactionFeature($attributes, $transaction['t_issuer'])) {
+                if ($this->isVersion(1, $transaction['t_issuer'], 'transaction_sync')) {
+                    PaymentService::confirmTransaction($transactionData, [
+                        'gateway' => $attributes['payment_method'],
+                        'agent_name' => $attributes['agent_name'],
+                        'amount' => $transactionData['t_amount'],
+                        'currency' => $transactionData['t_currency'],
+                        'transaction_id' => $transactionData['t_transaction_id'],
+                        'gateway_transaction_id' => $transactionData['t_transaction_id'],
+                    ]);
+                } else {
+                    $this->confirmTransaction($transactionData);
+                }
+            }
             $db_connection->commit();
         } catch (\Exception $e) {
             $db_connection->rollBack();
@@ -403,7 +419,7 @@ class TransactionService
         }
 
         if (!empty($attributes['multi_search'])) {
-            $issuer = array_get($attributes['multi_search'], 't_country').
+            $issuer = array_get($attributes['multi_search'], 't_country') .
                 array_get($attributes['multi_search'], 't_city');
 
             unset($attributes['multi_search']['t_country'], $attributes['multi_search']['t_city']);
@@ -415,18 +431,18 @@ class TransactionService
                 }
 
                 if (in_array($column, $fullTextSearchColumn)) {
-                    $where->push([$column, 'ILIKE', '%'.$value.'%']);
+                    $where->push([$column, 'ILIKE', '%' . $value . '%']);
                 } else {
                     $where->push([$column, 'ILIKE', $value]);
                 }
             }
 
             if (!empty($issuer)) {
-                $where->push(['t_issuer', 'ILIKE', '%'.$issuer.'%']);
+                $where->push(['t_issuer', 'ILIKE', '%' . $issuer . '%']);
             }
 
             if (!empty(array_get($attributes['multi_search'], 't_agent_name'))) {
-                $where->push(['t_agent_name', 'ILIKE', '%'.array_get($attributes['multi_search'], 't_agent_name').'%']);
+                $where->push(['t_agent_name', 'ILIKE', '%' . array_get($attributes['multi_search'], 't_agent_name') . '%']);
             }
         }
 
@@ -571,8 +587,8 @@ class TransactionService
             $workflowServiceSyncStatus = $this->syncTransactionToWorkflow($transaction);
             if (!empty($workflowServiceSyncStatus['error_msg'])) {
                 Log::error(
-                    'Transaction ERROR: transaction sync to workflow service '.
-                        $transaction['t_transaction_id'].' failed, because: '.
+                    'Transaction ERROR: transaction sync to workflow service ' .
+                        $transaction['t_transaction_id'] . ' failed, because: ' .
                         json_encode($workflowServiceSyncStatus, 256)
                 );
             }
@@ -580,8 +596,8 @@ class TransactionService
             $ecommerceSyncStatus = $this->syncTransactionToEcommerce($transaction, 'PAID');
             if (!empty($ecommerceSyncStatus['error_msg'])) {
                 Log::error(
-                    'Transaction ERROR: transaction sync to ecommerce '.
-                        $transaction['t_transaction_id'].' failed, because: '.
+                    'Transaction ERROR: transaction sync to ecommerce ' .
+                        $transaction['t_transaction_id'] . ' failed, because: ' .
                         json_encode($ecommerceSyncStatus, 256)
                 );
             }
@@ -671,7 +687,7 @@ class TransactionService
                 'error_msg' => [],
             ];
         } catch (\Exception $e) {
-            Log::info('TransactionService syncTransaction dispatch error_msg:'.$e->getMessage());
+            Log::info('TransactionService syncTransaction dispatch error_msg:' . $e->getMessage());
 
             return [
                 'status' => 'error',
@@ -692,20 +708,20 @@ class TransactionService
         $fgId = $transaction['t_xref_fg_id'];
         $data = $this->createWorkflowPayload($this->getTransaction($transaction['t_id']));
 
-        Log::info('TransactionService syncTransactionToWorkflow start: '.$fgId);
+        Log::info('TransactionService syncTransactionToWorkflow start: ' . $fgId);
 
         try {
             dispatch(new TransactionSyncToWorkflowJob($client, $location, $data))
                 ->onConnection('workflow_transaction_sync_queue')
                 ->onQueue('workflow_transaction_sync_queue');
 
-            Log::info('TransactionService syncTransactionToWorkflow dispatch: '.$fgId);
+            Log::info('TransactionService syncTransactionToWorkflow dispatch: ' . $fgId);
 
             return [
                 'error_msg' => [],
             ];
         } catch (\Exception $e) {
-            Log::info('TransactionService syncTransactionToWorkflow dispatch: '.$fgId.' - error_msg:'.$e->getMessage());
+            Log::info('TransactionService syncTransactionToWorkflow dispatch: ' . $fgId . ' - error_msg:' . $e->getMessage());
 
             return [
                 'status' => 'error',
@@ -725,7 +741,7 @@ class TransactionService
         $fg_id = $transaction['t_xref_fg_id'];
         $data = $this->createEcommercePayload($transaction, $paymentStatus);
 
-        Log::info('TransactionService syncTransactionToEcommerce start: '.$fg_id);
+        Log::info('TransactionService syncTransactionToEcommerce start: ' . $fg_id);
 
         try {
             /** @var QueueService $queueService */
@@ -736,14 +752,14 @@ class TransactionService
                 'error_msg' => [],
             ];
         } catch (\Exception $e) {
-            Log::info('TransactionService syncTransactionToEcommerce sync: '.$fg_id.' - error_code:'.$e->getCode().' - error_msg:'.$e->getMessage());
+            Log::info('TransactionService syncTransactionToEcommerce sync: ' . $fg_id . ' - error_code:' . $e->getCode() . ' - error_msg:' . $e->getMessage());
 
             if (in_array((int) $e->getCode(), [404, 408])) {
                 dispatch(new TransactionSyncToEcommerceJob($fg_id, $data))
                     ->onConnection('ecommerce_transaction_sync_queue')
                     ->onQueue('ecommerce_transaction_sync_queue');
 
-                Log::info('TransactionService syncTransactionToEcommerce dispatch: '.$fg_id);
+                Log::info('TransactionService syncTransactionToEcommerce dispatch: ' . $fg_id);
             }
 
             return [
@@ -773,10 +789,10 @@ class TransactionService
 
     protected function generateTransactionId($transaction_id_seq, $issuer)
     {
-        $environment = env('APPLICATION_ENV') == 'prod' ? '' : strtoupper(env('APPLICATION_ENV')).date('Ymd').'-';
-        $project = env('PROJECT') ? env('PROJECT').'-' : '';
+        $environment = env('APPLICATION_ENV') == 'prod' ? '' : strtoupper(env('APPLICATION_ENV')) . date('Ymd') . '-';
+        $project = env('PROJECT') ? env('PROJECT') . '-' : '';
 
-        return $project.$environment.$issuer.'-'.str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
+        return $project . $environment . $issuer . '-' . str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
     }
 
     protected function convertItemsFieldToArray($transaction_id, $items_field, $add_field = [])
@@ -819,6 +835,29 @@ class TransactionService
         }
 
         return $response;
+    }
+
+    /**
+     * @param float  $amount
+     * @param string $issuer
+     *
+     * @return bool
+     */
+    private function validateFreeTransactionFeature(float $amount, string $issuer): bool
+    {
+        return $amount === 0.00 && $this->isVersion(2, $issuer, 'free_transaction');
+    }
+
+    /**
+     * @param array  $payload
+     * @param string $issuer
+     *
+     * @return bool
+     */
+    private function validateAgentTransactionFeature(array $payload, string $issuer): bool
+    {
+        return (!empty($payload['agent_name']) && !empty($payload['payment_method']))
+            && $this->isVersion(2, $issuer, 'agent_transaction');
     }
 
     /**

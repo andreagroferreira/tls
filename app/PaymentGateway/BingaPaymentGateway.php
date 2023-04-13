@@ -118,6 +118,7 @@ class BingaPaymentGateway implements PaymentGatewayInterface
         }
         if ($transaction_data['t_status'] == 'pending') {
             $update_fields = [
+                't_gateway' => $this->getPaymentGatewayName(),
                 't_gateway_transaction_id' => $order['code'],
             ];
             $this->transactionService->updateById($transaction_data['t_id'], $update_fields);

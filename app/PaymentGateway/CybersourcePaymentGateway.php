@@ -132,8 +132,27 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
 
     public function return($return_params)
     {
-        $order_id = $return_params['order_id'];
+        $order_id = $return_params['order_id'] ?? null;
+
+        if (empty($order_id)) {
+            Log::warning('ONLINE PAYMENT, Cybersource: Payment return failed: empty order id');
+
+            return [
+                'is_success' => 'fail',
+                'message' => 'Transaction not found.',
+            ];
+        }
+
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
+
+        if (blank($transaction)) {
+            Log::warning('ONLINE PAYMENT, Cybersource: Payment return failed: transaction not found for order id ' . $order_id);
+
+            return [
+                'is_success' => 'fail',
+                'message' => 'Transaction not found.',
+            ];
+        }
 
         if ($transaction['t_status'] === 'closed') {
             $transactionLog = $this->transactionLogsService->fetchByTransactionId($order_id);

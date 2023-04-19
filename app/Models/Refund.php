@@ -9,28 +9,18 @@ class Refund extends Model
 {
     use HasFactory;
 
-    /**
-     * @var bool
-     */
-    public $timestamps = false;
+    public const CREATED_AT = 'r_tech_creation';
+    public const UPDATED_AT = 'r_tech_modification';
 
-    /**
-     * @var string
-     */
     protected $table = 'refunds';
-
-    /**
-     * @var string
-     */
     protected $primaryKey = 'r_id';
 
-    /**
-     * @var array
-     */
     protected $fillable = [
         'r_id',
         'r_issuer',
         'r_reason_type',
-        'r_status'
+        'r_status',
+        'r_tech_creation',
+        'r_tech_modification',
     ];
 }

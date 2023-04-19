@@ -141,7 +141,7 @@ class FawryController extends BaseController
             return $this->sendError('P0006', ['message' => 'unknown_error', 'href' => array_get($init_data, 'href')], 400);
         } else {
             // other error from fawry
-            return $this->sendError('P0006', ['message' => 'unknown_error: ' . $message], 400);
+            return $this->sendError('P0006', ['message' => 'Payment Failed: ' . $message, 'href' => array_get($init_data, 'href')], 400);
         }
     }
 }

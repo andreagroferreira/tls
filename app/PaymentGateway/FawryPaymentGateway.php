@@ -219,13 +219,14 @@ class FawryPaymentGateway implements PaymentGatewayInterface
 
     public function return($params)
     {
-        $order_id = '';
+        $order_id =  $params['order_id'] ?? '';
         if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
             $order_id = $params['merchantRefNumber'];
-        } else {
+        } else if(isset($params['chargeResponse'])) {
             $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];
-        }
+        }   
+
         if (empty($order_id)) {
             return [
                 'is_success' => 'fail',
@@ -234,6 +235,14 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             ];
         }
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
+        if ((isset($params['basketPayment']) && $params['basketPayment'] == 'false') && (isset($params['statusCode']) &&  $params['statusCode']!= 200)) {
+            return [
+                'is_success' => 'fail',
+                'orderid'    => $order_id,
+                'href'       => $transaction['t_onerror_url'],
+                'message'    => $params['statusDescription'] ?? 'unknown_error',
+            ];
+        }
         $payment_config = $this->getPaymentConfig($params, $transaction['t_xref_pa_id']);
         $pay_version = strtolower($payment_config['common']['version']);
         return $pay_version == 'v1' ? $this->returnV1($params) : $this->returnV2($params);
@@ -428,8 +437,8 @@ class FawryPaymentGateway implements PaymentGatewayInterface
 
     public function notify($params)
     {
-        $order_id = !empty($params['MerchantRefNo']) ? $params['MerchantRefNo'] : $params['merchantRefNumber'];
-        if (!$order_id) {
+        $order_id = $params['MerchantRefNo'] ?? $params['merchantRefNumber'] ?? '';
+        if (empty($order_id)) {
             Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : merchantRefNumber is empty");
             return [
                 'status' => 'fail',

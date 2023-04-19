@@ -250,7 +250,7 @@ class CybersourcePaymentGateway implements PaymentGatewayInterface
             'amount'         => $notify_params['req_amount'],
             'currency'       => $notify_params['req_currency'],
             'transaction_id' => $order_id,
-            'gateway_transaction_id' => $notify_params['t_transaction_id'],
+            'gateway_transaction_id' => $order_id,
         ];
 
         $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');

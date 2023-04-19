@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Transactions extends Model
 {
     use HasFactory;
-    public $timestamps = false;
+
+    public const CREATED_AT = 't_tech_creation';
+    public const UPDATED_AT = 't_tech_modification';
 
     protected $table = 'transactions';
     protected $primaryKey = 't_id';

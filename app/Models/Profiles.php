@@ -9,9 +9,11 @@ class Profiles extends Model
 {
     use HasFactory;
 
+    public const CREATED_AT = 'p_tech_creation';
+    public const UPDATED_AT = 'p_tech_modification';
+    
     protected $table = 'profiles';
     protected $primaryKey = 'p_id';
-    public $timestamps = false;
 
     protected $fillable = [
         'p_id',

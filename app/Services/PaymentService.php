@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\PaymentEauditorLogJob;
 use App\Traits\FeatureVersionsTrait;
-//use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use \Mpdf\Mpdf as PDF;
@@ -269,7 +268,7 @@ class PaymentService
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$fileName.'"'
         ]);
-        
+
         $response = $this->apiService->callFileLibraryUploadApi($queryParams, $pdfstream);
         unset($pdfstream);
 

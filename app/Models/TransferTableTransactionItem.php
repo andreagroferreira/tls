@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class TransferTableTransactionItem extends Model
 {
     use HasFactory;
-    public $timestamps = false;
+
+    public const CREATED_AT = 'ti_tech_creation';
+    public const UPDATED_AT = 'ti_tech_modification';
 
     protected $table = 'transfer_table_transaction_items';
     protected $primaryKey = 'tti_id';

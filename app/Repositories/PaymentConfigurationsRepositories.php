@@ -85,7 +85,8 @@ class PaymentConfigurationsRepositories
         $paymentConfiguration = $this->paymentConfigurations->find($id)->first();
         $where = [
             'pc_country' => $paymentConfiguration->pc_country,
-            'pc_city' => $paymentConfiguration->pc_city
+            'pc_city' => $paymentConfiguration->pc_city,
+            'pc_service' => $paymentConfiguration->pc_service
         ];
 
         return $this->paymentConfigurations->select()->where($where)->delete();

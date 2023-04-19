@@ -128,7 +128,7 @@ class TokenResolveService
         );
 
         if (empty($response)) {
-            throw new \Exception('No item found for the collection - '.$collection);
+            throw new \Exception('No item found for the collection - ' . $collection);
         }
 
         $response = array_first($response);
@@ -172,7 +172,6 @@ class TokenResolveService
             'vat' => 0,
             'price_without_vat' => 0,
         ];
-
         foreach ($transactionItems as $item) {
             foreach ($item['skus'] as $service) {
                 $sku = $service['sku'];
@@ -200,6 +199,41 @@ class TokenResolveService
         }
 
         return $basketValues;
+    }
+
+    /**
+     * @param string $language
+     * @param string $sku
+     *
+     * @return array
+     */
+    private function getSkuTranslationsFromDirectus(string $language, string $sku): array
+    {
+        $collection = 'sku_translations';
+        $selectFields = 'product_name,sku';
+        $selectFilters = [
+            'status' => [
+                'eq' => 'published',
+            ],
+            'translation' => [
+                'eq' => $language,
+            ],
+            'sku' => [
+                'eq' => $sku,
+            ],
+        ];
+
+        $skuTranslations = $this->directusService->getContent(
+            $collection,
+            $selectFields,
+            $selectFilters
+        );
+
+        foreach ($skuTranslations as $product) {
+            $translatedSKU[$product['sku']] = $product['product_name'];
+        }
+
+        return $translatedSKU ?? [];
     }
 
     /**
@@ -262,10 +296,23 @@ class TokenResolveService
         array $basketServices
     ): string {
         $basketServicesContent = '';
-        foreach ($basketServices as $service) {
+        foreach ($basketServices as $sku => $service) {
             $serviceContent = $content;
             foreach ($tokens as $token => $tokenName) {
-                $serviceContent = str_replace($token, $service[$tokenName], $serviceContent);
+                $getProductNameLanguage = explode(':', $tokenName);
+
+                if (count($getProductNameLanguage) > 1) {
+                    $language = $getProductNameLanguage[1];
+                    $translatedSku = $this->getSkuTranslationsFromDirectus($language, $sku);
+
+                    if (empty($translatedSku)) {
+                        $serviceContent = str_replace($token, $service[array_first($getProductNameLanguage)], $serviceContent);
+                    } else {
+                        $serviceContent = str_replace($token, $translatedSku[$sku], $serviceContent);
+                    }
+                } else {
+                    $serviceContent = str_replace($token, $service[$tokenName], $serviceContent);
+                }
             }
             $basketServicesContent .= $serviceContent;
         }
@@ -384,7 +431,7 @@ class TokenResolveService
 
         if (empty($translation)) {
             if (null === $collectionGlobalIndex) {
-                Log::error('Correct collection index not found for collection: '.$collectionName.' - code:'.$code);
+                Log::error('Correct collection index not found for collection: ' . $collectionName . ' - code:' . $code);
 
                 return '';
             }
@@ -392,7 +439,7 @@ class TokenResolveService
             $translationGlobal = $this->getActiveTranslation($collections[$collectionGlobalIndex]['translation']);
 
             if (empty($translationGlobal)) {
-                Log::error('No active translation found for collection: '.$collectionName.' - code: '.$code);
+                Log::error('No active translation found for collection: ' . $collectionName . ' - code: ' . $code);
 
                 return '';
             }
@@ -433,9 +480,9 @@ class TokenResolveService
     private function getTokenTranslationFromDirectus(array $tokenDetails, string $lang): string
     {
         $collection = $tokenDetails[1];
-        $field = 'translation.'.$tokenDetails[2];
+        $field = 'translation.' . $tokenDetails[2];
         $options['lang'] = $lang;
-        $select = 'code,'.$field;
+        $select = 'code,' . $field;
         $issuer_filter = [
             $this->city,
             $this->country,
@@ -461,17 +508,17 @@ class TokenResolveService
             $options
         );
         if (empty($tokenCollections)) {
-            Log::error('No collections returned for token with issuer:'.$this->issuer.' - '.$collection.'.'.$field);
-            
+            Log::error('No collections returned for token with issuer:' . $this->issuer . ' - ' . $collection . '.' . $field);
+
             return '';
         }
 
         if (count($tokenCollections) > 1) {
             $translation = $this->getCorrectCollectionTranslation($tokenCollections, $tokenDetails[1]);
         } else {
-            if(empty(array_first($tokenCollections)['translation'])){
-                Log::error('No Translation found for token with issuer:'.$this->issuer.' - '.$collection.'.'.$field);
-                
+            if (empty(array_first($tokenCollections)['translation'])) {
+                Log::error('No Translation found for token with issuer:' . $this->issuer . ' - ' . $collection . '.' . $field);
+
                 return '';
             }
             $translation = $this->getActiveTranslation(array_first($tokenCollections)['translation']);
@@ -489,9 +536,9 @@ class TokenResolveService
     private function getTokenTranslationFromApplication(array $tokenDetails, string $fg_id): string
     {
         $translations = [];
-        $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/'.$this->client.'/forms_in_group/'.$fg_id);
+        $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/' . $this->client . '/forms_in_group/' . $fg_id);
         if ($applicationsResponse['status'] != 200 || empty($applicationsResponse['body'])) {
-            Log::error('No applicant details returned from TLS API for token: '.$tokenDetails[1].'- form group :'.$fg_id);
+            Log::error('No applicant details returned from TLS API for token: ' . $tokenDetails[1] . '- form group :' . $fg_id);
 
             return '';
         }
@@ -510,14 +557,14 @@ class TokenResolveService
      */
     private function getQrCodeFromApplication(array $tokenDetails, string $fg_id): string
     {
-        $response = $this->apiService->callTlsApi('GET', '/tls/v1/'.$this->client.'/receipt_qrcode?fg_id='.$fg_id.'&type=all_receipts&occurence=1&scale=5');
+        $response = $this->apiService->callTlsApi('GET', '/tls/v1/' . $this->client . '/receipt_qrcode?fg_id=' . $fg_id . '&type=all_receipts&occurence=1&scale=5');
         if ($response['status'] != 200) {
-            Log::error('No QrCode details returned from TLS API for token: '.$tokenDetails[1].'- form group :'.$fg_id);
+            Log::error('No QrCode details returned from TLS API for token: ' . $tokenDetails[1] . '- form group :' . $fg_id);
 
             return '';
         }
 
-        return 'data:image/png;base64,'.base64_encode($response['body']->getContents()) ?? '';
+        return 'data:image/png;base64,' . base64_encode($response['body']->getContents()) ?? '';
     }
 
     /**
@@ -528,7 +575,7 @@ class TokenResolveService
     private function getBasketTokens(string $content): array
     {
         $tokenList = [];
-        $pattern = '~({{\\w+}})~';
+        $pattern = '~({{\\w+}}|{{\\w+:\\w+}})~';
 
         preg_match_all($pattern, $content, $allTokens);
         if (count($allTokens)) {

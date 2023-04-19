@@ -9,24 +9,12 @@ class RefundLog extends Model
 {
     use HasFactory;
 
-    /**
-     * @var bool
-     */
-    public $timestamps = false;
+    public const CREATED_AT = 'rl_tech_creation';
+    public const UPDATED_AT = 'rl_tech_modification';
 
-    /**
-     * @var string
-     */
     protected $table = 'refund_logs';
-
-    /**
-     * @var string
-     */
     protected $primaryKey = 'rl_id';
 
-    /**
-     * @var array
-     */
     protected $fillable = [
         'rl_id',
         'rl_xref_r_id',
@@ -34,5 +22,7 @@ class RefundLog extends Model
         'rl_type',
         'rl_description',
         'rl_agent',
+        'rl_tech_creation',
+        'rl_tech_modification',
     ];
 }

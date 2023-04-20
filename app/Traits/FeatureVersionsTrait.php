@@ -18,11 +18,10 @@ trait FeatureVersionsTrait
     {
         $country = substr($issuer, 0, 2);
         $city = substr($issuer, 2, 3);
-        $client = substr($issuer, 6, 2);
 
         $featureVersionRepository = new FeatureVersionRepository(new FeatureVersion(), new DbConnectionService());
         $where = [
-            'fvc_project' => getProjectId($client),
+            'fvc_project' => getProjectId(),
             'fvc_country' => $country,
             'fvc_city' => $city,
             'fv_type' => $fvType,

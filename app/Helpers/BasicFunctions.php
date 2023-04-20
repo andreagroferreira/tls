@@ -237,9 +237,11 @@ function getFilePath(array $transaction, string $storageService = 'file-library'
     return 'invoice/WW/'.$country.'/'.$city.'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
 }
 
-function getProjectId($client)
+function getProjectId()
 {    
-    switch ($client) {
+    $project = getenv('CLIENT');
+
+    switch ($project) {
         case 'gss-us':
             $projectCode = 'us';
 
@@ -271,7 +273,7 @@ function getProjectId($client)
             break;
 
         default:
-            $projectCode = substr($client, -2);
+            $projectCode = substr($project, -2);
     }
 
     return $projectCode;

@@ -22,7 +22,7 @@ trait FeatureVersionsTrait
 
         $featureVersionRepository = new FeatureVersionRepository(new FeatureVersion(), new DbConnectionService());
         $where = [
-            'fvc_project' => $client,
+            'fvc_project' => getProjectId($client),
             'fvc_country' => $country,
             'fvc_city' => $city,
             'fv_type' => $fvType,

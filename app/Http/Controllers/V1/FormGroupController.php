@@ -48,7 +48,7 @@ class FormGroupController extends BaseController
     {
         $params = $request->all();
         $fg_id  = $request->route('fg_id');
-        if (!isset($fg_id) || !isset($params['client'])) {
+        if (blank($fg_id) || !isset($params['client'])) {
             return $this->sendError('miss_fields', 'missing fg_id or client');
         }
         try {

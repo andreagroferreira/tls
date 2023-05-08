@@ -148,10 +148,6 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
             ->json();
 
         if ($this->hasErrors($response)) {
-            if ($this->handled($response['error']['errorCode'])) {
-                return $this->checkOrderStatus();
-            }
-
             Log::error('[PaymentGateway\EasypayPaymentGateway] - Error while verifying order status.', [
                 'error' => $response['error'],
                 'requestBody' => $body,
@@ -322,6 +318,11 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
 
             case 'PAGE_NOT_FOUND':
                 $this->refreshPageToken();
+
+                return true;
+
+            case 'INVALID_MERCHANTKEY':
+                $this->updateHeaders(['PartnerKey' => $this->config['config']['partnerKey']]);
 
                 return true;
         }

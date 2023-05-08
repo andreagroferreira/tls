@@ -169,10 +169,12 @@ class Easypay implements PaymentGatewayServiceInterface
     public function validateTransactionStatus(Request $request)
     {
         $error = $request->get('error');
-        if ($error !== null) {
+        $errorCode = $request->get('errorCode');
+        if ($error !== null || $errorCode !== null) {
+            $errorMessage = $error['errorMessage'] ?? $errorCode ?? 'Unknown error';
             return [
                 'is_success' => 'fail',
-                'message' => 'Payment Error: ' . $error['errorMessage'],
+                'message' => 'Payment Error: ' . $errorMessage,
             ];
         }
 

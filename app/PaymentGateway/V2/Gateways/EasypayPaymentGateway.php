@@ -148,6 +148,10 @@ class EasypayPaymentGateway extends PaymentGateway implements PaymentGatewayInte
             ->json();
 
         if ($this->hasErrors($response)) {
+            if ($this->handled($response['error']['errorCode'])) {
+                return $this->checkOrderStatus($transaction);
+            }
+
             Log::error('[PaymentGateway\EasypayPaymentGateway] - Error while verifying order status.', [
                 'error' => $response['error'],
                 'requestBody' => $body,

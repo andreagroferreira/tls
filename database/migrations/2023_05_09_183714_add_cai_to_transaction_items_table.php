@@ -14,7 +14,7 @@ class AddCaiToTransactionItemsTable extends Migration
     public function up()
     {
         Schema::connection('deploy_payment_pgsql')->table('transaction_items', function (Blueprint $table) {
-            $table->string('ti_cai')->nullable();
+            $table->string('ti_xref_f_cai')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddCaiToTransactionItemsTable extends Migration
     public function down()
     {
         Schema::connection('deploy_payment_pgsql')->table('transaction_items', function (Blueprint $table) {
-            $table->dropColumn('ti_cai');
+            $table->dropColumn('ti_xref_f_cai');
         });
     }
 }

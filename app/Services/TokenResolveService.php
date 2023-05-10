@@ -374,11 +374,17 @@ class TokenResolveService
 
             $tokenPrefixRule = $tokenDetails[0];
             if ($tokenPrefixRule === 'c') {
-                $resolvedTokens[$token] = $this->getTokenTranslationFromDirectus($tokenDetails, $lang);
+                $resolvedTokens[$token] = $this->getTokenTranslationFromDirectus(
+                    $tokenDetails,
+                    $lang,
+                    $transaction['t_service']
+                );
             } elseif ($tokenPrefixRule === 'a' && $tokenDetails[1] === 'f_pers_surnames') {
                 $resolvedTokens[$token] = $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
             } elseif ($tokenPrefixRule === 'a' && $tokenDetails[1] === 'qr_code') {
                 $resolvedTokens[$token] = $this->getQrCodeFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+            } elseif ($tokenPrefixRule === 'a' && $tokenDetails[1] === 'customer_references') {
+                $resolvedTokens[$token] = $this->getCustomerReferences($transaction);
             } elseif ($tokenPrefixRule === 'basket') {
                 $resolvedTokens[$token] = $this->getTokenTranslationForPurchasedServices($transaction);
             }
@@ -472,13 +478,17 @@ class TokenResolveService
     /**
      * @param array  $tokenDetails
      * @param string $lang
+     * @param string $serviceType
      *
      * @throws \Exception
      *
      * @return string
      */
-    private function getTokenTranslationFromDirectus(array $tokenDetails, string $lang): string
-    {
+    private function getTokenTranslationFromDirectus(
+        array $tokenDetails,
+        string $lang,
+        string $serviceType
+    ): string {
         $collection = $tokenDetails[1];
         $field = 'translation.' . $tokenDetails[2];
         $options['lang'] = $lang;
@@ -500,13 +510,16 @@ class TokenResolveService
                 'eq' => 'published',
             ],
         ];
-
+        if ($tokenDetails[1] === 'legal_entity') {
+            $filters['type'] = ['eq' => $serviceType];
+        }
         $tokenCollections = $this->directusService->getContent(
             $collection,
             $select,
             $filters,
             $options
         );
+
         if (empty($tokenCollections)) {
             Log::error('No collections returned for token with issuer:' . $this->issuer . ' - ' . $collection . '.' . $field);
 
@@ -565,6 +578,27 @@ class TokenResolveService
         }
 
         return 'data:image/png;base64,' . base64_encode($response['body']->getContents()) ?? '';
+    }
+
+    /**
+     * @param $transaction
+     *
+     * @return string
+     */
+    private function getCustomerReferences(array $transaction): string
+    {
+        $customerReferences = [];
+        foreach ($transaction['t_items'] as $item) {
+            foreach ($item['skus'] as $service) {
+                $customerReferences[$item['f_id']] = $service['customer_reference'];
+            }
+        }
+
+        if (empty($customerReferences)) {
+            return '';
+        }
+
+        return 'Customer References: ' . implode(', ', array_values($customerReferences));
     }
 
     /**

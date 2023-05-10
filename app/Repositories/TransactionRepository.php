@@ -227,6 +227,7 @@ class TransactionRepository
                 'ti_label',
                 'ti_tag',
                 'rl_agent AS agent',
+                'ti_xref_f_cai'
             ])
             ->selectRaw('ri_id')
             ->selectRaw('ri_quantity*-1 AS quantity')
@@ -265,7 +266,8 @@ class TransactionRepository
                 'ti_fee_name',
                 'ti_label',
                 'ti_tag',
-                't_agent_name as agent'
+                't_agent_name as agent',
+                'ti_xref_f_cai'
             ])
             ->selectRaw('NULL AS ri_id')
             ->selectRaw('ti_quantity AS quantity')

@@ -39,7 +39,8 @@ class TransactionItemsService
                 'ti_price_rule AS price_rule',
                 'ti_fee_name AS product_name',
                 'ti_label AS label',
-                'ti_tag AS tag'
+                'ti_tag AS tag',
+                'ti_xref_f_cai AS customer_reference',
             ]
         );
 
@@ -52,9 +53,9 @@ class TransactionItemsService
                 $skus = [];
                 foreach ($item as $value) {
                     $skus[] = collect($value)->only(
-                        ['sku', 'price', 'vat', 'quantity', 'price_rule', 'product_name', 'label', 'tag']
+                        ['sku', 'price', 'vat', 'quantity', 'price_rule', 'product_name', 'label', 'tag', 'customer_reference']
                     )
-                    ->toArray();
+                        ->toArray();
                 }
 
                 return ['f_id' => $key, 'skus' => $skus];
@@ -85,7 +86,7 @@ class TransactionItemsService
 
     /**
      * @param string $transaction_id
-     * @param array $attributes
+     * @param array  $attributes
      *
      * @return mixed
      */
@@ -93,5 +94,4 @@ class TransactionItemsService
     {
         return $this->transactionItemsRepository->update($transaction_id, $attributes);
     }
-
 }

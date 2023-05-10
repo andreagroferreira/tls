@@ -33,7 +33,7 @@ class FormGroupService
         return $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/form_group/' . $fg_id);
     }
 
-    private function callFormInGroupApi($fg_id, $client)
+    public function callFormInGroupApi($fg_id, $client)
     {
         return $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/forms_in_group/' . $fg_id);
     }

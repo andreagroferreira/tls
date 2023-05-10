@@ -257,12 +257,25 @@ class TransactionService
             $transaction_data['t_issuer']
         );
 
+        $caiForForm = [];
+        if ($this->isVersion(2, $attributes['issuer'], 'aj_customer_reference')) {
+            $formsInGroup = $this->formGroupService->callFormInGroupApi($attributes['fg_id'], $attributes['client']);
+            foreach ($formsInGroup['body'] as $form) {
+                $caiForForm[$form['f_id']] = $form['f_cai'];
+            }
+        }
+
         $db_connection = DB::connection($this->dbConnectionService->getConnection());
         $db_connection->beginTransaction();
 
         try {
             $transaction = $this->transactionRepository->create($transaction_data);
-            $transactionItems = $this->convertItemsFieldToArray($transaction->t_transaction_id, $attributes['items']);
+            $transactionItems = $this->convertItemsFieldToArray(
+                $transaction->t_transaction_id,
+                $attributes['items'],
+                [],
+                $caiForForm
+            );
 
             $totalAmount = 0.00;
             foreach ($transactionItems as $item) {
@@ -401,6 +414,7 @@ class TransactionService
             'ti_price_rule',
             'ti_vat',
             't_agent_name',
+            'ti_xref_f_cai'
         ];
 
         $where = collect();
@@ -519,6 +533,7 @@ class TransactionService
             'City',
             'Date of transaction/refund',
             'Transaction ID',
+            'Customer Reference',
             'Group ID',
             'Basket type',
             'SKU',
@@ -537,6 +552,7 @@ class TransactionService
             'city',
             'modification_date',
             't_transaction_id',
+            'ti_xref_f_cai',
             't_xref_fg_id',
             't_service',
             'ti_fee_type',
@@ -794,9 +810,21 @@ class TransactionService
 
         return $project . $environment . $issuer . '-' . str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
     }
-
-    protected function convertItemsFieldToArray($transaction_id, $items_field, $add_field = [])
-    {
+    
+    /**
+     * @param  string $transaction_id
+     * @param  string $items_field
+     * @param  array $add_field
+     * @param  array $caiForForm
+     * 
+     * @return array
+     */
+    protected function convertItemsFieldToArray(
+        string $transaction_id,
+        string $items_field,
+        array $add_field = [],
+        array $caiForForm = []
+    ): array {
         $response = [];
         foreach (json_decode($items_field, true) as $items) {
             foreach ($items['skus'] as $sku) {
@@ -807,6 +835,7 @@ class TransactionService
                     'ti_vat' => $sku['vat'],
                     'ti_amount' => $sku['price'],
                     'ti_price_rule' => $sku['price_rule'] ?? null,
+                    'ti_xref_f_cai' => $caiForForm[$items['f_id']] ?? null,
                 ];
                 // agent receipt is used
                 if (isset($sku['quantity'])) {

@@ -15,17 +15,17 @@ class InsertNewCustomerReferenceFeatureVersionConfigurations extends Migration
         try {            
             DB::connection('deploy_payment_pgsql')->beginTransaction();
             $client = $this->getProjectId();
-            $featureVersions = DB::connection('deploy_payment_pgsql')->table('feature_versions')->where([
+            $featureVersion = DB::connection('deploy_payment_pgsql')->table('feature_versions')->where([
                 'fv_type' => 'aj_customer_reference',
                 'fv_version' => 1
             ])->first();
 
-            if (!empty($featureVersions)) {
+            if (!empty($featureVersion)) {
                 $this->createFeatureVersionConfigurations([
                     'fvc_project' => $client,
                     'fvc_country' => 'All',
                     'fvc_city' => 'All',
-                    'fvc_xref_fv_id' => $featureVersions->fv_id,
+                    'fvc_xref_fv_id' => $featureVersion->fv_id,
                 ]);
             }
 

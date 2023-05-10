@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class InsertNewFeatureVersionConfigurationsNew1 extends Migration
+class InsertNewFeatureVersionsConfigurationsCustomerReference extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class InsertNewFeatureVersionConfigurationsNew1 extends Migration
         try {
             DB::connection('deploy_payment_pgsql')->beginTransaction();
             $client = $this->getProjectId();
-            $types = [5 => 'free_transaction', 6 => 'agent_transaction'];
+            $types = [10 => 'aj_customer_reference'];
             foreach ($types as $key => $type) {
                 $projectFeatureVersionConfigData = [
                     'fvc_project' => $client,

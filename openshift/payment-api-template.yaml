@@ -1908,7 +1908,7 @@ objects:
     kind: HorizontalPodAutoscaler
     metadata:
       name: payment-api-hpa
-      spec:
+    spec:
       scaleTargetRef:
         apiVersion: apps/v1
         kind: Deployment

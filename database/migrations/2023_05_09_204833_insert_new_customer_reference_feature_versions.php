@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class InsertNewFeatureVersionsCustomerReference extends Migration
+class InsertNewCustomerReferenceFeatureVersions extends Migration
 {
     /**
      * Run the migrations.

@@ -142,6 +142,7 @@ class GetTransactionsToMigrate extends Command
             $items[] = [
                 'ti_xref_f_id' => $transactionItem->ti_xref_f_id,
                 'ti_xref_transaction_id' => $transactionId,
+                'ti_xref_f_cai' => $transactionItem->ti_xref_f_cai,
                 'ti_fee_type' => $this->getSkuTranslation($sku),
                 'ti_amount' => $skuData['price'] ?? 0,
                 'ti_quantity' => $skuData['quantity'] ?? 0,

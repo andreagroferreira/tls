@@ -51,6 +51,7 @@ class ImportTransactionsFromTlsConnect extends Command
         $inflightTransactions = $tlsConnectDatabaseConnection->select(
             "SELECT f.f_xref_fg_id as t_xref_fg_id,
                 t.t_xref_f_id as ti_xref_f_id,
+                f.f_cai as ti_xref_f_cai,
                 t.t_transaction_id,
                 f.f_xcopy_ug_xref_i_tag as t_issuer,
                 t.t_gateway_transaction_id,
@@ -90,6 +91,7 @@ class ImportTransactionsFromTlsConnect extends Command
             $transactionItem = [
                 'ti_xref_f_id' => $inflightTransaction->ti_xref_f_id,
                 'ti_xref_transaction_id' => $inflightTransaction->t_transaction_id,
+                'ti_xref_f_cai' => $inflightTransaction->ti_xref_f_cai,
                 'ti_transaction_item' => $inflightTransaction->transaction_items,
                 'ti_tech_creation' => $inflightTransaction->ti_tech_creation,
                 'ti_tech_modification' => $inflightTransaction->ti_tech_modification,

@@ -199,7 +199,7 @@ class GetTransactionsToMigrate extends Command
             'currency' => $transaction->t_currency,
             'last_modified_date' => $transaction->t_tech_modification,
         ];
-        $dbConnection->table('basket')->insert($basket);
+        $dbConnection->table('basket')->insertOrIgnore($basket);
 
         $basketGroup = [
             'id' => $transaction->t_xref_fg_id,
@@ -210,7 +210,7 @@ class GetTransactionsToMigrate extends Command
             'visa_type' => $transaction->f_visa_type,
             'country_id' => substr($transaction->t_issuer, 0, 2),
         ];
-        $dbConnection->table('basket_group')->insert($basketGroup);
+        $dbConnection->table('basket_group')->insertOrIgnore($basketGroup);
 
         return [
             'transaction_id' => $transaction->t_transaction_id,

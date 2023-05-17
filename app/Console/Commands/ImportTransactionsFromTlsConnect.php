@@ -71,7 +71,7 @@ class ImportTransactionsFromTlsConnect extends Command
                 JOIN actions a ON (a.a_form = f.f_id)
             WHERE f.f_is_purged IS FALSE
                 AND a.a_what = 'application_support_requested'
-                AND a.a_tech_deleted <> FALSE
+                AND a.a_tech_deleted IS FALSE
                 AND a.a_result_variant IS NOT NULL
                 AND a.a_when BETWEEN :startDate AND :endDate
                 AND f.f_xcopy_ug_xref_i_tag = :issuer

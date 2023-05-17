@@ -199,11 +199,7 @@ class GetTransactionsToMigrate extends Command
             'currency' => $transaction->t_currency,
             'last_modified_date' => $transaction->t_tech_modification,
         ];
-        $dbConnection->table('basket')->upsert(
-            $basket,
-            ['application_id', 'applicant_id', 'currency'],
-            ['last_modified_date']
-        );
+        $dbConnection->table('basket')->insertOrIgnore($basket);
 
         $basketGroup = [
             'id' => $transaction->t_xref_fg_id,
@@ -214,11 +210,7 @@ class GetTransactionsToMigrate extends Command
             'visa_type' => $transaction->f_visa_type,
             'country_id' => substr($transaction->t_issuer, 0, 2),
         ];
-        $dbConnection->table('basket_group')->upsert(
-            $basketGroup,
-            ['id', 'vac_id', 'visa_type', 'country_id'],
-            ['last_modified_date']
-        );
+        $dbConnection->table('basket_group')->insertOrIgnore($basketGroup);
 
         return [
             'transaction_id' => $transaction->t_transaction_id,
@@ -232,42 +224,51 @@ class GetTransactionsToMigrate extends Command
      */
     private function getSkuTranslation(string $oldSku): string
     {
+        $location = '/FRPAR2UK-EUR';
         $translations = [
-            'UK-APPTSELFREG'=>'ASS/FRPAR2UK-EUR',
-            'UK-APPTSTAREG'=>'AAS/FRPAR2UK-EUR',
-            'UK-CDAC'=>'CDAC/FRPAR2UK-EUR',
-            'UK-ECR-3P'=>'ECR/FRPAR2UK-EUR',
-            'UK-ECR-4P'=>'ECR/FRPAR2UK-EUR',
-            'UK-ECR-5P'=>'ECR/FRPAR2UK-EUR',
-            'UK-ECR-IN'=>'ECR/FRPAR2UK-EUR',
-            'UK-ECR-OUT'=>'ECRINT/FRPAR2UK-EUR',
-            'UK-KMPWA'=>'KMP/FRPAR2UK-EUR',
-            'UK-PL'=>'PL/FRPAR2UK-EUR',
-            'UK-PTA'=>'PTA/FRPAR2UK-EUR',
-            'UK-PV'=>'PV/FRPAR2UK-EUR',
-            'UK-PVS'=>'PVS/FRPAR2UK-EUR',
-            'UK-SMS'=>'SMS/FRPAR2UK-EUR',
-            'UK-SPV'=>'SPV/FRPAR2UK-EUR',
-            'UK-UAS'=>'AAS/FRPAR2UK-EUR',
-            'UK-UASSP'=>'AAS/FRPAR2UK-EUR',
-            'UK-WIWA'=>'FA/FRPAR2UK-EUR',
-            '14872'=>'ASS/FRPAR2UK-EUR',
-            '14866'=>'AAS/FRPAR2UK-EUR',
-            '18750'=>'CDAC/FRPAR2UK-EUR',
-            '18950'=>'ECR/FRPAR2UK-EUR',
-            '18951'=>'ECR/FRPAR2UK-EUR',
-            '18952'=>'ECR/FRPAR2UK-EUR',
-            '13511'=>'ECR/FRPAR2UK-EUR',
-            '13542'=>'ECRINT/FRPAR2UK-EUR',
-            '11978'=>'KMP/FRPAR2UK-EUR',
-            '11139'=>'PL/FRPAR2UK-EUR',
-            '11841'=>'PTA/FRPAR2UK-EUR',
-            '11237'=>'PV/FRPAR2UK-EUR',
-            '11315'=>'PVS/FRPAR2UK-EUR',
-            '12065'=>'SMS/FRPAR2UK-EUR',
-            '12014'=>'SPV/FRPAR2UK-EUR',
-            '16107'=>'AAS/FRPAR2UK-EUR',
-            '12163'=>'FA/FRPAR2UK-EUR',
+            'UK-MUP' => 'MUP',
+            'UK-COPY-BW' => 'PHO' . $location,
+            'UK-COPY-COL' => 'PHOCOL' . $location,
+            'UK-ASSP' => 'AASSP' . $location,
+            'UK-ASS' => 'AASS' . $location,
+            'UK-SVP' => 'SVP' . $location,
+            'UK-CDAC-INT' => 'CDACINT' . $location,
+            'UK-ODMVS' => 'AA' . $location,
+            'UK-APPTSELFREG' => 'ASS' . $location,
+            'UK-APPTSTAREG' => 'AAS' . $location,
+            'UK-CDAC' => 'CDAC' . $location,
+            'UK-ECR-3P' => 'ECR' . $location,
+            'UK-ECR-4P' => 'ECR' . $location,
+            'UK-ECR-5P' => 'ECR' . $location,
+            'UK-ECR-IN' => 'ECR' . $location,
+            'UK-ECR-OUT' => 'ECRINT' . $location,
+            'UK-KMPWA' => 'KMP' . $location,
+            'UK-PL' => 'PL' . $location,
+            'UK-PTA' => 'PTA' . $location,
+            'UK-PV' => 'PV' . $location,
+            'UK-PVS' => 'PVS' . $location,
+            'UK-SMS' => 'SMS' . $location,
+            'UK-SPV' => 'SPV' . $location,
+            'UK-UAS' => 'AAS' . $location,
+            'UK-UASSP' => 'AAS' . $location,
+            'UK-WIWA' => 'FA' . $location,
+            '14872' => 'ASS' . $location,
+            '14866' => 'AAS' . $location,
+            '18750' => 'CDAC' . $location,
+            '18950' => 'ECR' . $location,
+            '18951' => 'ECR' . $location,
+            '18952' => 'ECR' . $location,
+            '13511' => 'ECR' . $location,
+            '13542' => 'ECRINT' . $location,
+            '11978' => 'KMP' . $location,
+            '11139' => 'PL' . $location,
+            '11841' => 'PTA' . $location,
+            '11237' => 'PV' . $location,
+            '11315' => 'PVS' . $location,
+            '12065' => 'SMS' . $location,
+            '12014' => 'SPV' . $location,
+            '16107' => 'AAS' . $location,
+            '12163' => 'FA' . $location,
         ];
 
         return $translations[$oldSku] ?? $oldSku;

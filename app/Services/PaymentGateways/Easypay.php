@@ -4,6 +4,7 @@ namespace App\Services\PaymentGateways;
 
 use App\Contracts\Services\PaymentGatewayServiceInterface;
 use App\PaymentGateway\V2\Gateways\EasypayPaymentGateway;
+use App\Services\PaymentService;
 use App\Services\TransactionLogsService;
 use App\Services\V2\TransactionItemService;
 use App\Services\V2\TransactionService;
@@ -28,14 +29,21 @@ class Easypay implements PaymentGatewayServiceInterface
      */
     protected $gateway;
 
+    /**
+     * @var PaymentService
+     */
+    protected $paymentService;
+
     public function __construct(
         EasypayPaymentGateway $gateway,
         TransactionService $transactionService,
-        TransactionLogsService $transactionLogsService
+        TransactionLogsService $transactionLogsService,
+        PaymentService $paymentService
     ) {
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->gateway = $gateway;
+        $this->paymentService = $paymentService;
     }
 
     /**
@@ -113,7 +121,7 @@ class Easypay implements PaymentGatewayServiceInterface
             if ($transaction === null) {
                 return [
                     'is_success' => 'fail',
-                    'message' => 'Transaction not found for id: ' . $request->t_id,
+                    'message' => 'Transaction not found for id: ' . $request->order_id,
                 ];
             }
 
@@ -161,10 +169,12 @@ class Easypay implements PaymentGatewayServiceInterface
     public function validateTransactionStatus(Request $request)
     {
         $error = $request->get('error');
-        if ($error !== null) {
+        $errorCode = $request->get('errorCode');
+        if ($error !== null || $errorCode !== null) {
+            $errorMessage = $error['errorMessage'] ?? $errorCode ?? 'Unknown error';
             return [
                 'is_success' => 'fail',
-                'message' => 'Payment Error: ' . $error['errorMessage'],
+                'message' => 'Payment Error: ' . $errorMessage,
             ];
         }
 
@@ -173,7 +183,7 @@ class Easypay implements PaymentGatewayServiceInterface
         if ($transaction === null) {
             return [
                 'is_success' => 'fail',
-                'message' => 'Transaction not found for id: ' . $request->t_id,
+                'message' => 'Transaction not found for id: ' . $request->orderId,
             ];
         }
 
@@ -189,7 +199,20 @@ class Easypay implements PaymentGatewayServiceInterface
 
             switch ($orderStatus) {
                 case 'accepted':
-                    break;
+                    $transactionItemsService = new TransactionItemService($transaction->t_transaction_id);
+
+                    $transactionData = array_merge($transaction->toArray(), [
+                        't_items' => $transactionItemsService->getItemsPreparedToSync(),
+                        't_amount' => $transactionItemsService->getAmount(),
+                    ]);
+
+                    return $this->paymentService->confirm($transactionData, [
+                        'gateway' => $transaction->t_gateway,
+                        'amount' => $request->amount,
+                        'currency' => $transaction->t_currency,
+                        'gateway_transaction_id' => $request->transactionId,
+                        'gateway_transaction_reference' => $request->transactionId,
+                    ]);
 
                 case 'pending':
                     $returnParams['is_success'] = 'ok';

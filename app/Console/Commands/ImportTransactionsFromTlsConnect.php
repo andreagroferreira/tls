@@ -42,9 +42,9 @@ class ImportTransactionsFromTlsConnect extends Command
         $transferTableTransactionRepository->setConnection($dbConnectionService->getConnection());
 
         $filter = [
-            $this->argument('startDate'),
-            $this->argument('endDate'),
-            $this->argument('issuer'),
+            'startDate' => $this->argument('startDate'),
+            'endDate' => $this->argument('endDate'),
+            'issuer' => $this->argument('issuer'),
         ];
 
         $tlsConnectDatabaseConnection = DB::connection('tlsconnect_pgsql');

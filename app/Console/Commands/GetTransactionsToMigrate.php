@@ -236,7 +236,7 @@ class GetTransactionsToMigrate extends Command
             'UK-ODMVS' => 'AA' . $location,
             'UK-APPTSELFREG' => 'ASS' . $location,
             'UK-APPTSTAREG' => 'AAS' . $location,
-            'UK-APPTSTAREG-FREE' => 'ASS' . $location,
+            'UK-APPTSTAREG-FREE' => 'AAS' . $location,
             'UK-CDAC' => 'CDAC' . $location,
             'UK-ECR-3P' => 'ECR' . $location,
             'UK-ECR-4P' => 'ECR' . $location,

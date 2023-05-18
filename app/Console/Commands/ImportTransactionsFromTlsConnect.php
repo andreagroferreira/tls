@@ -70,11 +70,19 @@ class ImportTransactionsFromTlsConnect extends Command
                 INNER JOIN forms f ON (f.f_id = t.t_xref_f_id)
                 JOIN actions a ON (a.a_form = f.f_id)
             WHERE f.f_is_purged IS FALSE
-                AND a.a_what = 'application_support_requested'
                 AND a.a_tech_deleted IS FALSE
                 AND a.a_result_variant IS NOT NULL
-                AND a.a_when BETWEEN :startDate AND :endDate
                 AND f.f_xcopy_ug_xref_i_tag = :issuer
+                AND a.a_when BETWEEN :startDate AND :endDate
+                AND a.a_result_variant = t.t_transaction_id
+                AND a.a_what = 'application_support_requested'
+                AND f.f_id NOT IN (
+                    SELECT a.a_form FROM actions a
+                    INNER JOIN forms f ON (f.f_id = a.a_form)
+                    WHERE f.f_is_purged IS FALSE
+                        AND f.f_xcopy_ug_xref_i_tag = :issuer
+                        AND (a.a_what = 'deliver' OR a.a_what = 'documentation withdrawn')
+                )
             ORDER BY a.a_id ASC;",
             $filter
         );

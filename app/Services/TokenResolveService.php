@@ -431,7 +431,7 @@ class TokenResolveService
                 $collectionIndex = $i;
             }
         }
-        if (null != $collectionIndex) {
+        if (null !== $collectionIndex) {
             $translation = $this->getActiveTranslation($collections[$collectionIndex]['translation']);
         }
 

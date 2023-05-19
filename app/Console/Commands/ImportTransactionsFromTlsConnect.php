@@ -42,15 +42,16 @@ class ImportTransactionsFromTlsConnect extends Command
         $transferTableTransactionRepository->setConnection($dbConnectionService->getConnection());
 
         $filter = [
-            $this->argument('startDate'),
-            $this->argument('endDate'),
-            $this->argument('issuer'),
+            'startDate' => $this->argument('startDate'),
+            'endDate' => $this->argument('endDate'),
+            'issuer' => $this->argument('issuer'),
         ];
 
         $tlsConnectDatabaseConnection = DB::connection('tlsconnect_pgsql');
         $inflightTransactions = $tlsConnectDatabaseConnection->select(
             "SELECT f.f_xref_fg_id as t_xref_fg_id,
                 t.t_xref_f_id as ti_xref_f_id,
+                f.f_cai as ti_xref_f_cai,
                 t.t_transaction_id,
                 f.f_xcopy_ug_xref_i_tag as t_issuer,
                 t.t_gateway_transaction_id,
@@ -69,11 +70,19 @@ class ImportTransactionsFromTlsConnect extends Command
                 INNER JOIN forms f ON (f.f_id = t.t_xref_f_id)
                 JOIN actions a ON (a.a_form = f.f_id)
             WHERE f.f_is_purged IS FALSE
-                AND a.a_what = 'application_support_requested'
-                AND a.a_tech_deleted <> FALSE
+                AND a.a_tech_deleted IS FALSE
                 AND a.a_result_variant IS NOT NULL
-                AND a.a_when BETWEEN :startDate AND :endDate
                 AND f.f_xcopy_ug_xref_i_tag = :issuer
+                AND a.a_when BETWEEN :startDate AND :endDate
+                AND a.a_result_variant = t.t_transaction_id
+                AND a.a_what = 'application_support_requested'
+                AND f.f_id NOT IN (
+                    SELECT a.a_form FROM actions a
+                    INNER JOIN forms f ON (f.f_id = a.a_form)
+                    WHERE f.f_is_purged IS FALSE
+                        AND f.f_xcopy_ug_xref_i_tag = :issuer
+                        AND (a.a_what = 'deliver' OR a.a_what = 'documentation withdrawn')
+                )
             ORDER BY a.a_id ASC;",
             $filter
         );
@@ -90,6 +99,7 @@ class ImportTransactionsFromTlsConnect extends Command
             $transactionItem = [
                 'ti_xref_f_id' => $inflightTransaction->ti_xref_f_id,
                 'ti_xref_transaction_id' => $inflightTransaction->t_transaction_id,
+                'ti_xref_f_cai' => $inflightTransaction->ti_xref_f_cai,
                 'ti_transaction_item' => $inflightTransaction->transaction_items,
                 'ti_tech_creation' => $inflightTransaction->ti_tech_creation,
                 'ti_tech_modification' => $inflightTransaction->ti_tech_modification,

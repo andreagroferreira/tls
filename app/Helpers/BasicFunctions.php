@@ -236,3 +236,45 @@ function getFilePath(array $transaction, string $storageService = 'file-library'
 
     return 'invoice/WW/'.$country.'/'.$city.'/'.array_get($transaction, 't_xref_fg_id').'/'.array_get($transaction, 't_transaction_id').'.pdf';
 }
+
+function getProjectId()
+{    
+    $project = getenv('CLIENT');
+
+    switch ($project) {
+        case 'gss-us':
+            $projectCode = 'us';
+
+            break;
+
+        case 'srf-fr':
+            $projectCode = 'srf_fr';
+
+            break;
+
+        case 'hmpo-uk':
+            $projectCode = 'hmpo_uk';
+
+            break;
+
+        case 'leg-be':
+            $projectCode = 'leg_be';
+
+            break;
+
+        case 'leg-de':
+            $projectCode = 'leg_de';
+
+            break;
+
+        case 'biolab-ma':
+            $projectCode = 'biolab_ma';
+
+            break;
+
+        default:
+            $projectCode = substr($project, -2);
+    }
+
+    return $projectCode;
+}

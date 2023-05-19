@@ -110,6 +110,7 @@ class GetTransactionsToMigrate extends Command
             't_issuer' => $transferTransaction->t_issuer,
             't_gateway_transaction_id' => $transferTransaction->t_gateway_transaction_id,
             't_gateway' => $transferTransaction->t_gateway,
+            't_payment_method' => $transferTransaction->t_gateway,
             't_agent_name' => $transferTransaction->t_agent_name,
             't_gateway_transaction_reference' => $transferTransaction->t_gateway_transaction_reference,
             't_status' => 'done',
@@ -142,7 +143,9 @@ class GetTransactionsToMigrate extends Command
             $items[] = [
                 'ti_xref_f_id' => $transactionItem->ti_xref_f_id,
                 'ti_xref_transaction_id' => $transactionId,
-                'ti_fee_type' => $this->getSkuTranslation($sku),
+                'ti_xref_f_cai' => $transactionItem->ti_xref_f_cai,
+                'ti_fee_type' => $this->getSkuTranslation($sku, 'sku'),
+                'ti_fee_name' => $this->getSkuTranslation($sku, 'name'),
                 'ti_amount' => $skuData['price'] ?? 0,
                 'ti_quantity' => $skuData['quantity'] ?? 0,
                 'ti_vat' => $transactionItem->ti_vat ?? 0,
@@ -198,7 +201,7 @@ class GetTransactionsToMigrate extends Command
             'currency' => $transaction->t_currency,
             'last_modified_date' => $transaction->t_tech_modification,
         ];
-        $dbConnection->table('basket')->insert($basket);
+        $dbConnection->table('basket')->insertOrIgnore($basket);
 
         $basketGroup = [
             'id' => $transaction->t_xref_fg_id,
@@ -209,7 +212,7 @@ class GetTransactionsToMigrate extends Command
             'visa_type' => $transaction->f_visa_type,
             'country_id' => substr($transaction->t_issuer, 0, 2),
         ];
-        $dbConnection->table('basket_group')->insert($basketGroup);
+        $dbConnection->table('basket_group')->insertOrIgnore($basketGroup);
 
         return [
             'transaction_id' => $transaction->t_transaction_id,
@@ -218,47 +221,216 @@ class GetTransactionsToMigrate extends Command
 
     /**
      * @param string $oldSku
+     * @param string $key
      *
      * @return string
      */
-    private function getSkuTranslation(string $oldSku): string
+    private function getSkuTranslation(string $oldSku, string $key = 'sku'): string
     {
+        $location = '/FRPAR2UK-EUR';
         $translations = [
-            'UK-MUP' => 'MUP/FR-EUR',
-            'UK-SPV' => 'SPV/FR-EUR',
-            'UK-CDAC-INT' => 'CDAC/FR-EUR',
-            'UK-CDAC' => 'CDAC/FR-EUR',
-            'UK-APPTSELFREG' => 'ASS/FR-EUR',
-            'UK-ECR-3P' => 'ECR/FR-EUR',
-            'UK-KMPWA' => 'KMP/FR-EUR',
-            'UK-UAS' => '16107',
-            'UK-PL' => 'PL/FR-EUR',
-            'UK-PTA' => 'PTA/FR-EUR',
-            'UK-PV' => 'PV/FR-EUR',
-            'UK-SMS' => 'SMS/FR-EUR',
-            'UK-WIWA' => 'WIWA/FR-EUR',
-            'UK-ECR-IN' => 'ECR/FR-EUR',
-            'UK-ECR-4P' => 'ECR/FR-EUR',
-            '18751' => 'CDAC/FR-EUR',
-            '18750' => 'CDAC/FR-EUR',
-            '14872' => 'ASS/FR-EUR',
-            '14866' => 'ASS/FR-EUR',
-            '17056' => 'ASS/FR-EUR',
-            '18952' => 'ECR/FR-EUR',
-            '11978' => 'KMP/FR-EUR',
-            '11139' => 'PL/FR-EUR',
-            '11841' => 'PTA/FR-EUR',
-            '11237' => 'PV/FR-EUR',
-            '16627' => 'PV/FR-EUR',
-            '12065' => 'SMS/FR-EUR',
-            '12014' => 'SPV/EUR',
-            '12163' => 'WIWA/FR-EUR',
-            '13511' => 'ECR/FR-EUR',
-            '11486' => 'ECR/FR-EUR',
-            '13542' => 'ECR/FR-EUR',
-            '18951' => 'ECR/FR-EUR',
+            'UK-MUP' => [
+                'name' => 'Mandatory User Pay',
+                'sku' => 'MUP',
+            ],
+            'UK-COPY-BW' => [
+                'name' => 'Photocopy (B&W)',
+                'sku' => 'PHO' . $location,
+            ],
+            'UK-COPY-COL' => [
+                'name' => 'Photocopy (Colour)',
+                'sku' => 'PHOCOL' . $location,
+            ],
+            'UK-ASSP' => [
+                'name' => 'TLScontact Assisted Scanning Settlement Priority',
+                'sku' => 'AASSP' . $location,
+            ],
+            'UK-ASS' => [
+                'name' => 'TLScontact Assisted Scanning Settlement',
+                'sku' => 'AASS' . $location,
+            ],
+            'UK-SVP' => [
+                'name' => 'Single Visit Package',
+                'sku' => 'SVP' . $location,
+            ],
+            'UK-CDAC-INT' => [
+                'name' => 'Courier Delivery Address Change International Upgrade',
+                'sku' => 'CDACINT' . $location,
+            ],
+            'UK-ODMVS' => [
+                'name' => 'Apply Anywhere',
+                'sku' => 'AA' . $location,
+            ],
+            'UK-APPTSELFREG' => [
+                'name' => 'Appointment Self Service - Regular',
+                'sku' => 'ASS' . $location,
+            ],
+            'UK-APPTSTAREG' => [
+                'name' => 'Appointment Assisted Service - Regular',
+                'sku' => 'AAS' . $location,
+            ],
+            'UK-APPTSTAREG-FREE' => [
+                'name' => 'Appointment Assisted Service - Regular',
+                'sku' => 'AAS' . $location,
+            ],
+            'UK-CDAC' => [
+                'name' => 'Courier Delivery Address Change',
+                'sku' => 'CDAC' . $location,
+            ],
+            'UK-ECR-3P' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            'UK-ECR-4P' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            'UK-ECR-5P' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            'UK-ECR-IN' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            'UK-ECR-OUT' => [
+                'name' => 'Express Courier Return International',
+                'sku' => 'ECRINT' . $location,
+            ],
+            'UK-KMPWA' => [
+                'name' => 'Keep My Passport',
+                'sku' => 'KMP' . $location,
+            ],
+            'UK-PL' => [
+                'name' => 'Premium Lounge',
+                'sku' => 'PL' . $location,
+            ],
+            'UK-PTA' => [
+                'name' => 'Prime Time Appointment',
+                'sku' => 'PTA' . $location,
+            ],
+            'UK-PV' => [
+                'name' => 'Priority Visa Service non Settlement',
+                'sku' => 'PV' . $location,
+            ],
+            'UK-PVS' => [
+                'name' => 'Priority Visa Service Settlement',
+                'sku' => 'PVS' . $location,
+            ],
+            'UK-SMS' => [
+                'name' => 'SMS Notification',
+                'sku' => 'SMS' . $location,
+            ],
+            'UK-SPV' => [
+                'name' => 'Super Priority Service',
+                'sku' => 'SPV' . $location,
+            ],
+            'UK-UAS' => [
+                'name' => 'Appointment Assisted Service - Regular',
+                'sku' => 'AAS' . $location,
+            ],
+            'UK-UASSP' => [
+                'name' => 'Appointment Assisted Service - Regular',
+                'sku' => 'AAS' . $location,
+            ],
+            'UK-WIWA' => [
+                'name' => 'Flexi Appointment',
+                'sku' => 'FA' . $location,
+            ],
+            '2830' => [
+                'name' => 'Premium Lounge',
+                'sku' => 'PL' . $location,
+            ],
+            '2831' => [
+                'name' => 'Priority Visa Service non Settlement',
+                'sku' => 'PV' . $location,
+            ],
+            '4342' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            '15412' => [
+                'name' => 'Super Priority Service',
+                'sku' => 'SPV' . $location,
+            ],
+            '16627' => [
+                'name' => 'Super Priority Service',
+                'sku' => 'SPV' . $location,
+            ],
+            '17056' => [
+                'name' => 'Appointment Assisted Service - Regular',
+                'sku' => 'AAS' . $location,
+            ],
+            '14872' => [
+                'name' => 'Appointment Self Service - Regular',
+                'sku' => 'ASS' . $location,
+            ],
+            '14866' => [
+                'name' => 'Appointment Assisted Service - Regular',
+                'sku' => 'AAS' . $location,
+            ],
+            '18750' => [
+                'name' => 'Courier Delivery Address Change',
+                'sku' => 'CDAC' . $location,
+            ],
+            '18950' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            '18951' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            '18952' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            '13511' => [
+                'name' => 'Express Courier Return',
+                'sku' => 'ECR' . $location,
+            ],
+            '13542' => [
+                'name' => 'Express Courier Return International',
+                'sku' => 'ECRINT' . $location,
+            ],
+            '11978' => [
+                'name' => 'Keep My Passport',
+                'sku' => 'KMP' . $location,
+            ],
+            '11139' => [
+                'name' => 'Premium Lounge',
+                'sku' => 'PL' . $location,
+            ],
+            '11841' => [
+                'name' => 'Prime Time Appointment',
+                'sku' => 'PTA' . $location,
+            ],
+            '11237' => [
+                'name' => 'Priority Visa Service non Settlement',
+                'sku' => 'PV' . $location,
+            ],
+            '11315' => [
+                'name' => 'Priority Visa Service Settlement',
+                'sku' => 'PVS' . $location,
+            ],
+            '12065' => [
+                'name' => 'SMS Notification',
+                'sku' => 'SMS' . $location,
+            ],
+            '12014' => [
+                'name' => 'Super Priority Service',
+                'sku' => 'SPV' . $location,
+            ],
+            '16107' => [
+                'name' => 'Appointment Assisted Service - Regular',
+                'sku' => 'AAS' . $location,
+            ],
+            '12163' => [
+                'name' => 'Flexi Appointment',
+                'sku' => 'FA' . $location,
+            ],
         ];
 
-        return $translations[$oldSku] ?? $oldSku;
+        return $translations[$oldSku][$key] ?? $oldSku;
     }
 }

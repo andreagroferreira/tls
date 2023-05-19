@@ -445,6 +445,20 @@ class ApiService
     }
 
     /**
+     * @param string $queryParams
+     * 
+     * @return array
+     * 
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function callFileLibraryFilesApi(string $queryParams): array
+    {
+        return $this->getApi($this->getFileLibraryApiDomain().'/api/'.$this->getFileLibraryApiVersion().'/file-library/files/'.$queryParams);
+    }
+
+    /**
      * @param $queryParams
      *
      * @return array

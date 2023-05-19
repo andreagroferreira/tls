@@ -585,19 +585,27 @@ class TransactionController extends BaseController
         $params = [
             'page' => $request->input('page', 1),
             'limit' => $request->input('limit', 20),
-            'start_date' => $request->input('start_date', Carbon::today()->toDateTimeString()),
-            'end_date' => $request->input('end_date', Carbon::today()->toDateTimeString()),
+            'start_date' => $request->input('start_date', Carbon::now()->subWeeks(3)->toDateTimeString()),
+            'end_date' => $request->input('end_date', Carbon::now()->toDateTimeString()),
             'order_field' => $request->input('order_field', 't_id'),
             'order' => $request->input('order', 'desc'),
             'multi_search' => $request->input('multi_search'),
             'csv' => $request->input('csv', false),
         ];
 
+        if (empty($params['start_date'])) {
+            $params['start_date'] = Carbon::now()->subWeeks(3)->toDateTimeString();
+            
+        } 
+        if (empty($params['end_date'])) {
+            $params['end_date'] = Carbon::now()->toDateTimeString();
+        }
+       
         $validator = validator($params, [
             'page' => 'required|integer',
             'limit' => 'required|integer',
-            'start_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d H:i:s',
-            'end_date' => 'nullable|required_if:csv,1,true|date_format:Y-m-d H:i:s|after_or_equal:start_date',
+            'start_date' => 'required|date_format:Y-m-d H:i:s|before_or_equal:end_date',
+            'end_date' => 'required|date_format:Y-m-d H:i:s|after_or_equal:start_date',
             'order_field' => 'required|string',
             'order' => [
                 'required',

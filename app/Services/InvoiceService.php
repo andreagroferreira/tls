@@ -182,12 +182,18 @@ class InvoiceService
      */
     public function getFileLibraryInvoiceFileContent(Transactions $transaction): ?object
     {
-        $file = getFilePath($transaction->toArray());
+        $getFile = $this->apiService->callFileLibraryFilesApi('invoice?fileName='.$transaction->t_transaction_id);
+        
+        if($getFile['status'] != 200 || empty($getFile['body']['data'])) {
+            Log::warning('Transaction Error: receipt download failed');
 
-        $queryParams = 'path='.$file;
-
+            return null;
+        }
+        
+        $file  = array_first($getFile['body']['data']);
+        
         try {
-            $response = $this->apiService->callFileLibraryDownloadApi($queryParams);
+            $response = $this->apiService->callFileLibraryDownloadApi('path='.$file['path']);
         } catch (\Exception $e) {
             Log::warning('Transaction Error: error file-library api "'.$e->getMessage().'"');
 

@@ -2691,5 +2691,10 @@ return [
         "gcc_id" => "RZE",
         "gcc_xref_gc_id" => "pl",
         "gcc_name" => "Rzeszow",
+    ],
+    'ZZZ' => [
+        "gcc_id" => "ZZZ",
+        "gcc_xref_gc_id" => "ab",
+        "gcc_name" => "CountryAB",
     ]
 ];

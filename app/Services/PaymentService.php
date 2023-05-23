@@ -5,9 +5,9 @@ namespace App\Services;
 use App\Jobs\InvoiceMailJob;
 use App\Jobs\PaymentEauditorLogJob;
 use App\Traits\FeatureVersionsTrait;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use \Mpdf\Mpdf as PDF;
 
 class PaymentService
 {
@@ -261,8 +261,13 @@ class PaymentService
         $userName = 'tlspay';
         $queryParams = 'country='.$country.'&city='.$city.'&fileName='.$fileName.'&userName='.$userName;
 
-        $pdf = Pdf::loadHTML($invoice_content);
-        $pdfstream = $pdf->download($fileName);
+        $pdf = new PDF(['autoScriptToLang' => true,'autoArabic' => true, 'autoLangToFont' => true]);
+        $pdf->WriteHTML($invoice_content);
+        $pdfstream = response()->make($pdf->OutputBinaryData(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$fileName.'"'
+        ]);
+
         $response = $this->apiService->callFileLibraryUploadApi($queryParams, $pdfstream);
         unset($pdfstream);
 

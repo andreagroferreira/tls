@@ -38,9 +38,9 @@ stages:
 
 prepare-instance:
   stage: build
-  image: ${DOCKER_REGISTRY_ADDRESS}/tlscontact/composer:${DOCKER_TAG_COMPOSER}
+  image: ${DOCKER_REGISTRY_ADDRESS}/composer:${DOCKER_TAG_COMPOSER_V2}
   script:
-    - composer install -o
+    - composer install -o --ignore-platform-req=ext-gd
   after_script:
     - rm -rf composer.*
   extends: .job_dependencies_artifacts_expire_in
@@ -56,7 +56,7 @@ prepare-instance:
 
 test-unit:
   stage: test
-  image: ${DOCKER_REGISTRY_ADDRESS}/tlscontact/composer:${DOCKER_TAG_COMPOSER}
+  image: ${DOCKER_REGISTRY_ADDRESS}/composer:${DOCKER_TAG_COMPOSER_V2}
   dependencies:
     - prepare-instance
   before_script:

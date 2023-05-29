@@ -170,7 +170,15 @@ class KBankController extends BaseController
      */
     public function fetchConfig(Request $request) {
         $params = $request->post();
-        if (empty($params['client']) || empty($params['issuer']) || empty($params['payment']) || empty($params['pa_id'])) {
+
+        $validator = validator($params, [
+            'client'    => 'required|string',
+            'issuer'    => 'required|string',
+            'payment'   => 'required|string',
+            'pa_id'     => 'required|int',
+        ]);
+
+        if ($validator->fails()) {
             $this->sendError('P0009', "client or issuer, payment no_data_received", 400);
         }
         try {

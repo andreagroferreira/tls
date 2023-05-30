@@ -257,20 +257,17 @@ class PaymentService
         $scope = $transaction['t_xref_fg_id'];
         $country = substr($transaction['t_issuer'], 0, 2);
         $city = substr($transaction['t_issuer'], 2, 3).'/'.$scope;
-        $fileName = $transaction['t_transaction_id'].'.pdf';
-        $userName = 'tlspay';
-        $queryParams = 'country='.$country.'&city='.$city.'&fileName='.$fileName.'&userName='.$userName;
 
-        $pdf = new PDF(['autoScriptToLang' => true,'autoArabic' => true, 'autoLangToFont' => true]);
+        $pdf = new PDF(['autoScriptToLang' => true,'autoArabic' => true, 'autoLangToFont' => true, 'packTableData' => true]);
         $pdf->WriteHTML($invoice_content);
-        $pdfstream = response()->make($pdf->OutputBinaryData(), 200, [
+        $response = $this->apiService->callFileLibraryUploadApi(
+            'country='.$country.'&city='.$city.'&fileName='.$transaction['t_transaction_id'].'.pdf&userName=tlspay',
+            response()->make($pdf->OutputBinaryData(), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$fileName.'"'
-        ]);
-
-        $response = $this->apiService->callFileLibraryUploadApi($queryParams, $pdfstream);
-        unset($pdfstream);
-
+            'Content-Disposition' => 'inline; filename="'.$transaction['t_transaction_id'].'.pdf"'
+                ])
+        );
+        unset($pdf);
         if ($response['status'] !== 200) {
             Log::warning('Transaction Error: receipt pdf upload failed');
 

@@ -391,17 +391,14 @@ class TransactionService
      */
     public function listTransactions(array $attributes): array
     {
-        $fullTextSearchColumn = ['ti_fee_type', 't_comment', 't_reference_id'];
+        $fullTextSearchColumn = ['ti_fee_type', 'ti_xref_f_cai'];
 
         $allowedColumns = [
             't_country',
             't_city',
             'ti_fee_type',
-            't_reference_id',
-            't_comment',
             't_xref_fg_id',
             't_client',
-            't_batch_id',
             'ti_quantity',
             'ti_xref_f_id',
             't_service',
@@ -414,7 +411,7 @@ class TransactionService
             'ti_price_rule',
             'ti_vat',
             't_agent_name',
-            'ti_xref_f_cai'
+            'ti_xref_f_cai',
         ];
 
         $where = collect();
@@ -460,30 +457,20 @@ class TransactionService
             }
         }
 
-        if ($attributes['csv']) {
-            $transactions = $this->transactionRepository->exportTransactionsToCsv(
+        $transactions = $this->transactionRepository->listTransactions(
+            $where,
+            $dateConditionTransaction,
+            $dateConditionRefund,
+            $attributes['limit'],
+            $attributes['order_field'],
+            $attributes['order']
+        );
+        if (!empty($transactions['data'])) {
+            $summary = $this->listTransactionsSkuSummary(
                 $where,
                 $dateConditionTransaction,
-                $dateConditionRefund,
-                $attributes['order_field'],
-                $attributes['order']
+                $dateConditionRefund
             );
-        } else {
-            $transactions = $this->transactionRepository->listTransactions(
-                $where,
-                $dateConditionTransaction,
-                $dateConditionRefund,
-                $attributes['limit'],
-                $attributes['order_field'],
-                $attributes['order']
-            );
-            if (!empty($transactions['data'])) {
-                $summary = $this->listTransactionsSkuSummary(
-                    $where,
-                    $dateConditionTransaction,
-                    $dateConditionRefund
-                );
-            }
         }
 
         if (empty($transactions)) {
@@ -514,75 +501,39 @@ class TransactionService
     }
 
     /**
-     * @param array $result
+     * Creates transaction csv.
+     * Returns its path.
      *
-     * @return array
+     * @param array $attributes
+     *
+     * @return string
      */
-    public function writeTransactionsToCsv(array $result): array
+    public function createTransactionCsv(array $attributes): string
     {
-        $headers = [
-            'Content-type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=download.csv',
-            'Pragma' => 'no-cache',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires' => '0',
-        ];
-        $columns = [
-            'Client',
-            'Country',
-            'City',
-            'Date of transaction/refund',
-            'Transaction ID',
-            'Customer Reference',
-            'Group ID',
-            'Basket type',
-            'SKU',
-            'Payment type',
-            'Gateway transaction ID',
-            'Currency',
-            'Amount (without tax)',
-            'VAT',
-            'Amount (with tax)',
-            'Quantity',
-            'Agent',
-        ];
         $fields = [
-            't_client',
-            'country',
-            'city',
-            'modification_date',
-            't_transaction_id',
-            'ti_xref_f_cai',
-            't_xref_fg_id',
-            't_service',
-            'ti_fee_type',
-            't_payment_method',
-            't_gateway_transaction_id',
-            't_currency',
-            'amount_without_tax',
-            'ti_vat',
-            'amount',
-            'quantity',
-            'agent',
+            't_client' => 'Client',
+            'country' => 'Country',
+            'city' => 'City',
+            'modification_date' => 'Date of transaction/refund',
+            't_transaction_id' => 'Transaction ID',
+            'ti_xref_f_cai' => 'Customer Reference',
+            't_xref_fg_id' => 'Group ID',
+            't_service' => 'Basket type',
+            'ti_fee_type' => 'SKU',
+            't_payment_method' => 'Payment type',
+            't_gateway_transaction_id' => 'Gateway transaction ID',
+            't_currency' => 'Currency',
+            'amount_without_tax' => 'Amount (without tax)',
+            'ti_vat' => 'VAT',
+            'amount' => 'Amount (with tax)',
+            'quantity' => 'Quantity',
+            'agent' => 'Agent',
         ];
 
-        $callback = function () use ($result, $columns, $fields) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-            foreach ($result as $details) {
-                $row = [];
-                foreach ($fields as $v) {
-                    $row[$v] = $details[$v];
-                }
-                fputcsv($file, $row);
-            }
-            fclose($file);
-        };
+        $attributes['fields'] = array_keys($fields);
+        $attributes['columns'] = array_values($fields);
 
-        return [
-            'callback' => $callback,
-            'headers' => $headers,
-        ];
+        return $this->transactionRepository->createTransactionCsv($attributes);
     }
 
     /**
@@ -810,13 +761,13 @@ class TransactionService
 
         return $project . $environment . $issuer . '-' . str_pad($transaction_id_seq, 10, '0', STR_PAD_LEFT);
     }
-    
+
     /**
-     * @param  string $transaction_id
-     * @param  string $items_field
-     * @param  array $add_field
-     * @param  array $caiForForm
-     * 
+     * @param string $transaction_id
+     * @param string $items_field
+     * @param array  $add_field
+     * @param array  $caiForForm
+     *
      * @return array
      */
     protected function convertItemsFieldToArray(

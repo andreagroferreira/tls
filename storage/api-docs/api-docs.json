@@ -2661,16 +2661,6 @@
                         }
                     },
                     {
-                        "name": "appointment_date",
-                        "in": "query",
-                        "description": "date of appointment",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "2022-11-25 00:00:00"
-                        }
-                    },
-                    {
                         "name": "items",
                         "in": "query",
                         "description": "Refund items",
@@ -3261,21 +3251,23 @@
                     {
                         "name": "start_date",
                         "in": "query",
-                        "description": "start date",
+                        "description": "start date and time",
                         "required": false,
                         "schema": {
-                            "type": "date",
-                            "example": "2022-01-01"
+                            "type": "string",
+                            "format": "datetime",
+                            "example": "2023-01-01 00:00:00"
                         }
                     },
                     {
                         "name": "end_date",
                         "in": "query",
-                        "description": "end date",
+                        "description": "end date and time",
                         "required": false,
                         "schema": {
-                            "type": "date",
-                            "example": "2022-12-31"
+                            "type": "string",
+                            "format": "datetime",
+                            "example": "2023-01-02 23:59:59"
                         }
                     },
                     {
@@ -3316,21 +3308,12 @@
                         }
                     },
                     {
-                        "name": "multi_search[t_reference_id]",
+                        "name": "multi_search[ti_xref_f_cai]",
                         "in": "query",
-                        "description": "search reference id",
+                        "description": "search customer reference number",
                         "required": false,
                         "schema": {
                             "example": "GWP123456"
-                        }
-                    },
-                    {
-                        "name": "multi_search[t_comment]",
-                        "in": "query",
-                        "description": "search comment",
-                        "required": false,
-                        "schema": {
-                            "example": "test"
                         }
                     },
                     {
@@ -3349,15 +3332,6 @@
                         "required": false,
                         "schema": {
                             "example": "de"
-                        }
-                    },
-                    {
-                        "name": "multi_search[t_batch_id]",
-                        "in": "query",
-                        "description": "search batch id",
-                        "required": false,
-                        "schema": {
-                            "example": "B123"
                         }
                     },
                     {

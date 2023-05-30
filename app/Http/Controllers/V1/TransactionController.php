@@ -270,9 +270,9 @@ class TransactionController extends BaseController
             'payment_method' => 'nullable',
             'service' => 'nullable',
             'expiration' => 'nullable|integer|gt:0',
-            'agent_name'=>'nullable|string',
-            'appointment_date'=>'nullable|date_format:Y-m-d',
-            'appointment_time'=>'nullable|date_format:H:i',
+            'agent_name' => 'nullable|string',
+            'appointment_date' => 'nullable|date_format:Y-m-d',
+            'appointment_time' => 'nullable|date_format:H:i',
             'items' => [
                 'bail',
                 'required',
@@ -292,7 +292,7 @@ class TransactionController extends BaseController
                         foreach ($skus as $sku) {
                             $diff = array_diff(['sku', 'price', 'vat'], array_keys((array) $sku));
                             if (filled($diff)) {
-                                $fail('The items.skus.'.implode(', ', $diff).' field is required.');
+                                $fail('The items.skus.' . implode(', ', $diff) . ' field is required.');
                             }
                         }
                     }
@@ -456,16 +456,16 @@ class TransactionController extends BaseController
      *     @OA\Parameter(
      *          name="start_date",
      *          in="query",
-     *          description="start date",
+     *          description="start date and time",
      *          required=false,
-     *          @OA\Schema(type="date", example="2022-01-01"),
+     *          @OA\Schema(format="datetime", type="string", example="2023-01-01 00:00:00"),
      *      ),
      *      @OA\Parameter(
      *          name="end_date",
      *          in="query",
-     *          description="end date",
+     *          description="end date and time",
      *          required=false,
-     *          @OA\Schema(type="date", example="2022-12-31"),
+     *          @OA\Schema(format="datetime", type="string", example="2023-01-02 23:59:59"),
      *      ),
      *      @OA\Parameter(
      *          name="csv",
@@ -502,21 +502,12 @@ class TransactionController extends BaseController
      *
      *      ),
      *      @OA\Parameter(
-     *          name="multi_search[t_reference_id]",
+     *          name="multi_search[ti_xref_f_cai]",
      *          in="query",
-     *          description="search reference id",
+     *          description="search customer reference number",
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="GWP123456"),
-     *
-     *      ),
-     *      @OA\Parameter(
-     *          name="multi_search[t_comment]",
-     *          in="query",
-     *          description="search comment",
-     *          required=false,
-     *          @OA\Items(type="array"),
-     *          @OA\Schema(example="test"),
      *
      *      ),
      *      @OA\Parameter(
@@ -535,15 +526,6 @@ class TransactionController extends BaseController
      *          required=false,
      *          @OA\Items(type="array"),
      *          @OA\Schema(example="de"),
-     *
-     *      ),
-     *      @OA\Parameter(
-     *          name="multi_search[t_batch_id]",
-     *          in="query",
-     *          description="search batch id",
-     *          required=false,
-     *          @OA\Items(type="array"),
-     *          @OA\Schema(example="B123"),
      *
      *      ),
      *      @OA\Parameter(
@@ -629,20 +611,21 @@ class TransactionController extends BaseController
             $numberOfDays = round((strtotime($validator->validated()['end_date']) - strtotime($validator->validated()['start_date'])) / (60 * 60 * 24));
 
             if ($numberOfDays > $maxAllowedDays) {
-                return $this->sendError('date-range selection error', 'Exceeds max allowed days of '.$maxAllowedDays);
+                return $this->sendError('date-range selection error', 'Exceeds max allowed days of ' . $maxAllowedDays);
             }
         }
 
         try {
-            $res = $this->transactionService->listTransactions($validator->validated());
-
-            if ($csvRequired) {
-                $return = $this->transactionService->writeTransactionsToCsv($res['data']);
-
-                return response()->stream($return['callback'], 200, $return['headers']);
+            if (!$csvRequired) {
+                return $this->sendResponse($this->transactionService->listTransactions($validator->validated()));
             }
 
-            return $this->sendResponse($res);
+            return response()
+                ->download(
+                    $this->transactionService->createTransactionCsv($validator->validated()),
+                    'accounting_journal_'.date('Y-m-d').'_'.date('His').'.csv'
+                )
+                ->deleteFileAfterSend(true);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }

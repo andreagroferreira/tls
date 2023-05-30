@@ -1351,7 +1351,7 @@ class TransactionControllerTest extends TestCase
 
         $this->get($this->listTransactionsApi . '?start_date=' . $today . '&end_date=' . $tomorrow . '&csv=1');
         $this->response->assertStatus(200);
-        $this->assertTrue($this->response->headers->get('content-disposition') == 'attachment; filename=download.csv');
+        $this->assertTrue($this->response->headers->get('content-disposition') == 'attachment; filename=accounting_journal_'.date('Y-m-d').'_'.date('His').'.csv');
     }
 
     /**

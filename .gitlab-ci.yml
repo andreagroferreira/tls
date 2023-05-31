@@ -355,6 +355,16 @@ deploy-instance:
       CI_COMMIT_SHORT_SHA="${CI_COMMIT_SHORT_SHA}" | oc apply -f -
     - oc start-build ${APPLICATION_NAME} --from-dir=. --follow -w
     - oc rollout status dc/${APPLICATION_NAME} -w
+    - |
+      if [[ ${ENV} = "IET2" || ${ENV} = "SE" || ${ENV} = "SES" ]]; then
+        echo "Its OKD3"
+        echo $ENV
+        oc process -f ./openshift/autoscaler-v1-template.yaml | oc apply -f -
+      else
+        echo "Its OKD4"
+        echo $ENV
+        oc process -f ./openshift/autoscaler-v2-template.yaml | oc apply -f -
+      fi
     - oc process -f ./openshift/payment-fawry-queue-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"

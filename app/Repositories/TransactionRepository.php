@@ -363,9 +363,8 @@ class TransactionRepository
         $fileName = storage_path(
             "{$outputFolderPath}" . date('YmdHis', strtotime($attributes['start_date'])) . '_' . date('YmdHis', strtotime($attributes['end_date'])) . '.csv'
         );
-
         if (!is_dir(storage_path("{$outputFolderPath}"))) {
-            mkdir(storage_path("{$outputFolderPath}"), null, true);
+            mkdir(storage_path("{$outputFolderPath}"), 0755, true);
         }
 
         $out = fopen($fileName, 'a');
@@ -461,7 +460,7 @@ class TransactionRepository
             ->orderByRaw('t_id ' . $attributes['order'] . ' NULLS LAST')
             ->chunk(5000, function ($transactions) use ($attributes, $out) {
                 foreach ($transactions as $transaction) {
-                    fputcsv($out, $this->enrichTransactionDetails($transaction)->only($attributes['fields']));
+                    fputcsv($out, $this->enrichTransactionDetails($transaction, $attributes['multi_search']['timezoneOffset'] ?? '')->only($attributes['fields']));
                 }
             });
         fclose($out);
@@ -553,14 +552,22 @@ class TransactionRepository
     {
         return $this->transactionModel->where('t_id', $tId)->update($data);
     }
-
-    private function enrichTransactionDetails(object $transaction): object
+    
+    /**
+     *
+     * @param  object $transaction
+     * @param  string $timezoneOffset
+     * 
+     * @return object
+     */
+    private function enrichTransactionDetails(object $transaction, string $timezoneOffset): object
     {
         $transaction->country = getCountryName($transaction->country_code);
         $transaction->city = getCityName($transaction->city_code);
         $transaction->receipt_url = getFilePath($transaction->toArray(), $transaction->t_invoice_storage);
         $transaction->amount = number_format((float) $transaction->amount, 2);
         $transaction->amount_without_tax = number_format((float) $transaction->amount_without_tax, 2);
+        $transaction->modification_date = getLocalDateTimeFromUTC($transaction->modification_date, $timezoneOffset);
 
         return $transaction;
     }

@@ -577,12 +577,11 @@ class TransactionController extends BaseController
 
         if (empty($params['start_date'])) {
             $params['start_date'] = Carbon::now()->subWeeks(3)->toDateTimeString();
-            
-        } 
+        }
         if (empty($params['end_date'])) {
             $params['end_date'] = Carbon::now()->toDateTimeString();
         }
-       
+
         $validator = validator($params, [
             'page' => 'required|integer',
             'limit' => 'required|integer',
@@ -619,7 +618,6 @@ class TransactionController extends BaseController
             if (!$csvRequired) {
                 return $this->sendResponse($this->transactionService->listTransactions($validator->validated()));
             }
-
             return response()
                 ->download(
                     $this->transactionService->createTransactionCsv($validator->validated()),

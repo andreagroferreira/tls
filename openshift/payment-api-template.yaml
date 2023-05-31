@@ -1904,21 +1904,3 @@ objects:
           ports:
             - port: 8443
               protocol: TCP
-  - apiVersion: autoscaling/v2beta2
-    kind: HorizontalPodAutoscaler
-    metadata:
-      name: payment-api-hpa
-    spec:
-      scaleTargetRef:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: payment-api
-      minReplicas: 2
-      maxReplicas: 10
-      metrics:
-      - type: Resource
-        resource:
-          name: cpu
-          target:
-            type: Utilization
-            averageUtilization: 100

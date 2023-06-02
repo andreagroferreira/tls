@@ -428,7 +428,7 @@ class TokenResolveService
                     $lang,
                     $transaction['t_service']
                 );
-                
+
             } elseif ($tokenPrefixRule === 'a') {
                 $resolvedTokens[$token] = $this->getApplicationTokenValues($tokenDetails,$transaction);
                 
@@ -574,7 +574,7 @@ class TokenResolveService
         string $serviceType
     ): string {
         $collection = $tokenDetails[1];
-        $field = 'translation.' . $tokenDetails[2];
+        $field = ($tokenDetails[2] === 'name') ? $tokenDetails[2]:'translation.' . $tokenDetails[2];
         $options['lang'] = $lang;
         $select = 'code,' . $field;
         $issuer_filter = [
@@ -582,7 +582,7 @@ class TokenResolveService
             $this->country,
             'ww',
         ];
-
+        
         if ($tokenDetails[1] === 'application_centers') {
             $issuer_filter = [$this->issuer, 'ww'];
         }
@@ -624,6 +624,9 @@ class TokenResolveService
             $translation = $this->getCorrectCollectionTranslation($tokenCollections, $tokenDetails[1]);
         } else {
             if (empty(array_first($tokenCollections)['translation'])) {
+                if(filled(array_first($tokenCollections)[$tokenDetails[2]])) {
+                    return array_first($tokenCollections)[$tokenDetails[2]];
+                }
                 Log::error('No Translation found for token with issuer:' . $this->issuer . ' - ' . $collection . '.' . $field);
 
                 return '';

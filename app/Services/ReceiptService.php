@@ -47,16 +47,16 @@ class ReceiptService
         if (blank($transaction)) {
             return null;
         }
-        
+
         $rawContent = $this->getReceiptContent($transaction);
-        if(empty($rawContent)){
+        if(empty($rawContent)) {
             return null;
         }
 
         return  $this->tokenResolveService->resolveReceiptTemplate($rawContent, $transaction, 'en-us');
     }
 
-    
+
 
     /**
      * @param string $collection_name
@@ -66,7 +66,8 @@ class ReceiptService
      *
      * @return array
      */
-    public function getReceiptContent(array $transaction): array {
+    public function getReceiptContent(array $transaction): array
+    {
         $country = substr($transaction['t_issuer'], 0, 2);
         $city = substr($transaction['t_issuer'], 2, 3);
         $select_filters = [

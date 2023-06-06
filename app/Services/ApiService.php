@@ -391,6 +391,7 @@ class ApiService
     /**
      * @param string $queryParams
      * @param Response $data
+     * @param string $folderName
      *
      * @return array
      *

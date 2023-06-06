@@ -113,6 +113,14 @@ return [
             'queue' => 'ecommerce_transaction_sync_queue',
             'retry_after' => 90,
         ],
+
+        'tlspay_receipt_queue' => [
+            'driver' => 'database',
+            'connection' => 'payment_pgsql',
+            'table' => 'jobs',
+            'queue' => 'tlspay_receipt_queue',
+            'retry_after' => 90,
+        ],
     ],
 
     /*

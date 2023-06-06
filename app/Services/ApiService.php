@@ -398,9 +398,9 @@ class ApiService
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function callFileLibraryUploadApi(string $queryParams, Response $data): array
+    public function callFileLibraryUploadApi(string $queryParams, Response $data, string $folderName): array
     {
-        $url = $this->getFileLibraryApiDomain() . '/api/' . $this->getFileLibraryApiVersion() . '/file-library/upload/invoice?' . $queryParams;
+        $url = $this->getFileLibraryApiDomain() . '/api/' . $this->getFileLibraryApiVersion() . '/file-library/upload/'.$folderName.'?' . $queryParams;
         $response = $this->guzzleClient->request('post', $url, [
             'verify' => false,
             'http_errors' => false,

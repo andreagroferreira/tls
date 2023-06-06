@@ -2194,6 +2194,43 @@
                 }
             }
         },
+        "/api/v1/generate_download_receipt": {
+            "get": {
+                "tags": [
+                    "Payment API"
+                ],
+                "description": "Generate receipt file for a transaction ID if not present. Return receipt file for a transaction ID if present.",
+                "operationId": "37316a9b47320977269dab143646e2a1",
+                "parameters": [
+                    {
+                        "name": "transaction_id",
+                        "in": "query",
+                        "description": "Transaction ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "visa-uk-dev-frPAR2uk-0000000001"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get the transaction information",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: bad request"
+                    },
+                    "404": {
+                        "description": "Transaction ID does not exist"
+                    }
+                }
+            }
+        },
         "/api/v1/recommendation-config-upload": {
             "post": {
                 "tags": [

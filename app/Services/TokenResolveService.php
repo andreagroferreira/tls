@@ -710,7 +710,7 @@ class TokenResolveService
             return '';
         }
 
-        return 'Customer References: ' . implode(', ', array_values($customerReferences));
+        return implode(', ', array_values($customerReferences));
     }
 
     /**

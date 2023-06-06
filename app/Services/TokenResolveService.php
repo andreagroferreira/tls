@@ -74,7 +74,7 @@ class TokenResolveService
             return $data;
         }
 
-        $listOfToken = $this->pregMatchTemplate($data,'invoice_content');
+        $listOfToken = $this->pregMatchTemplate($data, 'invoice_content');
 
         if (empty($listOfToken)) {
             return $data;
@@ -96,7 +96,7 @@ class TokenResolveService
 
         return $data;
     }
-    
+
     /**
      * @param array  $template
      * @param array  $transaction
@@ -120,12 +120,12 @@ class TokenResolveService
             return $data;
         }
         $data = $this->getCorrectCollectionTranslation($template, 'tlspay_receipts');
-        
+
         if (empty($data['receipt_content'])) {
             return $data;
         }
 
-        $listOfToken = $this->pregMatchTemplate($data,'receipt_content');
+        $listOfToken = $this->pregMatchTemplate($data, 'receipt_content');
         if (empty($listOfToken)) {
             return $data;
         }
@@ -143,6 +143,7 @@ class TokenResolveService
         foreach ($resolvedTokens as $token => $value) {
             $data['receipt_content'] = str_replace($token, $value, $data['receipt_content']);
         }
+
         return $data;
     }
 
@@ -380,7 +381,7 @@ class TokenResolveService
     }
 
     /**
-     * @param array $content
+     * @param array  $content
      * @param string $contentName
      *
      * @return array
@@ -389,9 +390,9 @@ class TokenResolveService
     {
         $pattern = '~({{\\w+:\\w+:\\w+}}|{{\\w+:\\w+}})~';
         $tokens = [];
-        preg_match_all($pattern, $content[$contentName], $invoice_tokens);
-        if (count($invoice_tokens)) {
-            $tokens = array_unique($invoice_tokens, SORT_REGULAR)[0];
+        preg_match_all($pattern, $content[$contentName], $invoiceReceiptTokens);
+        if (count($invoiceReceiptTokens)) {
+            $tokens = array_unique($invoiceReceiptTokens, SORT_REGULAR)[0];
         }
         // will hold all tokens from invoice content
         return array_unique($tokens, SORT_REGULAR);
@@ -428,49 +429,61 @@ class TokenResolveService
                     $lang,
                     $transaction['t_service']
                 );
-                
             } elseif ($tokenPrefixRule === 'a') {
-                $resolvedTokens[$token] = $this->getApplicationTokenValues($tokenDetails,$transaction);
-                
+                $resolvedTokens[$token] = $this->getApplicationTokenValues($tokenDetails, $transaction);
             } elseif ($tokenPrefixRule === 'basket') {
                 $resolvedTokens[$token] = $this->getTokenTranslationForPurchasedServices($transaction);
             }
         }
+
         return $resolvedTokens;
     }
-    
+
     /**
+     * @param array $tokenDetails
+     * @param array $transaction
      *
-     * @param  array $tokenDetails
-     * @param  array $transaction
-     * 
      * @return string
      */
-    private function getApplicationTokenValues(array $tokenDetails, array $transaction): string 
+    private function getApplicationTokenValues(array $tokenDetails, array $transaction): string
     {
         switch ($tokenDetails[1]) {
             case 'f_pers_surnames':
-                $tokenValue =  $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+                $tokenValue = $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+
                 break;
+
             case 'f_pers_addr_is_owned':
-                $tokenValue =  $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+                $tokenValue = $this->getTokenTranslationFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+
                 break;
-            case 'qr_code' :
-                $tokenValue =  $this->getQrCodeFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+
+            case 'qr_code':
+                $tokenValue = $this->getQrCodeFromApplication($tokenDetails, $transaction['t_xref_fg_id']);
+
                 break;
-            case 'customer_references' :
-                $tokenValue =  $this->getCustomerReferences($transaction);
+
+            case 'customer_references':
+                $tokenValue = $this->getCustomerReferences($transaction);
+
                 break;
-            case 'order_id' :
-                $tokenValue =  $transaction['t_transaction_id'];
+
+            case 'order_id':
+                $tokenValue = $transaction['t_transaction_id'];
+
                 break;
-            case 'receipt_date' :
-                $tokenValue =  date('Y-m-d h:i:s a');
+
+            case 'receipt_date':
+                $tokenValue = date('Y-m-d h:i:s a');
+
                 break;
-            case 'appointment_date' :
-                $tokenValue =  $transaction['t_appointment_date'];
+
+            case 'appointment_date':
+                $tokenValue = $transaction['t_appointment_date'];
+
                 break;
         }
+
         return $tokenValue ?? '';
     }
 
@@ -489,15 +502,17 @@ class TokenResolveService
         $hasCity = $numberOfCollections > 2;
         $collectionIndex = null;
         $collectionGlobalIndex = null;
+        $code = '';
         foreach ($collections as $i => $collection) {
             if (empty($collection['translation'])) {
                 continue;
             }
-            if($collectionName == 'application_center_detail') {
+            if ($collectionName == 'application_center_detail') {
                 $code = $collection['application_center']['code'];
             } else {
                 $code = $collection['code'];
             }
+
             if ('ww' == $code || $this->issuer == $code) {
                 $collectionGlobalIndex = $i;
             }
@@ -523,7 +538,7 @@ class TokenResolveService
             if (null === $collectionGlobalIndex) {
                 Log::error('Correct collection index not found for collection: ' . $collectionName . ' - code:' . $code);
 
-                return '';
+                return [];
             }
 
             $translationGlobal = $this->getActiveTranslation($collections[$collectionGlobalIndex]['translation']);
@@ -531,7 +546,7 @@ class TokenResolveService
             if (empty($translationGlobal)) {
                 Log::error('No active translation found for collection: ' . $collectionName . ' - code: ' . $code);
 
-                return '';
+                return [];
             }
 
             return $translationGlobal;
@@ -574,7 +589,7 @@ class TokenResolveService
         string $serviceType
     ): string {
         $collection = $tokenDetails[1];
-        $field = 'translation.' . $tokenDetails[2];
+        $field = ($tokenDetails[2] === 'name') ? $tokenDetails[2] : 'translation.' . $tokenDetails[2];
         $options['lang'] = $lang;
         $select = 'code,' . $field;
         $issuer_filter = [
@@ -599,8 +614,8 @@ class TokenResolveService
         }
         if ($tokenDetails[1] === 'application_center_detail') {
             $filters = [
-                'detail_code' =>[
-                    'contains' => $tokenDetails[2]
+                'detail_code' => [
+                    'contains' => $tokenDetails[2],
                 ],
                 'status' => [
                     'eq' => 'published',
@@ -624,6 +639,9 @@ class TokenResolveService
             $translation = $this->getCorrectCollectionTranslation($tokenCollections, $tokenDetails[1]);
         } else {
             if (empty(array_first($tokenCollections)['translation'])) {
+                if (filled(array_first($tokenCollections)[$tokenDetails[2]])) {
+                    return array_first($tokenCollections)[$tokenDetails[2]];
+                }
                 Log::error('No Translation found for token with issuer:' . $this->issuer . ' - ' . $collection . '.' . $field);
 
                 return '';

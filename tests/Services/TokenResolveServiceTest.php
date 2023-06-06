@@ -30,6 +30,20 @@ class TokenResolveServiceTest extends \TestCase
     /**
      * @var array
      */
+    private $directusServiceMockResultReceipt = [
+        [
+            'code' => 'TUN',
+            'translation' => [
+                [
+                    'receipt_legal_entity_tls_online' => 'TUN Legal entity',
+                ],
+            ],
+        ],
+    ];
+
+    /**
+     * @var array
+     */
     private $apiServiceMockResult = [
         'status' => 200,
         'body' => [
@@ -104,7 +118,6 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ww',
                 'translation' => [
                     [
-                        'email_content' => 'This is test address for email content : {{c:application_centers:address}} ',
                         'invoice_content' => 'This is test address for invoice content : {{c:application_centers:address}}',
                     ],
                 ],
@@ -114,6 +127,7 @@ class TokenResolveServiceTest extends \TestCase
         $transaction = [
             't_issuer' => '',
             't_xref_fg_id' => '13512',
+            't_service' => 'tls',
         ];
 
         $this->directusServiceMock
@@ -124,13 +138,17 @@ class TokenResolveServiceTest extends \TestCase
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
-        $this->expectExceptionMessage('No collections returned for token: application_centers.translation.address');
+        $expectedResult = [
+            'invoice_content' => 'This is test address for invoice content : ',
+        ];
 
-        $tokenResolveService->resolveTemplate(
+        $resolvedTemplate = $tokenResolveService->resolveTemplate(
             $template,
             $transaction,
             'en-us'
         );
+
+        $this->assertEquals($expectedResult, $resolvedTemplate);
     }
 
     /**
@@ -145,7 +163,6 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'tnTUN2de',
                 'translation' => [
                     [
-                        'email_content' => 'This is test address for email content : {{c:application_centers:address}} ',
                         'invoice_content' => 'This is test address for invoice content : {{c:application_centers:address}}',
                     ],
                 ],
@@ -155,23 +172,28 @@ class TokenResolveServiceTest extends \TestCase
         $transaction = [
             't_issuer' => 'tnTUN2de',
             't_xref_fg_id' => '',
+            't_service' => 'tls',
         ];
 
         $this->directusServiceMock
-            ->expects($this->never())
+            ->expects($this->once())
             ->method('getContent')
             ->willReturn([])
         ;
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
-        $this->expectExceptionMessage('Correct collection index not found');
+        $expectedResult = [
+            'invoice_content' => 'This is test address for invoice content : ',
+        ];
 
-        $tokenResolveService->resolveTemplate(
+        $resolvedTemplate = $tokenResolveService->resolveTemplate(
             $template,
             $transaction,
             'en-us'
         );
+
+        $this->assertEquals($expectedResult, $resolvedTemplate);
     }
 
     /**
@@ -191,6 +213,7 @@ class TokenResolveServiceTest extends \TestCase
         $transaction = [
             't_issuer' => 'tnTUN2de',
             't_xref_fg_id' => '',
+            't_service' => 'tls',
         ];
 
         $this->directusServiceMock
@@ -201,13 +224,13 @@ class TokenResolveServiceTest extends \TestCase
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
-        $this->expectExceptionMessage('No active translation found');
-
-        $tokenResolveService->resolveTemplate(
+        $resolvedTemplate = $tokenResolveService->resolveTemplate(
             $template,
             $transaction,
             'en-us'
         );
+
+        $this->assertEmpty($resolvedTemplate);
     }
 
     /**
@@ -222,7 +245,6 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ww',
                 'translation' => [
                     [
-                        'email_content' => 'This is test address for email content : {{t:address}} ',
                         'invoice_content' => 'This is test address for invoice content : {{t:address}}',
                     ],
                 ],
@@ -260,7 +282,6 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ww',
                 'translation' => [
                     [
-                        'email_content' => 'This is test address for email content : {{c:application_centers:address}} ',
                         'invoice_content' => 'This is test address for invoice content : {{c:application_centers:address}}',
                     ],
                 ],
@@ -270,6 +291,7 @@ class TokenResolveServiceTest extends \TestCase
         $transaction = [
             't_issuer' => 'tnTUN2de',
             't_xref_fg_id' => '',
+            't_service' => 'tls',
         ];
 
         $this->directusServiceMock
@@ -281,11 +303,53 @@ class TokenResolveServiceTest extends \TestCase
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
         $expectedResult = [
-            'email_content' => 'This is test address for email content : Leman building, rue du lac Leman, Berges du lac 1, 1053, Tunis, Tunisia ',
             'invoice_content' => 'This is test address for invoice content : Leman building, rue du lac Leman, Berges du lac 1, 1053, Tunis, Tunisia',
         ];
 
         $resolvedTemplate = $tokenResolveService->resolveTemplate(
+            $template,
+            $transaction,
+            'en-us'
+        );
+
+        $this->assertEquals($expectedResult, $resolvedTemplate);
+    }
+
+    /**
+     * @return void
+     */
+    public function testResolveTokensForReceiptCollection(): void
+    {
+        $template = [
+            [
+                'code' => 'TUN',
+                'translation' => [
+                    [
+                        'receipt_content' => '{{c:application_center_detail:receipt_legal_entity_tls_online}} This is test legal entity for receipt content',
+                    ],
+                ],
+            ],
+        ];
+
+        $transaction = [
+            't_issuer' => 'tnTUN2de',
+            't_xref_fg_id' => '',
+            't_service' => 'tls'
+        ];
+
+        $this->directusServiceMock
+            ->expects($this->once())
+            ->method('getContent')
+            ->willReturn($this->directusServiceMockResultReceipt)
+        ;
+
+        $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
+
+        $expectedResult = [
+            'receipt_content' => 'TUN Legal entity This is test legal entity for receipt content',
+        ];
+
+        $resolvedTemplate = $tokenResolveService->resolveReceiptTemplate(
             $template,
             $transaction,
             'en-us'
@@ -306,7 +370,6 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ww',
                 'translation' => [
                     [
-                        'email_content' => 'Dear {{a:f_pers_surnames}} ,This is test address for email content',
                         'invoice_content' => 'This is test address for invoice content for {{a:f_pers_surnames}}',
                     ],
                 ],
@@ -316,6 +379,7 @@ class TokenResolveServiceTest extends \TestCase
         $transaction = [
             't_issuer' => 'tnTUN2de',
             't_xref_fg_id' => '',
+            't_service' => 'tls',
         ];
 
         $mockApiResult = ['status' => 404, 'message' => 'No Applicant found'];
@@ -328,13 +392,17 @@ class TokenResolveServiceTest extends \TestCase
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
-        $this->expectExceptionMessage('No applicant details returned for token: f_pers_surnames');
+        $expectedResult = [
+            'invoice_content' => 'This is test address for invoice content for ',
+        ];
 
-        $tokenResolveService->resolveTemplate(
+        $resolvedTemplate = $tokenResolveService->resolveTemplate(
             $template,
             $transaction,
             'en-us'
         );
+
+        $this->assertEquals($expectedResult, $resolvedTemplate);
     }
 
     /**
@@ -349,7 +417,6 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ww',
                 'translation' => [
                     [
-                        'email_content' => 'Dear {{a:f_pers_surnames}} ,This is test address for email content',
                         'invoice_content' => 'This is test address for invoice content for {{a:f_pers_surnames}}',
                     ],
                 ],
@@ -359,6 +426,7 @@ class TokenResolveServiceTest extends \TestCase
         $transaction = [
             't_issuer' => 'tnTUN2de',
             't_xref_fg_id' => 'er',
+            't_service' => 'tls',
         ];
 
         $mockApiResult = ['status' => 404, 'message' => 'No Applicant found'];
@@ -371,13 +439,18 @@ class TokenResolveServiceTest extends \TestCase
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
-        $this->expectExceptionMessage('No applicant details returned for token: f_pers_surnames');
+        $expectedResult = [
+            'invoice_content' => 'This is test address for invoice content for ',
+        ];
+        ;
 
-        $tokenResolveService->resolveTemplate(
+        $resolvedTemplate = $tokenResolveService->resolveTemplate(
             $template,
             $transaction,
             'en-us'
         );
+
+        $this->assertEquals($expectedResult, $resolvedTemplate);
     }
 
     /**
@@ -390,7 +463,6 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ww',
                 'translation' => [
                     [
-                        'email_content' => 'Dear {{a:f_pers_surnames}} ,This is test address for email content',
                         'invoice_content' => 'This is test address for invoice content for {{a:f_pers_surnames}}',
                     ],
                 ],
@@ -400,6 +472,7 @@ class TokenResolveServiceTest extends \TestCase
         $transaction = [
             't_issuer' => 'tnTUN2de',
             't_xref_fg_id' => '13512',
+            't_service' => 'tls',
         ];
 
         $this->apiServiceMock
@@ -411,7 +484,6 @@ class TokenResolveServiceTest extends \TestCase
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
         $expectedResult = [
-            'email_content' => 'Dear Applicant1, Applicant2 ,This is test address for email content',
             'invoice_content' => 'This is test address for invoice content for Applicant1, Applicant2',
         ];
 
@@ -434,8 +506,7 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ke',
                 'translation' => [
                     [
-                        'email_content' => 'This is test address for email content {{basket:services}}',
-                        'invoice_content' => 'This is test address for invoice content for',
+                        'invoice_content' => 'This is test address for invoice content for {{basket:services}}',
                     ],
                 ],
             ],
@@ -469,8 +540,7 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ke',
                 'translation' => [
                     [
-                        'email_content' => 'This is test address for email content {{basket:services}}',
-                        'invoice_content' => 'This is test address for invoice content for',
+                        'invoice_content' => 'This is test address for invoice content for {{basket:services}}',
                     ],
                 ],
             ],
@@ -517,8 +587,7 @@ class TokenResolveServiceTest extends \TestCase
                 'code' => 'ke',
                 'translation' => [
                     [
-                        'email_content' => 'This is test address for email content {{basket:services}}',
-                        'invoice_content' => 'This is test address for invoice content for',
+                        'invoice_content' => 'This is test address for invoice content for {{basket:services}}',
                     ],
                 ],
             ],
@@ -537,9 +606,10 @@ class TokenResolveServiceTest extends \TestCase
                     'skus' => [
                         [
                             'sku' => ' Premium Lounge',
-                            'price' => 454,
+                            'price' => 908,
                             'vat' => 1,
-                            'quantity' => 1,
+                            'quantity' => 2,
+                            'product_name' => ' Premium Lounge'
                         ],
                     ],
                 ],
@@ -550,16 +620,15 @@ class TokenResolveServiceTest extends \TestCase
             [
                 'content' => '{{META_service_rows}}, total without tax - {{total_without_tax}}',
                 'meta_tokens' => [
-                    'META_service_rows' => 'Service -{{sku}}, Qauntity - {{quantity}}, Currency - {{currency}}, price - {{price}}',
+                    'META_service_rows' => 'Service -{{product_name}}, Qauntity - {{quantity}}, Currency - {{currency}}, price - {{price}}',
                 ],
             ],
         ];
 
-        $basketResolvedContent = 'Service - Premium Lounge, Qauntity - 2, Currency - KES, price - 908, total without tax - 2416.00';
+        $basketResolvedContent = 'Service - Premium Lounge, Qauntity - 2, Currency - KES, price - 908, total without tax - 898.92';
 
         $expectedResult = [
-            'email_content' => 'This is test address for email content '.$basketResolvedContent,
-            'invoice_content' => 'This is test address for invoice content for',
+            'invoice_content' => 'This is test address for invoice content for '.$basketResolvedContent,
         ];
 
         $this->directusServiceMock

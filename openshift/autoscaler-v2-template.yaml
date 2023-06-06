@@ -8,7 +8,7 @@ objects:
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
-      name: payment-api-hpa
+      name: payment-api-hpa-v2
     spec:
       scaleTargetRef:
         apiVersion: apps.openshift.io/v1
@@ -16,25 +16,32 @@ objects:
         name: payment-api
       minReplicas: 2
       maxReplicas: 10
-    behavior:
-      scaleUp:
-        stabilizationWindowSeconds: 0
-        selectPolicy: Min
-        policies:
-          - type: Pods
-            value: 1
-            periodSeconds: 60
-      scaleDown:
-        stabilizationWindowSeconds: 300
-        selectPolicy: Max
-        policies:
-          - type: Percent
-            value: 100
-            periodSeconds: 15
-    metrics:
-      - type: Resource
-        resource:
-          name: cpu
-          target:
-            type: Utilization
-            averageUtilization: 80
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80
+        - type: Resource
+          resource:
+            name: memory 
+            target:
+              type: Utilization 
+              averageUtilization: 80
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          selectPolicy: Min
+          policies:
+            - type: Pods
+              value: 1
+              periodSeconds: 60
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          selectPolicy: Max
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+

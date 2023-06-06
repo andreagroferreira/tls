@@ -474,6 +474,10 @@ parameters:
     description: CPU initially requested by the app container
     displayName: App container requested cpu cores
     required: true
+  - name: CPU_LIMIT
+    description: Maximum CPU cores allocated to the app container
+    displayName: App container maximum cpu cores
+    required: true
   - displayName: Custom https Route Hostname
     description: 'Custom hostname for https service route. Leave blank for default hostname,
       e.g.: <application-name>.<project>.<default-domain-suffix>'
@@ -1620,12 +1624,37 @@ objects:
                 - containerPort: 8443
                   protocol: TCP
                   name: https
+              startupProbe:
+                  httpGet:
+                      scheme: HTTPS
+                      path: /api/v1/list_transactions?page=1&limit=1
+                      port: https
+                  failureThreshold: 18
+              readinessProbe:
+                  httpGet:
+                      scheme: HTTPS
+                      path: /api/v1/list_transactions?page=1&limit=1
+                      port: https
+                  timeoutSeconds: 3
+                  periodSeconds: 10
+                  successThreshold: 1
+                  failureThreshold: 6
+              livenessProbe:
+                  httpGet:
+                      scheme: HTTPS
+                      path: /api/v1/list_transactions?page=1&limit=1
+                      port: https
+                  timeoutSeconds: 3
+                  periodSeconds: 30
+                  successThreshold: 1
+                  failureThreshold: 3
               resources:
                 requests:
                   memory: ${MEMORY_REQUEST}
                   cpu: ${CPU_REQUEST}
                 limits:
                   memory: ${MEMORY_LIMIT}
+                  cpu: ${CPU_LIMIT}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:

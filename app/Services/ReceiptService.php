@@ -102,9 +102,6 @@ class ReceiptService
      */
     public function saveReceipt(array $transaction, string $fileName): bool
     {
-        $country = substr($transaction['t_issuer'], 0, 2);
-        $city = substr($transaction['t_issuer'], 2, 3) . '/' . $transaction['t_xref_fg_id'];
-
         $content = $this->getReceiptFileContent($transaction);
         if (!$content['receipt_content']) {
             throw new \Exception('Error ' . $transaction['t_transaction_id'] . ' - Workflow:' . $transaction['t_workflow'] . ' - Type:' . $transaction['t_service']);
@@ -113,7 +110,7 @@ class ReceiptService
         $pdf = new PDF(['autoScriptToLang' => true, 'autoArabic' => true, 'autoLangToFont' => true, 'packTableData' => true]);
         $pdf->WriteHTML($content['receipt_content']);
         $response = $this->apiService->callFileLibraryUploadApi(
-            'country=' . $country . '&city=' . $city . '&fileName=' . $fileName . '&userName=tlspay',
+            'country=' . substr($transaction['t_issuer'], 0, 2) . '&city=' . substr($transaction['t_issuer'], 2, 3) . '/' . $transaction['t_xref_fg_id'] . '&fileName=' . $fileName . '&userName=tlspay',
             response()->make($pdf->OutputBinaryData(), 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $fileName . '"',

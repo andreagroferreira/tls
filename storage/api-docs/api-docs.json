@@ -2215,18 +2215,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "get the transaction information",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
+                        "description": "The job has been added to the queue. This job will generate the receipt file and save it in file-library"
                     },
                     "400": {
                         "description": "Error: bad request"
                     },
                     "404": {
-                        "description": "Transaction ID does not exist"
+                        "description": "Transaction does not exist"
                     }
                 }
             }

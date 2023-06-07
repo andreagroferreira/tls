@@ -28,8 +28,7 @@ class ReceiptController extends BaseController
      *      ),
      *      @OA\Response(
      *          response="200",
-     *          description="get the transaction information",
-     *          @OA\JsonContent(),
+     *          description="The job has been added to the queue. This job will generate the receipt file and save it in file-library"
      *      ),
      *      @OA\Response(
      *          response="400",
@@ -37,19 +36,15 @@ class ReceiptController extends BaseController
      *      ),
      *      @OA\Response(
      *          response="404",
-     *          description="Transaction ID does not exist"
+     *          description="Transaction does not exist"
      *      ),
      * )
      */
     public function generateOrDownloadReceipt(Request $request)
-    {
+    {        
         $validator = validator(
-            [
-                'transaction_id' => $request->input('transaction_id'),
-            ],
-            [
-                'transaction_id' => 'required|string',
-            ]
+            ['transaction_id' => $request->input('transaction_id')],
+            ['transaction_id' => 'required|string']
         );
 
         if ($validator->fails()) {
@@ -60,19 +55,19 @@ class ReceiptController extends BaseController
             $fileName = 'receipt-' . $validator->validated()['transaction_id'] . '.pdf';
             $res = $this->receiptService->generateReceipt($validator->validated()['transaction_id'], $fileName);
 
-            if ($res) {
-                if ($res['type'] === 'download') {
-                    return $this->streamDownload(
-                        function () use ($res) {
-                            echo $res['fileContent'];
-                        },
-                        $fileName,
-                        ['Content-type' => 'application/pdf']
-                    );
-                }
-            } else {
-                return $this->sendResponse('Transaction ID does not exist', 404);
+            if (!$res) {
+                return $this->sendResponse('Transaction does not exist', 404);
             }
+            if ($res['type'] === 'download') {
+                return $this->streamDownload(
+                    function () use ($res) {
+                        echo $res['fileContent'];
+                    },
+                    $fileName,
+                    ['Content-type' => 'application/pdf']
+                );
+            } 
+            return $this->sendResponse('The job has been added to the queue. This job will generate the receipt file and save it in file-library');
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }

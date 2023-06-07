@@ -23,19 +23,22 @@ class TransactionService
     protected $transactionItemsService;
     protected $formGroupService;
     protected $transactionLogsService;
+    protected $receiptService;
 
     public function __construct(
         TransactionRepository $transactionRepository,
         DbConnectionService $dbConnectionService,
         TransactionItemsService $transactionItemsService,
         FormGroupService $formGroupService,
-        TransactionLogsService $transactionLogsService
+        TransactionLogsService $transactionLogsService,
+        ReceiptService $receiptService
     ) {
         $this->transactionRepository = $transactionRepository;
         $this->dbConnectionService = $dbConnectionService;
         $this->transactionItemsService = $transactionItemsService;
         $this->formGroupService = $formGroupService;
         $this->transactionLogsService = $transactionLogsService;
+        $this->receiptService = $receiptService;
         $this->transactionRepository->setConnection($this->dbConnectionService->getConnection());
     }
 
@@ -584,6 +587,10 @@ class TransactionService
         } else {
             dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
                 ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
+        }
+
+        if ($this->isVersion(2, $transaction['t_issuer'], 'receipt')) {
+            $this->receiptService->generateReceipt($transaction['t_transaction_id'], $transaction['t_transaction_id'] . '.pdf');
         }
 
         $result = [

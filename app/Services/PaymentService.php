@@ -127,7 +127,9 @@ class PaymentService
                 ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
         }
 
-        $this->receiptService->generateReceipt($transaction['t_transaction_id'], $transaction['t_transaction_id'] . '.pdf');
+        if ($this->isVersion(2, $transaction['t_issuer'], 'receipt')) {
+            $this->receiptService->generateReceipt($transaction['t_transaction_id'], $transaction['t_transaction_id'] . '.pdf');
+        }
 
         if (!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($error_msg, 256));

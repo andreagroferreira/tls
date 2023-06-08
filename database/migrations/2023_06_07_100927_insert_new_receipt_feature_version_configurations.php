@@ -17,7 +17,7 @@ class InsertNewReceiptFeatureVersionConfigurations extends Migration
             $client = $this->getProjectId();
             $featureVersion = DB::connection('deploy_payment_pgsql')->table('feature_versions')->where([
                 'fv_type' => 'receipt',
-                'fv_version' => 2
+                'fv_version' => 1
             ])->first();
 
             if (!empty($featureVersion)) {

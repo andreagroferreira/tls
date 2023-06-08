@@ -66,8 +66,9 @@ class ReceiptController extends BaseController
                     $fileName,
                     ['Content-type' => 'application/pdf']
                 );
-            } 
-            return $this->sendResponse('The job has been added to the queue. This job will generate the receipt file and save it in file-library');
+            } else if ($res['type'] === 'upload') {
+                return $this->sendResponse('The job has been added to the queue. This job will generate the receipt file and save it in file-library');
+            }
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }

@@ -13,10 +13,13 @@ class InsertNewReceiptFeatureVersions extends Migration
     public function up()
     {
         DB::connection('deploy_payment_pgsql')->beginTransaction();
-        $this->createFeatureVersions([
-            'fv_type' => 'receipt',
-            'fv_version' => 2,
-        ]);
+        $featureVersions = [1, 2];
+        foreach ($featureVersions as $version) {
+            $this->createFeatureVersions([
+                'fv_type' => 'receipt',
+                'fv_version' => $version,
+            ]);
+        }
         DB::connection('deploy_payment_pgsql')->commit();
     }
 

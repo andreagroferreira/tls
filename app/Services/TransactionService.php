@@ -589,6 +589,8 @@ class TransactionService
                 ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
         }
 
+        $this->receiptService->generateReceipt($transaction['t_transaction_id'], $transaction['t_transaction_id'] . '.pdf');
+
         $result = [
             'is_success' => 'ok',
             'orderid' => $transaction['t_transaction_id'],

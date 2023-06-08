@@ -3,26 +3,32 @@
 namespace App\Services;
 
 use App\Jobs\ReceiptJob;
+use App\Traits\FeatureVersionsTrait;
 use Illuminate\Support\Facades\Log;
 use \Mpdf\Mpdf as PDF;
 
 class ReceiptService
 {
+    use FeatureVersionsTrait;
+
     protected $transactionService;
     protected $apiService;
     protected $directusService;
     protected $tokenResolveService;
+    protected $receiptService;
 
     public function __construct(
         TransactionService $transactionService,
         ApiService $apiService,
         DirectusService $directusService,
-        TokenResolveService $tokenResolveService
+        TokenResolveService $tokenResolveService,
+        ReceiptService $receiptService
     ) {
         $this->transactionService = $transactionService;
         $this->apiService = $apiService;
         $this->directusService = $directusService;
         $this->tokenResolveService = $tokenResolveService;
+        $this->receiptService = $receiptService;
     }
 
     /**
@@ -78,18 +84,23 @@ class ReceiptService
             return [];
         }
 
-        $checkIfFileExists = $this->apiService->callFileLibraryFilesApi('receipt?fileName=' . $fileName);
+        if ($this->isVersion(2, $transaction['t_issuer'], 'receipt')) {
+            $checkIfFileExists = $this->apiService->callFileLibraryFilesApi('receipt?fileName=' . $fileName);
 
-        if ($checkIfFileExists['status'] != 200) {
-            Log::warning('Error getting the receipt file details from file-library for ' . json_encode($transaction['t_transaction_id']));
-        }
-        
-        if (!empty($checkIfFileExists['body']['data'])) {
-            return ['fileContent' => $this->downloadReceipt($transaction, array_first($checkIfFileExists['body']['data'])['path']), 'type' => 'download'];
+            if ($checkIfFileExists['status'] != 200) {
+                Log::warning('Error getting the receipt file details from file-library for ' . json_encode($transaction['t_transaction_id']));
+            }
+
+            if (!empty($checkIfFileExists['body']['data'])) {
+                return ['fileContent' => $this->downloadReceipt($transaction, array_first($checkIfFileExists['body']['data'])['path']), 'type' => 'download'];
+            }
+
+            dispatch(new ReceiptJob($transaction, $fileName))->onConnection('tlspay_receipt_queue')->onQueue('tlspay_receipt_queue');
+
+            return ['type' => 'upload'];
         }
 
-        dispatch(new ReceiptJob($transaction, $fileName))->onConnection('tlspay_receipt_queue')->onQueue('tlspay_receipt_queue');
-        return ['type' => 'upload'];
+        return [];
     }
     
     /**

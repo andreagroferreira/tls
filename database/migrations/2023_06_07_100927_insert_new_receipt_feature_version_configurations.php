@@ -12,7 +12,7 @@ class InsertNewReceiptFeatureVersionConfigurations extends Migration
      */
     public function up()
     {
-        try {            
+        try {
             DB::connection('deploy_payment_pgsql')->beginTransaction();
             $client = $this->getProjectId();
             $featureVersion = DB::connection('deploy_payment_pgsql')->table('feature_versions')->where([

@@ -70,7 +70,7 @@ class ReceiptService
     /**
      * @param  string $transactionId
      * @param  string $fileName
-     * 
+     *
      * @return null|array
      */
     public function generateReceipt(string $transactionId, string $fileName): ?array
@@ -102,7 +102,7 @@ class ReceiptService
 
         return [];
     }
-    
+
     /**
      * @param  array $transaction
      * @param  string $fileName
@@ -141,7 +141,7 @@ class ReceiptService
     /**
      * @param  array $transaction
      * @param  string $filePath
-     * 
+     *
      * @return null|object
      */
     private function downloadReceipt(array $transaction, string $filePath): ?object

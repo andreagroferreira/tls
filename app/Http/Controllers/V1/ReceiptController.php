@@ -41,7 +41,7 @@ class ReceiptController extends BaseController
      * )
      */
     public function generateOrDownloadReceipt(Request $request)
-    {        
+    {
         $validator = validator(
             ['transaction_id' => $request->input('transaction_id')],
             ['transaction_id' => 'required|string']

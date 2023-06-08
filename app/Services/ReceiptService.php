@@ -85,7 +85,7 @@ class ReceiptService
         }
 
         if ($this->isVersion(2, $transaction['t_issuer'], 'receipt')) {
-            $checkIfFileExists = $this->apiService->callFileLibraryFilesApi('receipt?fileName=' . $fileName);
+            $checkIfFileExists = $this->apiService->callFileLibraryFilesApi('invoice?fileName=' . $fileName);
 
             if ($checkIfFileExists['status'] != 200) {
                 Log::warning('Error getting the receipt file details from file-library for ' . json_encode($transaction['t_transaction_id']));
@@ -126,7 +126,7 @@ class ReceiptService
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $fileName . '"',
             ]),
-            'receipt'
+            'invoice'
         );
         unset($pdf);
         if ($response['status'] !== 200) {

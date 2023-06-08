@@ -11,24 +11,18 @@ class ReceiptService
 {
     use FeatureVersionsTrait;
 
-    protected $transactionService;
     protected $apiService;
     protected $directusService;
     protected $tokenResolveService;
-    protected $receiptService;
 
     public function __construct(
-        TransactionService $transactionService,
         ApiService $apiService,
         DirectusService $directusService,
-        TokenResolveService $tokenResolveService,
-        ReceiptService $receiptService
+        TokenResolveService $tokenResolveService
     ) {
-        $this->transactionService = $transactionService;
         $this->apiService = $apiService;
         $this->directusService = $directusService;
         $this->tokenResolveService = $tokenResolveService;
-        $this->receiptService = $receiptService;
     }
 
     /**
@@ -75,7 +69,8 @@ class ReceiptService
      */
     public function generateReceipt(string $transactionId, string $fileName): ?array
     {
-        $transaction = $this->transactionService->fetchTransaction([
+        $transactionService = app()->make('App\Services\TransactionService');
+        $transaction = $transactionService->fetchTransaction([
             't_transaction_id' => $transactionId,
             't_status' => 'done',
             't_tech_deleted' => false]);

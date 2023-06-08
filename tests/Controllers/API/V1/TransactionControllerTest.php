@@ -1368,7 +1368,6 @@ class TransactionControllerTest extends TestCase
         $this->setFeatureVersions(2, 'transaction_sync');
         $this->setFeatureVersions(2, 'invoice');
         $this->setFeatureVersions(2, 'free_transaction');
-        $this->setFeatureVersions(2, 'receipt');
 
         //set items skus price to 0
         $defaultPayload['items'][0]['skus'][0]['price'] = 0;
@@ -1396,7 +1395,6 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(array_get($transactionData[0], 'gateway'), 'free');
         $this->assertEquals(array_get($transactionData[0]['items'][0]['skus'][0], 'price'), 0);
         $this->seeInDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
-        $this->seeInDatabase('jobs', ['queue' => 'tlspay_receipt_queue'], $this->dbConnection);
         $this->seeInDatabase('jobs', ['queue' => 'workflow_transaction_sync_queue'], $this->dbConnection);
     }
 
@@ -1484,7 +1482,6 @@ class TransactionControllerTest extends TestCase
     {
         $this->setFeatureVersions(2, 'transaction_sync');
         $this->setFeatureVersions(2, 'invoice');
-        $this->setFeatureVersions(2, 'receipt');
         $this->setFeatureVersions(2, 'agent_transaction');
 
         //set agentName and paymentMethod
@@ -1514,7 +1511,6 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(array_get($transactionData[0], 'gateway'), 'paybank');
         $this->assertEquals(array_get($transactionData[0], 'agent_gateway'), 'card');
         $this->seeInDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
-        $this->seeInDatabase('jobs', ['queue' => 'tlspay_receipt_queue'], $this->dbConnection);
         $this->seeInDatabase('jobs', ['queue' => 'workflow_transaction_sync_queue'], $this->dbConnection);
     }
 

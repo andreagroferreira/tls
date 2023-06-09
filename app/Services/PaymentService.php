@@ -19,6 +19,7 @@ class PaymentService
     protected $invoiceService;
     protected $apiService;
     protected $tokenResolveService;
+    protected $receiptService;
     protected $agent_name = '';
     protected $force_pay_for_not_online_payment_avs = 'no'; //支持支付 s_online_avs=no 的avs
 
@@ -28,7 +29,8 @@ class PaymentService
         FormGroupService $formGroupService,
         InvoiceService $invoiceService,
         ApiService $apiService,
-        TokenResolveService $tokenResolveService
+        TokenResolveService $tokenResolveService,
+        ReceiptService $receiptService
     ) {
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
@@ -36,6 +38,7 @@ class PaymentService
         $this->invoiceService = $invoiceService;
         $this->apiService = $apiService;
         $this->tokenResolveService = $tokenResolveService;
+        $this->receiptService = $receiptService;
     }
 
     public function saveTransactionLog(
@@ -123,6 +126,8 @@ class PaymentService
             dispatch(new InvoiceMailJob($transaction, 'tlspay_email_invoice'))
                 ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
         }
+
+        $this->receiptService->generateReceipt($transaction['t_transaction_id'], $transaction['t_transaction_id'] . '.pdf');
 
         if (!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($error_msg, 256));
@@ -260,13 +265,16 @@ class PaymentService
 
         $pdf = new PDF(['autoScriptToLang' => true,'autoArabic' => true, 'autoLangToFont' => true, 'packTableData' => true]);
         $pdf->WriteHTML($invoice_content);
+        
         $response = $this->apiService->callFileLibraryUploadApi(
-            'country='.$country.'&city='.$city.'&fileName='.$transaction['t_transaction_id'].'.pdf&userName=tlspay',
+            'country=' . $country . '&city=' . $city . '&fileName=' . $transaction['t_transaction_id'] . '.pdf&userName=tlspay',
             response()->make($pdf->OutputBinaryData(), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$transaction['t_transaction_id'].'.pdf"'
-                ])
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $transaction['t_transaction_id'] . '.pdf"',
+            ]),
+            'invoice'
         );
+
         unset($pdf);
         if ($response['status'] !== 200) {
             Log::warning('Transaction Error: receipt pdf upload failed');

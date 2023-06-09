@@ -1433,6 +1433,7 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(array_get($transactionData[0]['items'][0]['skus'][0], 'price'), 0);
         $this->assertEquals(array_get($transactionData[0]['items'][0]['skus'][1], 'price'), 2);
         $this->missingFromDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
+        $this->missingFromDatabase('jobs', ['queue' => 'tlspay_receipt_queue'], $this->dbConnection);
         $this->missingFromDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
     }
 
@@ -1547,6 +1548,7 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(array_get($transactionData[0], 'gateway'), null);
         $this->assertEquals(array_get($transactionData[0], 'agent_gateway'), null);
         $this->missingFromDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
+        $this->missingFromDatabase('jobs', ['queue' => 'tlspay_receipt_queue'], $this->dbConnection);
         $this->missingFromDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
     }
 
@@ -1584,6 +1586,7 @@ class TransactionControllerTest extends TestCase
         $this->assertEquals(array_get($transactionData[0], 'gateway'), null);
         $this->assertEquals(array_get($transactionData[0], 'agent_gateway'), 'card');
         $this->missingFromDatabase('jobs', ['queue' => 'tlspay_invoice_queue'], $this->dbConnection);
+        $this->missingFromDatabase('jobs', ['queue' => 'tlspay_receipt_queue'], $this->dbConnection);
         $this->missingFromDatabase('jobs', ['queue' => 'tlscontact_transaction_sync_queue'], $this->dbConnection);
     }
 

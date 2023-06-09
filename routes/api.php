@@ -30,6 +30,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'V1'], function () use ($ro
     $router->post('transaction', 'TransactionController@create');
     $router->get('transactions', 'TransactionController@fetchAll');
     $router->get('list_transactions', 'TransactionController@listTransactions');
+    $router->get('generate_download_receipt', 'ReceiptController@generateOrDownloadReceipt');
 
     // form group api
     $router->get('form_group/{fg_id}', 'FormGroupController@fetch');

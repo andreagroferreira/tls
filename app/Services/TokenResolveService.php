@@ -513,7 +513,7 @@ class TokenResolveService
                 $code = $collection['code'];
             }
 
-            if ('ww' == $code || $this->issuer == $code) {
+            if ('ww' == $code || 'wwWWW2ww' == $code || $this->issuer == $code) {
                 $collectionGlobalIndex = $i;
             }
             if ($code == $this->city) {
@@ -581,13 +581,13 @@ class TokenResolveService
      *
      * @throws \Exception
      *
-     * @return string
+     * @return string|null
      */
     private function getTokenTranslationFromDirectus(
         array $tokenDetails,
         string $lang,
         string $serviceType
-    ): string {
+    ): ?string {
         $collection = $tokenDetails[1];
         $field = ($tokenDetails[2] === 'name') ? $tokenDetails[2] : 'translation.' . $tokenDetails[2];
         $options['lang'] = $lang;
@@ -635,8 +635,9 @@ class TokenResolveService
             return '';
         }
 
-        if (count($tokenCollections) > 1) {
+        if (count($tokenCollections) > 1 || $tokenDetails[1] === 'application_center_detail') {
             $translation = $this->getCorrectCollectionTranslation($tokenCollections, $tokenDetails[1]);
+            
         } else {
             if (empty(array_first($tokenCollections)['translation'])) {
                 if (filled(array_first($tokenCollections)[$tokenDetails[2]])) {

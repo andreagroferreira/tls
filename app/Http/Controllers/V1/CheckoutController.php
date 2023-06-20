@@ -55,7 +55,7 @@ class CheckoutController extends BaseController
      */
     public function checkout(Request $request)
     {
-        $lang = $request->get('lang');
+        $lang = $request->get('lang') ?? 'en-us';
         $t_id = $request->route('t_id');
 
         try {
@@ -103,6 +103,9 @@ class CheckoutController extends BaseController
                     'href' => $transaction['t_onerror_url'],
                 ], 400);
             }
+
+            $this->transactionService->updateLanguage($transaction, $lang);
+
             // pay onsite
             $is_pay_onsite = $transaction['t_gateway'] == 'pay_later';
             if ($is_pay_onsite) {

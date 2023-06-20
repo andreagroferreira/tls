@@ -55,7 +55,7 @@ class CheckoutController extends BaseController
      */
     public function checkout(Request $request)
     {
-        $lang = $request->get('lang');
+        $lang = $request->get('lang') ?? 'en-us';
         $t_id = $request->route('t_id');
 
         try {

@@ -103,6 +103,9 @@ class CheckoutController extends BaseController
                     'href' => $transaction['t_onerror_url'],
                 ], 400);
             }
+
+            $this->transactionService->updateLanguage($transaction, $lang);
+
             // pay onsite
             $is_pay_onsite = $transaction['t_gateway'] == 'pay_later';
             if ($is_pay_onsite) {

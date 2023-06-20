@@ -1031,4 +1031,18 @@ class TransactionService
             'items' => $filteredItems,
         ];
     }
+
+    /**
+     * @param array  $transaction
+     * @param string $language
+     *
+     * @return void
+     */
+    public function updateLanguage(array $transaction, string $language): void
+    {
+        $this->transactionRepository->update(
+            ['t_id' => $transaction['t_id']],
+            ['t_language' => $language]
+        );
+    }
 }

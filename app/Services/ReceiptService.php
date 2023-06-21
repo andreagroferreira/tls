@@ -43,7 +43,7 @@ class ReceiptService
                 'in' => [substr($transaction['t_issuer'], 2, 3), substr($transaction['t_issuer'], 0, 2), 'ww'],
             ],
             'type' => [
-                'eq' => $transaction['t_service'] . '_' . (($transaction['t_workflow'] == 'vac') ? 'onsite' : 'online'),
+                'eq' => $transaction['t_service'] . '_' . (($transaction['t_payment_method'] !== 'online' && $transaction['t_agent_name'] != null) ? 'onsite' : 'online'),
             ],
         ];
 

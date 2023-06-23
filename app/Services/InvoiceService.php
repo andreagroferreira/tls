@@ -213,7 +213,7 @@ class InvoiceService
      * @param string $collection_name
      * @param string $issuer
      * @param string $service
-     * @param string $lang
+     * @param string $language
      *
      * @return array
      */
@@ -221,7 +221,7 @@ class InvoiceService
         string $collection_name,
         string $issuer,
         string $service,
-        string $lang
+        string $language
     ): array {
         $country = substr($issuer, 0, 2);
         $city = substr($issuer, 2, 3);
@@ -243,7 +243,7 @@ class InvoiceService
             $collection_name,
             $select_fields,
             $select_filters,
-            ['lang' => $lang]
+            ['lang' => $language]
         );
     }
 

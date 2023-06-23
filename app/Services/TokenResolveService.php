@@ -49,7 +49,6 @@ class TokenResolveService
     /**
      * @param array  $template
      * @param array  $transaction
-     * @param string $lang
      *
      * @throws \Exception
      *
@@ -57,8 +56,7 @@ class TokenResolveService
      */
     public function resolveTemplate(
         array $template,
-        array $transaction,
-        string $lang
+        array $transaction
     ): array {
         $data = [];
         $this->issuer = $transaction['t_issuer'];
@@ -82,8 +80,7 @@ class TokenResolveService
 
         $resolvedTokens = $this->getResolvedTokens(
             $listOfToken,
-            $transaction,
-            $lang
+            $transaction
         );
 
         if (empty($resolvedTokens)) {
@@ -245,7 +242,7 @@ class TokenResolveService
                 }
                 $basketValues['services'][$sku]['price'] += $price;
                 $basketValues['vat'] += round($vat, 2) * $quantity;
-                $basketValues['price_without_vat'] += ($price - $vat);
+                $basketValues['price_without_vat'] += ($price - $vat) * $quantity;
             }
         }
         $basketValues['vat_percent'] = $vatPercent.'%' ?? '0%';
@@ -410,8 +407,7 @@ class TokenResolveService
      */
     private function getResolvedTokens(
         array $tokens,
-        array $transaction,
-        string $language
+        array $transaction
     ): array {
         $resolvedTokens = [];
         foreach ($tokens as $token) {
@@ -425,7 +421,7 @@ class TokenResolveService
 
             $tokenPrefixRule = $tokenDetails[0];
             if ($tokenPrefixRule === 'c') {
-                $resolvedTokens[$token] = $this->getTokenTranslationFromDirectus($tokenDetails, $language);
+                $resolvedTokens[$token] = $this->getTokenTranslationFromDirectus($tokenDetails, ($transaction['t_language'] !== null) ? $transaction['t_language'] : 'en-us');
             } elseif ($tokenPrefixRule === 'a') {
                 $resolvedTokens[$token] = $this->getApplicationTokenValues($tokenDetails, $transaction);
             } elseif ($tokenPrefixRule === 'basket') {
@@ -637,10 +633,14 @@ class TokenResolveService
             if ($tokenDetails[2] == 'name' && filled($tokenCollections)) {
                 foreach ($tokenCollections as $getName) {
                     if ($getName['code'] === $this->issuer) {
-                        return $getName['name'];
+                        $translation = $getName['name'];
+                        break;
                     }
-                    return ($getName['code'] === 'wwWWW2ww') ? $getName['name'] : '';
+                    if($getName['code'] === 'wwWWW2ww') {
+                        $translation = $getName['name'];
+                    }
                 }
+                return $translation ?? '';
             }
             if (empty(array_first($tokenCollections)['translation'])) {
                 Log::error('No Translation found for token with issuer:' . $this->issuer . ' - ' . $collection . '.' . $field);
@@ -669,7 +669,7 @@ class TokenResolveService
             return '';
         }
         foreach ($applicationsResponse['body'] as $applicant) {
-            $translations[] = $applicant[$tokenDetails[1]];
+            $translations[] = ($tokenDetails[1] == 'f_pers_surnames') ? $applicant['f_pers_givennames'].' '.$applicant[$tokenDetails[1]] : $applicant[$tokenDetails[1]];
         }
 
         return implode(', ', array_unique($translations, SORT_REGULAR));

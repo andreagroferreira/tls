@@ -127,7 +127,7 @@ class PaymentService
                 ->onConnection('tlspay_invoice_queue')->onQueue('tlspay_invoice_queue');
         }
 
-        $this->receiptService->generateReceipt($transaction['t_transaction_id'], $transaction['t_transaction_id'] . '.pdf');
+        $this->receiptService->generateReceipt($transaction['t_transaction_id'], 'receipt-' . $transaction['t_transaction_id'] . '.pdf');
 
         if (!empty($error_msg)) {
             Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($error_msg, 256));
@@ -297,25 +297,18 @@ class PaymentService
      */
     public function sendInvoice(array $transaction, string $collection_name): void
     {
-        $lang = 'en-us';
-
         $content = $this->invoiceService->getInvoiceContent(
             $collection_name,
             $transaction['t_issuer'],
             $transaction['t_service'],
-            $lang
+            ($transaction['t_language'] !== null) ? $transaction['t_language'] : 'en-us'
         );
 
         if (empty($content)) {
             throw new \Exception('Error Fetching Invoice Content for Collection:'.$collection_name.' - Issuer:'.$transaction['t_issuer'].' - Type:'.$transaction['t_service']);
         }
 
-        $resolvedTemplate = $this->tokenResolveService->resolveTemplate(
-            $content,
-            $transaction,
-            $lang
-        );
-
+        $resolvedTemplate = $this->tokenResolveService->resolveTemplate($content, $transaction);
         if (empty($resolvedTemplate)) {
             throw new \Exception('Error Resolving Invoice Content for Collection:'.$collection_name.' - Issuer:'.$transaction['t_issuer'].' - Type:'.$transaction['t_service']);
         }

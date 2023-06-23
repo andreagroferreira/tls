@@ -51,7 +51,7 @@ class ReceiptService
             'tlspay_receipts',
             '*.*',
             $select_filters,
-            ['lang' => 'en-us']
+            ['lang' => ($transaction['t_language'] !== null) ? $transaction['t_language'] : 'en-us']
         );
 
         if (empty($rawContent)) {

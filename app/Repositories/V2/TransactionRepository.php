@@ -11,9 +11,9 @@ class TransactionRepository
      *
      * @param int $id
      *
-     * @return null|\App\Models\Transactions
+     * @return null|Transactions
      */
-    public function getById(int $id): ?Transactions
+    public static function getById(int $id): ?Transactions
     {
         return Transactions::where('t_id', $id)->first();
     }
@@ -23,7 +23,7 @@ class TransactionRepository
      *
      * @param string $transactionId
      *
-     * @return null|\App\Models\Transactions
+     * @return null|Transactions
      */
     public function getByTransactionId(string $transactionId): ?Transactions
     {

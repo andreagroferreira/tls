@@ -5,23 +5,22 @@ namespace Src\Domain\Payment\Model\Gateway;
 class Provider
 {
     /**
-     * @var int
+     * @var id
      */
     private int $id = 1;
     /**
-     * @var string|null
+     * @var null|string
      */
     private string $code;
     /**
-     * @var string|null
+     * @var null|string
      */
     private string $name;
 
     /**
-     * @var boolean|null
+     * @var null|bool
      */
     private bool $deleted = false;
-
 
     public function getId(): int
     {

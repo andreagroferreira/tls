@@ -499,21 +499,20 @@ objects:
       labels:
         app: ${APPLICATION_NAME}
     rules:
-    - apiGroups:
-        - ''
-      resources:
-        - pods
-      verbs:
-        - get
-        - list
-    - apiGroups:
-        - ''
-      resources:
-        - pods/exec
-      verbs:
-        - create
-  -
-    apiVersion: v1
+      - apiGroups:
+          - ''
+        resources:
+          - pods
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - ''
+        resources:
+          - pods/exec
+        verbs:
+          - create
+  - apiVersion: v1
     kind: BuildConfig
     metadata:
       labels:
@@ -526,11 +525,11 @@ objects:
         to:
           kind: ImageStreamTag
           name: ${APPLICATION_NAME}:latest
-      postCommit: {}
-      resources: {}
+      postCommit: { }
+      resources: { }
       runPolicy: Serial
       source:
-        binary: {}
+        binary: { }
         type: Binary
       strategy:
         sourceStrategy:
@@ -543,12 +542,11 @@ objects:
               Value: "True"
           from:
             kind: ImageStreamTag
-            name: tlsconnect-php73-s2i:latest
+            name: tlsconnect-php81-s2i:latest
             namespace: openshift
         type: Source
       successfulBuildsHistoryLimit: 5
-  -
-    apiVersion: v1
+  - apiVersion: v1
     kind: ImageStream
     metadata:
       labels:
@@ -564,15 +562,12 @@ objects:
       00-app.conf: |
         SetEnv APPLICATION_ENV "${APPLICATION_ENV}"
         SetEnv PROJECT $PROJECT
-        php_flag log_errors on
-        php_flag track_errors on
+        SetEnv PAGE_TYPE "app"
         CustomLog "|/usr/bin/cat" "{ \"time\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\", \"remoteIP\":\"%a\", \"host\":\"%V\", \"requestPath\":\"%U\", \"query\":\"%q\",\"method\":\"%m\", \"status\":\"%>s\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }"
         LogFormat "{ \"time\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\", \"remoteIP\":\"%a\", \"host\":\"%V\", \"requestPath\":\"%U\", \"query\":\"%q\",\"method\":\"%m\", \"status\":\"%>s\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }"
         TransferLog "|/usr/bin/cat"
         ErrorLogFormat "{ \"time\":\"%{%Y-%m-%dT%T}t\", \"%-m\":\"%l\", \"pid\":\"%P\", \"Message\":\"%M\" }"
-
-  -
-    apiVersion: apps.openshift.io/v1
+  - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -1625,29 +1620,29 @@ objects:
                   protocol: TCP
                   name: https
               startupProbe:
-                  httpGet:
-                      scheme: HTTPS
-                      path: /api/v1/list_transactions?page=1&limit=1
-                      port: https
-                  failureThreshold: 18
+                httpGet:
+                  scheme: HTTPS
+                  path: /api/v1/list_transactions?page=1&limit=1
+                  port: https
+                failureThreshold: 18
               readinessProbe:
-                  httpGet:
-                      scheme: HTTPS
-                      path: /api/v1/list_transactions?page=1&limit=1
-                      port: https
-                  timeoutSeconds: 3
-                  periodSeconds: 10
-                  successThreshold: 1
-                  failureThreshold: 6
+                httpGet:
+                  scheme: HTTPS
+                  path: /api/v1/list_transactions?page=1&limit=1
+                  port: https
+                timeoutSeconds: 3
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 6
               livenessProbe:
-                  httpGet:
-                      scheme: HTTPS
-                      path: /api/v1/list_transactions?page=1&limit=1
-                      port: https
-                  timeoutSeconds: 3
-                  periodSeconds: 30
-                  successThreshold: 1
-                  failureThreshold: 3
+                httpGet:
+                  scheme: HTTPS
+                  path: /api/v1/list_transactions?page=1&limit=1
+                  port: https
+                timeoutSeconds: 3
+                periodSeconds: 30
+                successThreshold: 1
+                failureThreshold: 3
               resources:
                 requests:
                   memory: ${MEMORY_REQUEST}
@@ -1675,22 +1670,22 @@ objects:
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
-          securityContext: {}
+          securityContext: { }
           terminationGracePeriodSeconds: 30
           volumes:
-            - emptyDir: {}
+            - emptyDir: { }
               name: volume-application-data
-            - emptyDir: {}
+            - emptyDir: { }
               name: volume-logs
-            - emptyDir: {}
+            - emptyDir: { }
               name: volume-apache-config
-            - emptyDir: {}
+            - emptyDir: { }
               name: volume-ssl-move
-            - emptyDir: {}
+            - emptyDir: { }
               name: volume-ssl
-            - emptyDir: {}
+            - emptyDir: { }
               name: volume-pgpass
-            - emptyDir: {}
+            - emptyDir: { }
               name: trusted-ca
             - name: volume-ssl-init
               secret:
@@ -1708,8 +1703,7 @@ objects:
                     path: 00-app.conf
                 name: ${APPLICATION_NAME}-${PROJECT}
               name: volume-apache-config-init
-  -
-    apiVersion: v1
+  - apiVersion: v1
     kind: Service
     metadata:
       annotations:
@@ -1724,8 +1718,7 @@ objects:
       ports:
         - name: https
           port: 8443
-  -
-    kind: Route
+  - kind: Route
     apiVersion: v1
     id: "${APPLICATION_NAME}-https"
     metadata:
@@ -1753,12 +1746,12 @@ objects:
     spec:
       ingress:
         - from:
-          - namespaceSelector:
-              matchLabels:
-                network.openshift.io/policy-group: ingress
-          - namespaceSelector:
-              matchLabels:
-                name: default
+            - namespaceSelector:
+                matchLabels:
+                  network.openshift.io/policy-group: ingress
+            - namespaceSelector:
+                matchLabels:
+                  name: default
           ports:
             - port: 8443
               protocol: TCP

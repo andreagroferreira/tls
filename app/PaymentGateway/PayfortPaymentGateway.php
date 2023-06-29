@@ -2,16 +2,15 @@
 
 namespace App\PaymentGateway;
 
+use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\ApiService;
 use App\Services\FormGroupService;
 use App\Services\GatewayService;
-use App\Services\PaymentService;
 use App\Services\PaymentInitiateService;
+use App\Services\PaymentService;
+use App\Services\TransactionItemsService;
 use App\Services\TransactionLogsService;
 use App\Services\TransactionService;
-use App\Services\TransactionItemsService;
-use App\Services\ApiService;
-use Illuminate\Support\Facades\Log;
-use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use Illuminate\Support\Arr;
 
 class PayfortPaymentGateway implements PaymentGatewayInterface
@@ -33,16 +32,15 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         GatewayService $gatewayService,
         PaymentService $paymentService,
         ApiService $apiService
-    )
-    {
+    ) {
         $this->paymentInitiateService = $paymentInitiateService;
-        $this->transactionService     = $transactionService;
+        $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->transactionItemsService = $transactionItemsService;
-        $this->formGroupService   = $formGroupService;
-        $this->gatewayService     = $gatewayService;
-        $this->paymentService     = $paymentService;
-        $this->apiService         = $apiService;
+        $this->formGroupService = $formGroupService;
+        $this->gatewayService = $gatewayService;
+        $this->paymentService = $paymentService;
+        $this->apiService = $apiService;
     }
 
     public function getPaymentGatewayName()
@@ -57,7 +55,6 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
 
     public function checkout()
     {
-
     }
 
     public function redirto($params)
@@ -68,28 +65,29 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         if (blank($translations_data)) {
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: transaction not found'
+                'message' => 'Transaction ERROR: transaction not found',
             ];
-        } else if ($pa_id) {
+        }
+        if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
-        $client  = $translations_data['t_client'];
-        $issuer  = $translations_data['t_issuer'];
-        $fg_id   = $translations_data['t_xref_fg_id'];
+        $client = $translations_data['t_client'];
+        $issuer = $translations_data['t_issuer'];
+        $fg_id = $translations_data['t_xref_fg_id'];
         $payfort_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
-        $pay_config     = $this->getPaySecret($payfort_config);
-        $application    = $this->formGroupService->fetch($fg_id, $client);
-        $u_email        = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
+        $pay_config = $this->getPaySecret($payfort_config);
+        $application = $this->formGroupService->fetch($fg_id, $client);
+        $u_email = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $params = [
-            'command'             => 'PURCHASE',
-            'access_code'         => $pay_config['access_code'],
+            'command' => 'PURCHASE',
+            'access_code' => $pay_config['access_code'],
             'merchant_identifier' => $pay_config['merchant_id'],
-            'merchant_reference'  => $translations_data['t_transaction_id'],
-            'amount'              => $translations_data['t_amount'] * 100,
-            'currency'            => $translations_data['t_currency'],
-            'language'            => 'en',
-            'customer_email'      => $u_email,
-            'return_url'          => get_callback_url($payfort_config['common']['return_url']),
+            'merchant_reference' => $translations_data['t_transaction_id'],
+            'amount' => $translations_data['t_amount'] * 100,
+            'currency' => $translations_data['t_currency'],
+            'language' => 'en',
+            'customer_email' => $u_email,
+            'return_url' => get_callback_url($payfort_config['common']['return_url']),
         ];
         $params['signature'] = $this->makeSignature($params, $pay_config['request_phrase']);
 
@@ -98,7 +96,7 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         return [
             'form_method' => 'post',
             'form_action' => $pay_config['host'],
-            'form_fields' => $params
+            'form_fields' => $params,
         ];
     }
 
@@ -109,155 +107,162 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         if (empty($order_id)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => '[null]',
-                'message'    => 'empty_merchant_ref_number'
+                'orderid' => '[null]',
+                'message' => 'empty_merchant_ref_number',
             ];
         }
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         if (empty($transaction)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => $order_id,
-                'message'    => 'transaction_id_not_exists'
+                'orderid' => $order_id,
+                'message' => 'transaction_id_not_exists',
             ];
         }
         if (strtolower($transaction['t_status']) == 'done') {
             return [
                 'is_success' => 'ok',
-                'orderid'    => $order_id,
-                'message'    => 'The transaction paid successfully.',
-                'href'       => $transaction['t_redirect_url']
+                'orderid' => $order_id,
+                'message' => 'The transaction paid successfully.',
+                'href' => $transaction['t_redirect_url'],
             ];
         }
         if (strtolower($transaction['t_status']) == 'close') {
             return [
                 'is_success' => 'fail',
-                'orderid'    => $order_id,
-                'message'    => 'transaction_cancelled',
-                'href'       => $transaction['t_onerror_url']
+                'orderid' => $order_id,
+                'message' => 'transaction_cancelled',
+                'href' => $transaction['t_onerror_url'],
             ];
         }
         $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
-        $pay_config     = $this->getPaySecret($payfort_config);
-        $validate       = $this->validateSignature($return_params, $pay_config['response_phrase']);
+        $pay_config = $this->getPaySecret($payfort_config);
+        $validate = $this->validateSignature($return_params, $pay_config['response_phrase']);
         if ($validate) {
             if ($return_params['amount'] != $transaction['t_amount'] * 100) {
                 return [
                     'is_success' => 'fail',
-                    'orderid'    => $order_id,
-                    'message'    => 'payment_amount_incorrect',
-                    'href'       => $transaction['t_onerror_url']
+                    'orderid' => $order_id,
+                    'message' => 'payment_amount_incorrect',
+                    'href' => $transaction['t_onerror_url'],
                 ];
             }
             if (strtolower($transaction['t_status']) == 'pending' && strtoupper($return_params['command']) == 'PURCHASE' && $return_params['response_code'] == 14000 && $return_params['status'] == 14 && strtolower($return_params['response_message']) == 'success') {
                 // update transaction
                 $confirm_params = [
-                    'gateway'                => $this->getPaymentGatewayName(),
-                    'amount'                 => floatval($transaction['t_amount']),
-                    'currency'               => $transaction['t_currency'],
-                    'transaction_id'         => $transaction['t_transaction_id'],
+                    'gateway' => $this->getPaymentGatewayName(),
+                    'amount' => floatval($transaction['t_amount']),
+                    'currency' => $transaction['t_currency'],
+                    'transaction_id' => $transaction['t_transaction_id'],
                     'gateway_transaction_id' => $return_params['fort_id'],
                 ];
-                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'success');
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $return_params, 'success');
                 $response = $this->paymentService->confirm($transaction, $confirm_params);
                 if ($response['is_success'] == 'ok') {
                     return [
                         'is_success' => 'ok',
-                        'orderid'    => $order_id,
-                        'message'    => 'The transaction paid successfully.',
-                        'href'       => $transaction['t_redirect_url']
-                    ];
-                } else {
-                    return [
-                        'is_success' => 'fail',
-                        'orderid'    => $order_id,
-                        'message'    => $response['message'],
-                        'href'       => $transaction['t_onerror_url']
+                        'orderid' => $order_id,
+                        'message' => 'The transaction paid successfully.',
+                        'href' => $transaction['t_redirect_url'],
                     ];
                 }
-            } else {
+
                 return [
                     'is_success' => 'fail',
-                    'orderid'    => $order_id,
-                    'message'    => 'unknown_error',
-                    'href'       => $transaction['t_onerror_url']
+                    'orderid' => $order_id,
+                    'message' => $response['message'],
+                    'href' => $transaction['t_onerror_url'],
                 ];
             }
-        } else {
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $return_params,'fail');
+
             return [
                 'is_success' => 'fail',
-                'orderid'    => $order_id,
-                'message'    => 'signature_verification_failed',
-                'href'       => $transaction['t_onerror_url']
+                'orderid' => $order_id,
+                'message' => 'unknown_error',
+                'href' => $transaction['t_onerror_url'],
             ];
         }
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $return_params, 'fail');
+
+        return [
+            'is_success' => 'fail',
+            'orderid' => $order_id,
+            'message' => 'signature_verification_failed',
+            'href' => $transaction['t_onerror_url'],
+        ];
     }
 
     public function notify($notify_params)
     {
-        $order_id     = $notify_params['merchant_reference'] ?? '';
+        $order_id = $notify_params['merchant_reference'] ?? '';
         $json['code'] = 400;
 
         if (empty($order_id)) {
             $json['message'] = 'empty_merchant_ref_number';
+
             return $json;
         }
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         if (empty($transaction)) {
             $json['message'] = 'transaction_id_not_exists';
+
             return $json;
         }
         if (strtolower($transaction['t_status']) == 'done') {
             $json['code'] = 200;
             $json['message'] = 'transaction_finished';
+
             return $json;
         }
         if (strtolower($transaction['t_status']) == 'close') {
             $json['message'] = 'transaction_cancelled';
+
             return $json;
         }
 
         $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
-        $pay_config     = $this->getPaySecret($payfort_config);
-        $validate       = $this->validateSignature($notify_params, $pay_config['response_phrase']);
+        $pay_config = $this->getPaySecret($payfort_config);
+        $validate = $this->validateSignature($notify_params, $pay_config['response_phrase']);
         if ($validate) {
             if ($notify_params['amount'] != $transaction['t_amount'] * 100) {
                 $json['message'] = 'payment_amount_incorrect';
+
                 return $json;
             }
 
             if (strtolower($transaction['t_status']) == 'pending' && strtoupper($notify_params['command']) == 'PURCHASE' && $notify_params['response_code'] == 14000 && $notify_params['status'] == 14 && strtolower($notify_params['response_message']) == 'success') {
                 // update transaction
                 $confirm_params = [
-                    'gateway'                => $this->getPaymentGatewayName(),
-                    'amount'                 => floatval($transaction['t_amount']),
-                    'currency'               => $transaction['t_currency'],
-                    'transaction_id'         => $transaction['t_transaction_id'],
+                    'gateway' => $this->getPaymentGatewayName(),
+                    'amount' => floatval($transaction['t_amount']),
+                    'currency' => $transaction['t_currency'],
+                    'transaction_id' => $transaction['t_transaction_id'],
                     'gateway_transaction_id' => $notify_params['fort_id'],
                 ];
-                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'success');
+                $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $notify_params, 'success');
                 $response = $this->paymentService->confirm($transaction, $confirm_params);
                 if ($response['is_success'] == 'ok') {
                     $json['code'] = 200;
                     $json['message'] = 'transaction_success';
-                    return $json;
-                } else {
-                    $json['message'] = $response['message'];
+
                     return $json;
                 }
-            } else {
-                $json['message'] = 'unknown_error';
+                $json['message'] = $response['message'];
+
                 return $json;
             }
-        } else {
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $notify_params,'fail');
-            $json['message'] = 'signature_verification_failed';
+            $json['message'] = 'unknown_error';
+
             return $json;
         }
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $notify_params, 'fail');
+        $json['message'] = 'signature_verification_failed';
+
+        return $json;
     }
 
-    private function getPaySecret($pay_config) {
+    private function getPaySecret($pay_config)
+    {
         if ($this->gatewayService->getClientUseFile()) {
             $app_env = $this->isSandBox();
             $is_live = ($pay_config['common']['env'] == 'live');
@@ -265,15 +270,18 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
         } else {
             $key = 'config';
         }
+
         return $pay_config[$key];
     }
 
-    private function makeSignature($arr, $phrase) {
+    private function makeSignature($arr, $phrase)
+    {
         $shaString = '';
         ksort($arr);
         foreach ($arr as $key => $value) {
-            $shaString .= "$key=$value";
+            $shaString .= "{$key}={$value}";
         }
+
         return hash('sha256', $phrase . $shaString . $phrase);
     }
 
@@ -283,8 +291,9 @@ class PayfortPaymentGateway implements PaymentGatewayInterface
             return false;
         }
         $old_sign = $arr['signature'];
-        $arr      = Arr::except($arr, ['signature']);
+        $arr = Arr::except($arr, ['signature']);
         $new_sign = $this->makeSignature($arr, $phrase);
-        return $new_sign==$old_sign;
+
+        return $new_sign == $old_sign;
     }
 }

@@ -53,49 +53,9 @@ prepare-instance:
     - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: on_success
-
-test-unit:
-  stage: test
-  image: ${DOCKER_REGISTRY_ADDRESS}/composer:${DOCKER_TAG_COMPOSER_V2}
-  dependencies:
-    - prepare-instance
-  before_script:
-    - apk add g++ make zlib-dev autoconf file gcc libc-dev make g++ pkgconf re2c
-    - pecl install xdebug && docker-php-ext-enable xdebug
-    - docker-php-ext-install bcmath
-    - apk add postgresql postgresql-dev
-    - docker-php-ext-install pdo pgsql pdo_pgsql
-    - addgroup -S postgres && adduser -S postgres -G postgres
-    - mkdir -p /var/lib/postgresql/data
-    - mkdir -p /run/postgresql/
-    - chown -R postgres:postgres /run/postgresql/
-    - chmod -R 777 /var/lib/postgresql/data
-    - chown -R postgres:postgres /var/lib/postgresql/data
-    - su postgres -c "initdb /var/lib/postgresql/data; echo 'host all  all    0.0.0.0/0  md5' >> /var/lib/postgresql/data/pg_hba.conf; pg_ctl start -D /var/lib/postgresql/data -l /var/lib/postgresql/log.log;"
-    - psql -U postgres -c "CREATE ROLE root WITH SUPERUSER; CREATE ROLE common WITH SUPERUSER; ALTER ROLE root WITH LOGIN; ALTER ROLE root WITH CREATEDB;"
-  script:
-    - export XDEBUG_MODE="coverage"
-    - ./vendor/bin/phpunit --coverage-clover=coverage-report.clover --log-junit unittest-report.xml
-  extends: .artifacts_expire_in
-  artifacts:
-    when: always
-    reports:
-      junit:
-        - unittest-report.xml
-    paths:
-      - "./"
-  rules:
-    - if: $ROLLBACK == "true" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TAG
-      when: never
-    - if: $APP_ENV == "production"
-      when: manual
-      allow_failure: false
-    - when: on_success
-      allow_failure: false
-
 deploy-instance:
   stage: deploy
-  dependencies: []
+  dependencies: [ ]
   variables:
     MEMORY_REQUEST: "256Mi"
     MEMORY_LIMIT: "512Mi"
@@ -126,9 +86,9 @@ deploy-instance:
         exit 1
       fi
     - oc get secret $PROJECT-pgcluster-tlspay-e-commerce-service-db-secret || oc create secret generic $PROJECT-pgcluster-tlspay-e-commerce-service-db-secret
-        --from-literal=database-name=""
-        --from-literal=username=""
-        --from-literal=password=""
+      --from-literal=database-name=""
+      --from-literal=username=""
+      --from-literal=password=""
     - oc process -f ./openshift/payment-api-template.yaml
       APPLICATION_NAME="${APPLICATION_NAME}"
       PROJECT="${INSTANCE}"
@@ -710,7 +670,7 @@ deploy-instance:
 
 rollback:
   extends: .rollback
-  dependencies: []
+  dependencies: [ ]
   script:
     - oc rollout undo dc/${APPLICATION_NAME}
   rules:

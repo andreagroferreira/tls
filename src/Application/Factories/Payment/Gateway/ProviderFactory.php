@@ -59,4 +59,5 @@ class ProviderFactory
 
         return self::fromEloquent($providerEloquentModel);
     }
+
 }

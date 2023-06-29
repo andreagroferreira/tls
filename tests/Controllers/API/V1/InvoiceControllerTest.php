@@ -20,7 +20,7 @@ class InvoiceControllerTest extends TestCase
 
     public function testInvoiceApiMethodIsGet(): void
     {
-        $this->post($this->invoiceApi.'/1234');
+        $this->post($this->invoiceApi . '/1234');
         $this->response->assertStatus(405);
     }
 
@@ -28,13 +28,13 @@ class InvoiceControllerTest extends TestCase
     {
         $transaction = $this->generateTransaction();
 
-        $this->get($this->invoiceApi.'/'.$transaction->t_transaction_id);
+        $this->get($this->invoiceApi . '/' . $transaction->t_transaction_id);
         $this->response->assertStatus(404);
     }
 
     public function testTransactionIdNotFound(): void
     {
-        $this->get($this->invoiceApi.'/1234');
+        $this->get($this->invoiceApi . '/1234');
         $this->response->assertStatus(404);
     }
 
@@ -48,7 +48,7 @@ class InvoiceControllerTest extends TestCase
         $mockInvoiceService->method('getInvoiceFileContent')
             ->willReturn('success');
 
-        $this->get($this->invoiceApi.'/'.$transaction->t_transaction_id);
+        $this->get($this->invoiceApi . '/' . $transaction->t_transaction_id);
         $this->response->assertStatus(200);
     }
 
@@ -58,7 +58,7 @@ class InvoiceControllerTest extends TestCase
 
         $country = substr($transaction->t_issuer, 0, 2);
         $city = substr($transaction->t_issuer, 2, 3);
-        $expectedFilePath = 'invoice/WW/'.$country.'/'.$city.'/'.$transaction->t_xref_fg_id.'/'.$transaction->t_transaction_id.'.pdf';
+        $expectedFilePath = 'invoice/WW/' . $country . '/' . $city . '/' . $transaction->t_xref_fg_id . '/' . $transaction->t_transaction_id . '.pdf';
 
         $filePath = getFilePath((array) $transaction, $transaction->t_invoice_storage);
 
@@ -84,7 +84,7 @@ class InvoiceControllerTest extends TestCase
             't_invoice_storage' => 's3',
         ]);
 
-        $expectedFilePath = $transaction->t_client.'/'.$transaction->t_xref_fg_id.'/'.$transaction->t_transaction_id.'.pdf';
+        $expectedFilePath = $transaction->t_client . '/' . $transaction->t_xref_fg_id . '/' . $transaction->t_transaction_id . '.pdf';
 
         $filePath = getFilePath((array) $transaction, $transaction->t_invoice_storage);
 

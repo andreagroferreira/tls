@@ -11,15 +11,13 @@ class AccountFactory
 {
     public static function fromRequest(Request $request): ?Account
     {
-        $accountEloquentModel = AccountEloquentModel::find($request->get('account_id'));
+        $accountEloquentModel = AccountEloquentModel::find($request->get('pa_id'));
 
         if (null === $accountEloquentModel) {
             return null;
         }
+
         $provider = ProviderFactory::toMergeProvider($accountEloquentModel->pa_xref_psp_id);
-        if (false === $provider) {
-            return null;
-        }
 
         return self::fromEloquent($accountEloquentModel, $provider);
     }

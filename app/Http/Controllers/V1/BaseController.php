@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Laravel\Lumen\Routing\Controller;
+use App\Http\Controllers\Controller;
 
 /**
  * @OA\Info(

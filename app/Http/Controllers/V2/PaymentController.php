@@ -8,7 +8,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Laravel\Lumen\Routing\Controller;
+use App\Http\Controllers\Controller;
 
 class PaymentController extends Controller
 {

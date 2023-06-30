@@ -7,7 +7,6 @@ use App\Repositories\TransactionItemsRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\TransferTableTransactionRepository;
 use App\Services\DbConnectionService;
-use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -46,9 +45,9 @@ class GetTransactionsToMigrate extends Command
      * @param TransactionItemsRepository         $transactionItemsRepository
      * @param DbConnectionService                $dbConnectionService
      *
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     public function handle(
         TransferTableTransactionRepository $transferTableTransactionRepository,
@@ -81,7 +80,7 @@ class GetTransactionsToMigrate extends Command
                 $response = $this->createTransactions($transaction, $transactionItems);
                 if (isset($response['transaction'])) {
                     $transferTableTransactionRepository->update(['t_transaction_id' => $transaction->t_transaction_id], ['result_migration' => 'OK']);
-                    Log::info('Transactions migrated successful for Transaction t_id: '.$response['transaction']['t_id']);
+                    Log::info('Transactions migrated successful for Transaction t_id: ' . $response['transaction']['t_id']);
                 }
                 if (isset($response['error'])) {
                     $transferTableTransactionRepository->update(['t_transaction_id' => $transaction->t_transaction_id], ['result_migration' => json_encode($response['error'])]);
@@ -90,7 +89,7 @@ class GetTransactionsToMigrate extends Command
             } catch (\Exception $e) {
                 $dbConnection->rollBack();
                 $transferTableTransactionRepository->update(['t_transaction_id' => $transaction->t_transaction_id], ['result_migration' => json_encode($e->getMessage())]);
-                Log::error('Error to import Transaction ID: '.$transaction->t_transaction_id.'. Error Message: '.$e->getMessage());
+                Log::error('Error to import Transaction ID: ' . $transaction->t_transaction_id . '. Error Message: ' . $e->getMessage());
             }
         }
     }

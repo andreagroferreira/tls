@@ -1,10 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class CreatePaymentDatabase extends Migration
 {
@@ -18,9 +15,9 @@ class CreatePaymentDatabase extends Migration
         $database = config('database.connections.payment_pgsql.database');
 
         $db_connection = DB::connection('pgsql');
-        if ($db_connection->table('pg_database')->whereRaw("datname='$database'")->count() === 0) {
+        if ($db_connection->table('pg_database')->whereRaw("datname='{$database}'")->count() === 0) {
             $db_connection->commit();
-            $db_connection->statement('CREATE DATABASE ' . '"' . $database . '"');
+            $db_connection->statement('CREATE DATABASE "' . $database . '"');
             sleep(30);
         }
 
@@ -34,6 +31,5 @@ class CreatePaymentDatabase extends Migration
      */
     public function down()
     {
-
     }
 }

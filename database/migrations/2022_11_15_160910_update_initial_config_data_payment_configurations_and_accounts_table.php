@@ -64,7 +64,7 @@ class UpdateInitialConfigDataPaymentConfigurationsAndAccountsTable extends Migra
                             if (!empty($gatewayValues[$config])) {
                                 $paymentAccountData['pa_type'] = $config;
                                 $paymentAccountData['pa_info'] = json_encode($this->getPaymentAccountInfo($gatewayValues[$config]));
-                                $paymentAccountData['pa_name'] = ucfirst($gatewayKey).' '.$issuer;
+                                $paymentAccountData['pa_name'] = ucfirst($gatewayKey) . ' ' . $issuer;
                                 $configurations['pc_is_active'] = ($envName === $config);
                                 $this->createPayment($paymentAccountData, $configurations);
                             }

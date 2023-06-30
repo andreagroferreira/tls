@@ -307,7 +307,7 @@ return [
         ],
         'production' => [
             // TODO: To be completed
-            'host' => 'test', //env('ENVPAY_PAYSOFT_uaKBP2pl_HOST')
+            'host' => 'test', // env('ENVPAY_PAYSOFT_uaKBP2pl_HOST')
             'merchant_id' => null,
             'signature_algorithm' => null,
             'signature_secret_key' => null,

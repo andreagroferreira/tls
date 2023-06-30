@@ -49,7 +49,7 @@ class TransactionItemService
     /**
      * Returns an array of the transaction items given a transactionId.
      * Prepared to be synced with the Ecommerce side.
-     * 
+     *
      * @return array
      */
     public function getItemsPreparedToSync(): array

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Repositories;
-
 
 use App\Models\RecommendationConfig as RecommendationConfigModel;
 
@@ -12,8 +10,7 @@ class RecommendationConfigRepositories
 
     public function __construct(
         RecommendationConfigModel $RecommendationConfigModel
-    )
-    {
+    ) {
         $this->RecommendationConfigModel = $RecommendationConfigModel;
     }
 
@@ -43,5 +40,4 @@ class RecommendationConfigRepositories
     {
         return $this->RecommendationConfigModel->find($rc_id);
     }
-
 }

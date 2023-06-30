@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransactionLogs extends Model
 {
+    public $timestamps = false;
     protected $table = 'transaction_logs';
     protected $primaryKey = 'tl_id';
-    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *

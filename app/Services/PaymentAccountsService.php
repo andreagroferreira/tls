@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\PaymentAccountsRepositories;
 use App\Repositories\PaymentServiceProvidersRepositories;
-use Illuminate\Support\Facades\Log;
 
 class PaymentAccountsService
 {
@@ -16,8 +15,7 @@ class PaymentAccountsService
         PaymentAccountsRepositories $paymentAccountsRepositories,
         PaymentServiceProvidersRepositories $paymentServiceProvidersRepositories,
         DbConnectionService $dbConnectionService
-    )
-    {
+    ) {
         $this->paymentAccountsRepositories = $paymentAccountsRepositories;
         $this->paymentAccountsRepositories->setConnection($dbConnectionService->getConnection());
         $this->paymentServiceProvidersRepositories = $paymentServiceProvidersRepositories;
@@ -48,6 +46,7 @@ class PaymentAccountsService
     public function fetchPaymentServiceProvidersList(): array
     {
         $paymentServiceProviders = $this->paymentServiceProvidersRepositories->fetchAll(['psp_id', 'psp_code', 'psp_name']);
+
         return $paymentServiceProviders->toArray();
     }
 
@@ -55,5 +54,4 @@ class PaymentAccountsService
     {
         return $this->paymentAccountsRepositories->create($params);
     }
-
 }

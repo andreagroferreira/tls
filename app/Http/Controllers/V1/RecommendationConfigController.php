@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Jobs\PaymentEauditorLogJob;
 use App\Services\RecommendationConfigService;
 use Illuminate\Http\Request;
-use App\Jobs\PaymentEauditorLogJob;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Queue;
 
 class RecommendationConfigController extends BaseController
 {
@@ -15,8 +13,7 @@ class RecommendationConfigController extends BaseController
 
     public function __construct(
         RecommendationConfigService $recommendationConfigService
-    )
-    {
+    ) {
         $this->recommendationConfigService = $recommendationConfigService;
     }
 
@@ -25,32 +22,41 @@ class RecommendationConfigController extends BaseController
      *     path="/api/v1/recommendation-config-upload",
      *     tags={"Payment API"},
      *     description="upload csv file to table recommendation_config",
+     *
      *      @OA\Parameter(
      *          name="files",
      *          in="query",
      *          description="upload the file name",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="recommendation_config.csv"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="uploaded_by",
      *          in="query",
      *          description="log on user",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="hua"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="comment",
      *          in="query",
      *          description="user comments",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="hua"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="return upload success",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -65,9 +71,9 @@ class RecommendationConfigController extends BaseController
             'rc_comment' => $request->input('comment'),
         ];
         $validator = validator($params, [
-            'rc_file_name'   => 'required',
-            'rc_uploaded_by'  => 'required|string',
-            'rr_comment' => 'string|nullable'
+            'rc_file_name' => 'required',
+            'rc_uploaded_by' => 'required|string',
+            'rr_comment' => 'string|nullable',
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
@@ -78,18 +84,19 @@ class RecommendationConfigController extends BaseController
             foreach ($files as $name => $content) {
                 $fileInfo = [
                     'fileName' => $name,
-                    'fileContent' => $content['fileContent']
+                    'fileContent' => $content['fileContent'],
                 ];
             }
         }
         $fileName = $fileInfo['fileName'];
-        $entension = substr($fileName,strrpos($fileName,'.')+1);
+        $entension = substr($fileName, strrpos($fileName, '.') + 1);
         if ($entension != 'csv') {
             return $this->sendError('file format error', 'Please upload a file in CSV format.');
         }
         $fileContent = base64_decode($fileInfo['fileContent']);
         $fileSize = strlen($fileContent);
-        try{
+
+        try {
             $recommendation_rules_content = csv_content_array($fileContent, ',');
         } catch (\Exception $e) {
             return $this->sendError('file error', 'Please upload the correct file');
@@ -100,17 +107,16 @@ class RecommendationConfigController extends BaseController
                 return $this->sendError('File structure error', 'File is missing ' . $v . ' column.');
             }
         }
-        foreach ($recommendation_rules_content as $k=>$v){
-            if($v['Priority'] && !is_numeric($v['Priority'])){
-                return $this->sendError('File structure error', 'line '.($k+2).':Priority column format error,Priority should be empty or an integer.');
+        foreach ($recommendation_rules_content as $k => $v) {
+            if ($v['Priority'] && !is_numeric($v['Priority'])) {
+                return $this->sendError('File structure error', 'line ' . ($k + 2) . ':Priority column format error,Priority should be empty or an integer.');
             }
-            if($v['Profile'] && (!is_string($v['Profile']) || is_numeric($v['Profile']))){
-                return $this->sendError('File structure error', 'line '.($k+2).':Profile column format error,Profile should be empty or string.');
+            if ($v['Profile'] && (!is_string($v['Profile']) || is_numeric($v['Profile']))) {
+                return $this->sendError('File structure error', 'line ' . ($k + 2) . ':Profile column format error,Profile should be empty or string.');
             }
-            if(empty($v['Scope'])){
-                return $this->sendError('File structure error', 'line '.($k+2).':Scope column format error,Scope should not be empty.');
+            if (empty($v['Scope'])) {
+                return $this->sendError('File structure error', 'line ' . ($k + 2) . ':Scope column format error,Scope should not be empty.');
             }
-
         }
         $uploaded_by = $params['rc_uploaded_by'];
         $params_create = [
@@ -118,29 +124,31 @@ class RecommendationConfigController extends BaseController
             'rc_uploaded_by' => $uploaded_by,
             'rc_content' => $fileContent,
             'rc_file_size' => $fileSize,
-            'rc_comment' => $params['rc_comment']
+            'rc_comment' => $params['rc_comment'],
         ];
 
         $log_content = [
-            'action_name'   => $this->recommendationActionName,
-            'user_name'     => $uploaded_by,
-            'rc_file_name'  => $fileName,
-            'queue_type'    => 'profile_process_log'
+            'action_name' => $this->recommendationActionName,
+            'user_name' => $uploaded_by,
+            'rc_file_name' => $fileName,
+            'queue_type' => 'profile_process_log',
         ];
 
         try {
             $this->recommendationConfigService->create($params_create);
             $log_content['type'] = 'Success';
             dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
-	    return $this->sendResponse([
+
+            return $this->sendResponse([
                 'status' => 'success',
-                'message' => 'Upload successful!'
+                'message' => 'Upload successful!',
             ]);
         } catch (\Exception $e) {
-            $log_content['type']         = 'Error';
+            $log_content['type'] = 'Error';
             $log_content['errorComment'] = $e->getMessage();
             dispatch(new PaymentEauditorLogJob($log_content))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
-	    return $this->sendError('unknown_error', $e->getMessage());
+
+            return $this->sendError('unknown_error', $e->getMessage());
         }
     }
 
@@ -149,18 +157,23 @@ class RecommendationConfigController extends BaseController
      *     path="/api/v1/recommendation-configs",
      *     tags={"Payment API"},
      *     description="Get the top10 recommendation rule files",
+     *
      *     @OA\Parameter(
      *          name="limit",
      *          in="query",
      *          description="number of recommendation_config, default for 10",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="10"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the recommendation result list",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -174,15 +187,16 @@ class RecommendationConfigController extends BaseController
                 'limit' => $request->get('limit', 10),
             ];
             $validator = validator($params, [
-                'limit' => 'integer'
+                'limit' => 'integer',
             ]);
-            if($validator->fails()) {
+            if ($validator->fails()) {
                 return $this->sendError('params error', $validator->errors()->first());
             }
             $res = $this->recommendationConfigService->fetch($params['limit']);
-            foreach ($res as $k=>$v){
+            foreach ($res as $k => $v) {
                 $res[$k]['rc_file_size'] = get_file_size($v['rc_file_size']);
             }
+
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
@@ -194,30 +208,36 @@ class RecommendationConfigController extends BaseController
      *     path="/api/v1/recommendation-config/{rc_id}",
      *     tags={"Payment API"},
      *     description="Download the recommendation config files by id",
+     *
      *      @OA\Parameter(
      *          name="rc_id",
      *          in="path",
      *          description="the id for this file",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="Download the recommendation config",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
      *      )
      * )
      */
-    public function download(Request $request){
-        $params    = [
-            'rc_id' => $request->route('rc_id')
+    public function download(Request $request)
+    {
+        $params = [
+            'rc_id' => $request->route('rc_id'),
         ];
         $validator = validator($params, [
-            'rc_id' => 'required|integer'
+            'rc_id' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -226,11 +246,11 @@ class RecommendationConfigController extends BaseController
 
         try {
             $params = $validator->validated();
-            $res    = $this->recommendationConfigService->fetchByRcId($params['rc_id']);
+            $res = $this->recommendationConfigService->fetchByRcId($params['rc_id']);
+
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }
-
 }

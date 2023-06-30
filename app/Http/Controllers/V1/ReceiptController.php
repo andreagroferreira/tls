@@ -19,13 +19,16 @@ class ReceiptController extends BaseController
      *     path="/api/v1/generate_download_receipt",
      *     tags={"Payment API"},
      *     description="Generate receipt file for a transaction ID if not present. Return receipt file for a transaction ID if present.",
+     *
      *     @OA\Parameter(
      *          name="transaction_id",
      *          in="query",
      *          description="Transaction ID",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="visa-uk-dev-frPAR2uk-0000000001"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="The job has been added to the queue. This job will generate the receipt file and save it in file-library"
@@ -66,7 +69,7 @@ class ReceiptController extends BaseController
                     $fileName,
                     ['Content-type' => 'application/pdf']
                 );
-            } else if ($res['type'] === 'upload') {
+            } elseif ($res['type'] === 'upload') {
                 return $this->sendResponse('The job has been added to the queue. This job will generate the receipt file and save it in file-library');
             }
         } catch (\Exception $e) {

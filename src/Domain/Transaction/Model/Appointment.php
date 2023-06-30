@@ -8,10 +8,12 @@ class Appointment
      * @var null|string
      */
     private string $agentName;
+
     /**
      * @var null|string
      */
     private string $language;
+
     /**
      * @var null|string
      */
@@ -49,7 +51,6 @@ class Appointment
     /**
      * @param string $language
      */
-
     public function setLanguage(string $language): void
     {
         $this->language = $language;

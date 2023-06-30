@@ -3,7 +3,6 @@
 use Illuminate\Support\Str;
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Database Connection Name
@@ -34,140 +33,62 @@ return [
     */
 
     'connections' => [
-
         'sqlite' => [
             'driver' => 'sqlite',
+            'url' => env('DATABASE_URL'),
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
-            'prefix' => env('DB_PREFIX', ''),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
         'mysql' => [
             'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', 3306),
+            'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
-            'prefix' => env('DB_PREFIX', ''),
-            'strict' => env('DB_STRICT_MODE', true),
-            'engine' => env('DB_ENGINE', null),
-            'timezone' => env('DB_TIMEZONE', '+00:00'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
-            'port' => env('POSTGRES_DB_PORT', 5432),
-            'database' => 'postgres',
-            'username' => env('POSTGRES_DEPLOY_DB_USERNAME', 'forge'),
-            'password' => env('POSTGRES_DEPLOY_DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
-            'prefix' => env('DB_PREFIX', ''),
-            'schema' => env('DB_SCHEMA', 'public'),
-            'sslmode' => env('DB_SSL_MODE', 'prefer'),
-        ],
-
-        'payment_pgsql' => [
-            'driver' => 'pgsql',
-            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
-            'port' => env('POSTGRES_DB_PORT', '5432'),
-            'database' => env('POSTGRES_PAYMENT_DB_DATABASE', 'payment_template'),
-            'username' => env('POSTGRES_DB_USERNAME', 'forge'),
-            'password' => env('POSTGRES_DB_PASSWORD', ''),
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
-            'schema' => 'public',
+            'search_path' => 'public',
             'sslmode' => 'prefer',
-        ],
-
-        'deploy_payment_pgsql' => [
-            'driver' => 'pgsql',
-            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
-            'port' => env('POSTGRES_DB_PORT', '5432'),
-            'database' => env('POSTGRES_PAYMENT_DB_DATABASE', 'payment_template'),
-            'username' => env('POSTGRES_DEPLOY_DB_USERNAME', 'forge'),
-            'password' => env('POSTGRES_DEPLOY_DB_PASSWORD', ''),
-            'charset' => 'utf8',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'schema' => 'public',
-            'sslmode' => 'prefer',
-        ],
-
-        'unit_test_pgsql' => [
-            'driver' => 'pgsql',
-            'host' => env('UNIT_TEST_POSTGRES_DB_HOST', 'localhost'),
-            'port' => env('UNIT_TEST_POSTGRES_DB_PORT', '5432'),
-            'database' => 'postgres',
-            'username' => env('UNIT_TEST_POSTGRES_DB_USERNAME', ''),
-            'password' => env('UNIT_TEST_POSTGRES_DB_PASSWORD', ''),
-            'charset' => 'utf8',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'schema' => 'public',
-            'sslmode' => 'prefer',
-            'options'   => array(
-                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
-            ),
-        ],
-
-        'unit_test_payment_pgsql' => [
-            'driver' => 'pgsql',
-            'host' => env('UNIT_TEST_POSTGRES_DB_HOST', 'localhost'),
-            'port' => env('UNIT_TEST_POSTGRES_DB_PORT', '5432'),
-            'database' => env('UNIT_TEST_PAYMENT_DB_DATABASE', 'payment_unit_test'),
-            'username' => env('UNIT_TEST_POSTGRES_DB_USERNAME', ''),
-            'password' => env('UNIT_TEST_POSTGRES_DB_PASSWORD', ''),
-            'charset' => 'utf8',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'schema' => 'public',
-            'sslmode' => 'prefer',
-            'options'   => array(
-                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
-            ),
         ],
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', 1433),
+            'port' => env('DB_PORT', '1433'),
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
-            'prefix' => env('DB_PREFIX', ''),
-        ],
-
-        'ecommerce_pgsql' => [
-            'driver' => 'pgsql',
-            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
-            'port' => env('POSTGRES_DB_PORT', '5432'),
-            'database' => env('POSTGRES_ECOMMERCE_DB_DATABASE', 'tlspay-e-commerce-service-db'),
-            'username' => env('POSTGRES_ECOMMERCE_DB_USERNAME', 'tlspay-e-commerce-service-user'),
-            'password' => env('POSTGRES_ECOMMERCE_DB_PASSWORD', ''),
-            'charset' =>  env('DB_CHARSET', 'utf8'),
-            'prefix' => env('DB_PREFIX', ''),
-            'schema' => 'public',
-            'sslmode' => 'prefer',
-        ],
-
-        'tlsconnect_pgsql' => [
-            'driver' => 'pgsql',
-            'host' => env('POSTGRES_DB_HOST', '127.0.0.1'),
-            'port' => env('POSTGRES_DB_PORT', '5432'),
-            'database' => env('POSTGRES_TLSCONNECT_DB_DATABASE', ''),
-            'username' => env('POSTGRES_DB_USERNAME', 'forge'),
-            'password' => env('POSTGRES_DB_PASSWORD', ''),
-            'charset' =>  env('DB_CHARSET', 'utf8'),
-            'prefix' => env('DB_PREFIX', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
             'prefix_indexes' => true,
-            'schema' => 'public',
-            'sslmode' => 'prefer',
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
     ],
 
@@ -190,48 +111,35 @@ return [
     |--------------------------------------------------------------------------
     |
     | Redis is an open source, fast, and advanced key-value store that also
-    | provides a richer set of commands than a typical key-value systems
+    | provides a richer body of commands than a typical key-value system
     | such as APC or Memcached. Laravel makes it easy to dig right in.
     |
     */
 
     'redis' => [
-
         'client' => env('REDIS_CLIENT', 'phpredis'),
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'context' => (strpos(env('REDIS_HOST'), 'tls://') === 0) ? ['stream' => ['verify_peer' => false, 'verify_peer_name' => false], 'verify_peer' => false, 'verify_peer_name' => false] : null,
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'lumen'), '_').'_database_'),
-            'parameters' => [
-                'host' => env('REDIS_HOST', '127.0.0.1'),
-                'password' => env('REDIS_PASSWORD', null),
-                'port' => env('REDIS_PORT', 6379),
-            ]
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
-        'clusters' => [
-            'default' => [
-                [
-                    'url' => env('REDIS_URL'),
-                    'host' => env('REDIS_HOST', '127.0.0.1'),
-                    'password' => env('REDIS_PASSWORD', null),
-                    'port' => env('REDIS_PORT', '6379'),
-                    'database' => env('REDIS_DB', '0'),
-                ]
-            ],
-
-            'cache' => [
-                [
-                    'url' => env('REDIS_URL'),
-                    'host' => env('REDIS_HOST', '127.0.0.1'),
-                    'password' => env('REDIS_PASSWORD', null),
-                    'port' => env('REDIS_PORT', '6379'),
-                    'database' => env('REDIS_CACHE_DB', '1'),
-                ]
-            ],
+        'default' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_DB', '0'),
         ],
 
+        'cache' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_CACHE_DB', '1'),
+        ],
     ],
-
 ];

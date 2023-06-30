@@ -1,11 +1,10 @@
 <?php
 
-
 namespace App\Http\Controllers\V1;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Laravel\Lumen\Routing\Controller as Controller;
 
 /**
  * @OA\Info(
@@ -32,10 +31,11 @@ class BaseController extends Controller
             $message = json_encode($message);
         }
         Log::info('status=' . $code . ', error=' . $error . ', message=' . $message);
+
         return response()->json([
             'status' => 'fail',
             'error' => $error,
-            'message' => $message
+            'message' => $message,
         ], $code);
     }
 

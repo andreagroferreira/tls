@@ -26,7 +26,7 @@ class AddUniqueIndexForTransactionsTable extends Migration
     public function down()
     {
         Schema::table('transactions', function (Blueprint $table) {
-           $table->dropUnique('transactions_t_transaction_id_unique');
+            $table->dropUnique('transactions_t_transaction_id_unique');
         });
     }
 }

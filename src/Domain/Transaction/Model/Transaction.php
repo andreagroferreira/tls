@@ -2,8 +2,6 @@
 
 namespace Src\Domain\Transaction\Model;
 
-use DateTime;
-
 class Transaction
 {
     /**
@@ -42,9 +40,9 @@ class Transaction
     private string $currency;
 
     /**
-     * @var null|DateTime
+     * @var null|\DateTime
      */
-    private DateTime $expirationDate;
+    private \DateTime $expirationDate;
 
     /**
      * @var null|string
@@ -189,17 +187,17 @@ class Transaction
     }
 
     /**
-     * @return DateTime
+     * @return \DateTime
      */
-    public function getExpirationDate(): DateTime
+    public function getExpirationDate(): \DateTime
     {
         return $this->expirationDate;
     }
 
     /**
-     * @param DateTime $expirationDate
+     * @param \DateTime $expirationDate
      */
-    public function setExpirationDate(DateTime $expirationDate): void
+    public function setExpirationDate(\DateTime $expirationDate): void
     {
         $this->expirationDate = $expirationDate;
     }

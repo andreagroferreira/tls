@@ -3,18 +3,19 @@
 namespace App\Services;
 
 use App\Repositories\TransactionLogsRepository;
-use App\Services\DbConnectionService;
 
 class TransactionLogsService
 {
     protected $transactionLogsRepository;
 
-    public function __construct(TransactionLogsRepository $transactionLogsRepository, DbConnectionService $dbConnectionService) {
+    public function __construct(TransactionLogsRepository $transactionLogsRepository, DbConnectionService $dbConnectionService)
+    {
         $this->transactionLogsRepository = $transactionLogsRepository;
         $this->transactionLogsRepository->setConnection($dbConnectionService->getConnection());
     }
 
-    public function create($attributes) {
+    public function create($attributes)
+    {
         return $this->transactionLogsRepository->insert($attributes);
     }
 
@@ -23,7 +24,8 @@ class TransactionLogsService
      *
      * @return mixed
      */
-    public function fetchByTransactionId(string $transactionId) {
+    public function fetchByTransactionId(string $transactionId)
+    {
         return $this->transactionLogsRepository->fetch(['tl_xref_transaction_id' => $transactionId])->first();
     }
 }

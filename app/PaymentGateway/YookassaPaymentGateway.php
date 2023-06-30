@@ -9,6 +9,7 @@ use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Log;
+
 use function Ramsey\Uuid\v4;
 
 class YookassaPaymentGateway implements PaymentGatewayInterface
@@ -25,13 +26,12 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         GatewayService $gatewayService,
         PaymentService $paymentService,
         ApiService $apiService
-    )
-    {
+    ) {
         $this->transactionService = $transactionService;
-        $this->formGroupService   = $formGroupService;
-        $this->gatewayService     = $gatewayService;
-        $this->paymentService     = $paymentService;
-        $this->apiService         = $apiService;
+        $this->formGroupService = $formGroupService;
+        $this->gatewayService = $gatewayService;
+        $this->paymentService = $paymentService;
+        $this->apiService = $apiService;
     }
 
     public function isSandBox(): bool
@@ -57,9 +57,10 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         if (blank($transaction)) {
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: transaction not found'
+                'message' => 'Transaction ERROR: transaction not found',
             ];
-        } else if ($pa_id) {
+        }
+        if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
         $yookassa_config = $this->getYookassaConfig($transaction['t_client'], $transaction['t_issuer'], $pa_id);
@@ -74,7 +75,7 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
             ],
             'confirmation' => [
                 'type' => 'redirect',
-                'return_url'=> get_callback_url($yookassa_config['return_url']) . '?t_id=' . $transaction['t_id'],
+                'return_url' => get_callback_url($yookassa_config['return_url']) . '?t_id=' . $transaction['t_id'],
             ],
             'description' => $transaction['t_transaction_id'],
         ];
@@ -91,8 +92,8 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
             $orderId = convertUrlQuery($query)['orderId'];
         } else {
             return [
-                'status'  => 'error',
-                'message' => $payment['body']['description']
+                'status' => 'error',
+                'message' => $payment['body']['description'],
             ];
         }
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $transaction);
@@ -114,11 +115,12 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         $transaction_id = $params['t_id'] ?? '';
         $transaction = $this->transactionService->getTransaction($transaction_id);
         if (empty($transaction)) {
-            Log::warning("ONLINE PAYMENT, Yookassa : No transaction found in the database for " . $transaction_id . "\n" .
+            Log::warning('ONLINE PAYMENT, Yookassa : No transaction found in the database for ' . $transaction_id . "\n" .
                 json_encode($_POST, JSON_UNESCAPED_UNICODE));
+
             return [
-                'status'  => 'error',
-                'message' => 'Transaction ERROR: transaction not found'
+                'status' => 'error',
+                'message' => 'Transaction ERROR: transaction not found',
             ];
         }
 
@@ -138,39 +140,42 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
                 'issuer' => $transaction['t_issuer'],
                 'amount' => $transaction['t_amount'],
                 'message' => 'failure',
-                'href' => $transaction['t_redirect_url']
+                'href' => $transaction['t_redirect_url'],
             ];
         }
 
         $isValid = $paymentCaptureInfo['body']['status'] === 'succeeded';
         if (!$isValid) {
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
             return [
-                'status'  => 'error',
-                'message' => 'Request ERROR: params validate failed'
+                'status' => 'error',
+                'message' => 'Request ERROR: params validate failed',
             ];
         }
         $this->paymentService->saveTransactionLog($transaction_id, $paymentCaptureInfo, $this->getPaymentGatewayName());
 
         $confirm_params = [
-            'gateway'                => $this->getPaymentGatewayName(),
-            'amount'                 => $paymentCaptureInfo['body']['amount']['value'],
-            'currency'               => $paymentCaptureInfo['body']['amount']['currency'],
-            'transaction_id'         => $paymentCaptureInfo['body']['description'],
+            'gateway' => $this->getPaymentGatewayName(),
+            'amount' => $paymentCaptureInfo['body']['amount']['value'],
+            'currency' => $paymentCaptureInfo['body']['amount']['currency'],
+            'transaction_id' => $paymentCaptureInfo['body']['description'],
             'gateway_transaction_id' => $transaction['t_gateway_transaction_id'],
         ];
-        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'success');
+
         return $this->paymentService->confirm($transaction, $confirm_params);
     }
 
     public function getYookassaConfig($client, $issuer, $pa_id): array
     {
         $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
-        $yookassa_config = array_merge($config['common'], $this->getPaySecret($config));
-        return $yookassa_config;
+
+        return array_merge($config['common'], $this->getPaySecret($config));
     }
 
-    private function getPaySecret($pay_config) {
+    private function getPaySecret($pay_config)
+    {
         if ($this->gatewayService->getClientUseFile()) {
             $app_env = $this->isSandBox();
             $is_live = ($pay_config['common']['env'] == 'live');
@@ -178,6 +183,7 @@ class YookassaPaymentGateway implements PaymentGatewayInterface
         } else {
             $key = 'config';
         }
+
         return $pay_config[$key];
     }
 }

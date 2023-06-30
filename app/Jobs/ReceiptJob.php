@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Jobs;
+
 use Illuminate\Support\Facades\Log;
 
 class ReceiptJob extends Job

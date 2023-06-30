@@ -9,6 +9,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class TokenResolveServiceTest extends \TestCase
@@ -87,14 +88,12 @@ class TokenResolveServiceTest extends \TestCase
         $this->directusServiceMock
             ->expects($this->never())
             ->method('getContent')
-            ->willReturn([])
-        ;
+            ->willReturn([]);
 
         $this->apiServiceMock
             ->expects($this->never())
             ->method('callTlsApi')
-            ->willReturn([])
-        ;
+            ->willReturn([]);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
         $resolvedTemplate = $tokenResolveService->resolveTemplate(
@@ -107,9 +106,9 @@ class TokenResolveServiceTest extends \TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     public function testIssuerIsEmptyForCollection(): void
     {
@@ -133,8 +132,7 @@ class TokenResolveServiceTest extends \TestCase
         $this->directusServiceMock
             ->expects($this->once())
             ->method('getContent')
-            ->willReturn([])
-        ;
+            ->willReturn([]);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -152,9 +150,9 @@ class TokenResolveServiceTest extends \TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     public function testIsCorrectTranslationForCollection(): void
     {
@@ -178,8 +176,7 @@ class TokenResolveServiceTest extends \TestCase
         $this->directusServiceMock
             ->expects($this->once())
             ->method('getContent')
-            ->willReturn([])
-        ;
+            ->willReturn([]);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -197,9 +194,9 @@ class TokenResolveServiceTest extends \TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     public function testIsActiveTranslationForCollection(): void
     {
@@ -219,8 +216,7 @@ class TokenResolveServiceTest extends \TestCase
         $this->directusServiceMock
             ->expects($this->never())
             ->method('getContent')
-            ->willReturn([])
-        ;
+            ->willReturn([]);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -234,9 +230,9 @@ class TokenResolveServiceTest extends \TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     public function testIsTokensResolvedForCollection(): void
     {
@@ -258,8 +254,7 @@ class TokenResolveServiceTest extends \TestCase
         $this->directusServiceMock
             ->expects($this->never())
             ->method('getContent')
-            ->willReturn([])
-        ;
+            ->willReturn([]);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -297,8 +292,7 @@ class TokenResolveServiceTest extends \TestCase
         $this->directusServiceMock
             ->expects($this->once())
             ->method('getContent')
-            ->willReturn($this->directusServiceMockResult)
-        ;
+            ->willReturn($this->directusServiceMockResult);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -334,14 +328,13 @@ class TokenResolveServiceTest extends \TestCase
         $transaction = [
             't_issuer' => 'tnTUN2de',
             't_xref_fg_id' => '',
-            't_service' => 'tls'
+            't_service' => 'tls',
         ];
 
         $this->directusServiceMock
             ->expects($this->once())
             ->method('getContent')
-            ->willReturn($this->directusServiceMockResultReceipt)
-        ;
+            ->willReturn($this->directusServiceMockResultReceipt);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -359,9 +352,9 @@ class TokenResolveServiceTest extends \TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     public function testFormGroupIdIsEmptyForApplication(): void
     {
@@ -387,8 +380,7 @@ class TokenResolveServiceTest extends \TestCase
         $this->apiServiceMock
             ->expects($this->once())
             ->method('callTlsApi')
-            ->willReturn($mockApiResult)
-        ;
+            ->willReturn($mockApiResult);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -406,9 +398,9 @@ class TokenResolveServiceTest extends \TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     public function testFormGroupIdIsInvalidForApplication(): void
     {
@@ -434,15 +426,13 @@ class TokenResolveServiceTest extends \TestCase
         $this->apiServiceMock
             ->expects($this->once())
             ->method('callTlsApi')
-            ->willReturn($mockApiResult)
-        ;
+            ->willReturn($mockApiResult);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
         $expectedResult = [
             'invoice_content' => 'This is test address for invoice content for ',
         ];
-        ;
 
         $resolvedTemplate = $tokenResolveService->resolveTemplate(
             $template,
@@ -478,8 +468,7 @@ class TokenResolveServiceTest extends \TestCase
         $this->apiServiceMock
             ->expects($this->once())
             ->method('callTlsApi')
-            ->willReturn($this->apiServiceMockResult)
-        ;
+            ->willReturn($this->apiServiceMockResult);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -609,7 +598,7 @@ class TokenResolveServiceTest extends \TestCase
                             'price' => 908,
                             'vat' => 1,
                             'quantity' => 2,
-                            'product_name' => ' Premium Lounge'
+                            'product_name' => ' Premium Lounge',
                         ],
                     ],
                 ],
@@ -628,14 +617,13 @@ class TokenResolveServiceTest extends \TestCase
         $basketResolvedContent = 'Service - Premium Lounge, Qauntity - 2, Currency - KES, price - 908, total without tax - 898.92';
 
         $expectedResult = [
-            'invoice_content' => 'This is test address for invoice content for '.$basketResolvedContent,
+            'invoice_content' => 'This is test address for invoice content for ' . $basketResolvedContent,
         ];
 
         $this->directusServiceMock
             ->expects($this->once())
             ->method('getContent')
-            ->willReturn($basketContent)
-        ;
+            ->willReturn($basketContent);
 
         $tokenResolveService = new TokenResolveService($this->directusServiceMock, $this->apiServiceMock);
 
@@ -655,8 +643,7 @@ class TokenResolveServiceTest extends \TestCase
     {
         return $this->getMockBuilder(DirectusService::class)
             ->disableOriginalConstructor()
-            ->getMock()
-        ;
+            ->getMock();
     }
 
     /**
@@ -666,7 +653,6 @@ class TokenResolveServiceTest extends \TestCase
     {
         return $this->getMockBuilder(ApiService::class)
             ->disableOriginalConstructor()
-            ->getMock()
-        ;
+            ->getMock();
     }
 }

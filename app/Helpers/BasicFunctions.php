@@ -34,10 +34,10 @@ function getPublicKey()
             $public_key_string = wordwrap($keycloakRealm['body']['public_key'], 65, "\n", true);
 
             return <<<EOD
------BEGIN PUBLIC KEY-----
-$public_key_string
------END PUBLIC KEY-----
-EOD;
+                -----BEGIN PUBLIC KEY-----
+                {$public_key_string}
+                -----END PUBLIC KEY-----
+                EOD;
         }
     });
 }
@@ -182,7 +182,7 @@ function csv2array($in, $option = '', $separator = "\t", $include_comment = fals
             }
 
             return false;
-            //terminateTech();
+            // terminateTech();
         }
         $new_row = [];
         if ($option == 'INDEXED_ARRAY') {

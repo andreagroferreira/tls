@@ -6,7 +6,6 @@ use App\Repositories\RefundItemRepository;
 use App\Repositories\RefundLogRepository;
 use App\Repositories\RefundRepository;
 use App\Traits\FeatureVersionsTrait;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -89,7 +88,7 @@ class RefundService
         $refundData = [
             'r_issuer' => $attributes['r_issuer'],
             'r_reason_type' => $attributes['reason'] ?? '',
-            'r_status' => 'done'
+            'r_status' => 'done',
         ];
         $dbConnection = DB::connection($this->dbConnectionService->getConnection());
         $dbConnection->beginTransaction();
@@ -115,7 +114,7 @@ class RefundService
                 )
             );
             $dbConnection->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $dbConnection->rollBack();
             Log::error('Could not create refund.', [$e->getMessage()]);
 
@@ -230,7 +229,7 @@ class RefundService
             }
         }
         if (!empty($error_msg)) {
-            Log::error('Refund ERROR: Refund '.$refundRequest->r_id.' failed, because: '.json_encode($error_msg, 256));
+            Log::error('Refund ERROR: Refund ' . $refundRequest->r_id . ' failed, because: ' . json_encode($error_msg, 256));
         }
     }
 

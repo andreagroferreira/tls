@@ -89,7 +89,7 @@ class PaymentConfigurationsService
         foreach ($payment_configurations->toArray() as $payment_config) {
             $country = $payment_config['pc_country'];
             $city = $payment_config['pc_city'];
-            $res_key = $country.'-'.$city;
+            $res_key = $country . '-' . $city;
             $result[$res_key]['pc_id'] = $payment_config['pc_id'];
             $result[$res_key]['country'] = $country;
             $result[$res_key]['city'] = $city;
@@ -134,9 +134,9 @@ class PaymentConfigurationsService
     {
         $gateway = $this->gatewayService;
         $result = [];
-        $citiesInfo = config('list_city.'.$city);
+        $citiesInfo = config('list_city.' . $city);
         $client = $this->getClient();
-        $issuer = $citiesInfo['gcc_xref_gc_id'].$citiesInfo['gcc_id'].'2'.$client;
+        $issuer = $citiesInfo['gcc_xref_gc_id'] . $citiesInfo['gcc_id'] . '2' . $client;
 
         if (empty($citiesInfo['gcc_xref_gc_id']) || empty($city) || $client == '') {
             return [];
@@ -151,7 +151,7 @@ class PaymentConfigurationsService
                 $result[] = 'gov';
             }
         } catch (\Exception $e) {
-            Log::warning('Payment Configuration Error: fetchPaymentGatewayTypes "'.$e->getMessage().'"');
+            Log::warning('Payment Configuration Error: fetchPaymentGatewayTypes "' . $e->getMessage() . '"');
 
             return [];
         }
@@ -190,7 +190,7 @@ class PaymentConfigurationsService
         $exist_payment_config = $this->getExistsConfigs($params['pc_id']);
         $res = array_filter($all_payment_config, function ($v, $k) use ($exist_payment_config) {
             foreach ($exist_payment_config as $key => $val) {
-                if ($val['pa_name'].$val['pa_type'] == $v['pa_name'].$v['pa_type']) {
+                if ($val['pa_name'] . $val['pa_type'] == $v['pa_name'] . $v['pa_type']) {
                     return false;
                 }
             }
@@ -199,7 +199,7 @@ class PaymentConfigurationsService
         }, ARRAY_FILTER_USE_BOTH);
         $payment_config = array_values($res);
         foreach ($payment_config as $k => $v) {
-            $payment_config[$k]['pa_name_type'] = $v['pa_name'].' ('.ucfirst($v['pa_type']).')';
+            $payment_config[$k]['pa_name_type'] = $v['pa_name'] . ' (' . ucfirst($v['pa_type']) . ')';
         }
 
         return $payment_config;

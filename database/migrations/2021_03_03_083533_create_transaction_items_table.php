@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CreateTransactionItemsTable extends Migration
 {
@@ -26,7 +26,7 @@ class CreateTransactionItemsTable extends Migration
             $table->boolean('ti_tech_deleted')->default(0);
         });
 
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE transaction_items OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE transaction_items OWNER TO common;');
     }
 
     /**

@@ -2,12 +2,12 @@
 
 namespace App\PaymentGateway;
 
+use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Log;
-use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 
 class PaysoftPaymentGateway implements PaymentGatewayInterface
 {
@@ -19,11 +19,10 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
 
     public function __construct(
         TransactionService $transactionService,
-        GatewayService     $gatewayService,
-        PaymentService     $paymentService,
-        FormGroupService   $formGroupService
-    )
-    {
+        GatewayService $gatewayService,
+        PaymentService $paymentService,
+        FormGroupService $formGroupService
+    ) {
         $this->transactionService = $transactionService;
         $this->gatewayService = $gatewayService;
         $this->paymentService = $paymentService;
@@ -53,9 +52,10 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         if (blank($translations_data)) {
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: transaction not found'
+                'message' => 'Transaction ERROR: transaction not found',
             ];
-        } else if ($pa_id) {
+        }
+        if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
 
@@ -83,7 +83,7 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         return [
             'form_method' => 'post',
             'form_action' => array_get($paysoft_config, 'current.host'),
-            'form_fields' => $form_fields
+            'form_fields' => $form_fields,
         ];
     }
 
@@ -99,13 +99,15 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         if (strtolower(array_get($transaction, 't_status')) != 'pending') {
             $this->logWarning('notify data check failed, incorrect order status.', $params);
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
             return false;
         }
 
         if (bccomp($this->amountFormat($transaction['t_amount']), array_get($params, 'LMI_PAYMENT_AMOUNT'), $this->amount_decimals) !== 0) {
             $this->logWarning('notify data check failed, payment amount incorrect.', $params);
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
             return false;
         }
 
@@ -113,14 +115,16 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
 
         if (!$this->validateSignature($config, $params)) {
             $this->logWarning('notify data check failed, signature verification failed.', $params);
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
             return false;
         }
 
         $can_confirm = (filled(array_get($params, 'LMI_SYS_PAYMENT_ID')) && filled(array_get($params, 'LMI_SYS_PAYMENT_DATE')));
         if (!$can_confirm) {
             $this->logWarning('notify data check failed. ', $params);
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
             return false;
         }
 
@@ -131,39 +135,10 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
             'transaction_id' => $transaction['t_transaction_id'],
             'gateway_transaction_id' => array_get($params, 'LMI_SYS_PAYMENT_ID'),
         ];
-        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'success');
         $response = $this->paymentService->confirm($transaction, $confirm_params);
 
         return array_get($response, 'is_success') == 'ok' ? true : false;
-    }
-
-    protected function initialNotify($params)
-    {
-        $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => array_get($params, 'LMI_PAYMENT_NO'), 't_tech_deleted' => false]);
-
-        if (blank($transaction)) {
-            $this->logWarning('initial notify data check failed, transaction not found.', $params);
-            return false;
-        }
-
-        $paysoft_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_xref_pa_id']);
-
-        if ($transaction['t_status'] != 'pending') {
-            $this->logWarning('initial notify data check failed, incorrect order status.', $params);
-            return false;
-        }
-
-        if (array_get($params, 'LMI_MERCHANT_ID') != array_get($paysoft_config, 'current.merchant_id')) {
-            $this->logWarning('initial notify data check failed, signature verification failed.', $params);
-            return false;
-        }
-
-        if (bccomp($this->amountFormat($transaction['t_amount']), array_get($params, 'LMI_PAYMENT_AMOUNT'), $this->amount_decimals) !== 0) {
-            $this->logWarning('notify data check failed, payment amount incorrect.', $params);
-            return false;
-        }
-
-        return 'YES';
     }
 
     public function return($params)
@@ -172,22 +147,57 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         if (blank($transaction)) {
             $this->logWarning('return data check failed, transaction not found.', $params);
+
             return [
                 'status' => 'fail',
-                'message' => 'Transaction ERROR: transaction not found.'
+                'message' => 'Transaction ERROR: transaction not found.',
             ];
         }
         $this->paymentService->saveTransactionLog($order_id, $params, $this->getPaymentGatewayName());
 
         $is_pay_done = ($transaction['t_status'] == 'done' && array_get($transaction, 't_gateway_transaction_id') == array_get($params, 'LMI_SYS_PAYMENT_ID'));
+
         return [
             'is_success' => $is_pay_done ? 'ok' : 'error',
             'orderid' => $transaction['t_transaction_id'],
             'issuer' => $transaction['t_issuer'],
             'amount' => $this->amountFormat($transaction['t_amount']),
             'message' => $is_pay_done ? '' : 'Transaction ERROR: Pay Failure.',
-            'href' => $transaction['t_redirect_url']
+            'href' => $transaction['t_redirect_url'],
         ];
+    }
+
+    protected function initialNotify($params)
+    {
+        $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => array_get($params, 'LMI_PAYMENT_NO'), 't_tech_deleted' => false]);
+
+        if (blank($transaction)) {
+            $this->logWarning('initial notify data check failed, transaction not found.', $params);
+
+            return false;
+        }
+
+        $paysoft_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_xref_pa_id']);
+
+        if ($transaction['t_status'] != 'pending') {
+            $this->logWarning('initial notify data check failed, incorrect order status.', $params);
+
+            return false;
+        }
+
+        if (array_get($params, 'LMI_MERCHANT_ID') != array_get($paysoft_config, 'current.merchant_id')) {
+            $this->logWarning('initial notify data check failed, signature verification failed.', $params);
+
+            return false;
+        }
+
+        if (bccomp($this->amountFormat($transaction['t_amount']), array_get($params, 'LMI_PAYMENT_AMOUNT'), $this->amount_decimals) !== 0) {
+            $this->logWarning('notify data check failed, payment amount incorrect.', $params);
+
+            return false;
+        }
+
+        return 'YES';
     }
 
     protected function getConfig($client, $issuer, $pa_id)
@@ -197,7 +207,7 @@ class PaysoftPaymentGateway implements PaymentGatewayInterface
         $is_live = $config['common']['env'] == 'live' ? true : false;
         if (!$this->gatewayService->getClientUseFile()) {
             $config['current'] = $config['config'];
-        } else if ($is_live && !$app_env) {
+        } elseif ($is_live && !$app_env) {
             // Live account
             $config['current'] = $config['production'];
         } else {

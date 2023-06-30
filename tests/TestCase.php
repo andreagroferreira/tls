@@ -1,12 +1,10 @@
 <?php
 
-use Laravel\Lumen\Testing\TestCase as BaseTestCase;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Client as GuzzleClient;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -17,7 +15,7 @@ abstract class TestCase extends BaseTestCase
      */
     public function createApplication()
     {
-        return require __DIR__.'/../bootstrap/app.php';
+        return require __DIR__ . '/../bootstrap/app.php';
     }
 
     public function createSimpleMockResponse($responses)
@@ -29,16 +27,17 @@ abstract class TestCase extends BaseTestCase
             $code = $res['code'];
             $responses_array[] = new Response($code, $headers, $body);
         }
-//        $headers = ['Content-Type' => 'application/json'];
-//        $body = json_encode($responseData);
-//        $response = new Response($statusCode, $headers, $body);
+        //        $headers = ['Content-Type' => 'application/json'];
+        //        $body = json_encode($responseData);
+        //        $response = new Response($statusCode, $headers, $body);
 
         $mock = new MockHandler($responses_array);
         $handler = HandlerStack::create($mock);
         $client = new GuzzleClient(['handler' => $handler]);
 
-        //client instance is bound to the mock here.
+        // client instance is bound to the mock here.
         $this->app->instance(GuzzleClient::class, $client);
+
         return $responses;
     }
 }

@@ -40,13 +40,13 @@ class InvoiceMailJob implements ShouldQueue
     public function handle()
     {
         $paymentService = app()->make('App\Services\PaymentService');
-        Log::info('InvoiceQueue - Generating invoice for transaction: '.json_encode($this->transaction['t_id']));
+        Log::info('InvoiceQueue - Generating invoice for transaction: ' . json_encode($this->transaction['t_id']));
 
         try {
             $paymentService->sendInvoice($this->transaction, $this->collection);
-            Log::info('InvoiceQueue - Generation finished successfully for transaction: '.json_encode($this->transaction['t_id']));
+            Log::info('InvoiceQueue - Generation finished successfully for transaction: ' . json_encode($this->transaction['t_id']));
         } catch (\Exception $exception) {
-            Log::error('InvoiceQueue error - '.$exception->getMessage());
+            Log::error('InvoiceQueue error - ' . $exception->getMessage());
             $error = [
                 'error_code' => $exception->getCode(),
                 'error_msg' => $exception->getMessage(),

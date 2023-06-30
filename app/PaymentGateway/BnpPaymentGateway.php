@@ -2,6 +2,7 @@
 
 namespace App\PaymentGateway;
 
+use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\ApiService;
 use App\Services\CurrencyCodeService;
 use App\Services\FormGroupService;
@@ -11,7 +12,6 @@ use App\Services\TransactionItemsService;
 use App\Services\TransactionService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 
 class BnpPaymentGateway implements PaymentGatewayInterface
 {
@@ -24,15 +24,14 @@ class BnpPaymentGateway implements PaymentGatewayInterface
     protected $apiService;
 
     public function __construct(
-        TransactionService  $transactionService,
+        TransactionService $transactionService,
         TransactionItemsService $transactionItemsService,
-        GatewayService      $gatewayService,
-        PaymentService      $paymentService,
-        FormGroupService    $formGroupService,
+        GatewayService $gatewayService,
+        PaymentService $paymentService,
+        FormGroupService $formGroupService,
         CurrencyCodeService $currencyCodeService,
-        ApiService          $apiService
-    )
-    {
+        ApiService $apiService
+    ) {
         $this->transactionService = $transactionService;
         $this->transactionItemsService = $transactionItemsService;
         $this->gatewayService = $gatewayService;
@@ -65,9 +64,10 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         if (blank($transactionData)) {
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: transaction not found'
+                'message' => 'Transaction ERROR: transaction not found',
             ];
-        } else if ($pa_id) {
+        }
+        if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
 
@@ -89,7 +89,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
             'language' => array_get($bnp_config, 'common.language'),
             'jsonParams' => json_encode([
                 'force_terminal_id' => array_get($bnp_config, 'current.terminal_id'),
-                'udf1' => $transactionData['t_xref_fg_id']
+                'udf1' => $transactionData['t_xref_fg_id'],
             ]),
         ];
 
@@ -101,9 +101,10 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         $payment_form_url = array_get($response, 'body.formUrl');
         if (blank($payment_order_id) || blank($payment_form_url) || array_get($response, 'body.errorCode') !== '0') {
             $this->logWarning('order registration request failed.', $response);
+
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: Payment error, please try again.'
+                'message' => 'Transaction ERROR: Payment error, please try again.',
             ];
         }
 
@@ -114,7 +115,7 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         return [
             'form_method' => 'post',
             'form_action' => $payment_form_url,
-            'form_fields' => []
+            'form_fields' => [],
         ];
     }
 
@@ -130,9 +131,10 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         $transaction = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $payment_order_id, 't_tech_deleted' => false]);
         if (blank($transaction)) {
             $this->logWarning('return data check failed, transaction not found.', $params);
+
             return [
                 'status' => 'fail',
-                'message' => 'Transaction ERROR: transaction not found.'
+                'message' => 'Transaction ERROR: transaction not found.',
             ];
         }
 
@@ -155,11 +157,12 @@ class BnpPaymentGateway implements PaymentGatewayInterface
             && array_get($response, 'body.OrderStatus') == 2
         )) {
             $this->logWarning('payment api confirm failed.', $response);
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $response, 'fail');
+
             return [
                 'status' => 'fail',
                 'orderid' => array_get($transaction, 't_transaction_id'),
-                'message' => array_get($response, 'body.params.respCode_desc', array_get($response, 'body.actionCodeDescription', 'Payment failed.'))
+                'message' => array_get($response, 'body.params.respCode_desc', array_get($response, 'body.actionCodeDescription', 'Payment failed.')),
             ];
         }
 
@@ -172,7 +175,8 @@ class BnpPaymentGateway implements PaymentGatewayInterface
             'transaction_id' => $transaction['t_transaction_id'],
             'gateway_transaction_id' => $payment_order_id,
         ]);
-        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $response, 'success');
+
         return array_merge($res, ['payment_data' => [
             'now' => Carbon::now()->format('Y-m-d H:i'),
             'response_code' => array_get($response, 'body.params.respCode_desc'),
@@ -181,40 +185,6 @@ class BnpPaymentGateway implements PaymentGatewayInterface
             'approval_code' => array_get($response, 'body.approvalCode'),
             'amount' => $received_amount . ' ' . $received_currency,
         ]]);
-    }
-
-    protected function getConfig($client, $issuer, $pa_id)
-    {
-        $app_env = $this->isSandBox();
-        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
-        $is_live = $config['common']['env'] == 'live' ? true : false;
-        if (!$this->gatewayService->getClientUseFile()) {
-            $config['current'] = $config['config'];
-        } else if ($is_live && !$app_env) {
-            // Live account
-            $config['current'] = $config['production'];
-        } else {
-            // Test account
-            $config['current'] = $config['sandbox'];
-        }
-
-        return $config;
-    }
-
-    protected function amountFormat($amount, $amount_decimals, $is_return_params = false)
-    {
-        if ($amount_decimals) {
-            while ($amount_decimals > 0) {
-                if ($is_return_params) {
-                    $amount /= 10;
-                } else {
-                    $amount *= 10;
-                }
-                $amount_decimals--;
-            }
-        }
-
-        return $amount;
     }
 
     /**
@@ -247,6 +217,40 @@ class BnpPaymentGateway implements PaymentGatewayInterface
         $formUserRelativeEmail = strtolower($formGroup['u_relative_email'] ?? env('DUMMY_TRANSACTION_ACCOUNT', 'dummy.transaction@tlscontact.com'));
 
         return in_array(strtolower($requestedEmail), [$formUserEmail, $formUserRelativeEmail], true);
+    }
+
+    protected function getConfig($client, $issuer, $pa_id)
+    {
+        $app_env = $this->isSandBox();
+        $config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
+        $is_live = $config['common']['env'] == 'live' ? true : false;
+        if (!$this->gatewayService->getClientUseFile()) {
+            $config['current'] = $config['config'];
+        } elseif ($is_live && !$app_env) {
+            // Live account
+            $config['current'] = $config['production'];
+        } else {
+            // Test account
+            $config['current'] = $config['sandbox'];
+        }
+
+        return $config;
+    }
+
+    protected function amountFormat($amount, $amount_decimals, $is_return_params = false)
+    {
+        if ($amount_decimals) {
+            while ($amount_decimals > 0) {
+                if ($is_return_params) {
+                    $amount /= 10;
+                } else {
+                    $amount *= 10;
+                }
+                --$amount_decimals;
+            }
+        }
+
+        return $amount;
     }
 
     protected function logWarning($message, $params)

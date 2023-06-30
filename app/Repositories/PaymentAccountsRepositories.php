@@ -1,10 +1,8 @@
 <?php
 
-
 namespace App\Repositories;
 
 use App\Models\PaymentAccounts;
-use Illuminate\Support\Facades\DB;
 
 class PaymentAccountsRepositories
 {
@@ -48,14 +46,13 @@ class PaymentAccountsRepositories
 
     public function update($where, $attributes)
     {
-
         $paymentAccounts = $this->paymentAccounts->where($where)->first();
         if (blank($paymentAccounts)) {
             return false;
         }
 
         foreach ($attributes as $key => $value) {
-            $paymentAccounts->$key = $value;
+            $paymentAccounts->{$key} = $value;
         }
         $paymentAccounts->save();
 
@@ -68,6 +65,7 @@ class PaymentAccountsRepositories
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);
         }
+
         return $result->get();
     }
 
@@ -91,7 +89,7 @@ class PaymentAccountsRepositories
      * @param string $city
      * @param string $service
      *
-     * @return PaymentAccounts|null
+     * @return null|PaymentAccounts
      */
     public function findByPspCodeLocationAndService(
         string $gateway,
@@ -101,6 +99,7 @@ class PaymentAccountsRepositories
         string $service
     ): ?PaymentAccounts {
         $env = env('APP_ENV') === 'production' ? 'production' : 'sandbox';
+
         return $this->paymentAccounts
             ->select('payment_accounts.*')
             ->join('payment_configurations', 'payment_configurations.pc_xref_pa_id', '=', 'payment_accounts.pa_id')

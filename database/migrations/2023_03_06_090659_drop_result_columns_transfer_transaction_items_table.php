@@ -16,7 +16,7 @@ class DropResultColumnsTransferTransactionItemsTable extends Migration
         Schema::connection('deploy_payment_pgsql')->table('transfer_table_transaction_items', function (Blueprint $table) {
             $table->dropColumn('result_migration_payment');
             $table->dropColumn('result_migration_ecommerce');
-         });
+        });
     }
 
     /**
@@ -26,7 +26,7 @@ class DropResultColumnsTransferTransactionItemsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('deploy_payment_pgsql')->table('transfer_table_transaction_items', function(Blueprint $table) {
+        Schema::connection('deploy_payment_pgsql')->table('transfer_table_transaction_items', function (Blueprint $table) {
             $table->text('result_migration_payment')->nullable();
             $table->text('result_migration_ecommerce')->nullable();
         });

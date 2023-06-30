@@ -22,17 +22,17 @@ class GatewayService
         $getClientUseFile = $this->getClientUseFile();
         if ($getClientUseFile) {
             return $this->getConfig($client, $issuer);
-        } else {
-            return $this->paymentGatewayService->getConfig($client, $issuer, $service);
         }
+
+        return $this->paymentGatewayService->getConfig($client, $issuer, $service);
     }
 
     /**
-     * @param string $client
-     * @param string $issuer
-     * @param string $gateway
-     * @param int|null $pa_id
-     * @param string $service
+     * @param string   $client
+     * @param string   $issuer
+     * @param string   $gateway
+     * @param null|int $pa_id
+     * @param string   $service
      *
      * @return array
      */
@@ -54,10 +54,11 @@ class GatewayService
             $pa_id,
             $service
         );
-        $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $config['pa_type']), $config['config']);
+        $diff = array_diff_key(config("payment_gateway_accounts.{$gateway}." . $config['pa_type']), $config['config']);
         foreach ($diff as $key => $value) {
             $config['config'][$key] = $value;
         }
+
         return $config;
     }
 
@@ -67,9 +68,9 @@ class GatewayService
         $clients = explode(',', env('USE_FILE_CONFIGURATION'));
         if (in_array($current_client, $clients)) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public function getConfig($client, $issuer)
@@ -78,7 +79,7 @@ class GatewayService
         $country = substr($issuer, 0, 2);
         $paymentClient = substr($issuer, -2);
         $defaultClientConfiguration = 'allAll2all';
-        $countryLevelConfiguration = $country.'All2'.$paymentClient;
+        $countryLevelConfiguration = $country . 'All2' . $paymentClient;
 
         $clientPaymentGateways = config('payment_gateway')[$client];
 
@@ -93,30 +94,31 @@ class GatewayService
         return $config;
     }
 
-    public function getKbankConfig($client, $issuer, $gateway, $pa_id) {
-        $kbank_config   = $this->getGateway($client, $issuer, $gateway, $pa_id);
+    public function getKbankConfig($client, $issuer, $gateway, $pa_id)
+    {
+        $kbank_config = $this->getGateway($client, $issuer, $gateway, $pa_id);
         $getClientUseFile = $this->getClientUseFile();
         if ($getClientUseFile) {
-            $app_env        = !(env('APP_ENV') === 'production');
-            $is_live        = $kbank_config['common']['env'] == 'live';
+            $app_env = !(env('APP_ENV') === 'production');
+            $is_live = $kbank_config['common']['env'] == 'live';
             if ($is_live && !$app_env) {
                 $config_data = [
                     'redirect_host' => $kbank_config['production']['redirect_host'],
-                    'api_key'       => $kbank_config['production']['apikey'],
-                    'mid'           => $kbank_config['production']['mid']
+                    'api_key' => $kbank_config['production']['apikey'],
+                    'mid' => $kbank_config['production']['mid'],
                 ];
             } else {
                 $config_data = [
                     'redirect_host' => $kbank_config['sandbox']['sandbox_redirect_host'],
-                    'api_key'       => $kbank_config['sandbox']['sandbox_apikey'],
-                    'mid'           => $kbank_config['sandbox']['sandbox_mid']
+                    'api_key' => $kbank_config['sandbox']['sandbox_apikey'],
+                    'mid' => $kbank_config['sandbox']['sandbox_mid'],
                 ];
             }
         } else {
             $config_data = [
                 'redirect_host' => $kbank_config['config']['redirect_host'],
-                'api_key'       => $kbank_config['config']['apikey'],
-                'mid'           => $kbank_config['config']['mid']
+                'api_key' => $kbank_config['config']['apikey'],
+                'mid' => $kbank_config['config']['mid'],
             ];
         }
 

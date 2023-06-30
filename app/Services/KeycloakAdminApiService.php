@@ -38,6 +38,7 @@ class KeycloakAdminApiService
             }
             Cache::put($access_token_cache_key, array_get($response, 'body.access_token'), array_get($response, 'body.expires_in') / 60);
             Cache::put($refresh_token_cache_key, array_get($response, 'body.refresh_token'), array_get($response, 'body.refresh_expires_in') / 60);
+
             return ['headers' => ['Authorization' => 'Bearer ' . array_get($response, 'body.access_token')]];
         }
 
@@ -52,7 +53,7 @@ class KeycloakAdminApiService
         }
         Cache::put($access_token_cache_key, array_get($response, 'body.access_token'), array_get($response, 'body.expires_in') / 60);
         Cache::put($refresh_token_cache_key, array_get($response, 'body.refresh_token'), array_get($response, 'body.refresh_expires_in') / 60);
+
         return ['headers' => ['Authorization' => 'Bearer ' . array_get($response, 'body.access_token')]];
     }
-
 }

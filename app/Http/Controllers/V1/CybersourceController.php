@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers\V1;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
@@ -21,45 +20,55 @@ class CybersourceController extends BaseController
      *     path="/api/v1/cybersource/redirto",
      *     tags={"Payment API"},
      *     description="return reqeust from Cybersource",
+     *
      *     @OA\Parameter(
      *          name="t_id",
      *          in="query",
      *          description="transaction id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="transaction created",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
      *      ),
      * )
      */
-    public function redirto(Request $request) {
+    public function redirto(Request $request)
+    {
         $params = $request->post();
+
         try {
             $body = $this->paymentGateway->redirto($params);
+
             return $this->sendResponse($body, 200);
         } catch (\Exception $e) {
             return $this->sendError('P0006111', $e->getMessage(), 400);
         }
     }
 
-
     /**
      * @OA\Post(
      *     path="/api/v1/cybersource/notify",
      *     tags={"Payment API"},
      *     description="return reqeust from Cybersource",
+     *
      *      @OA\Response(
      *          response="200",
      *          description="transaction created",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -72,14 +81,15 @@ class CybersourceController extends BaseController
         if (blank($params)) {
             return $this->sendError('P0006', 'Illegal parameter');
         }
+
         try {
             $result = $this->paymentGateway->notify($params);
             $status = $result['is_success'] ?? '';
             if ($status == 'ok') {
                 return $this->sendResponse($result, 200);
-            } else {
-                return $this->sendError('P0006', ['message' => array_get($result, 'message', 'unknown_error'), 'href' => array_get($result, 'href')], 400);
             }
+
+            return $this->sendError('P0006', ['message' => array_get($result, 'message', 'unknown_error'), 'href' => array_get($result, 'href')], 400);
         } catch (\Exception $e) {
             return $this->sendError('P0006', $e->getMessage(), 400);
         }
@@ -90,11 +100,14 @@ class CybersourceController extends BaseController
      *     path="/api/v1/cybersource/return",
      *     tags={"Payment API"},
      *     description="return reqeust from Cybersource",
+     *
      *      @OA\Response(
      *          response="200",
      *          description="transaction created",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -105,8 +118,9 @@ class CybersourceController extends BaseController
     {
         $return_params = $request->post();
         if (empty($return_params)) {
-            $this->sendError('P0009', ['message' => "no_data_received"], 400);
+            $this->sendError('P0009', ['message' => 'no_data_received'], 400);
         }
+
         try {
             $result = $this->paymentGateway->return($return_params);
         } catch (\Exception $e) {
@@ -116,9 +130,8 @@ class CybersourceController extends BaseController
         $status = $result['is_success'] ?? '';
         if ($status == 'ok') {
             return $this->sendResponse($result, 200);
-        } else {
-            return $this->sendError('P0006', ['message' => array_get($result, 'message', 'unknown_error'), 'href' => array_get($result, 'href')], 400);
         }
-    }
 
+        return $this->sendError('P0006', ['message' => array_get($result, 'message', 'unknown_error'), 'href' => array_get($result, 'href')], 400);
+    }
 }

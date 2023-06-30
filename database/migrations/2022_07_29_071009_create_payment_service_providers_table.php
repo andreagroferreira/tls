@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentServiceProvidersTable extends Migration
 {
@@ -23,7 +23,7 @@ class CreatePaymentServiceProvidersTable extends Migration
             $table->timestamp('psp_tech_modification')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
 
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE payment_service_providers OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE payment_service_providers OWNER TO common;');
     }
 
     /**

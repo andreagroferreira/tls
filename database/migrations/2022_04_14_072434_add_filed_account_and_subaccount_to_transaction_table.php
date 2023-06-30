@@ -14,8 +14,8 @@ class AddFiledAccountAndSubaccountToTransactionTable extends Migration
     public function up()
     {
         Schema::connection('deploy_payment_pgsql')->table('transactions', function (Blueprint $table) {
-            $table->string('t_gateway_account',100)->nullable(true);
-            $table->string('t_gateway_subaccount',100)->nullable(true);
+            $table->string('t_gateway_account', 100)->nullable(true);
+            $table->string('t_gateway_subaccount', 100)->nullable(true);
         });
     }
 

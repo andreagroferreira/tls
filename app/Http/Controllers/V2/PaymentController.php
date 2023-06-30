@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\V2;
 
 use App\Contracts\Services\PaymentGatewayServiceInterface;
+use App\Http\Controllers\Controller;
 use Illuminate\Container\EntryNotFoundException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Laravel\Lumen\Routing\Controller;
 
 class PaymentController extends Controller
 {
@@ -59,13 +59,13 @@ class PaymentController extends Controller
     public function resolveService(string $gatewayName): ?PaymentGatewayServiceInterface
     {
         try {
-            return app('App\\Services\\PaymentGateways\\'.Str::ucfirst($gatewayName));
+            return app('App\\Services\\PaymentGateways\\' . Str::ucfirst($gatewayName));
         } catch (BindingResolutionException $e) {
             throw new EntryNotFoundException('Payment Controller Error. Service class not found.', 404, $e);
         } catch (\Exception $e) {
             Log::error('[PaymentController] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }

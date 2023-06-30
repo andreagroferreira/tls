@@ -172,6 +172,7 @@ class Easypay implements PaymentGatewayServiceInterface
         $errorCode = $request->get('errorCode');
         if ($error !== null || $errorCode !== null) {
             $errorMessage = $error['errorMessage'] ?? $errorCode ?? 'Unknown error';
+
             return [
                 'is_success' => 'fail',
                 'message' => 'Payment Error: ' . $errorMessage,

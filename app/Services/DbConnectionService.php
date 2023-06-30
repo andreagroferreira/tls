@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +21,7 @@ class DbConnectionService
         }
 
         $this->connection = $connection;
+
         return true;
     }
 

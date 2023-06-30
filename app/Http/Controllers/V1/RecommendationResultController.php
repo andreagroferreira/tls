@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\V1;
-
 
 use App\Services\RecommendationResultService;
 use Illuminate\Http\Request;
@@ -14,8 +12,7 @@ class RecommendationResultController extends BaseController
 
     public function __construct(
         RecommendationResultService $recommendationResultService
-    )
-    {
+    ) {
         $this->recommendationResultService = $recommendationResultService;
     }
 
@@ -24,74 +21,95 @@ class RecommendationResultController extends BaseController
      *     path="/api/v1/rcd_result",
      *     tags={"Payment API"},
      *     description="add a recommendation result",
+     *
      *      @OA\Parameter(
      *          name="f_id",
      *          in="query",
      *          description="the tlsconnect f_id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="1"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="agent",
      *          in="query",
      *          description="the agent who operate this record",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="test.test"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="sku",
      *          in="query",
      *          description="the sku accepted or denied",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="COURIER"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="result",
      *          in="query",
      *          description="the recommendation result, accept or deny",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="accept"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="comment",
      *          in="query",
      *          description="the recommendation result comment",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="I do not need"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="issuer",
      *          in="query",
      *          description="the recommendation result issuer",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="ruMOW2uk"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="price",
      *          in="query",
      *          description="the recommendation result price",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="10.00"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="currency",
      *          in="query",
      *          description="the recommendation result currency",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example=""),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="service_script",
      *          in="query",
      *          description="the recommendation result service script",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example=""),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="create a recommendation result record success",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -100,31 +118,31 @@ class RecommendationResultController extends BaseController
      */
     public function create(Request $request)
     {
-        $params    = [
+        $params = [
             'rr_xref_f_id' => $request->input('f_id'),
-            'rr_agent'     => $request->input('agent'),
-            'rr_sku'       => $request->input('sku'),
-            'rr_result'    => $request->input('result'),
-            'rr_comment'   => $request->input('comment'),
-            'rr_issuer'    => $request->input('issuer'),
-            'rr_price'     => $request->input('price'),
-            'rr_currency'  => $request->input('currency'),
-            'rr_service_script' => $request->input('service_script')
+            'rr_agent' => $request->input('agent'),
+            'rr_sku' => $request->input('sku'),
+            'rr_result' => $request->input('result'),
+            'rr_comment' => $request->input('comment'),
+            'rr_issuer' => $request->input('issuer'),
+            'rr_price' => $request->input('price'),
+            'rr_currency' => $request->input('currency'),
+            'rr_service_script' => $request->input('service_script'),
         ];
         $validator = validator($params, [
-            'rr_xref_f_id'   => 'required|integer',
-            'rr_agent'  => 'required|string',
-            'rr_sku'    => 'required|string',
+            'rr_xref_f_id' => 'required|integer',
+            'rr_agent' => 'required|string',
+            'rr_sku' => 'required|string',
             'rr_result' => [
                 'required',
                 'string',
                 Rule::in(['accept', 'deny']),
             ],
-            'rr_comment'  => 'string|nullable',
-            'rr_issuer'   => 'string|nullable',
-            'rr_price'    => 'string|nullable',
+            'rr_comment' => 'string|nullable',
+            'rr_issuer' => 'string|nullable',
+            'rr_price' => 'string|nullable',
             'rr_currency' => 'string|nullable',
-            'rr_service_script' => 'string|nullable'
+            'rr_service_script' => 'string|nullable',
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
@@ -132,7 +150,8 @@ class RecommendationResultController extends BaseController
 
         try {
             $params = $validator->validated();
-            $res    = $this->recommendationResultService->create($params);
+            $res = $this->recommendationResultService->create($params);
+
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
@@ -144,18 +163,23 @@ class RecommendationResultController extends BaseController
      *     path="/api/v1/rcd_result/{f_id}",
      *     tags={"Payment API"},
      *     description="get the recommendation result according to f_id",
+     *
      *      @OA\Parameter(
      *          name="f_id",
      *          in="path",
      *          description="the tlsconnect f_id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the recommendation result list",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -164,11 +188,11 @@ class RecommendationResultController extends BaseController
      */
     public function fetchAll(Request $request)
     {
-        $params    = [
-            'f_id' => $request->route('f_id')
+        $params = [
+            'f_id' => $request->route('f_id'),
         ];
         $validator = validator($params, [
-            'f_id' => 'required|integer'
+            'f_id' => 'required|integer',
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
@@ -176,7 +200,8 @@ class RecommendationResultController extends BaseController
 
         try {
             $params = $validator->validated();
-            $res    = $this->recommendationResultService->fetchByFId($params['f_id']);
+            $res = $this->recommendationResultService->fetchByFId($params['f_id']);
+
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
@@ -188,32 +213,41 @@ class RecommendationResultController extends BaseController
      *     path="/api/v1/rcd_result/{rcd_id}",
      *     tags={"Payment API"},
      *     description="delete the recommendation results according to rcd_id",
+     *
      *      @OA\Parameter(
      *          name="rcd_id",
      *          in="path",
      *          description="the recommendation result id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="1"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="rr_deleted_by",
      *          in="query",
      *          description="the agent who delete this record",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="test.test"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="is_soft_delete",
      *          in="query",
      *          description="soft delete this record or not, yes(for soft delte) or no",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="yes"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="deleted the record",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -222,10 +256,10 @@ class RecommendationResultController extends BaseController
      */
     public function delete(Request $request)
     {
-        $params    = [
+        $params = [
             'rr_id' => $request->route('rcd_id'),
             'rr_deleted_by' => $request->input('rr_deleted_by'),
-            'is_soft_delete' => $request->input('is_soft_delete', 'yes')
+            'is_soft_delete' => $request->input('is_soft_delete', 'yes'),
         ];
         $validator = validator($params, [
             'rr_id' => 'required|integer',
@@ -234,7 +268,7 @@ class RecommendationResultController extends BaseController
                 'required',
                 'string',
                 Rule::in(['yes', 'no']),
-            ]
+            ],
         ]);
         if ($validator->fails()) {
             return $this->sendError('params error', $validator->errors()->first());
@@ -242,11 +276,11 @@ class RecommendationResultController extends BaseController
 
         try {
             $params = $validator->validated();
-            $res    = $this->recommendationResultService->delete($params);
+            $res = $this->recommendationResultService->delete($params);
+
             return $this->sendResponse($res);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
     }
-
 }

@@ -7,8 +7,6 @@ use Src\Domain\Payment\Repositories\ConfigurationRepositoryInterface;
 
 class ConfigurationRepository implements ConfigurationRepositoryInterface
 {
-
-
     public function getConfigurationById(int $configurationId): bool
     {
         // TODO: Implement getConfigurationById() method.

@@ -8,10 +8,12 @@ class Provider
      * @var id
      */
     private int $id = 1;
+
     /**
      * @var null|string
      */
     private string $code;
+
     /**
      * @var null|string
      */

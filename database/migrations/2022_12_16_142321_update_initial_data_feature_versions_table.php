@@ -47,7 +47,6 @@ class UpdateInitialDataFeatureVersionsTable extends Migration
      */
     public function down()
     {
-        //
     }
 
     /**

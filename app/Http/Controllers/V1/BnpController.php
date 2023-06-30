@@ -10,9 +10,9 @@ use Illuminate\Validation\Rule;
 
 class BnpController extends BaseController
 {
-    private $paymentGateway;
     protected $invoiceService;
     protected $apiService;
+    private $paymentGateway;
 
     public function __construct(PaymentGatewayInterface $paymentGateway, InvoiceService $invoiceService, ApiService $apiService)
     {
@@ -26,18 +26,23 @@ class BnpController extends BaseController
      *     path="/api/v1/bnp/redirto",
      *     tags={"Payment API"},
      *     description="return reqeust from bnp",
+     *
      *     @OA\Parameter(
      *          name="t_id",
      *          in="query",
      *          description="transaction id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="transaction created",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -47,6 +52,7 @@ class BnpController extends BaseController
     public function redirto(Request $request)
     {
         $params = $request->post();
+
         try {
             $result = $this->paymentGateway->redirto($params);
             if (array_get($result, 'status') == 'error') {
@@ -64,11 +70,14 @@ class BnpController extends BaseController
      *     path="/api/v1/bnp/return",
      *     tags={"Payment API"},
      *     description="return reqeust from bnp",
+     *
      *      @OA\Response(
      *          response="200",
      *          description="transaction created",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -79,8 +88,9 @@ class BnpController extends BaseController
     {
         $return_params = $request->post();
         if (empty($return_params)) {
-            $this->sendError('P0009', ['message' => "no_data_received"], 400);
+            $this->sendError('P0009', ['message' => 'no_data_received'], 400);
         }
+
         try {
             $result = $this->paymentGateway->return($return_params);
         } catch (\Exception $e) {
@@ -90,13 +100,13 @@ class BnpController extends BaseController
         $status = $result['is_success'] ?? '';
         if ($status == 'ok') {
             return $this->sendResponse($result, 200);
-        } else {
-            return $this->sendError('P0006', [
-                'orderid' => array_get($result, 'orderid'),
-                'message' => array_get($result, 'message', 'unknown_error'),
-                'href' => array_get($result, 'href')
-            ], 400);
         }
+
+        return $this->sendError('P0006', [
+            'orderid' => array_get($result, 'orderid'),
+            'message' => array_get($result, 'message', 'unknown_error'),
+            'href' => array_get($result, 'href'),
+        ], 400);
     }
 
     /**
@@ -104,32 +114,41 @@ class BnpController extends BaseController
      *     path="/api/v1/bnp/receipt",
      *     tags={"Payment API"},
      *     description="return receipt",
+     *
      *     @OA\Parameter(
      *          name="order_id",
      *          in="query",
      *          description="the transaction_id",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="DEVELOPMENT20210414-dzALG2be-0000000055"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="action",
      *          in="query",
      *          description="action",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="show/download/send"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="email",
      *          in="query",
      *          description="If action is send, you need to fill in email",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="a@a.com"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="receipt content",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -144,9 +163,9 @@ class BnpController extends BaseController
                 'requester_email' => 'required|email',
                 'action' => [
                     'required',
-                    Rule::in(['show', 'download', 'send'])
+                    Rule::in(['show', 'download', 'send']),
                 ],
-                'email' => 'required_if:action,send|email'
+                'email' => 'required_if:action,send|email',
             ]);
 
             if ($validator->fails()) {
@@ -164,17 +183,19 @@ class BnpController extends BaseController
 
             if (!$res) {
                 return $this->sendError('', '');
-            } else if ($params['action'] == 'send') {
+            }
+            if ($params['action'] == 'send') {
                 $response = $this->apiService->callEmailApi('POST', 'send_email', [
                     'to' => $params['email'],
                     'subject' => 'Order ' . $params['order_id'] . ' receipt',
                     'body' => 'Order ' . $params['order_id'] . ' receipt, please check the attachment.',
-                    'attachment' => ['pdf' => ['receipt.pdf' => $res]]
+                    'attachment' => ['pdf' => ['receipt.pdf' => $res]],
                 ]);
+
                 return array_get($response, 'status') == 200 ? $this->sendResponse(['content' => 'true']) : $this->sendError('', '');
-            } else {
-                return $this->sendResponse(['content' => $res]);
             }
+
+            return $this->sendResponse(['content' => $res]);
         } catch (\Exception $e) {
             return $this->sendError('', $e->getMessage());
         }

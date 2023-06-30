@@ -29,8 +29,7 @@ class AddRecommendationDataFieldForRecommendationResult extends Migration
      */
     public function down()
     {
-        Schema::connection('deploy_payment_pgsql')->table('recommendation_result', function($table)
-        {
+        Schema::connection('deploy_payment_pgsql')->table('recommendation_result', function ($table) {
             $table->dropColumn('rr_profile');
             $table->dropColumn('rr_issuer');
             $table->dropColumn('rr_price');

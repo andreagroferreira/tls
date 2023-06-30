@@ -30,32 +30,41 @@ class RefundController extends BaseController
      *     path="/api/v1/refund",
      *     tags={"Payment API"},
      *     description="create a new refund request",
+     *
      *     @OA\Parameter(
      *          name="agent",
      *          in="query",
      *          description="agent email ID",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="test@test.com"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="reason",
      *          in="query",
      *          description="the reason for refund",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="other"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="items",
      *          in="query",
      *          description="Refund items",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example=""),
      *      ),
+     *
      *     @OA\Response(
      *          response="200",
      *          description="Refund Request created",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -90,13 +99,16 @@ class RefundController extends BaseController
      *     path="/api/v1/transaction_items_and_refunds/{ti_xref_f_id}",
      *     tags={"Payment API"},
      *     description=" Get all Refund Transaction Items",
+     *
      *     @OA\Parameter(
      *          name="ti_xref_f_id",
      *          in="path",
      *          description="Form ID",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -133,18 +145,23 @@ class RefundController extends BaseController
      *     path="/api/v1/refund/{r_id}",
      *     tags={"Payment API"},
      *     description="Get Refund request details with Transaction & Refund Items",
+     *
      *     @OA\Parameter(
      *          name="r_id",
      *          in="path",
      *          description="Refund ID",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="1"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="Got Refund request details with Transaction & Refund Items",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -234,11 +251,11 @@ class RefundController extends BaseController
                                 $checkIfRefundDone = $this->refundService->getRefundItemStatus($transactionItemId, $transactionItemData->ti_quantity, $quantity);
                                 if (!$checkIfRefundDone) {
                                     $transactionItemsArray[] = $transactionItemId;
-                                    $fail('The Refund request already done for item.ti_id '.implode(',', $transactionItemsArray));
+                                    $fail('The Refund request already done for item.ti_id ' . implode(',', $transactionItemsArray));
                                 }
                             }
                         } else {
-                            $fail('The Refund request cannot be created for item.ti_id '.$transactionItemId);
+                            $fail('The Refund request cannot be created for item.ti_id ' . $transactionItemId);
                         }
                     }
                 },

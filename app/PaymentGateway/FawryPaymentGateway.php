@@ -3,18 +3,17 @@
 namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Jobs\FawryPaymentJob;
+use App\Services\ApiService;
 use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
+use App\Services\TransactionItemsService;
 use App\Services\TransactionLogsService;
 use App\Services\TransactionService;
-use App\Services\TransactionItemsService;
-use App\Services\ApiService;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-use App\Jobs\FawryPaymentJob;
-use Illuminate\Support\Facades\Queue;
-use Carbon\Carbon;
 
 class FawryPaymentGateway implements PaymentGatewayInterface
 {
@@ -35,13 +34,13 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         PaymentService $paymentService,
         ApiService $apiService
     ) {
-        $this->transactionService     = $transactionService;
+        $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->transactionItemsService = $transactionItemsService;
-        $this->formGroupService   = $formGroupService;
-        $this->gatewayService     = $gatewayService;
-        $this->paymentService     = $paymentService;
-        $this->apiService         = $apiService;
+        $this->formGroupService = $formGroupService;
+        $this->gatewayService = $gatewayService;
+        $this->paymentService = $paymentService;
+        $this->apiService = $apiService;
     }
 
     public function getPaymentGatewayName()
@@ -56,15 +55,6 @@ class FawryPaymentGateway implements PaymentGatewayInterface
 
     public function checkout()
     {
-
-    }
-
-    private function getEnvpayValue($env_key) {
-        $suffix = 'ENVPAY_';
-        if (strtoupper(substr($env_key, 0, 7)) !== $suffix) {
-            return getenv($env_key);
-        }
-        return getenv(substr($env_key, 7));
     }
 
     public function redirto($params)
@@ -76,34 +66,35 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         if (blank($translations_data)) {
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: transaction not found'
+                'message' => 'Transaction ERROR: transaction not found',
             ];
-        } else if ($pa_id) {
+        }
+        if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
-        $client         = $translations_data['t_client'];
-        $issuer         = $translations_data['t_issuer'];
-        $fg_id          = $translations_data['t_xref_fg_id'];
-        $order_id       = $translations_data['t_transaction_id'] ?? '';
-        $application    = $this->formGroupService->fetch($fg_id, $client);
-        $u_email        = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
+        $client = $translations_data['t_client'];
+        $issuer = $translations_data['t_issuer'];
+        $fg_id = $translations_data['t_xref_fg_id'];
+        $order_id = $translations_data['t_transaction_id'] ?? '';
+        $application = $this->formGroupService->fetch($fg_id, $client);
+        $u_email = $application['u_relative_email'] ?? $application['u_email'] ?? "tlspay-{$client}-{$fg_id}@tlscontact.com";
         $payment_config = $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
-        $is_live        = $payment_config['common']['env'] == 'live' ? true : false;
-        $app_env        = $this->isSandBox();
+        $is_live = $payment_config['common']['env'] == 'live' ? true : false;
+        $app_env = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $host_url    = $payment_config['config']['host'];
+            $host_url = $payment_config['config']['host'];
             $merchant_id = $payment_config['config']['merchant_id'];
-            $secret      = $payment_config['config']['secret_key'];
-        } else if ($is_live && !$app_env) {
+            $secret = $payment_config['config']['secret_key'];
+        } elseif ($is_live && !$app_env) {
             // Live account
-            $host_url    = $payment_config['production']['host'];
+            $host_url = $payment_config['production']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
+            $secret = $this->getEnvpayValue($payment_config['production']['secret_key']);
         } else {
             // Test account
-            $host_url    = $payment_config['sandbox']['host'];
+            $host_url = $payment_config['sandbox']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['sandbox']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
+            $secret = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
         }
         $init_url = url($host_url . '/ECommerceWeb/api/payments/init');
         $return_url = get_callback_url($payment_config['common']['return_url']);
@@ -122,12 +113,12 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             if (json_last_error()) {
                 return ['status' => 'fail', 'error' => 'INTERNAL ERROR', 'msg' => 'Transaction items can`t be parsed.'];
             }
-            array_multisort(array_column($items,'f_id'), SORT_ASC, $items);
+            array_multisort(array_column($items, 'f_id'), SORT_ASC, $items);
             foreach ($items as $k => $item) {
                 $tmp = [];
                 $tmp['itemId'] = $item['f_id'];
                 $price = 0;
-                foreach($item['skus'] as $sku) {
+                foreach ($item['skus'] as $sku) {
                     $price += floatval($sku['price']);
                     $sku_list .= $sku['sku'];
                 }
@@ -140,7 +131,7 @@ class FawryPaymentGateway implements PaymentGatewayInterface
             return ['status' => 'fail', 'error' => 'INTERNAL ERROR', 'msg' => 'Transaction items not found.'];
         }
 
-        $expiry = strtotime("+1 day", strtotime($translations_data['t_expiration'])) * 1000;
+        $expiry = strtotime('+1 day', strtotime($translations_data['t_expiration'])) * 1000;
         $amount = number_format($translations_data['t_amount'], 2, '.', '');
 
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
@@ -164,103 +155,267 @@ class FawryPaymentGateway implements PaymentGatewayInterface
                 'quantity' => 1,
                 'productSKU' => $sku_list,
                 'sign_type' => 'SHA256',
-                'signature' => $hash_sign
+                'signature' => $hash_sign,
             ];
+
             return [
                 'form_method' => 'load_js',
                 'form_action' => $pay_js,
-                'form_fields' => $params
+                'form_fields' => $params,
             ];
-        } else {
-            $sign_string = $merchant_id . $order_id . $profile_id . $return_url . $quantity . $secret;
-            $hash_sign = hash('SHA256', $sign_string);
-            // Prepare parameters to post payment gateway -- V2
-            // official document: https://developer.fawrystaging.com/docs/express-checkout/self-hosted-checkout
-            $params = [
-                'merchantCode' => $merchant_id,
-                'merchantRefNum' => $order_id,
-                'customerEmail' => $u_email,
-                'customerProfileId' => $profile_id,
-                'chargeItems' => $charge_items,
-                'returnUrl' => $return_url,
-                'authCaptureModePayment' => false,
-                'signature' => $hash_sign
-            ];
-
-            $client = new Client();
-            $response = $client->post($init_url, [
-                'headers' => [
-                    'Accept' => 'application/json, text/plain, */*',
-                    'Content-Type' => "application/json;charset=utf-8",
-                ],
-                'json' => $params
-            ]);
-            $status_code = $response->getStatusCode();
-            $payment_id = $response->getBody()->getContents();
-            if ($status_code==200 && $payment_id) {
-                if (filter_var($payment_id, FILTER_VALIDATE_URL)) {
-                    parse_str(parse_url($payment_id, PHP_URL_QUERY), $query);
-                    $payment_id = array_get($query, 'payment-id');
-                }
-                return [
-                    'form_method' => 'get',
-                    'form_action' => $host_url . '/atfawry/plugin/',
-                    'form_fields' => [
-                        'payment-id' => $payment_id,
-                        'locale' => 'en',
-                        'mode' => 'SEPARATED'
-                    ],
-                ];
-            } else {
-                return ['status' => 'fail', 'error' => 'INTERNAL ERROR', 'msg' => 'Payment request failed.'];
-            }
         }
+        $sign_string = $merchant_id . $order_id . $profile_id . $return_url . $quantity . $secret;
+        $hash_sign = hash('SHA256', $sign_string);
+        // Prepare parameters to post payment gateway -- V2
+        // official document: https://developer.fawrystaging.com/docs/express-checkout/self-hosted-checkout
+        $params = [
+            'merchantCode' => $merchant_id,
+            'merchantRefNum' => $order_id,
+            'customerEmail' => $u_email,
+            'customerProfileId' => $profile_id,
+            'chargeItems' => $charge_items,
+            'returnUrl' => $return_url,
+            'authCaptureModePayment' => false,
+            'signature' => $hash_sign,
+        ];
+
+        $client = new Client();
+        $response = $client->post($init_url, [
+            'headers' => [
+                'Accept' => 'application/json, text/plain, */*',
+                'Content-Type' => 'application/json;charset=utf-8',
+            ],
+            'json' => $params,
+        ]);
+        $status_code = $response->getStatusCode();
+        $payment_id = $response->getBody()->getContents();
+        if ($status_code == 200 && $payment_id) {
+            if (filter_var($payment_id, FILTER_VALIDATE_URL)) {
+                parse_str(parse_url($payment_id, PHP_URL_QUERY), $query);
+                $payment_id = array_get($query, 'payment-id');
+            }
+
+            return [
+                'form_method' => 'get',
+                'form_action' => $host_url . '/atfawry/plugin/',
+                'form_fields' => [
+                    'payment-id' => $payment_id,
+                    'locale' => 'en',
+                    'mode' => 'SEPARATED',
+                ],
+            ];
+        }
+
+        return ['status' => 'fail', 'error' => 'INTERNAL ERROR', 'msg' => 'Payment request failed.'];
     }
 
     public function return($params)
     {
-        $order_id =  $params['order_id'] ?? '';
+        $order_id = $params['order_id'] ?? '';
         if (!isset($params['chargeResponse']) && isset($params['merchantRefNumber'])) {
             $order_id = $params['merchantRefNumber'];
-        } else if(isset($params['chargeResponse'])) {
+        } elseif (isset($params['chargeResponse'])) {
             $charge_response = json_decode($params['chargeResponse'], true);
             $order_id = $charge_response['merchantRefNumber'];
-        }   
+        }
 
         if (empty($order_id)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => '[null]',
-                'message'    => 'empty_merchant_ref_number'
+                'orderid' => '[null]',
+                'message' => 'empty_merchant_ref_number',
             ];
         }
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
-        if ((isset($params['basketPayment']) && $params['basketPayment'] == 'false') && (isset($params['statusCode']) &&  $params['statusCode']!= 200)) {
+        if ((isset($params['basketPayment']) && $params['basketPayment'] == 'false') && (isset($params['statusCode']) && $params['statusCode'] != 200)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => $order_id,
-                'href'       => $transaction['t_onerror_url'],
-                'message'    => $params['statusDescription'] ?? 'unknown_error',
+                'orderid' => $order_id,
+                'href' => $transaction['t_onerror_url'],
+                'message' => $params['statusDescription'] ?? 'unknown_error',
             ];
         }
         $payment_config = $this->getPaymentConfig($params, $transaction['t_xref_pa_id']);
         $pay_version = strtolower($payment_config['common']['version']);
+
         return $pay_version == 'v1' ? $this->returnV1($params) : $this->returnV2($params);
     }
 
-    private function getPaymentConfig($params, $pa_id) {
+    public function notify($params)
+    {
+        $order_id = $params['MerchantRefNo'] ?? $params['merchantRefNumber'] ?? '';
+        if (empty($order_id)) {
+            Log::warning('ONLINE PAYMENT, FAWRY: notify check failed : merchantRefNumber is empty');
+
+            return [
+                'status' => 'fail',
+                'message' => 'empty_merchant_ref_number',
+            ];
+        }
+
+        // find transaction in database
+        $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
+        if (empty($transaction)) {
+            Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : the transaction number {$order_id} does not exist");
+
+            return [
+                'status' => 'fail',
+                'message' => 'transaction_id_not_exists',
+            ];
+        }
+        if (strtolower($transaction['t_status']) == 'done') {
+            return [
+                'status' => 'success',
+            ];
+        }
+
+        // get trade information
+        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
+        $app_env = $this->isSandBox();
+        $is_live = $payment_config['common']['env'] == 'live' ? true : false;
+        if (!$this->gatewayService->getClientUseFile()) {
+            $host_url = $payment_config['config']['host'];
+            $merchant_id = $payment_config['config']['merchant_id'];
+            $secret = $payment_config['config']['secret_key'];
+        } elseif ($is_live && !$app_env) {
+            // Live config
+            $host_url = $payment_config['production']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
+            $secret = $this->getEnvpayValue($payment_config['production']['secret_key']);
+        } else {
+            // Test config
+            $host_url = $payment_config['sandbox']['host'];
+            $merchant_id = $this->getEnvpayValue($payment_config['sandbox']['merchant_id']);
+            $secret = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
+        }
+        if (strtolower($payment_config['common']['version']) == 'v1') {
+            $fawry_ref_no = $params['FawryRefNo'] ?? '';
+            $payment_amount = $params['Amount'] ?? '';
+            $order_status = $params['OrderStatus'] ?? '';
+            $message_signature = $params['MessageSignature'] ?? '';
+            // verify the signature
+            $sign_string = $secret . $payment_amount . $fawry_ref_no . $order_id . $order_status;
+        } else {
+            $fawry_ref_number = $params['fawryRefNumber'] ?? '';
+            $payment_amount = sprintf('%.2f', $params['paymentAmount']) ?? '';
+            $order_amount = sprintf('%.2f', $params['orderAmount']) ?? '';
+            $order_status = $params['orderStatus'] ?? '';
+            $payment_method = $params['paymentMethod'] ?? '';
+            $message_signature = $params['messageSignature'] ?? '';
+            $payment_refrence_number = $params['paymentRefrenceNumber'] ?? '';
+            // verify the signature
+            $sign_string = $fawry_ref_number . $order_id . $payment_amount . $order_amount . $order_status . $payment_method . $payment_refrence_number . $secret;
+        }
+
+        $hash_sign = hash('SHA256', $sign_string);
+        if ($hash_sign !== $message_signature) {
+            Log::warning('ONLINE PAYMENT, FAWRY: notify check failed : signature verification failed');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
+            return [
+                'status' => 'fail',
+                'message' => 'signature_verification_failed',
+            ];
+        }
+        // check payment amount
+        $t_amount = floatval($transaction['t_amount']);
+        if ($t_amount != $payment_amount) {
+            Log::warning('ONLINE PAYMENT, FAWRY: notify check failed : payment amount is incorrect');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
+            return [
+                'status' => 'fail',
+                'message' => 'payment_amount_incorrect',
+            ];
+        }
+
+        if ($order_status != 'PAID') {
+            $status_sign = $merchant_id . $order_id . $secret;
+            $status_url = $host_url . '/ECommerceWeb/Fawry/payments/status/v2';
+            $status_params = [
+                'merchantCode' => $merchant_id,
+                'merchantRefNumber' => $order_id,
+                'signature' => hash('SHA256', $status_sign),
+            ];
+            $query_params = [];
+            foreach ($status_params as $k => $v) {
+                $query_params[] = "{$k}={$v}";
+            }
+            $status_url .= '?' . implode('&', $query_params);
+            $client = new Client();
+            $response = $client->request('GET', $status_url);
+            $status_code = $response->getStatusCode();
+            $return_content = $response->getBody()->getContents();
+            $result = json_decode($return_content, true);
+            if ($status_code == 200 && !empty($result)) {
+                if ($result['orderStatus'] != 'PAID') {
+                    $queue_status = false;
+                    if ($transaction['t_in_queue'] == true) {
+                        if (isset($params['queueStatus'])) {
+                            $queue_status = true;
+                        }
+                    } else {
+                        $this->transactionService->update(['t_transaction_id' => $order_id], ['t_in_queue' => true]);
+                        $queue_status = true;
+                    }
+                    if ($queue_status) {
+                        $params['queueStatus'] = true;
+                        $fawry_job = new FawryPaymentJob($params);
+                        dispatch($fawry_job->delay(Carbon::now()->addMinute(1)))->onConnection('tlscontact_fawry_payment_queue')->onQueue('tlscontact_fawry_payment_queue');
+                    }
+                    Log::warning('ONLINE PAYMENT, Fawrypay(order status is wrong): The current order status is ' . $order_status);
+                    $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
+                    return [
+                        'status' => 'fail',
+                        'message' => 'unknown_error',
+                    ];
+                }
+            }
+        }
+        // if orderStatus is PAID, update transaction
+        $confirm_params = [
+            'gateway' => $this->getPaymentGatewayName(),
+            'amount' => floatval($transaction['t_amount']),
+            'currency' => $transaction['t_currency'],
+            'transaction_id' => $transaction['t_transaction_id'],
+            'gateway_transaction_id' => '',
+            'gateway_transaction_reference' => $this->getFawryRefNumber($params),
+        ];
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'success');
+        $response = $this->paymentService->confirm($transaction, $confirm_params);
+        if ($response['is_success'] == 'ok') {
+            return [
+                'status' => 'success',
+            ];
+        }
+    }
+
+    private function getEnvpayValue($env_key)
+    {
+        $suffix = 'ENVPAY_';
+        if (strtoupper(substr($env_key, 0, 7)) !== $suffix) {
+            return getenv($env_key);
+        }
+
+        return getenv(substr($env_key, 7));
+    }
+
+    private function getPaymentConfig($params, $pa_id)
+    {
         $order_id = $params['merchantRefNumber'];
         $reg = '/[a-z]{2}[A-Z]{3}2[a-z]{2}/';
         preg_match($reg, $order_id, $matches);
         if (empty($matches)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => '[null]',
-                'message'    => 'Invalid request'
+                'orderid' => '[null]',
+                'message' => 'Invalid request',
             ];
         }
         $issuer = $matches[0];
-        $client = substr($issuer,-2);
+        $client = substr($issuer, -2);
+
         return $this->gatewayService->getGateway($client, $issuer, $this->getPaymentGatewayName(), $pa_id);
     }
 
@@ -276,312 +431,172 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         if (empty($order_id)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => '[null]',
-                'message'    => 'empty_merchant_ref_number'
+                'orderid' => '[null]',
+                'message' => 'empty_merchant_ref_number',
             ];
         }
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         if (empty($transaction)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => $order_id,
-                'message'    => 'transaction_id_not_exists'
+                'orderid' => $order_id,
+                'message' => 'transaction_id_not_exists',
             ];
         }
         if (strtolower($transaction['t_status']) == 'done') {
             return [
                 'is_success' => 'ok',
-                'orderid'    => $order_id,
-                'message'    => 'The transaction paid successfully.',
-                'href'       => $transaction['t_redirect_url']
+                'orderid' => $order_id,
+                'message' => 'The transaction paid successfully.',
+                'href' => $transaction['t_redirect_url'],
             ];
         }
         $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $is_live = $payment_config['common']['env'] == 'live';
         $app_env = $this->isSandBox();
         if (!$this->gatewayService->getClientUseFile()) {
-            $host_url    = $payment_config['config']['host'];
+            $host_url = $payment_config['config']['host'];
             $merchant_id = $payment_config['config']['merchant_id'];
-            $secret      = $payment_config['config']['secret_key'];
-        } else if ($is_live && !$app_env) {
+            $secret = $payment_config['config']['secret_key'];
+        } elseif ($is_live && !$app_env) {
             // Live account
-            $host_url    = $payment_config['production']['host'];
+            $host_url = $payment_config['production']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
+            $secret = $this->getEnvpayValue($payment_config['production']['secret_key']);
         } else {
             // Test account
-            $host_url    = $payment_config['sandbox']['host'];
+            $host_url = $payment_config['sandbox']['host'];
             $merchant_id = $this->getEnvpayValue($payment_config['sandbox']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
+            $secret = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
         }
         $verify_url = url($host_url . $payment_config['common']['verify_path_v1']);
         $verify_params = [];
-        $verify_params['merchantCode']      =  $merchant_id;
-        $verify_params['merchantRefNumber'] =  $order_id;
-        $verify_params['signature']         =  hash('SHA256', $merchant_id . $order_id . $secret);
+        $verify_params['merchantCode'] = $merchant_id;
+        $verify_params['merchantRefNumber'] = $order_id;
+        $verify_params['signature'] = hash('SHA256', $merchant_id . $order_id . $secret);
         $query_params = [];
         foreach ($verify_params as $k => $v) {
-            $query_params[] = "$k=$v";
+            $query_params[] = "{$k}={$v}";
         }
         $client = new Client();
+
         try {
             $verify_url .= '?' . implode('&', $query_params);
             $response = $client->request('GET', $verify_url);
-            $status_code    = $response->getStatusCode();
+            $status_code = $response->getStatusCode();
             $return_content = $response->getBody()->getContents();
-            $result         = json_decode($return_content, true);
+            $result = json_decode($return_content, true);
             if ($status_code == 200 && !empty($result)) {
-                $order_status       = $result['paymentStatus'];
-                $received_amount    = number_format($result['paymentAmount'], 2, '.', '');
+                $order_status = $result['paymentStatus'];
+                $received_amount = number_format($result['paymentAmount'], 2, '.', '');
                 $transaction_amount = number_format($transaction['t_amount'], 2, '.', '');
                 if ($order_status == 'PAID' && $received_amount != $transaction_amount) {
-                    Log::warning('The payment amount is inconsistent, merchantRefNumber: ' . $order_id . ' [Received: ' . $received_amount . ', Expected: ' . $transaction_amount .']');
+                    Log::warning('The payment amount is inconsistent, merchantRefNumber: ' . $order_id . ' [Received: ' . $received_amount . ', Expected: ' . $transaction_amount . ']');
+
                     return [
                         'is_success' => 'fail',
-                        'orderid'    => $order_id,
-                        'message'    => 'payment_amount_incorrect',
-                        'href'       => $transaction['t_redirect_url']
+                        'orderid' => $order_id,
+                        'message' => 'payment_amount_incorrect',
+                        'href' => $transaction['t_redirect_url'],
                     ];
                 }
                 if ($order_status == 'PAID' && $received_amount == $transaction_amount && $transaction['t_transaction_id'] == $order_id && $transaction['t_status'] == 'pending') {
                     // update transaction
                     $confirm_params = [
-                        'gateway'        => $this->getPaymentGatewayName(),
-                        'amount'         => floatval($transaction['t_amount']),
-                        'currency'       => $transaction['t_currency'],
+                        'gateway' => $this->getPaymentGatewayName(),
+                        'amount' => floatval($transaction['t_amount']),
+                        'currency' => $transaction['t_currency'],
                         'transaction_id' => $transaction['t_transaction_id'],
                         'gateway_transaction_id' => '',
                         'gateway_transaction_reference' => $this->getFawryRefNumber($params),
                     ];
-                    $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
+                    $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'success');
                     $response = $this->paymentService->confirm($transaction, $confirm_params);
                     if ($response['is_success'] == 'ok') {
                         return [
                             'is_success' => 'ok',
-                            'orderid'    => $order_id,
-                            'message'    => 'transaction_has_been_paid_already',
-                            'href'       => $transaction['t_redirect_url']
+                            'orderid' => $order_id,
+                            'message' => 'transaction_has_been_paid_already',
+                            'href' => $transaction['t_redirect_url'],
                         ];
                     }
                 }
             }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'fail');
+
             return [
                 'is_success' => 'fail',
-                'orderid'    => '400',
-                'href'       => '', // TBC
-                'message'    => 'unknown_error'
+                'orderid' => '400',
+                'href' => '', // TBC
+                'message' => 'unknown_error',
             ];
         }
 
         return [
             'is_success' => 'fail',
-            'orderid'    => $order_id,
-            'message'    => 'transaction_has_been_paid_already',
-            'href'       => $transaction['t_redirect_url']
+            'orderid' => $order_id,
+            'message' => 'transaction_has_been_paid_already',
+            'href' => $transaction['t_redirect_url'],
         ];
     }
 
     private function returnV2($params)
     {
         $order_status = $params['orderStatus'] ?? '';
-        $order_id     = $params['merchantRefNumber'] ?? '';
+        $order_id = $params['merchantRefNumber'] ?? '';
         $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
         if (empty($transaction)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => $order_id,
-                'message'    => 'transaction_id_not_exists'
+                'orderid' => $order_id,
+                'message' => 'transaction_id_not_exists',
             ];
         }
         if (strtolower($transaction['t_status']) == 'done') {
             return [
                 'is_success' => 'ok',
-                'orderid'    => $order_id,
-                'message'    => 'The transaction paid successfully.',
-                'href'       => $transaction['t_redirect_url']
+                'orderid' => $order_id,
+                'message' => 'The transaction paid successfully.',
+                'href' => $transaction['t_redirect_url'],
             ];
         }
 
         if ($transaction['t_transaction_id'] == $order_id && $order_status == 'PAID') {
             // update transaction
             $confirm_params = [
-                'gateway'        => $this->getPaymentGatewayName(),
-                'amount'         => floatval($transaction['t_amount']),
-                'currency'       => $transaction['t_currency'],
+                'gateway' => $this->getPaymentGatewayName(),
+                'amount' => floatval($transaction['t_amount']),
+                'currency' => $transaction['t_currency'],
                 'transaction_id' => $transaction['t_transaction_id'],
                 'gateway_transaction_id' => '',
                 'gateway_transaction_reference' => $this->getFawryRefNumber($params),
             ];
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $params, 'success');
             $response = $this->paymentService->confirm($transaction, $confirm_params);
             if ($response['is_success'] == 'ok') {
                 return [
                     'is_success' => 'ok',
-                    'orderid'    => $order_id,
-                    'message'    => 'The transaction paid successfully.',
-                    'href'       => $transaction['t_redirect_url']
+                    'orderid' => $order_id,
+                    'message' => 'The transaction paid successfully.',
+                    'href' => $transaction['t_redirect_url'],
                 ];
             }
         }
 
         return [
             'is_success' => 'fail',
-            'orderid'    => $order_id,
-            'message'    => 'transaction_has_not_been_paid',
-            'href'       => $transaction['t_redirect_url']
+            'orderid' => $order_id,
+            'message' => 'transaction_has_not_been_paid',
+            'href' => $transaction['t_redirect_url'],
         ];
-    }
-
-    public function notify($params)
-    {
-        $order_id = $params['MerchantRefNo'] ?? $params['merchantRefNumber'] ?? '';
-        if (empty($order_id)) {
-            Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : merchantRefNumber is empty");
-            return [
-                'status' => 'fail',
-                'message' => "empty_merchant_ref_number",
-            ];
-        }
-
-        // find transaction in database
-        $transaction = $this->transactionService->fetchTransaction(['t_transaction_id' => $order_id, 't_tech_deleted' => false]);
-        if (empty($transaction)) {
-            Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : the transaction number $order_id does not exist");
-            return [
-                'status' => 'fail',
-                'message' => "transaction_id_not_exists",
-            ];
-        }
-        if (strtolower($transaction['t_status']) == 'done') {
-            return [
-                'status' => 'success',
-            ];
-        }
-
-        //get trade information
-        $payment_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
-        $app_env = $this->isSandBox();
-        $is_live = $payment_config['common']['env'] == 'live' ? true : false;
-        if (!$this->gatewayService->getClientUseFile()) {
-            $host_url    = $payment_config['config']['host'];
-            $merchant_id = $payment_config['config']['merchant_id'];
-            $secret      = $payment_config['config']['secret_key'];
-        } else if ($is_live && !$app_env) {
-            // Live config
-            $host_url    = $payment_config['production']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['production']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['production']['secret_key']);
-        } else {
-            // Test config
-            $host_url    = $payment_config['sandbox']['host'];
-            $merchant_id = $this->getEnvpayValue($payment_config['sandbox']['merchant_id']);
-            $secret      = $this->getEnvpayValue($payment_config['sandbox']['secret_key']);
-        }
-        if (strtolower($payment_config['common']['version']) == 'v1') {
-            $fawry_ref_no      = $params['FawryRefNo'] ?? '';
-            $payment_amount    = $params['Amount'] ?? '';
-            $order_status      = $params['OrderStatus'] ?? '';
-            $message_signature = $params['MessageSignature'] ?? '';
-            // verify the signature
-            $sign_string = $secret . $payment_amount . $fawry_ref_no . $order_id . $order_status;
-        } else {
-            $fawry_ref_number  = $params['fawryRefNumber'] ?? '';
-            $payment_amount    = sprintf("%.2f", $params['paymentAmount']) ?? '';
-            $order_amount      = sprintf("%.2f", $params['orderAmount']) ?? '';
-            $order_status      = $params['orderStatus'] ?? '';
-            $payment_method    = $params['paymentMethod'] ?? '';
-            $message_signature = $params['messageSignature'] ?? '';
-            $payment_refrence_number = $params['paymentRefrenceNumber'] ?? '';
-            // verify the signature
-            $sign_string = $fawry_ref_number . $order_id . $payment_amount . $order_amount . $order_status . $payment_method . $payment_refrence_number . $secret;
-        }
-
-        $hash_sign = hash('SHA256', $sign_string);
-        if ($hash_sign !== $message_signature) {
-            Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : signature verification failed");
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
-            return [
-                'status' => 'fail',
-                'message' => "signature_verification_failed",
-            ];
-        }
-        // check payment amount
-        $t_amount = floatval($transaction['t_amount']);
-        if ($t_amount != $payment_amount) {
-            Log::warning("ONLINE PAYMENT, FAWRY: notify check failed : payment amount is incorrect");
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
-            return [
-                'status' => 'fail',
-                'message' => "payment_amount_incorrect",
-            ];
-        }
-
-        if ($order_status != 'PAID') {
-            $status_sign   = $merchant_id . $order_id . $secret;
-            $status_url    = $host_url . '/ECommerceWeb/Fawry/payments/status/v2';
-            $status_params = [
-                'merchantCode'      => $merchant_id,
-                'merchantRefNumber' => $order_id,
-                'signature'         => hash('SHA256', $status_sign)
-            ];
-            $query_params = [];
-            foreach ($status_params as $k => $v) {
-                $query_params[] = "$k=$v";
-            }
-            $status_url .= '?' . implode('&', $query_params);
-            $client = new Client();
-            $response = $client->request('GET', $status_url);
-            $status_code    = $response->getStatusCode();
-            $return_content = $response->getBody()->getContents();
-            $result         = json_decode($return_content, true);
-            if ($status_code == 200 && !empty($result)) {
-                if ($result['orderStatus'] != 'PAID') {
-                    $queue_status = false;
-                    if ($transaction['t_in_queue'] == true) {
-                        if (isset($params['queueStatus'])) { $queue_status = true; }
-                    } else {
-                        $this->transactionService->update(['t_transaction_id' => $order_id], ['t_in_queue' => true]);
-                        $queue_status = true;
-                    }
-                    if ($queue_status) {
-                        $params['queueStatus'] = true;
-                        $fawry_job = new FawryPaymentJob($params);
-                        dispatch($fawry_job->delay(Carbon::now()->addMinute(1)))->onConnection('tlscontact_fawry_payment_queue')->onQueue('tlscontact_fawry_payment_queue');
-                    }
-                    Log::warning('ONLINE PAYMENT, Fawrypay(order status is wrong): The current order status is ' . $order_status);
-                    $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'fail');
-                    return [
-                        'status' => 'fail',
-                        'message' => 'unknown_error',
-                    ];
-                }
-            }
-        }
-        // if orderStatus is PAID, update transaction
-        $confirm_params = [
-            'gateway'        => $this->getPaymentGatewayName(),
-            'amount'         => floatval($transaction['t_amount']),
-            'currency'       => $transaction['t_currency'],
-            'transaction_id' => $transaction['t_transaction_id'],
-            'gateway_transaction_id' => '',
-            'gateway_transaction_reference' => $this->getFawryRefNumber($params),
-        ];
-        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $params,'success');
-        $response = $this->paymentService->confirm($transaction, $confirm_params);
-        if ($response['is_success'] == 'ok') {
-            return [
-                'status' => 'success',
-            ];
-        }
     }
 
     /**
      * @param array $payload
      *
-     * @return string|null
+     * @return null|string
      */
     private function getFawryRefNumber(array $payload): ?string
     {
@@ -590,12 +605,13 @@ class FawryPaymentGateway implements PaymentGatewayInterface
         return !blank($refNumber) ? (string) $refNumber : null;
     }
 
-    private function returnFail() {
+    private function returnFail()
+    {
         return response('fail', 400);
     }
 
-    private function returnSuccess() {
+    private function returnSuccess()
+    {
         return response('', 200);
     }
-
 }

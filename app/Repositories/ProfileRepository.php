@@ -56,6 +56,7 @@ class ProfileRepository
             ->distinct('p_xref_f_id')
             ->orderBy('p_xref_f_id')
             ->orderBy('p_tech_creation', 'DESC');
+
         return DB::table(DB::raw("({$sql->toSql()}) as sub"))
             ->where('p_profile', $profile)
             ->get();

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Jobs\ReceiptJob;
 use App\Traits\FeatureVersionsTrait;
 use Illuminate\Support\Facades\Log;
-use \Mpdf\Mpdf as PDF;
+use Mpdf\Mpdf as PDF;
 
 class ReceiptService
 {
@@ -62,8 +62,8 @@ class ReceiptService
     }
 
     /**
-     * @param  string $transactionId
-     * @param  string $fileName
+     * @param string $transactionId
+     * @param string $fileName
      *
      * @return null|array
      */
@@ -99,12 +99,12 @@ class ReceiptService
     }
 
     /**
-     * @param  array $transaction
-     * @param  string $fileName
-     *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param array  $transaction
+     * @param string $fileName
      *
      * @return bool
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function saveReceipt(array $transaction, string $fileName): bool
     {
@@ -132,28 +132,29 @@ class ReceiptService
 
         return true;
     }
-    
+
     /**
-     * @param  array $transaction
-     * @param  string $filePath
+     * @param array  $transaction
+     * @param string $filePath
      *
      * @return null|object
      */
     private function downloadReceipt(array $transaction, string $filePath): ?object
     {
         try {
-            $response = $this->apiService->callFileLibraryDownloadApi('path='.$filePath);
+            $response = $this->apiService->callFileLibraryDownloadApi('path=' . $filePath);
         } catch (\Exception $e) {
-            Log::warning('Error downloading the receipt from file-library for '.json_encode($transaction['t_transaction_id']).' - "'.$e->getMessage().'"');
+            Log::warning('Error downloading the receipt from file-library for ' . json_encode($transaction['t_transaction_id']) . ' - "' . $e->getMessage() . '"');
 
             return null;
         }
 
         if ($response['status'] != 200) {
-            Log::warning('Error downloading the receipt from file-library for '.json_encode($transaction['t_transaction_id']));
+            Log::warning('Error downloading the receipt from file-library for ' . json_encode($transaction['t_transaction_id']));
 
             return null;
         }
+
         return $response['body'];
     }
 }

@@ -19,6 +19,6 @@ class FailedJob extends Model
         'queue',
         'payload',
         'exception',
-        'failed_at'
+        'failed_at',
     ];
 }

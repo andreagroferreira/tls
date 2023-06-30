@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CreateTransactionsTable extends Migration
 {
@@ -36,7 +36,7 @@ class CreateTransactionsTable extends Migration
             $table->boolean('t_tech_deleted')->default(0);
         });
 
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE transactions OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE transactions OWNER TO common;');
     }
 
     /**

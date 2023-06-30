@@ -20,14 +20,19 @@ function get_cache_ttl($type)
     switch ($type) {
         case 'applicant':
             $ttl = 5 * 60;
+
             break;
+
         case 'visa_type':
         case 'configuration':
         case 'issuer':
             $ttl = 30 * 60;
+
             break;
+
         default:
             $ttl = 15 * 60;
     }
+
     return $ttl;
 }

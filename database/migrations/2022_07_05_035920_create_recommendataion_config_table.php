@@ -24,7 +24,7 @@ class CreateRecommendataionConfigTable extends Migration
             $table->timestamp('rc_tech_creation')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
 
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE recommendataion_config OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE recommendataion_config OWNER TO common;');
     }
 
     /**

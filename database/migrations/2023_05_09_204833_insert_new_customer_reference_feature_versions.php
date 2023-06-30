@@ -13,14 +13,14 @@ class InsertNewCustomerReferenceFeatureVersions extends Migration
     public function up()
     {
         DB::connection('deploy_payment_pgsql')->beginTransaction();
-            $featureVersions = [1, 2];
-            foreach ($featureVersions as $version) {
-                $this->createFeatureVersions([
-                    'fv_type' => 'aj_customer_reference',
-                    'fv_version' => $version,
-                ]);
-            }
-            DB::connection('deploy_payment_pgsql')->commit();
+        $featureVersions = [1, 2];
+        foreach ($featureVersions as $version) {
+            $this->createFeatureVersions([
+                'fv_type' => 'aj_customer_reference',
+                'fv_version' => $version,
+            ]);
+        }
+        DB::connection('deploy_payment_pgsql')->commit();
     }
 
     /**
@@ -30,7 +30,6 @@ class InsertNewCustomerReferenceFeatureVersions extends Migration
      */
     public function down()
     {
-        //
     }
 
     /**

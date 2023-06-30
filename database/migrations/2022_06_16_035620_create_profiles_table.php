@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CreateProfilesTable extends Migration
 {
@@ -24,7 +24,7 @@ class CreateProfilesTable extends Migration
             $table->unique(['p_xref_f_id', 'p_profile'], 'f_id_profile_unique_index');
         });
 
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE profiles OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE profiles OWNER TO common;');
     }
 
     /**

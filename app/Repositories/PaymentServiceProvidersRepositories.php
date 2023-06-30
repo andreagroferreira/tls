@@ -1,10 +1,8 @@
 <?php
 
-
 namespace App\Repositories;
 
 use App\Models\PaymentServiceProviders;
-use Illuminate\Support\Facades\DB;
 
 class PaymentServiceProvidersRepositories
 {
@@ -48,25 +46,26 @@ class PaymentServiceProvidersRepositories
 
     public function update($where, $attributes)
     {
-
         $paymentAccounts = $this->paymentServiceProviders->where($where)->first();
         if (blank($paymentAccounts)) {
             return false;
         }
 
         foreach ($attributes as $key => $value) {
-            $paymentAccounts->$key = $value;
+            $paymentAccounts->{$key} = $value;
         }
         $paymentAccounts->save();
 
         return $this->paymentServiceProviders->find($paymentAccounts->pa_id);
     }
 
-    public function findBy($attributes) {
+    public function findBy($attributes)
+    {
         $result = $this->paymentServiceProviders;
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);
         }
+
         return $result->get();
     }
 }

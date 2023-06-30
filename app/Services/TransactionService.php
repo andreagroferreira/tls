@@ -742,6 +742,20 @@ class TransactionService
     }
 
     /**
+     * @param array  $transaction
+     * @param string $language
+     *
+     * @return void
+     */
+    public function updateLanguage(array $transaction, string $language): void
+    {
+        $this->transactionRepository->update(
+            ['t_id' => $transaction['t_id']],
+            ['t_language' => $language]
+        );
+    }
+
+    /**
      * Close the transaction if it is expired.
      *
      * This method marks a transaction 't_status' as closed and sets 't_tech_modification' to the current time.
@@ -1030,19 +1044,5 @@ class TransactionService
             'paymentStatus' => $paymentStatus,
             'items' => $filteredItems,
         ];
-    }
-
-    /**
-     * @param array  $transaction
-     * @param string $language
-     *
-     * @return void
-     */
-    public function updateLanguage(array $transaction, string $language): void
-    {
-        $this->transactionRepository->update(
-            ['t_id' => $transaction['t_id']],
-            ['t_language' => $language]
-        );
     }
 }

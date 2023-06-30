@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use App\Http\Controllers\Controller;
 
 /**
  * @OA\Info(

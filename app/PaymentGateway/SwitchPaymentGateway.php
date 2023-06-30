@@ -99,7 +99,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             'form_fields' => [
                 'action' => $return_url,
                 'class' => 'paymentWidgets',
-                'data_brands' => 'VISA MASTER AMEX',// todo, 待定
+                'data_brands' => 'VISA MASTER AMEX', // todo, 待定
             ],
         ];
     }
@@ -201,7 +201,8 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
                 'message' => 'Order status error',
                 'href' => $transaction['t_onerror_url'],
             ];
-        } elseif ($result_code == '000.200.000') {
+        }
+        if ($result_code == '000.200.000') {
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $response, 'success');
 
             return [

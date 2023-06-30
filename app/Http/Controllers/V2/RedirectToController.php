@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\V2;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Container\EntryNotFoundException;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Src\Shared\Application\ServiceResolver;
 
 class RedirectToController extends Controller

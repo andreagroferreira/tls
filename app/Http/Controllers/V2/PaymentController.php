@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\V2;
 
 use App\Contracts\Services\PaymentGatewayServiceInterface;
+use App\Http\Controllers\Controller;
 use Illuminate\Container\EntryNotFoundException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use App\Http\Controllers\Controller;
 
 class PaymentController extends Controller
 {

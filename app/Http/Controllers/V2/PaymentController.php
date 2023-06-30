@@ -59,13 +59,13 @@ class PaymentController extends Controller
     public function resolveService(string $gatewayName): ?PaymentGatewayServiceInterface
     {
         try {
-            return app('App\\Services\\PaymentGateways\\'.Str::ucfirst($gatewayName));
+            return app('App\\Services\\PaymentGateways\\' . Str::ucfirst($gatewayName));
         } catch (BindingResolutionException $e) {
             throw new EntryNotFoundException('Payment Controller Error. Service class not found.', 404, $e);
         } catch (\Exception $e) {
             Log::error('[PaymentController] - General Payment Controller Error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }

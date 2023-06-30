@@ -33,11 +33,11 @@ class RefundRepository
     {
         return $this->refundModel->create($attributes);
     }
-    
+
     /**
-     * @param  array  $where
-     * @param  string $field
-     * 
+     * @param array  $where
+     * @param string $field
+     *
      * @return object
      */
     public function fetch(array $where, string $field = '*'): object

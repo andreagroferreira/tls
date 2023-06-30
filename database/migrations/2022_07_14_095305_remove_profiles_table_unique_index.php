@@ -21,6 +21,7 @@ class RemoveProfilesTableUniqueIndex extends Migration
             if ($exception->getCode() === '42704' && str_contains($exception->getMessage(), $message)) {
                 return;
             }
+
             throw $exception;
         }
     }

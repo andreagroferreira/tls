@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use function Illuminate\Events\queueable;
 
 class RecommendationRuleEngineService
 {
@@ -15,8 +14,7 @@ class RecommendationRuleEngineService
     public function __construct(
         ApiService $apiService,
         RecommendationConfigService $recommendationConfigService
-    )
-    {
+    ) {
         $this->apiService = $apiService;
         $this->recommendationConfigService = $recommendationConfigService;
         $this->client = $this->apiService->getProjectId();
@@ -29,60 +27,74 @@ class RecommendationRuleEngineService
         unset($params['issuer']);
 
         $conflict_skus = [];
-        //get all the matched condition rules
+        // get all the matched condition rules
         $matched_rules = collect($issuer_rules)
             ->filter(function ($issuer_rule) use ($params, $stages_status, $basket_skus, &$conflict_skus) {
-                $conditions = array_filter($issuer_rule, function($value) {
+                $conditions = array_filter($issuer_rule, function ($value) {
                     return !is_null($value) && $value !== '';
                 });
                 $matched = true;
-                if(!empty($conditions['AVS Conflict'])) {
+                if (!empty($conditions['AVS Conflict'])) {
                     $resolved_avs_conflict = $this->resolveAvsConflict($basket_skus, $conditions['AVS Conflict']);
                     $conflict_skus = array_merge($conflict_skus, $resolved_avs_conflict['conflict_skus']);
-                    if(!$resolved_avs_conflict['matched']) {
+                    if (!$resolved_avs_conflict['matched']) {
                         return false;
                     }
                 }
                 foreach ($conditions as $key => $rule) {
                     $verified_value = $params[$key] ?? '';
-                    switch ($key){
-                        case "Visa Type":
-                        case "Travel Purpose":
-                        case "Visa SubType":
+
+                    switch ($key) {
+                        case 'Visa Type':
+                        case 'Travel Purpose':
+                        case 'Visa SubType':
                             $matched = $this->checkList($verified_value, $rule);
+
                             break;
-                        case "In a group":
-                        case "City of residence":
-                        case "Nationality":
-                        case "Account Type":
-                        case "On Site":
-                        case "Profile":
+
+                        case 'In a group':
+                        case 'City of residence':
+                        case 'Nationality':
+                        case 'Account Type':
+                        case 'On Site':
+                        case 'Profile':
                             $matched = $this->checkString($verified_value, $rule);
+
                             break;
-                        case "Workflow":
+
+                        case 'Workflow':
                             $matched = $this->checkWorkflowStatus($stages_status, trim($rule, '"'));
+
                             break;
-                        case "Age Range":
+
+                        case 'Age Range':
                             $matched = $this->checkAge($verified_value, $rule);
+
                             break;
-                        case "Step":
+
+                        case 'Step':
                             $matched = $this->checkStep($verified_value, $rule);
+
                             break;
+
                         default: break;
                     }
                     if (!$matched) {
                         break;
                     }
                 }
+
                 return $matched;
             })->groupBy('Rule')->toArray();
-        $result['remove'] = array_column($matched_rules['Remove'] ?? [], null, 'Service ID' );
+        $result['remove'] = array_column($matched_rules['Remove'] ?? [], null, 'Service ID');
         $result['add'] = $this->getAddSkusAndPriority($issuer, $matched_rules['Add'] ?? []);
         $result['conflict'] = array_values(array_unique($conflict_skus));
+
         return $result;
     }
 
-    private function getAddSkusAndPriority($issuer, $add_rules) {
+    private function getAddSkusAndPriority($issuer, $add_rules)
+    {
         $country = substr($issuer, 0, 2);
         $dest = substr($issuer, -3);
         // get the most priority sku rules
@@ -96,27 +108,31 @@ class RecommendationRuleEngineService
                 $score = 10;
             }
             $rule['score'] = $score + $rule['Priority'];
+
             return $rule;
-        })->groupBy('Service ID')->map(function($item) {
+        })->groupBy('Service ID')->map(function ($item) {
             $item = $item->sortBy('score')->first();
             unset($item['score']);
+
             return $item;
         })->toArray();
     }
 
-    private function resolveAvsConflict($basket_avs, $condition) {
+    private function resolveAvsConflict($basket_avs, $condition)
+    {
         $conflict_skus = [];
         $matched = false;
         if (str_starts_with($condition, 'in_list')) {
-            $conflict_skus = array_map('trim', explode(',', preg_replace('/^in_list\((.*)?\)/' , '$1', $condition)));
+            $conflict_skus = array_map('trim', explode(',', preg_replace('/^in_list\((.*)?\)/', '$1', $condition)));
             $matched = !empty(array_intersect($basket_avs, $conflict_skus));
         } elseif (str_starts_with($condition, 'not_in_list')) {
-            $conflict_skus = array_map('trim', explode(',', preg_replace('/^not_in_list\((.*)?\)/' , '$1', $condition)));
+            $conflict_skus = array_map('trim', explode(',', preg_replace('/^not_in_list\((.*)?\)/', '$1', $condition)));
             $matched = empty(array_intersect($basket_avs, $conflict_skus));
         }
+
         return [
             'conflict_skus' => $conflict_skus,
-            'matched' => $matched
+            'matched' => $matched,
         ];
     }
 
@@ -124,32 +140,35 @@ class RecommendationRuleEngineService
     {
         if (str_starts_with($rule, 'in_list')) {
             return in_list($value, $rule);
-        } else if (str_starts_with($rule, 'not_in_list')) {
-            return not_in_list($value, $rule);
-        } else {
-            return false;
         }
+        if (str_starts_with($rule, 'not_in_list')) {
+            return not_in_list($value, $rule);
+        }
+
+        return false;
     }
 
-    private function checkString($value, $rule) {
+    private function checkString($value, $rule)
+    {
         return $value === $rule;
     }
 
     private function checkAge($age, $rule)
     {
         $match = false;
+
         try {
             if (str_starts_with($rule, '<=')) {
                 $match = $age <= str_replace('<=', '', $rule);
-            } else if (str_starts_with($rule, '<')) {
+            } elseif (str_starts_with($rule, '<')) {
                 $match = $age < str_replace('<', '', $rule);
-            } else if (str_starts_with($rule, '>=')) {
+            } elseif (str_starts_with($rule, '>=')) {
                 $match = $age >= str_replace('>=', '', $rule);
-            } else if (str_starts_with($rule, '>')) {
+            } elseif (str_starts_with($rule, '>')) {
                 $match = $age > str_replace('>', '', $rule);
-            } else if (strpos($rule, '-') !== false) {
+            } elseif (strpos($rule, '-') !== false) {
                 $condition = explode('-', $rule);
-                if (count($condition) != 2 || $condition[1] <= $condition [0]) {
+                if (count($condition) != 2 || $condition[1] <= $condition[0]) {
                     Log::info('expression is not valid: ' . $rule);
                     $match = false;
                 } else {
@@ -169,9 +188,9 @@ class RecommendationRuleEngineService
     {
         if (str_starts_with($rule, 'workflow_status')) {
             return workflow_status($stages_status, $rule);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     private function checkStep($step, $rule)
@@ -190,14 +209,15 @@ class RecommendationRuleEngineService
         $country = substr($issuer, 0, 2);
         $city = substr($issuer, 2, 3);
         $dest = substr($issuer, -3);
-        $rule_config  = $this->recommendationConfigService->fetch(1)->toArray();
+        $rule_config = $this->recommendationConfigService->fetch(1)->toArray();
         $client_rules = empty($rule_config)
             ? csv_to_array(storage_path('rules/' . $this->client . '/recommendation_rules.csv'), ',')
             : csv_content_array($rule_config[0]['rc_content'], ',');
-        $issuer_rules = collect($client_rules)->filter(function($rule) use ($country, $city, $dest){
+        $issuer_rules = collect($client_rules)->filter(function ($rule) use ($country, $city, $dest) {
             return in_array($rule['Scope'], [$country, $city, $dest]);
         })->values()->toArray();
         Cache::put($issuer_rule_cache_key, $issuer_rules, 15 * 60);
+
         return $issuer_rules;
     }
 }

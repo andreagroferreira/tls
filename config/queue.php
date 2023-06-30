@@ -1,8 +1,6 @@
 <?php
 
-
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Queue Connection Name
@@ -30,7 +28,6 @@ return [
     */
 
     'connections' => [
-
         'sync' => [
             'driver' => 'sync',
         ],
@@ -138,5 +135,4 @@ return [
         'database' => 'payment_pgsql',
         'table' => 'failed_jobs',
     ],
-
 ];

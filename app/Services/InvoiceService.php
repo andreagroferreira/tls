@@ -30,12 +30,12 @@ class InvoiceService
     /**
      * @param string $transaction_id
      *
+     * @return null|object|string
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
-     *
-     * @return null|object|string
      */
     public function getInvoiceFileContent(string $transaction_id)
     {
@@ -94,7 +94,7 @@ class InvoiceService
         try {
             $response = $this->apiService->callInvoiceApi($transaction['t_callback_url'], $data);
         } catch (\Exception $e) {
-            Log::warning('Transaction Error: error callback url "'.$transaction['t_callback_url'].'"');
+            Log::warning('Transaction Error: error callback url "' . $transaction['t_callback_url'] . '"');
 
             return false;
         }
@@ -121,9 +121,9 @@ class InvoiceService
     /**
      * @param Transactions $transaction
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     *
      * @return null|string
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getS3InvoiceFileContent(Transactions $transaction): ?string
     {
@@ -144,11 +144,11 @@ class InvoiceService
     /**
      * @param Transactions $transaction
      *
+     * @return null|string
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
-     *
-     * @return string|null
      */
     public function getMinioInvoiceFileContent(Transactions $transaction): ?string
     {
@@ -157,7 +157,7 @@ class InvoiceService
         try {
             $response = $this->apiService->callCustomerServiceInvoiceDownloadApi($path);
         } catch (\Exception $e) {
-            Log::warning('Transaction Error: error customer-service api "'.$e->getMessage().'"');
+            Log::warning('Transaction Error: error customer-service api "' . $e->getMessage() . '"');
 
             return null;
         }
@@ -174,28 +174,28 @@ class InvoiceService
     /**
      * @param Transactions $transaction
      *
+     * @return null|object
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
-     *
-     * @return null|object
      */
     public function getFileLibraryInvoiceFileContent(Transactions $transaction): ?object
     {
-        $getFile = $this->apiService->callFileLibraryFilesApi('invoice?fileName='.$transaction->t_transaction_id);
-        
-        if($getFile['status'] != 200 || empty($getFile['body']['data'])) {
+        $getFile = $this->apiService->callFileLibraryFilesApi('invoice?fileName=' . $transaction->t_transaction_id);
+
+        if ($getFile['status'] != 200 || empty($getFile['body']['data'])) {
             Log::warning('Transaction Error: receipt download failed');
 
             return null;
         }
-        
-        $file  = array_first($getFile['body']['data']);
-        
+
+        $file = array_first($getFile['body']['data']);
+
         try {
-            $response = $this->apiService->callFileLibraryDownloadApi('path='.$file['path']);
+            $response = $this->apiService->callFileLibraryDownloadApi('path=' . $file['path']);
         } catch (\Exception $e) {
-            Log::warning('Transaction Error: error file-library api "'.$e->getMessage().'"');
+            Log::warning('Transaction Error: error file-library api "' . $e->getMessage() . '"');
 
             return null;
         }
@@ -246,5 +246,4 @@ class InvoiceService
             ['lang' => $language]
         );
     }
-
 }

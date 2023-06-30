@@ -13,7 +13,6 @@ class CreateFeatureVersionsTable extends Migration
      */
     public function up()
     {
-
         Schema::connection('deploy_payment_pgsql')->create('feature_versions', function (Blueprint $table) {
             $table->bigIncrements('fv_id');
             $table->string('fv_type');

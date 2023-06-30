@@ -46,9 +46,9 @@ class GetPayuReference extends Command
      * @param DbConnectionService    $dbConnectionService
      * @param PaymentInitiateService $paymentInitiateService
      *
-     * @throws \Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     public function handle(
         TransactionRepository $transactionRepository,
@@ -60,7 +60,7 @@ class GetPayuReference extends Command
         foreach ($this->getPaymentIds() as $paymentId) {
             $result = $paymentInitiateService->paymentInitiate(
                 'get',
-                'https://api.paymentsos.com/payments/'.$paymentId['id'],
+                'https://api.paymentsos.com/payments/' . $paymentId['id'],
                 '',
                 false,
                 $this->getHeader()
@@ -97,10 +97,10 @@ class GetPayuReference extends Command
         $env = $this->isSandBox() ? 'test' : 'live';
 
         return [
-            'app_id: '.$this->appId,
-            'private_key: '.$this->privateKey,
+            'app_id: ' . $this->appId,
+            'private_key: ' . $this->privateKey,
             'api-version: 1.3.0',
-            'x-payments-os-env: '.$env,
+            'x-payments-os-env: ' . $env,
             'Content-Type: application/json',
         ];
     }
@@ -114,9 +114,9 @@ class GetPayuReference extends Command
     }
 
     /**
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     private function getPaymentIds(): array
     {
@@ -129,9 +129,9 @@ class GetPayuReference extends Command
     /**
      * @param string $issuer
      *
-     * @throws \Exception
-     *
      * @return void
+     *
+     * @throws \Exception
      */
     private function setPayuCredentials(string $issuer): void
     {

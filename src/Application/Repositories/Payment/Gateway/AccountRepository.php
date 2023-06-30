@@ -7,7 +7,6 @@ use Src\Domain\Payment\Repositories\AccountRepositoryInterface;
 
 class AccountRepository implements AccountRepositoryInterface
 {
-
     public function getAccountById(int $accountId): bool
     {
         // TODO: Implement getAccountById() method.

@@ -88,7 +88,7 @@ class ImportTransactionsFromTlsConnect extends Command
         );
 
         if (empty($inflightTransactions)) {
-            Log::info('No transactions found for filter: '.json_encode($filter));
+            Log::info('No transactions found for filter: ' . json_encode($filter));
 
             return;
         }
@@ -136,7 +136,7 @@ class ImportTransactionsFromTlsConnect extends Command
             try {
                 $importedTransaction = $transferTableTransactionRepository->fetch(['t_transaction_id' => $transactionId]);
                 if (filled($importedTransaction)) {
-                    Log::warning('Import skipped for Transaction ID: '.$transactionId.'. Transaction already imported.');
+                    Log::warning('Import skipped for Transaction ID: ' . $transactionId . '. Transaction already imported.');
 
                     continue;
                 }
@@ -145,11 +145,11 @@ class ImportTransactionsFromTlsConnect extends Command
                     $transaction,
                     $transactionItems[$transactionId]
                 );
-                Log::info('Import successful for Transaction ID: '.$transactionId);
+                Log::info('Import successful for Transaction ID: ' . $transactionId);
 
                 $dbConnection->commit();
             } catch (\Exception $exception) {
-                Log::error('Error to import Transaction ID: '.$transactionId.'. Error Message: '.$exception->getMessage());
+                Log::error('Error to import Transaction ID: ' . $transactionId . '. Error Message: ' . $exception->getMessage());
                 $dbConnection->rollBack();
             }
         }

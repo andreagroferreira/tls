@@ -11,7 +11,7 @@ class RefundItem extends Model
 
     public const CREATED_AT = 'ri_tech_creation';
     public const UPDATED_AT = 'ri_tech_modification';
-    
+
     protected $table = 'refund_items';
     protected $primaryKey = 'ri_id';
 

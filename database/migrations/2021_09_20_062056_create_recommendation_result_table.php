@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CreateRecommendationResultTable extends Migration
 {
@@ -26,7 +26,7 @@ class CreateRecommendationResultTable extends Migration
             $table->string('rr_deleted_by')->nullable(true)->comment('agent who deleted this line');
         });
 
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE recommendation_result OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE recommendation_result OWNER TO common;');
     }
 
     /**

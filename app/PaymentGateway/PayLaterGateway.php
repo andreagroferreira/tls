@@ -114,7 +114,7 @@ class PayLaterGateway implements PaymentGatewayInterface
     {
         $paymentWay = $this->getPaymentGatewayName();
         if ($transaction['t_gateway'] != $paymentWay || $transaction['t_status'] == 'pending') {
-            $gateway_transaction_id = 'PAY-LATER-'.date('His').'-'.($transaction['t_transaction_id'] ?? random_int(1000, 9999));
+            $gateway_transaction_id = 'PAY-LATER-' . date('His') . '-' . ($transaction['t_transaction_id'] ?? random_int(1000, 9999));
             $update_fields = [
                 't_gateway' => $paymentWay,
                 't_gateway_transaction_id' => $gateway_transaction_id,
@@ -134,8 +134,8 @@ class PayLaterGateway implements PaymentGatewayInterface
         $ecommerceSyncStatus = $this->transactionService->syncTransactionToEcommerce($transaction, 'PAY_LATER');
         if (!empty($ecommerceSyncStatus['error_msg'])) {
             Log::error(
-                'Transaction ERROR: transaction sync to ecommerce '.
-                $transaction['t_transaction_id'].' failed, because: '.
+                'Transaction ERROR: transaction sync to ecommerce ' .
+                $transaction['t_transaction_id'] . ' failed, because: ' .
                 json_encode($ecommerceSyncStatus, 256)
             );
         }
@@ -151,8 +151,8 @@ class PayLaterGateway implements PaymentGatewayInterface
         $workflowServiceSyncStatus = $this->transactionService->syncTransactionToWorkflow($transaction);
         if (!empty($workflowServiceSyncStatus['error_msg'])) {
             Log::error(
-                'Transaction ERROR: transaction '.
-                $transaction['t_transaction_id'].' failed, because: '.
+                'Transaction ERROR: transaction ' .
+                $transaction['t_transaction_id'] . ' failed, because: ' .
                 json_encode($workflowServiceSyncStatus['error_msg'], 256)
             );
         }

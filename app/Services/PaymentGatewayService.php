@@ -21,8 +21,7 @@ class PaymentGatewayService
         DbConnectionService $dbConnectionService,
         PaymentConfigurationsRepositories $paymentConfigurationsRepositories,
         PaymentServiceProvidersRepositories $paymentServiceProvidersRepositories
-    )
-    {
+    ) {
         $this->apiService = $apiService;
         $this->projectId = $this->apiService->getProjectId();
         $this->paymentAccountsRepositories = $paymentAccountsRepositories;
@@ -34,10 +33,10 @@ class PaymentGatewayService
     }
 
     /**
-     * @param string $gateway
-     * @param string $issuer
-     * @param int|null $pa_id
-     * @param string $service
+     * @param string   $gateway
+     * @param string   $issuer
+     * @param null|int $pa_id
+     * @param string   $service
      *
      * @return array
      */
@@ -61,10 +60,11 @@ class PaymentGatewayService
         $paymentAccounts = json_decode($paymentAccounts['pa_info'], true);
 
         $result = [];
-        $result['pa_type']  = $pa_type;
-        $result['label']    = config("payment_gateway_accounts.$gateway.label");
-        $result['common']   = config("payment_gateway_accounts.$gateway.common");
-        $result['config']   = $paymentAccounts;
+        $result['pa_type'] = $pa_type;
+        $result['label'] = config("payment_gateway_accounts.{$gateway}.label");
+        $result['common'] = config("payment_gateway_accounts.{$gateway}.common");
+        $result['config'] = $paymentAccounts;
+
         return $result;
     }
 
@@ -128,6 +128,7 @@ class PaymentGatewayService
                 $getPaymentGatewayConfig = $this->getPaymentGatewayConfig($client, $global_config, $service);
             }
         }
+
         return $getPaymentGatewayConfig ?? [];
     }
 
@@ -145,7 +146,7 @@ class PaymentGatewayService
             'pc_country' => $pc_country,
             'pc_city' => $pc_city,
             'pc_service' => $service,
-            'pc_is_active' => true
+            'pc_is_active' => true,
         ];
 
         $paymentConfigurations = $this->paymentConfigurationsRepositories->findBy($where)->toArray();
@@ -173,13 +174,13 @@ class PaymentGatewayService
             $payment_gateway_config[$gateway_type]['psp_code'] = $gateway;
             $payment_gateway_config[$gateway_type]['label'] = $v['psp_name'];
             $payment_gateway_config[$gateway_type]['type'] = $v['pa_type'];
-            $payment_gateway_config[$gateway_type]['common'] = config("payment_gateway_accounts.$gateway.common");
+            $payment_gateway_config[$gateway_type]['common'] = config("payment_gateway_accounts.{$gateway}.common");
             $payment_gateway_config[$gateway_type][$v['pa_type']] = json_decode($v['pa_info'], true);
             $payment_gateway_config[$gateway_type]['sort'] = ($gateway == 'pay_later' ? 2 : 1);
 
             if ($v['psp_code'] !== 'pay_later') {
                 $type = $payment_gateway_config[$gateway_type]['type'];
-                $diff = array_diff_key(config("payment_gateway_accounts.$gateway." . $type), $payment_gateway_config[$gateway_type][$v['pa_type']]);
+                $diff = array_diff_key(config("payment_gateway_accounts.{$gateway}." . $type), $payment_gateway_config[$gateway_type][$v['pa_type']]);
                 foreach ($diff as $key => $value) {
                     $payment_gateway_config[$gateway_type][$v['pa_type']][$key] = $value;
                 }
@@ -189,8 +190,7 @@ class PaymentGatewayService
         array_multisort($pa_name, SORT_ASC, $payment_gateway_config);
         $sort_payment_gateway_config = collect($payment_gateway_config);
         $payment_gateway_config = $sort_payment_gateway_config->sortBy('sort')->toArray();
+
         return $payment_gateway_config ?? [];
     }
-
-
 }

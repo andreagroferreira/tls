@@ -24,16 +24,15 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
     private $apiService;
 
     public function __construct(
-        PaymentInitiateService  $paymentInitiateService,
-        TransactionService      $transactionService,
-        TransactionLogsService  $transactionLogsService,
+        PaymentInitiateService $paymentInitiateService,
+        TransactionService $transactionService,
+        TransactionLogsService $transactionLogsService,
         TransactionItemsService $transactionItemsService,
-        FormGroupService        $formGroupService,
-        GatewayService          $gatewayService,
-        PaymentService          $paymentService,
-        ApiService              $apiService
-    )
-    {
+        FormGroupService $formGroupService,
+        GatewayService $gatewayService,
+        PaymentService $paymentService,
+        ApiService $apiService
+    ) {
         $this->paymentInitiateService = $paymentInitiateService;
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
@@ -115,18 +114,18 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         ];
         unset($post_params['sign']);
         ksort($post_params);
-        //dd($post_params);
+        // dd($post_params);
         $tmp = urldecode(http_build_query($post_params));
         $private_res = $search[0] . PHP_EOL . wordwrap($private_key, 64, "\n", true) . PHP_EOL . $search[1];
         // 生成的签名
         $private_sign = openssl_sign($tmp, $sign, $private_res, OPENSSL_ALGO_SHA256) ? base64_encode($sign) : null;
-        //$post_params['sign'] = $private_sign;
+        // $post_params['sign'] = $private_sign;
         $post_params['sign'] = $private_sign;
         $post_params['sign_type'] = 'RSA2';
         $gatewayURL = $gateway . '?charset=UTF-8';
-        //$post_params['biz_content'] = $default_params;
+        // $post_params['biz_content'] = $default_params;
         ksort($post_params);
-        //$parms = http_build_query($post_params);
+        // $parms = http_build_query($post_params);
 
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
 
@@ -177,7 +176,7 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
 
         $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $pay_config = $this->getPaySecret($payfort_config);
-        //#signature verification start
+        // #signature verification start
         $sign_params = [];
         foreach ($return_params as $key => $value) {
             if (!in_array($key, ['sign', 'sign_type', '']) && !empty($value)) {
@@ -189,18 +188,18 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         ksort($sign_params);
         $tmp = implode('&', $sign_params);
         Log::info('alipay return $tmp:' . $tmp);
-        //exit;
+        // exit;
         if (!empty($app_id) && $app_id == $alipay_appid) {
             $public_res = '-----BEGIN PUBLIC KEY-----' . PHP_EOL . wordwrap($public_key, 64, "\n", true) . PHP_EOL . '-----END PUBLIC KEY-----';
             // signature
             $expected_sign = !(openssl_verify($tmp, base64_decode($sign), $public_res, OPENSSL_ALGO_SHA256) === 1);
             Log::info('alipay return $expected_sign:' . $expected_sign);
-            //exit;
-            //$expected_sign = false;
+            // exit;
+            // $expected_sign = false;
             // signature verification success
             if ($expected_sign == false) {
                 Log::info('alipay return signature verification success！');
-                $received_currency = $return_params['receipt_currency_type'] ?? 'RMB'; //#currency,receipt_currency_type
+                $received_currency = $return_params['receipt_currency_type'] ?? 'RMB'; // #currency,receipt_currency_type
                 $received_amount = $return_params['total_amount'] ?? '0';
 
                 $expected_amount = strval($transaction['t_amount']);
@@ -254,7 +253,7 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
                     'message' => 'unknown_error',
                     'href' => $transaction['t_onerror_url'],
                 ];
-            }   //#signature verification fail
+            }   // #signature verification fail
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $return_params, 'fail');
 
             return [
@@ -294,7 +293,7 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
         }
         $payfort_config = $this->gatewayService->getGateway($transaction['t_client'], $transaction['t_issuer'], $this->getPaymentGatewayName(), $transaction['t_xref_pa_id']);
         $pay_config = $this->getPaySecret($payfort_config);
-        //#signature verifired start
+        // #signature verifired start
         $sign_params = [];
         foreach ($notify_params as $key => $value) {
             if (!in_array($key, ['sign', 'sign_type', '']) && !empty($value)) {
@@ -314,7 +313,7 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
             // signature verifired success
             if ($expected_sign == false) {
                 Log::info('alipay notify signature verifired success！');
-                $received_currency = $notify_params['receipt_currency_type'] ?? 'RMB'; //#currency,receipt_currency_type
+                $received_currency = $notify_params['receipt_currency_type'] ?? 'RMB'; // #currency,receipt_currency_type
                 $received_amount = $notify_params['total_amount'] ?? '0';
 
                 $expected_amount = strval($transaction['t_amount']);
@@ -325,7 +324,7 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
                 if (!$amount_matched or !$currency_matched) {
                     Log::warning("alipay notify: data check failed-1 : ({$expected_amount} == {$received_amount}) ({$expected_currency} == {$received_currency})");
                     Log::warning('alipay notify: data check failed-2 : ' . print_r($notify_params, 'error'));
-                    //$transaction_error = true;
+                    // $transaction_error = true;
                     return 'failure';
                 }
                 $trade_status = $notify_params['trade_status'];
@@ -353,14 +352,14 @@ class AlipayPaymentGateway implements PaymentGatewayInterface
                     $transaction_error = false;
                     Log::info('talipay notify ransaction done！');
                 }
-            } else { //#signature verified failure
+            } else { // #signature verified failure
                 $transaction_error = true;
                 Log::info('alipay notify signature verified failure！');
             }
         }
         Log::info('alipay notify done');
         if ($expected_sign) {
-            //$transaction_error = true;
+            // $transaction_error = true;
             Log::warning('alipay notify: digital signature check failed : ' . print_r($notify_params, 'error'));
             $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $notify_params, 'fail');
 

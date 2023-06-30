@@ -2,13 +2,13 @@
 
 namespace App\PaymentGateway;
 
+use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 use App\Services\ApiService;
 use App\Services\FormGroupService;
 use App\Services\GatewayService;
 use App\Services\PaymentService;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Log;
-use App\Contracts\PaymentGateway\PaymentGatewayInterface;
 
 class SwitchPaymentGateway implements PaymentGatewayInterface
 {
@@ -21,12 +21,11 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
 
     public function __construct(
         TransactionService $transactionService,
-        GatewayService     $gatewayService,
-        PaymentService     $paymentService,
-        FormGroupService   $formGroupService,
-        ApiService         $apiService
-    )
-    {
+        GatewayService $gatewayService,
+        PaymentService $paymentService,
+        FormGroupService $formGroupService,
+        ApiService $apiService
+    ) {
         $this->transactionService = $transactionService;
         $this->gatewayService = $gatewayService;
         $this->paymentService = $paymentService;
@@ -57,9 +56,10 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
         if (blank($translations_data)) {
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: transaction not found'
+                'message' => 'Transaction ERROR: transaction not found',
             ];
-        } else if ($pa_id) {
+        }
+        if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
 
@@ -70,35 +70,37 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
             'entityId' => array_get($switch_config, 'current.entity_id'),
             'amount' => $this->amountFormat($translations_data['t_amount']),
             'currency' => $translations_data['t_currency'],
-            'paymentType' => 'DB'
+            'paymentType' => 'DB',
         ];
         $response = $this->apiService->callGeneralApi('POST', $host . '/v1/checkouts', $post_data, $this->getHeaders($switch_config));
-        Log::info('Switch redirto $response:'.json_encode($response));
+        Log::info('Switch redirto $response:' . json_encode($response));
         $this->paymentService->saveTransactionLog($translations_data['t_transaction_id'], $response, $this->getPaymentGatewayName());
 
         if (array_get($response, 'status') != 200 || blank(array_get($response, 'body.id'))) {
             $this->logWarning('Create checkout failed.', $post_data);
+
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: payment failed,Please check whether the currency type is correct, such as USD'
+                'message' => 'Transaction ERROR: payment failed,Please check whether the currency type is correct, such as USD',
             ];
         }
 
-        if($translations_data['t_status'] == 'pending'){
-            $update_fields  = [
+        if ($translations_data['t_status'] == 'pending') {
+            $update_fields = [
                 't_gateway_transaction_id' => array_get($response, 'body.id'),
             ];
             $this->transactionService->updateById($translations_data['t_id'], $update_fields);
         }
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translations_data);
+
         return [
             'form_method' => 'load_js',
             'form_action' => $host . '/v1/paymentWidgets.js?checkoutId=' . array_get($response, 'body.id'),
             'form_fields' => [
                 'action' => $return_url,
                 'class' => 'paymentWidgets',
-                'data_brands' => 'VISA MASTER AMEX'// todo, 待定
-            ]
+                'data_brands' => 'VISA MASTER AMEX',// todo, 待定
+            ],
         ];
     }
 
@@ -109,114 +111,114 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
 
     public function return($return_params)
     {
-        Log::info('Switch start return:'.json_encode($return_params));
+        Log::info('Switch start return:' . json_encode($return_params));
         $t_gateway_transaction_id = $return_params['id'] ?? '';
         $resourcePath = $return_params['resourcePath'];
         if (empty($t_gateway_transaction_id)) {
             return [
                 'is_success' => 'fail',
                 'gateway_transaction_id' => '[null]',
-                'message'    => 'empty_id'
+                'message' => 'empty_id',
             ];
         }
         $transaction = $this->transactionService->fetchTransaction(['t_gateway_transaction_id' => $t_gateway_transaction_id, 't_tech_deleted' => false]);
-        if($transaction){
+        if ($transaction) {
             $this->paymentService->saveTransactionLog($transaction['t_transaction_id'], $return_params, $this->getPaymentGatewayName());
         }
         if (empty($transaction)) {
             return [
                 'is_success' => 'fail',
-                'orderid'    => $transaction['t_transaction_id'],
-                'message'    => 'transaction_id_not_exists'
+                'orderid' => $transaction['t_transaction_id'],
+                'message' => 'transaction_id_not_exists',
             ];
         }
         if (strtolower($transaction['t_status']) == 'done') {
             return [
                 'is_success' => 'ok',
-                'orderid'    => $transaction['t_transaction_id'],
-                'message'    => 'The transaction paid successfully.',
-                'href'       => $transaction['t_redirect_url']
+                'orderid' => $transaction['t_transaction_id'],
+                'message' => 'The transaction paid successfully.',
+                'href' => $transaction['t_redirect_url'],
             ];
         }
         if (strtolower($transaction['t_status']) == 'close') {
             return [
                 'is_success' => 'fail',
-                'orderid'    => $transaction['t_transaction_id'],
-                'message'    => 'transaction_cancelled',
-                'href'       => $transaction['t_onerror_url']
+                'orderid' => $transaction['t_transaction_id'],
+                'message' => 'transaction_cancelled',
+                'href' => $transaction['t_onerror_url'],
             ];
         }
         $switch_config = $this->getConfig($transaction['t_client'], $transaction['t_issuer'], $transaction['t_xref_pa_id']);
         $host = array_get($switch_config, 'current.host');
         $entity_id = array_get($switch_config, 'current.entity_id');
-        $response = $this->apiService->callGeneralApi('GET', $host . $resourcePath.'?entityId='.$entity_id, '', $this->getHeaders($switch_config));
-        Log::info('Switch return $response:'.json_encode($response));
+        $response = $this->apiService->callGeneralApi('GET', $host . $resourcePath . '?entityId=' . $entity_id, '', $this->getHeaders($switch_config));
+        Log::info('Switch return $response:' . json_encode($response));
         $this->paymentService->saveTransactionLog($transaction['t_transaction_id'], $response, $this->getPaymentGatewayName());
         if (array_get($response, 'status') != 200) {
             $this->logWarning('Switch return failed.');
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $response, 'fail');
+
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: payment failed.'
+                'message' => 'Transaction ERROR: payment failed.',
             ];
         }
 
         $result_code = array_get($response, 'body.result.code');
-        if($result_code == '000.000.000' || $result_code == '000.100.110' ){
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
+        if ($result_code == '000.000.000' || $result_code == '000.100.110') {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $response, 'success');
             if ($transaction['t_status'] == 'pending') {
                 // confirm the elements of the payment
                 $confirm_params = [
-                    'gateway'                => $this->getPaymentGatewayName(),
-                    'amount'                 => floatval($transaction['t_amount']),
-                    'currency'               => $transaction['t_currency'],
-                    'transaction_id'         => $transaction['t_transaction_id'],
+                    'gateway' => $this->getPaymentGatewayName(),
+                    'amount' => floatval($transaction['t_amount']),
+                    'currency' => $transaction['t_currency'],
+                    'transaction_id' => $transaction['t_transaction_id'],
                     'gateway_transaction_id' => $t_gateway_transaction_id,
                 ];
                 $response_t = $this->paymentService->confirm($transaction, $confirm_params);
-                Log::info('Switch return $response_t:'.json_encode($response_t));
+                Log::info('Switch return $response_t:' . json_encode($response_t));
                 if ($response_t['is_success'] == 'ok') {
                     return [
                         'is_success' => 'ok',
-                        'orderid'    => $transaction['t_transaction_id'],
-                        'message'    => 'The transaction paid successfully.',
-                        'href'       => $transaction['t_redirect_url']
-                    ];
-                } else {
-                    return [
-                        'is_success' => 'fail',
-                        'orderid'    => $transaction['t_transaction_id'],
-                        'message'    => $response['message'],
-                        'href'       => $transaction['t_onerror_url']
+                        'orderid' => $transaction['t_transaction_id'],
+                        'message' => 'The transaction paid successfully.',
+                        'href' => $transaction['t_redirect_url'],
                     ];
                 }
-            } else {
+
                 return [
-                    'is_success' => 'ok',
-                    'orderid'    => $transaction['t_transaction_id'],
-                    'message'    => 'Order status error',
-                    'href'       => $transaction['t_onerror_url']
+                    'is_success' => 'fail',
+                    'orderid' => $transaction['t_transaction_id'],
+                    'message' => $response['message'],
+                    'href' => $transaction['t_onerror_url'],
                 ];
             }
-        }elseif($result_code == '000.200.000'){
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'success');
+
             return [
                 'is_success' => 'ok',
-                'orderid'    => $transaction['t_transaction_id'],
-                'message'    => 'transaction pending',
-                'href'       => $transaction['t_onerror_url']
+                'orderid' => $transaction['t_transaction_id'],
+                'message' => 'Order status error',
+                'href' => $transaction['t_onerror_url'],
             ];
-        }else{
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$transaction, $response,'fail');
+        } elseif ($result_code == '000.200.000') {
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $response, 'success');
+
             return [
-                'is_success' => 'fail',
-                'orderid'    => $transaction['t_transaction_id'],
-                'message'    => 'unknown_error',
-                'href'       => $transaction['t_onerror_url']
+                'is_success' => 'ok',
+                'orderid' => $transaction['t_transaction_id'],
+                'message' => 'transaction pending',
+                'href' => $transaction['t_onerror_url'],
             ];
         }
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $transaction, $response, 'fail');
 
-
+        return [
+            'is_success' => 'fail',
+            'orderid' => $transaction['t_transaction_id'],
+            'message' => 'unknown_error',
+            'href' => $transaction['t_onerror_url'],
+        ];
     }
 
     protected function getConfig($client, $issuer, $pa_id)
@@ -228,13 +230,14 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
         if (!$this->gatewayService->getClientUseFile()) {
             // get database account
             $config['current'] = $config['config'];
-        } else if ($is_live && !$app_env) {
+        } elseif ($is_live && !$app_env) {
             // Live account
             $config['current'] = $config['production'];
         } else {
             // Test account
             $config['current'] = $config['sandbox'];
         }
+
         return $config;
     }
 
@@ -242,7 +245,7 @@ class SwitchPaymentGateway implements PaymentGatewayInterface
     {
         return [
             'Authorization' => 'Bearer ' . array_get($config, 'current.access_token'),
-            'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
+            'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
         ];
     }
 

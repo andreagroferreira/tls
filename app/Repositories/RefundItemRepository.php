@@ -46,18 +46,18 @@ class RefundItemRepository
     {
         return $this->refundItemModel->insert($attributes);
     }
-    
+
     /**
-     * @param  array  $where
-     * @param  string $field
-     * 
+     * @param array  $where
+     * @param string $field
+     *
      * @return object
      */
     public function fetch(array $where, string $field = '*'): object
     {
         return $this->refundItemModel->select($field)->where($where)->get();
     }
-    
+
     /**
      * @param array $where
      *
@@ -84,7 +84,7 @@ class RefundItemRepository
                 'r_id',
                 'r_issuer',
                 'r_reason_type',
-                'r_status'
+                'r_status',
             ])
             ->get();
     }

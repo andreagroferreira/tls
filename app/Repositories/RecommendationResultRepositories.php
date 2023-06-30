@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Repositories;
-
 
 use App\Models\RecommendationResult as RecommendationResultModel;
 
@@ -12,8 +10,7 @@ class RecommendationResultRepositories
 
     public function __construct(
         RecommendationResultModel $recommendationResultModel
-    )
-    {
+    ) {
         $this->recommendationResultModel = $recommendationResultModel;
     }
 
@@ -41,6 +38,7 @@ class RecommendationResultRepositories
     public function delete($rr_id)
     {
         $this->recommendationResultModel->where('rr_id', $rr_id)->delete();
+
         return $this->recommendationResultModel->find($rr_id);
     }
 
@@ -48,8 +46,9 @@ class RecommendationResultRepositories
     {
         $this->recommendationResultModel->where('rr_id', $rr_id)->update([
             'rr_tech_deleted' => true,
-            'rr_deleted_by'   => $deleted_by
+            'rr_deleted_by' => $deleted_by,
         ]);
+
         return $this->recommendationResultModel->find($rr_id);
     }
 }

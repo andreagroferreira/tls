@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 
 class Authenticate
@@ -18,7 +17,8 @@ class Authenticate
     /**
      * Create a new middleware instance.
      *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
+     * @param \Illuminate\Contracts\Auth\Factory $auth
+     *
      * @return void
      */
     public function __construct(Auth $auth)
@@ -29,13 +29,14 @@ class Authenticate
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     *
      * @return mixed
      */
-    public function handle($request, Closure $next, ...$role)
+    public function handle($request, \Closure $next, ...$role)
     {
-        if (env("APP_ENV") == 'testing') {
+        if (env('APP_ENV') == 'testing') {
             return $next($request);
         }
 
@@ -52,7 +53,7 @@ class Authenticate
             return response('Unauthorized.', 401);
         }
 
-        /* for client project, not need issuer params */
+        // for client project, not need issuer params
         if ($request->method() == 'GET' && in_array($request->path(), $this->ignoreIssuerAuth)) {
             return $next($request);
         }

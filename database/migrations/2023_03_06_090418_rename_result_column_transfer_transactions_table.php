@@ -14,7 +14,7 @@ class RenameResultColumnTransferTransactionsTable extends Migration
     public function up()
     {
         Schema::connection('deploy_payment_pgsql')->table('transfer_table_transactions', function (Blueprint $table) {
-            $table->renameColumn('result_migration_payment','result_migration');
+            $table->renameColumn('result_migration_payment', 'result_migration');
             $table->dropColumn('result_migration_ecommerce');
         });
     }

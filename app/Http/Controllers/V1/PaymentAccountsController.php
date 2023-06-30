@@ -4,7 +4,6 @@ namespace App\Http\Controllers\V1;
 
 use App\Services\PaymentAccountsService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class PaymentAccountsController extends BaseController
 {
@@ -20,11 +19,14 @@ class PaymentAccountsController extends BaseController
      *     path="/api/v1/payment-gateway-field-list",
      *     tags={"Payment API"},
      *     description="Get field details for all payment accounts.",
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the payment_accounts information",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -44,13 +46,13 @@ class PaymentAccountsController extends BaseController
                 if (!is_array($field)) {
                     continue;
                 }
-                $fieldList[$key][$env] = array_filter($field, function ($v){
+                $fieldList[$key][$env] = array_filter($field, function ($v) {
                     return $v === null;
                 });
             }
         }
 
-        try{
+        try {
             return $this->sendResponse($fieldList);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
@@ -62,18 +64,23 @@ class PaymentAccountsController extends BaseController
      *     path="/api/v1/payment-account/{pa_id}",
      *     tags={"Payment API"},
      *     description="get the payment_accounts details according to pa_id",
+     *
      *      @OA\Parameter(
      *          name="pa_id",
      *          in="path",
      *          description="the payment_accounts pa_id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the payment_accounts information",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -87,10 +94,10 @@ class PaymentAccountsController extends BaseController
     public function fetch(Request $request)
     {
         $params = [
-            'pa_id' => $request->route('pa_id')
+            'pa_id' => $request->route('pa_id'),
         ];
         $validator = validator($params, [
-            'pa_id' => 'required|integer'
+            'pa_id' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -101,9 +108,9 @@ class PaymentAccountsController extends BaseController
             $result = $this->paymentAccountsService->fetch($validator->validated());
             if ($result) {
                 return $this->sendResponse($result);
-            } else {
-                return $this->sendEmptyResponse(204);
             }
+
+            return $this->sendEmptyResponse(204);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
@@ -114,39 +121,50 @@ class PaymentAccountsController extends BaseController
      *     path="/api/v1/payment-account",
      *     tags={"Payment API"},
      *     description="update a payment_accounts",
+     *
      *      @OA\Parameter(
      *          name="psp_id",
      *          in="query",
      *          description="payment_accounts pa_xref_psp_id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="pa_name",
      *          in="query",
      *          description="payment_accounts pa_name",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="cmi"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="pa_type",
      *          in="query",
      *          description="payment_accounts pa_type",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="[sandbox, prod]"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="pa_info",
      *          in="query",
      *          description="payment_accounts pa_info.",
      *          required=true,
+     *
      *          @OA\Schema(type="json", example=""),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="payment_accounts update success",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -171,6 +189,7 @@ class PaymentAccountsController extends BaseController
 
         try {
             $result = $this->paymentAccountsService->update($params);
+
             return response()->json($result, 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -186,39 +205,50 @@ class PaymentAccountsController extends BaseController
      *     path="/api/v1/payment-account",
      *     tags={"Payment API"},
      *     description="add exists payment account",
+     *
      *      @OA\Parameter(
      *          name="pa_xref_psp_id",
      *          in="query",
      *          description="payment_service_providers id",
      *          required=true,
+     *
      *          @OA\Schema(type="number", example="2"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="pa_name",
      *          in="query",
      *          description="payment_accounts name",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="alipay cnBSJ2be prod"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="pa_type",
      *          in="query",
      *          description="payment_type option",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="prod, sandbox"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="pa_info",
      *          in="query",
      *          description="payment_accounts pa_info.",
      *          required=true,
+     *
      *          @OA\Schema(type="json", example=""),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="return upload success",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -258,6 +288,7 @@ class PaymentAccountsController extends BaseController
 
         try {
             $result = $this->paymentAccountsService->create($params);
+
             return response()->json($result, 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -273,11 +304,14 @@ class PaymentAccountsController extends BaseController
      *     path="/api/v1/payment-service-providers",
      *     tags={"Payment API"},
      *     description="get the payment_service_providers details",
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the payment_service_providers  information",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -294,9 +328,9 @@ class PaymentAccountsController extends BaseController
             $result = $this->paymentAccountsService->fetchPaymentServiceProvidersList();
             if ($result) {
                 return $this->sendResponse($result);
-            } else {
-                return $this->sendEmptyResponse(204);
             }
+
+            return $this->sendEmptyResponse(204);
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }

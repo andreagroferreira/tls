@@ -13,5 +13,4 @@ interface PaymentGatewayInterface
      * @return mixed
      */
     public function charge(float $amount, array $options = []);
-
 }

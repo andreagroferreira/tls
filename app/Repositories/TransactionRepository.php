@@ -364,7 +364,7 @@ class TransactionRepository
             "{$outputFolderPath}" . date('YmdHis', strtotime($attributes['start_date'])) . '_' . date('YmdHis', strtotime($attributes['end_date'])) . '.csv'
         );
         if (!is_dir(storage_path("{$outputFolderPath}"))) {
-            mkdir(storage_path("{$outputFolderPath}"), 0755, true);
+            mkdir(storage_path("{$outputFolderPath}"), 0o755, true);
         }
 
         $out = fopen($fileName, 'a');
@@ -552,12 +552,11 @@ class TransactionRepository
     {
         return $this->transactionModel->where('t_id', $tId)->update($data);
     }
-    
+
     /**
+     * @param object $transaction
+     * @param string $timezoneOffset
      *
-     * @param  object $transaction
-     * @param  string $timezoneOffset
-     * 
      * @return object
      */
     private function enrichTransactionDetails(object $transaction, string $timezoneOffset): object

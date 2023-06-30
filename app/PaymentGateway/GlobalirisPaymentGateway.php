@@ -3,12 +3,12 @@
 namespace App\PaymentGateway;
 
 use App\Contracts\PaymentGateway\PaymentGatewayInterface;
+use App\Services\ApiService;
+use App\Services\GatewayService;
+use App\Services\PaymentService;
 use App\Services\TransactionLogsService;
 use App\Services\TransactionService;
-use App\Services\ApiService;
-use App\Services\PaymentService;
 use Illuminate\Support\Facades\Log;
-use App\Services\GatewayService;
 
 class GlobalirisPaymentGateway implements PaymentGatewayInterface
 {
@@ -24,15 +24,16 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         PaymentService $paymentService,
         ApiService $apiService,
         GatewayService $gatewayService
-    ){
+    ) {
         $this->transactionService = $transactionService;
         $this->transactionLogsService = $transactionLogsService;
         $this->paymentService = $paymentService;
-        $this->apiService         = $apiService;
-        $this->gatewayService     = $gatewayService;
+        $this->apiService = $apiService;
+        $this->gatewayService = $gatewayService;
     }
 
-    public function getPaymentGatewayName() {
+    public function getPaymentGatewayName()
+    {
         return 'globaliris';
     }
 
@@ -41,24 +42,28 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         return env('APP_ENV') === 'production' ? false : true;
     }
 
-    public function checkout() {
+    public function checkout()
+    {
         return 'checkout';
     }
 
-    public function notify($params) {
+    public function notify($params)
+    {
         return 'notify';
     }
 
-    public function redirto($params) {
+    public function redirto($params)
+    {
         $t_id = $params['t_id'];
         $pa_id = $params['pa_id'] ?? null;
         $translationsData = $this->transactionService->getTransaction($t_id);
         if (blank($translationsData)) {
             return [
                 'status' => 'error',
-                'message' => 'Transaction ERROR: transaction not found'
+                'message' => 'Transaction ERROR: transaction not found',
             ];
-        } else if ($pa_id) {
+        }
+        if ($pa_id) {
             $this->transactionService->updateById($t_id, ['t_xref_pa_id' => $pa_id]);
         }
         $client = $translationsData['t_client'];
@@ -77,10 +82,10 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         if ($minFractionDigits) {
             while ($minFractionDigits > 0) {
                 $amount *= 10;
-                $minFractionDigits--;
+                --$minFractionDigits;
             }
         }
-        $amount =  round($amount, 0);
+        $amount = round($amount, 0);
         $applicationsResponse = $this->apiService->callTlsApi('GET', '/tls/v2/' . $client . '/forms_in_group/' . $fg_id);
         $applications = $applicationsResponse['status'] == 200 ? $applicationsResponse['body'] : [];
         $app_env = $this->isSandBox();
@@ -88,32 +93,32 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $cai_list_with_avs = array_column($applications, 'f_cai');
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
         if (!$this->gatewayService->getClientUseFile()) {
-            $hosturl        = $onlinePayment['config']['host'] ?? '';
-            $merchantid     = $onlinePayment['config']['merchant_id'] ?? '';
-            $account        = $onlinePayment['config']['account'] ?? '';
-            $secret         = $onlinePayment['config']['secret'] ?? '';
-        } else if ($is_live && !$app_env) {
+            $hosturl = $onlinePayment['config']['host'] ?? '';
+            $merchantid = $onlinePayment['config']['merchant_id'] ?? '';
+            $account = $onlinePayment['config']['account'] ?? '';
+            $secret = $onlinePayment['config']['secret'] ?? '';
+        } elseif ($is_live && !$app_env) {
             // Live account
-            $hosturl        = $onlinePayment['production']['host'] ?? '';
-            $merchantid     = $onlinePayment['production']['merchant_id'] ?? '';
-            $account        = $onlinePayment['production']['account'] ?? '';
-            $secret         = $onlinePayment['production']['secret'] ?? '';
+            $hosturl = $onlinePayment['production']['host'] ?? '';
+            $merchantid = $onlinePayment['production']['merchant_id'] ?? '';
+            $account = $onlinePayment['production']['account'] ?? '';
+            $secret = $onlinePayment['production']['secret'] ?? '';
         } else {
             // Test account
-            $hosturl        = $onlinePayment['sandbox']['sandbox_host'] ?? '';
-            $merchantid     = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
-            $account        = $onlinePayment['sandbox']['sandbox_account'] ?? '';
-            $secret         = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
+            $hosturl = $onlinePayment['sandbox']['sandbox_host'] ?? '';
+            $merchantid = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
+            $account = $onlinePayment['sandbox']['sandbox_account'] ?? '';
+            $secret = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
         }
-        $curr           = $translationsData['t_currency'] ?? '';
-        $txn_fee_extra  = $onlinePayment['common']['txn_fee_extra'] ?? '';
-        $txn_fee_rate   = $onlinePayment['common']['txn_fee_rate'] ?? '';
-        $returnurl      = $onlinePayment['common']['return_url'] ?? '';
-        $timestamp      = strftime("%Y%m%d%H%M%S");
+        $curr = $translationsData['t_currency'] ?? '';
+        $txn_fee_extra = $onlinePayment['common']['txn_fee_extra'] ?? '';
+        $txn_fee_rate = $onlinePayment['common']['txn_fee_rate'] ?? '';
+        $returnurl = $onlinePayment['common']['return_url'] ?? '';
+        $timestamp = strftime('%Y%m%d%H%M%S');
 
-        $tmp = "$timestamp.$merchantid.$orderId.$amount.$curr";
+        $tmp = "{$timestamp}.{$merchantid}.{$orderId}.{$amount}.{$curr}";
         $sha1hash = sha1($tmp);
-        $tmp = "$sha1hash.$secret";
+        $tmp = "{$sha1hash}.{$secret}";
         $sha1hash = sha1($tmp);
         $cai = implode(', ', array_unique($cai_list_with_avs));
         $url = url('/');
@@ -133,7 +138,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             'COMMENT2' => $url,
             'HPP_CAPTURE_ADDRESS' => true,
             'HPP_REMOVE_SHIPPING' => true,
-            'HPP_DO_NOT_RETURN_ADDRESS' => true
+            'HPP_DO_NOT_RETURN_ADDRESS' => true,
         ];
         $this->paymentService->PaymentTransationBeforeLog($this->getPaymentGatewayName(), $translationsData);
 
@@ -144,29 +149,31 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         ];
     }
 
-    public function return($params) {
-        $timestamp  = $params['TIMESTAMP'] ?? '';
-        $result     = $params['RESULT'] ?? '';
-        $orderId    = $params['ORDER_ID'] ?? '';
-        $message    = $params['MESSAGE'] ?? '';
-        $authcode   = $params['AUTHCODE'] ?? '';
-        $pasref     = $params['PASREF'] ?? '';
+    public function return($params)
+    {
+        $timestamp = $params['TIMESTAMP'] ?? '';
+        $result = $params['RESULT'] ?? '';
+        $orderId = $params['ORDER_ID'] ?? '';
+        $message = $params['MESSAGE'] ?? '';
+        $authcode = $params['AUTHCODE'] ?? '';
+        $pasref = $params['PASREF'] ?? '';
         $realexsha1 = $params['SHA1HASH'] ?? '';
-        $translationsData =  $this->transactionService->fetchTransaction(['t_transaction_id' => $orderId]);
+        $translationsData = $this->transactionService->fetchTransaction(['t_transaction_id' => $orderId]);
         if (empty($translationsData)) {
-            Log::warning("ONLINE PAYMENT,". strtoupper($this->getPaymentGatewayName()) . " : No transaction found in the database for " . $orderId . "\n" .
+            Log::warning('ONLINE PAYMENT,' . strtoupper($this->getPaymentGatewayName()) . ' : No transaction found in the database for ' . $orderId . "\n" .
                 json_encode($_POST, JSON_UNESCAPED_UNICODE));
+
             return [
                 'is_success' => 'error',
                 'orderid' => $orderId,
-                'issuer' =>'',
+                'issuer' => '',
                 'href' => '',
-                'message' => 'transaction_id_not_exists'
+                'message' => 'transaction_id_not_exists',
             ];
         }
         $client = $translationsData['t_client'];
         $issuer = $translationsData['t_issuer'];
-        $received_amount   = $params['AMOUNT'] ?? '';
+        $received_amount = $params['AMOUNT'] ?? '';
         if ($this->gatewayService->getClientUseFile()) {
             $config = $this->gatewayService->getConfig($client, $issuer);
             $onlinePayment = $config ? $config['globaliris'] : [];
@@ -177,28 +184,26 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
         $app_env = $this->isSandBox();
         $is_live = $onlinePayment['common']['env'] == 'live' ? true : false;
         if (!$this->gatewayService->getClientUseFile()) {
-            $merchantid     = $onlinePayment['config']['merchant_id'] ?? '';
-            $secret         = $onlinePayment['config']['secret'] ?? '';
-            $subaccount     = $onlinePayment['config']['account'] ?? '';
-        } else if ($is_live && !$app_env) {
+            $merchantid = $onlinePayment['config']['merchant_id'] ?? '';
+            $secret = $onlinePayment['config']['secret'] ?? '';
+            $subaccount = $onlinePayment['config']['account'] ?? '';
+        } elseif ($is_live && !$app_env) {
             // Live account
-            $merchantid     = $onlinePayment['production']['merchant_id'] ?? '';
-            $secret         = $onlinePayment['production']['secret'] ?? '';
-            $subaccount     = $onlinePayment['production']['account'] ?? '';
+            $merchantid = $onlinePayment['production']['merchant_id'] ?? '';
+            $secret = $onlinePayment['production']['secret'] ?? '';
+            $subaccount = $onlinePayment['production']['account'] ?? '';
         } else {
             // Test account
-            $merchantid     = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
-            $secret         = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
-            $subaccount     = $onlinePayment['sandbox']['sandbox_account'] ?? '';
+            $merchantid = $onlinePayment['sandbox']['sandbox_merchant_id'] ?? '';
+            $secret = $onlinePayment['sandbox']['sandbox_secret'] ?? '';
+            $subaccount = $onlinePayment['sandbox']['sandbox_account'] ?? '';
         }
 
-
-
-        $tmp = "$timestamp.$merchantid.$orderId.$result.$message.$pasref.$authcode";
+        $tmp = "{$timestamp}.{$merchantid}.{$orderId}.{$result}.{$message}.{$pasref}.{$authcode}";
         $sha1hash = sha1($tmp);
-        $tmp = "$sha1hash.$secret";
+        $tmp = "{$sha1hash}.{$secret}";
         $sha1hash = sha1($tmp);
-        if ($result == "00") {
+        if ($result == '00') {
             $flag = true;
         } else {
             $flag = false;
@@ -213,7 +218,7 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
             if ($minFractionDigits) {
                 while ($minFractionDigits > 0) {
                     $received_amount /= 10;
-                    $minFractionDigits--;
+                    --$minFractionDigits;
                 }
             }
 
@@ -226,20 +231,21 @@ class GlobalirisPaymentGateway implements PaymentGatewayInterface
                 't_gateway_account' => $merchantid ?? '',
                 't_gateway_subaccount' => $subaccount ?? '',
             ];
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$translationsData, $params,'success');
+            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $translationsData, $params, 'success');
+
             return $this->paymentService->confirm($translationsData, $confirm_params);
-        } else {
-            $result = [
-                'is_success' => 'error',
-                'orderid' => $orderId,
-                'issuer' => $issuer,
-                'message' => $msg,
-                'gatewayMessage' => $message,
-                'href' => $translationsData['t_onerror_url']
-            ];
-            $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(),$translationsData, $params,'fail');
-            $this->transactionLogsService->create(['tl_xref_transaction_id' => $translationsData['t_transaction_id'], 'tl_content' =>json_encode($result)]);
-            return $result;
         }
+        $result = [
+            'is_success' => 'error',
+            'orderid' => $orderId,
+            'issuer' => $issuer,
+            'message' => $msg,
+            'gatewayMessage' => $message,
+            'href' => $translationsData['t_onerror_url'],
+        ];
+        $this->paymentService->PaymentTransactionCallbackLog($this->getPaymentGatewayName(), $translationsData, $params, 'fail');
+        $this->transactionLogsService->create(['tl_xref_transaction_id' => $translationsData['t_transaction_id'], 'tl_content' => json_encode($result)]);
+
+        return $result;
     }
 }

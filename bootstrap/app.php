@@ -23,11 +23,11 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
- $app->withFacades();
+$app->withFacades();
 
- $app->withEloquent();
+$app->withEloquent();
 
- // import the payment gateway configuration
+// import the payment gateway configuration
 $app->configure('payment_gateway');
 
 $app->register(App\Providers\PaymentGatewayProvider::class);
@@ -88,9 +88,9 @@ $app->configure('services');
 |
 */
 
- $app->middleware([
-     App\Http\Middleware\CorsMiddleware::class,
- ]);
+$app->middleware([
+    App\Http\Middleware\CorsMiddleware::class,
+]);
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,

@@ -47,12 +47,12 @@ class TokenResolveService
     }
 
     /**
-     * @param array  $template
-     * @param array  $transaction
-     *
-     * @throws \Exception
+     * @param array $template
+     * @param array $transaction
      *
      * @return array
+     *
+     * @throws \Exception
      */
     public function resolveTemplate(
         array $template,
@@ -99,9 +99,9 @@ class TokenResolveService
      * @param array  $transaction
      * @param string $lang
      *
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     public function resolveReceiptTemplate(
         array $template,
@@ -147,9 +147,9 @@ class TokenResolveService
     /**
      * @param array $transaction
      *
-     * @throws \Exception
-     *
      * @return string
+     *
+     * @throws \Exception
      */
     private function getTokenTranslationForPurchasedServices(array $transaction): string
     {
@@ -227,7 +227,7 @@ class TokenResolveService
                 $productName = $service['product_name'];
                 $quantity = $service['quantity'];
                 $price = $service['price'];
-                $vat = ($price / (1 + $service['vat']/100)) * $service['vat']/100;
+                $vat = ($price / (1 + $service['vat'] / 100)) * $service['vat'] / 100;
                 $vatPercent = $service['vat'];
                 $basketValues['services'][$sku]['product_name'] = $productName;
                 $basketValues['services'][$sku]['currency'] = $transactionCurrency;
@@ -245,7 +245,8 @@ class TokenResolveService
                 $basketValues['price_without_vat'] += ($price - $vat) * $quantity;
             }
         }
-        $basketValues['vat_percent'] = $vatPercent.'%' ?? '0%';
+        $basketValues['vat_percent'] = $vatPercent . '%' ?? '0%';
+
         return $basketValues;
     }
 
@@ -401,9 +402,9 @@ class TokenResolveService
      * @param array  $transaction
      * @param string $language
      *
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     private function getResolvedTokens(
         array $tokens,
@@ -472,7 +473,7 @@ class TokenResolveService
                 break;
 
             case 'appointment_date_time':
-                $tokenValue = ($transaction['t_appointment_time'] == '00:00:00') ? $transaction['t_appointment_date'] : $transaction['t_appointment_date'].' '.$transaction['t_appointment_time'];
+                $tokenValue = ($transaction['t_appointment_time'] == '00:00:00') ? $transaction['t_appointment_date'] : $transaction['t_appointment_date'] . ' ' . $transaction['t_appointment_time'];
 
                 break;
         }
@@ -484,9 +485,9 @@ class TokenResolveService
      * @param array  $collections
      * @param string $collectionName
      *
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     private function getCorrectCollectionTranslation(array $collections, string $collectionName): array
     {
@@ -509,8 +510,9 @@ class TokenResolveService
             if ('ww' == $code || 'wwWWW2ww' == $code) {
                 $collectionGlobalIndex = $i;
             }
-            if($code == $this->issuer) {
+            if ($code == $this->issuer) {
                 $collectionIndex = $i;
+
                 break;
             }
             if ($code == $this->city) {
@@ -575,11 +577,11 @@ class TokenResolveService
      * @param array  $tokenDetails
      * @param string $language
      *
-     * @throws \Exception
+     * @return null|string
      *
-     * @return string|null
+     * @throws \Exception
      */
-    private function getTokenTranslationFromDirectus(array $tokenDetails, string $language): ?string 
+    private function getTokenTranslationFromDirectus(array $tokenDetails, string $language): ?string
     {
         $collection = $tokenDetails[1];
         $field = ($tokenDetails[2] === 'name') ? $tokenDetails[2] : 'translation.' . $tokenDetails[2];
@@ -619,27 +621,28 @@ class TokenResolveService
             $filters,
             $options
         );
-        
+
         if (empty($tokenCollections)) {
             Log::error('No collections returned for token with issuer:' . $this->issuer . ' - ' . $collection . '.' . $field);
 
             return '';
         }
-        
+
         if (filled($tokenCollections) && $tokenDetails[2] !== 'name') {
             $translation = $this->getCorrectCollectionTranslation($tokenCollections, $tokenDetails[1]);
-            
         } else {
             if ($tokenDetails[2] == 'name' && filled($tokenCollections)) {
                 foreach ($tokenCollections as $getName) {
                     if ($getName['code'] === $this->issuer) {
                         $translation = $getName['name'];
+
                         break;
                     }
-                    if($getName['code'] === 'wwWWW2ww') {
+                    if ($getName['code'] === 'wwWWW2ww') {
                         $translation = $getName['name'];
                     }
                 }
+
                 return $translation ?? '';
             }
             if (empty(array_first($tokenCollections)['translation'])) {
@@ -669,7 +672,7 @@ class TokenResolveService
             return '';
         }
         foreach ($applicationsResponse['body'] as $applicant) {
-            $translations[] = ($tokenDetails[1] == 'f_pers_surnames') ? $applicant['f_pers_givennames'].' '.$applicant[$tokenDetails[1]] : $applicant[$tokenDetails[1]];
+            $translations[] = ($tokenDetails[1] == 'f_pers_surnames') ? $applicant['f_pers_givennames'] . ' ' . $applicant[$tokenDetails[1]] : $applicant[$tokenDetails[1]];
         }
 
         return implode(', ', array_unique($translations, SORT_REGULAR));

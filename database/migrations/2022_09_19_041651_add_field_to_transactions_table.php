@@ -25,8 +25,7 @@ class AddFieldToTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('deploy_payment_pgsql')->table('transactions', function($table)
-        {
+        Schema::connection('deploy_payment_pgsql')->table('transactions', function ($table) {
             $table->dropColumn('t_xref_pa_id');
         });
     }

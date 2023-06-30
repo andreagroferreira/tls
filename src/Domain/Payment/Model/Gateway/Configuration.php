@@ -7,23 +7,28 @@ class Configuration
     /**
      * @var int
      */
-   private int $id = 1;
+    private int $id = 1;
+
     /**
      * @var Account
      */
     private Account $account;
+
     /**
-     * @var string|null
+     * @var null|string
      */
     private string $country;
+
     /**
-     * @var string|null
+     * @var null|string
      */
     private string $city;
+
     /**
-     * @var string|null
+     * @var null|string
      */
     private string $service;
+
     /**
      * @var bool
      */
@@ -33,7 +38,6 @@ class Configuration
      * @var bool
      */
     private bool $isDeleted = false;
-
 
     public function __construct(Account $account)
     {
@@ -48,7 +52,6 @@ class Configuration
     public function setId(int $id): int
     {
         $this->id = $id;
-
     }
 
     public function getAccount(): Account

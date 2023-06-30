@@ -45,7 +45,6 @@ class InsertNewFeatureVersions extends Migration
      */
     public function down()
     {
-        //
     }
 
     /**

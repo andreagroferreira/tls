@@ -31,18 +31,23 @@ class CheckoutController extends BaseController
      *     path="/api/v1/checkout/{t_id}",
      *     tags={"Payment API"},
      *     description="get the transaction details according to fg_id",
+     *
      *      @OA\Parameter(
      *          name="t_id",
      *          in="path",
      *          description="the transaction id, t_id in transaction table",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the transaction information",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -156,7 +161,7 @@ class CheckoutController extends BaseController
 
             return $this->sendResponse($data, 200);
         } catch (\Exception $e) {
-            Log::error('An error occurred: '.$e->getMessage());
+            Log::error('An error occurred: ' . $e->getMessage());
 
             return $this->sendError('P0006', $e->getMessage(), 400);
         }

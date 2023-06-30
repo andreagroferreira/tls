@@ -3,11 +3,10 @@
 namespace App\Providers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\ServiceProvider;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -18,7 +17,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
     }
 
     /**
@@ -38,6 +36,7 @@ class AuthServiceProvider extends ServiceProvider
             $bearToken = $request->bearerToken();
             if ($bearToken) {
                 $publicKey = getPublicKey();
+
                 try {
                     $decodedToken = JWT::decode($bearToken, new Key($publicKey, 'RS256'));
                     $user->id = substr(crc32($decodedToken->sub), 0, 9);
@@ -58,6 +57,7 @@ class AuthServiceProvider extends ServiceProvider
             } else {
                 $user = null;
             }
+
             return $user;
         });
     }

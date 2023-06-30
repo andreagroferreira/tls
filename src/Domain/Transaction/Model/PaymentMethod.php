@@ -2,14 +2,13 @@
 
 namespace Src\Domain\Transaction\Model;
 
-use DateTime;
-
 class PaymentMethod
 {
     /**
      * @var null|string
      */
     private string $currency;
+
     /**
      * @var null|string
      */
@@ -34,15 +33,16 @@ class PaymentMethod
      * @var null|string
      */
     private string $gatewayAccount;
+
     /**
      * @var null|string
      */
     private string $gatewaySubAccount;
 
     /**
-     * @var null|DateTime
+     * @var null|\DateTime
      */
-    private DateTime $gatewayExpirationDate;
+    private \DateTime $gatewayExpirationDate;
 
     /**
      * @return string
@@ -157,17 +157,17 @@ class PaymentMethod
     }
 
     /**
-     * @return DateTime
+     * @return \DateTime
      */
-    public function getGatewayExpirationDate(): DateTime
+    public function getGatewayExpirationDate(): \DateTime
     {
         return $this->gatewayExpirationDate;
     }
 
     /**
-     * @param DateTime $gatewayExpirationDate
+     * @param \DateTime $gatewayExpirationDate
      */
-    public function setGatewayExpirationDate(DateTime $gatewayExpirationDate): void
+    public function setGatewayExpirationDate(\DateTime $gatewayExpirationDate): void
     {
         $this->gatewayExpirationDate = $gatewayExpirationDate;
     }

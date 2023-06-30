@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentAccountsTable extends Migration
 {
@@ -25,11 +25,11 @@ class CreatePaymentAccountsTable extends Migration
             $table->timestamp('pa_tech_modification')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
         DB::connection('deploy_payment_pgsql')->statement(
-            "CREATE UNIQUE INDEX payment_accounts_unique_name
+            'CREATE UNIQUE INDEX payment_accounts_unique_name
                     ON payment_accounts(pa_name)
-                    WHERE pa_tech_deleted is false"
+                    WHERE pa_tech_deleted is false'
         );
-        DB::connection('deploy_payment_pgsql')->statement("ALTER TABLE payment_accounts OWNER TO common;");
+        DB::connection('deploy_payment_pgsql')->statement('ALTER TABLE payment_accounts OWNER TO common;');
     }
 
     /**

@@ -17,20 +17,24 @@ class RecommendationConfigService
         $this->recommendationConfigRepositories->setConnection($dbConnectionService->getConnection());
     }
 
-    public function create($params) {
-        $result    = $this->recommendationConfigRepositories->insert($params);
+    public function create($params)
+    {
+        $result = $this->recommendationConfigRepositories->insert($params);
         $cache_key = getRecommendationRulesCacheKey();
         Cache::pull($cache_key);
+
         return $result;
     }
 
-    public function fetch($limit) {
-        $select = ['rc_id', 'rc_file_name','rc_uploaded_by', 'rc_content', 'rc_file_size', 'rc_tech_creation'];
+    public function fetch($limit)
+    {
+        $select = ['rc_id', 'rc_file_name', 'rc_uploaded_by', 'rc_content', 'rc_file_size', 'rc_tech_creation'];
+
         return $this->recommendationConfigRepositories->fetch($select, $limit);
     }
 
-    public function fetchByRcId($rc_id) {
+    public function fetchByRcId($rc_id)
+    {
         return $this->recommendationConfigRepositories->fetchByRcId($rc_id);
     }
-
 }

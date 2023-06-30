@@ -10,6 +10,8 @@ class TransactionSyncJob extends Job
     /**
      * Create a new job instance.
      *
+     * @param mixed $client
+     *
      * @return void
      */
     public function __construct($client, array $data)
@@ -25,9 +27,7 @@ class TransactionSyncJob extends Job
      */
     public function handle()
     {
-
         $PaymentService = app()->make('App\Services\QueueService');
         $PaymentService->syncTransaction($this->client, $this->data);
-
     }
 }

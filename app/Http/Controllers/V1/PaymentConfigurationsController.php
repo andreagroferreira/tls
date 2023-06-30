@@ -20,25 +20,32 @@ class PaymentConfigurationsController extends BaseController
      *     path="/api/v1/payment-configurations-list",
      *     tags={"Payment API"},
      *     description="get a payment_configurations",
+     *
      *     @OA\Parameter(
      *          name="client",
      *          in="query",
      *          description="define which client you want to fetch",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="de"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="service_type",
      *          in="query",
      *          description="payment_configurations pc_service",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="tls"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="payment_configurations update success",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -72,18 +79,23 @@ class PaymentConfigurationsController extends BaseController
      *     path="/api/v1/location-config",
      *     tags={"Payment API"},
      *     description="Get the issuer exists payment-config",
+     *
      *     @OA\Parameter(
      *          name="pc_id",
      *          in="query",
      *          description="payment_configurations",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="10"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the paymentgateway result list",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -115,18 +127,23 @@ class PaymentConfigurationsController extends BaseController
      *     path="/api/v1/payment-gateway-types/{city}",
      *     tags={"Payment API"},
      *     description="Get types (gov,tls) of payment gateway by city, used by eCommerce to show multiple baskets",
+     *
      *     @OA\Parameter(
      *          name="city",
      *          in="path",
      *          description="Unique 3 letters City code per client",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="CAI"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the paymentgateway list types (tls,gov)",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -158,25 +175,32 @@ class PaymentConfigurationsController extends BaseController
      *     path="/api/v1/payment-config",
      *     tags={"Payment API"},
      *     description="add exists payment config",
+     *
      *      @OA\Parameter(
      *          name="pc_id",
      *          in="query",
      *          description="payment_configurations id",
      *          required=true,
+     *
      *          @OA\Schema(type="number", example="123"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="pa_id",
      *          in="query",
      *          description="payment_accounts id",
      *          required=true,
+     *
      *          @OA\Schema(type="number", example="123"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="return upload success",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -226,39 +250,50 @@ class PaymentConfigurationsController extends BaseController
      *     path="/api/v1/payment-configurations",
      *     tags={"Payment API"},
      *     description="create a payment_configurations",
+     *
      *     @OA\Parameter(
      *          name="client",
      *          in="query",
      *          description="define which client you want to fetch",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="de"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="country",
      *          in="query",
      *          description="define which country you want to fetch",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="eg"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="city",
      *          in="query",
      *          description="define which city you want to fetch",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="CAI"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="service",
      *          in="query",
      *          description="payment_configurations pc_service",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="tls"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="payment_configurations create success",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -295,18 +330,23 @@ class PaymentConfigurationsController extends BaseController
      *     path="/api/v1/location-available-accounts",
      *     tags={"Payment API"},
      *     description="Get the paymentgateway list",
+     *
      *     @OA\Parameter(
      *          name="pc_id",
      *          in="query",
      *          description="payment_configurations",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="10"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the paymentgateway result list",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -339,18 +379,23 @@ class PaymentConfigurationsController extends BaseController
      *     path="/api/v1/payment-configurations/{pc_id}",
      *     tags={"Payment API"},
      *     description="delete a payment_configuration",
+     *
      *     @OA\Parameter(
      *          name="pc_id",
      *          in="path",
      *          description="the payment_configurations pc_id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="payment_configuration delete success",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"

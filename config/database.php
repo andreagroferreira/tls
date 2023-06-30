@@ -3,7 +3,6 @@
 use Illuminate\Support\Str;
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Database Connection Name
@@ -34,7 +33,6 @@ return [
     */
 
     'connections' => [
-
         'sqlite' => [
             'driver' => 'sqlite',
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
@@ -110,9 +108,9 @@ return [
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
-            'options'   => array(
+            'options' => [
                 PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
-            ),
+            ],
         ],
 
         'unit_test_payment_pgsql' => [
@@ -127,9 +125,9 @@ return [
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
-            'options'   => array(
+            'options' => [
                 PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
-            ),
+            ],
         ],
 
         'sqlsrv' => [
@@ -150,7 +148,7 @@ return [
             'database' => env('POSTGRES_ECOMMERCE_DB_DATABASE', 'tlspay-e-commerce-service-db'),
             'username' => env('POSTGRES_ECOMMERCE_DB_USERNAME', 'tlspay-e-commerce-service-user'),
             'password' => env('POSTGRES_ECOMMERCE_DB_PASSWORD', ''),
-            'charset' =>  env('DB_CHARSET', 'utf8'),
+            'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => env('DB_PREFIX', ''),
             'schema' => 'public',
             'sslmode' => 'prefer',
@@ -163,7 +161,7 @@ return [
             'database' => env('POSTGRES_TLSCONNECT_DB_DATABASE', ''),
             'username' => env('POSTGRES_DB_USERNAME', 'forge'),
             'password' => env('POSTGRES_DB_PASSWORD', ''),
-            'charset' =>  env('DB_CHARSET', 'utf8'),
+            'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => env('DB_PREFIX', ''),
             'prefix_indexes' => true,
             'schema' => 'public',
@@ -196,18 +194,17 @@ return [
     */
 
     'redis' => [
-
         'client' => env('REDIS_CLIENT', 'phpredis'),
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
             'context' => (strpos(env('REDIS_HOST'), 'tls://') === 0) ? ['stream' => ['verify_peer' => false, 'verify_peer_name' => false], 'verify_peer' => false, 'verify_peer_name' => false] : null,
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'lumen'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'lumen'), '_') . '_database_'),
             'parameters' => [
                 'host' => env('REDIS_HOST', '127.0.0.1'),
                 'password' => env('REDIS_PASSWORD', null),
                 'port' => env('REDIS_PORT', 6379),
-            ]
+            ],
         ],
 
         'clusters' => [
@@ -218,7 +215,7 @@ return [
                     'password' => env('REDIS_PASSWORD', null),
                     'port' => env('REDIS_PORT', '6379'),
                     'database' => env('REDIS_DB', '0'),
-                ]
+                ],
             ],
 
             'cache' => [
@@ -228,10 +225,8 @@ return [
                     'password' => env('REDIS_PASSWORD', null),
                     'port' => env('REDIS_PORT', '6379'),
                     'database' => env('REDIS_CACHE_DB', '1'),
-                ]
+                ],
             ],
         ],
-
     ],
-
 ];

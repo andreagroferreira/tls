@@ -18,7 +18,6 @@ class UpdateUniqueFieldForPaymentAccountsTable extends Migration
 
             try {
                 $this->dropIndex($table, ['pa_name', 'pa_type']);
-
             } catch (\Exception $e) {
                 $exception = $e;
             }
@@ -41,7 +40,6 @@ class UpdateUniqueFieldForPaymentAccountsTable extends Migration
 
             try {
                 $this->dropIndex($table, ['pa_name']);
-
             } catch (\Exception $e) {
                 $exception = $e;
             }
@@ -55,6 +53,7 @@ class UpdateUniqueFieldForPaymentAccountsTable extends Migration
     /**
      * @param $table
      * @param array $fields
+     *
      * @return void
      */
     private function dropUnique($table, array $fields): void
@@ -66,6 +65,7 @@ class UpdateUniqueFieldForPaymentAccountsTable extends Migration
     /**
      * @param $table
      * @param array $fields
+     *
      * @return void
      */
     private function dropIndex($table, array $fields): void

@@ -7,7 +7,7 @@ use App\Jobs\PaymentEauditorLogJob;
 use App\Traits\FeatureVersionsTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use \Mpdf\Mpdf as PDF;
+use Mpdf\Mpdf as PDF;
 
 class PaymentService
 {
@@ -21,7 +21,7 @@ class PaymentService
     protected $tokenResolveService;
     protected $receiptService;
     protected $agent_name = '';
-    protected $force_pay_for_not_online_payment_avs = 'no'; //支持支付 s_online_avs=no 的avs
+    protected $force_pay_for_not_online_payment_avs = 'no'; // 支持支付 s_online_avs=no 的avs
 
     public function __construct(
         TransactionService $transactionService,
@@ -47,11 +47,11 @@ class PaymentService
         $payment_gateway
     ) {
         if (!empty($transaction_id)) {
-            $this->transactionLogsService->create(['tl_xref_transaction_id' => $transaction_id, 'tl_content' => $payment_gateway.' postback:'.json_encode($params)]);
+            $this->transactionLogsService->create(['tl_xref_transaction_id' => $transaction_id, 'tl_content' => $payment_gateway . ' postback:' . json_encode($params)]);
 
             return true;
         }
-        Log::warning('ONLINE_PAYMENT, '.$payment_gateway.": trying to log \$_POST info, but no orderId has been set\n\$_POST:".json_encode($params));
+        Log::warning('ONLINE_PAYMENT, ' . $payment_gateway . ": trying to log \$_POST info, but no orderId has been set\n\$_POST:" . json_encode($params));
 
         return false;
     }
@@ -76,7 +76,7 @@ class PaymentService
         }
         if (!$amount_matched || !$currency_matched) {
             Log::warning("ONLINE PAYMENT, {$payment_gateway} data check failed-1 : ({$amount_matched}) ({$currency_matched})");
-            Log::warning("ONLINE PAYMENT, {$payment_gateway} data check failed-2 : ".json_encode($_POST, JSON_UNESCAPED_UNICODE));
+            Log::warning("ONLINE PAYMENT, {$payment_gateway} data check failed-2 : " . json_encode($_POST, JSON_UNESCAPED_UNICODE));
             $error_msg[] = 'payment_amount_incorrect';
         }
 
@@ -130,8 +130,8 @@ class PaymentService
         $this->receiptService->generateReceipt($transaction['t_transaction_id'], 'receipt-' . $transaction['t_transaction_id'] . '.pdf');
 
         if (!empty($error_msg)) {
-            Log::error('Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed, because: '.json_encode($error_msg, 256));
-            $show_error_msg = 'Transaction ERROR: transaction '.$transaction['t_transaction_id'].' failed';
+            Log::error('Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed, because: ' . json_encode($error_msg, 256));
+            $show_error_msg = 'Transaction ERROR: transaction ' . $transaction['t_transaction_id'] . ' failed';
         }
         $result = [
             'is_success' => empty($error_msg) ? 'ok' : 'error',
@@ -161,7 +161,7 @@ class PaymentService
     public function sendEAuditorProfileLogs($data): bool
     {
         $eauditor_log_content = $this->formatProfileData($data);
-        //send eauditor log
+        // send eauditor log
         $this->apiService->callEAuditorApi('POST', env('TLSCONTACT_EAUDITOR_PORT'), $eauditor_log_content);
 
         return true;
@@ -169,7 +169,7 @@ class PaymentService
 
     public function PaymentTransationBeforeLog($service, $data)
     {
-        $data['comment'] = 'Transfered to '.$service;
+        $data['comment'] = 'Transfered to ' . $service;
         dispatch(new PaymentEauditorLogJob($data))->onConnection('payment_api_eauditor_log_queue')->onQueue('payment_api_eauditor_log_queue');
     }
 
@@ -251,21 +251,21 @@ class PaymentService
      * @param array  $transaction
      * @param string $invoice_content
      *
+     * @return bool
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
-     *
-     * @return bool
      */
     public function convertInvoiceContentToPdf(array $transaction, string $invoice_content): bool
     {
         $scope = $transaction['t_xref_fg_id'];
         $country = substr($transaction['t_issuer'], 0, 2);
-        $city = substr($transaction['t_issuer'], 2, 3).'/'.$scope;
+        $city = substr($transaction['t_issuer'], 2, 3) . '/' . $scope;
 
-        $pdf = new PDF(['autoScriptToLang' => true,'autoArabic' => true, 'autoLangToFont' => true, 'packTableData' => true]);
+        $pdf = new PDF(['autoScriptToLang' => true, 'autoArabic' => true, 'autoLangToFont' => true, 'packTableData' => true]);
         $pdf->WriteHTML($invoice_content);
-        
+
         $response = $this->apiService->callFileLibraryUploadApi(
             'country=' . $country . '&city=' . $city . '&fileName=' . $transaction['t_transaction_id'] . '.pdf&userName=tlspay',
             response()->make($pdf->OutputBinaryData(), 200, [
@@ -289,11 +289,11 @@ class PaymentService
      * @param array  $transaction
      * @param string $collection_name
      *
+     * @return void
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
-     *
-     * @return void
      */
     public function sendInvoice(array $transaction, string $collection_name): void
     {
@@ -305,18 +305,18 @@ class PaymentService
         );
 
         if (empty($content)) {
-            throw new \Exception('Error Fetching Invoice Content for Collection:'.$collection_name.' - Issuer:'.$transaction['t_issuer'].' - Type:'.$transaction['t_service']);
+            throw new \Exception('Error Fetching Invoice Content for Collection:' . $collection_name . ' - Issuer:' . $transaction['t_issuer'] . ' - Type:' . $transaction['t_service']);
         }
 
         $resolvedTemplate = $this->tokenResolveService->resolveTemplate($content, $transaction);
         if (empty($resolvedTemplate)) {
-            throw new \Exception('Error Resolving Invoice Content for Collection:'.$collection_name.' - Issuer:'.$transaction['t_issuer'].' - Type:'.$transaction['t_service']);
+            throw new \Exception('Error Resolving Invoice Content for Collection:' . $collection_name . ' - Issuer:' . $transaction['t_issuer'] . ' - Type:' . $transaction['t_service']);
         }
 
         $response = $this->convertInvoiceContentToPdf($transaction, $resolvedTemplate['invoice_content']);
 
         if (!$response) {
-            throw new \Exception('Error Processing Invoice Upload Request for Collection:'.$collection_name.' - Issuer:'.$transaction['t_issuer'].' - Type:'.$transaction['t_service']);
+            throw new \Exception('Error Processing Invoice Upload Request for Collection:' . $collection_name . ' - Issuer:' . $transaction['t_issuer'] . ' - Type:' . $transaction['t_service']);
         }
     }
 

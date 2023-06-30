@@ -22,25 +22,32 @@ class TransactionController extends BaseController
      *     path="/api/v1/transaction/{fg_id}",
      *     tags={"Payment API"},
      *     description="get the transaction details according to fg_id",
+     *
      *      @OA\Parameter(
      *          name="fg_id",
      *          in="path",
      *          description="the tlsconnect fg_id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="order",
      *          in="query",
      *          description="desc or asc",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example=""),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the transaction information",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -87,25 +94,32 @@ class TransactionController extends BaseController
      *     path="/api/v1/form_transaction/{f_id}",
      *     tags={"Payment API"},
      *     description="get the transaction details according to f_id",
+     *
      *      @OA\Parameter(
      *          name="f_id",
      *          in="path",
      *          description="the tlsconnect f_id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="order",
      *          in="query",
      *          description="desc or asc",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example=""),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the transaction information",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -152,102 +166,131 @@ class TransactionController extends BaseController
      *     path="/api/v1/transaction",
      *     tags={"Payment API"},
      *     description="create a new transaction",
+     *
      *      @OA\Parameter(
      *          name="fg_id",
      *          in="query",
      *          description="tlsconnect fg_id",
      *          required=true,
+     *
      *          @OA\Schema(type="integer", example="10000"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="client",
      *          in="query",
      *          description="the client id",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="be"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="issuer",
      *          in="query",
      *          description="the issuer tab",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="dzALG2be"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="currency",
      *          in="query",
      *          description="the payment currency for this transaction",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="MAD"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="redirect_url",
      *          in="query",
      *          description="the tlsconnect website redirection url",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="onSuccess_tlsweb_url?lang=fr-fr"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="onerror_url",
      *          in="query",
      *          description="the tlsconnect website error url",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="onError_tlsweb_url?lang=fr-fr"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="reminder_url",
      *          in="query",
      *          description="the tlsconnect website reminder url",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="callback_to_send_reminder?lang=fr-fr"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="callback_url",
      *          in="query",
      *          description="the tlsconnect website callback url",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="receipt_url/{fg_id}?lang=fr-fr"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="workflow",
      *          in="query",
      *          description="workflow",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="postal"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="payment_method",
      *          in="query",
      *          description="tls agent payment method",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="card"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="expiration",
      *          in="query",
      *          description="tls citizen appointment booking expiration time(timestamp)",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="1669123675"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="agent_name",
      *          in="query",
      *          description="agent name",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="test"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="items",
      *          in="query",
      *          description="transaction items. ",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example=""),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="transaction created",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -335,53 +378,68 @@ class TransactionController extends BaseController
      *     path="/api/v1/transactions",
      *     tags={"Payment API"},
      *     description="get all transactions",
+     *
      *     @OA\Parameter(
      *          name="page",
      *          in="query",
      *          description="page, default 1",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="1"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="limit",
      *          in="query",
      *          description="number of result per page",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="20"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="issuer",
      *          in="query",
      *          description="define which issuer you want to fetch",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="egCAI2be,egCAI2be"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="start_date",
      *          in="query",
      *          description="start date",
      *          required=false,
+     *
      *          @OA\Schema(type="date", example="2021-01-01"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="end_date",
      *          in="query",
      *          description="end date",
      *          required=false,
+     *
      *          @OA\Schema(type="date", example="2021-12-31"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="status",
      *          in="query",
      *          description="transaction stats, eg pending, waiting, close, done",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="pending"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the transaction",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -439,123 +497,161 @@ class TransactionController extends BaseController
      *     path="/api/v1/list_transactions",
      *     tags={"Payment API"},
      *     description="get all transactions for Accounting Journal",
+     *
      *     @OA\Parameter(
      *          name="page",
      *          in="query",
      *          description="page, default 1",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="1"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="limit",
      *          in="query",
      *          description="number of result per page",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="20"),
      *      ),
+     *
      *     @OA\Parameter(
      *          name="start_date",
      *          in="query",
      *          description="start date and time",
      *          required=false,
+     *
      *          @OA\Schema(format="datetime", type="string", example="2023-01-01 00:00:00"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="end_date",
      *          in="query",
      *          description="end date and time",
      *          required=false,
+     *
      *          @OA\Schema(format="datetime", type="string", example="2023-01-02 23:59:59"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="csv",
      *          in="query",
      *          description="CSV download (0 or 1)",
      *          required=false,
+     *
      *          @OA\Schema(type="integer", example="0"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="multi_search[t_country]",
      *          in="query",
      *          description="search country",
      *          required=false,
+     *
      *          @OA\Items(type="array"),
+     *
      *          @OA\Schema(example="gb"),
      *
      *      ),
+     *
      *      @OA\Parameter(
      *          name="multi_search[t_city]",
      *          in="query",
      *          description="search city",
      *          required=false,
+     *
      *          @OA\Items(type="array"),
+     *
      *          @OA\Schema(example="LON"),
      *
      *      ),
+     *
      *     @OA\Parameter(
      *          name="multi_search[ti_fee_type]",
      *          in="query",
      *          description="search fee type",
      *          required=false,
+     *
      *          @OA\Items(type="array"),
+     *
      *          @OA\Schema(example="service"),
      *
      *      ),
+     *
      *      @OA\Parameter(
      *          name="multi_search[ti_xref_f_cai]",
      *          in="query",
      *          description="search customer reference number",
      *          required=false,
+     *
      *          @OA\Items(type="array"),
+     *
      *          @OA\Schema(example="GWP123456"),
      *
      *      ),
+     *
      *      @OA\Parameter(
      *          name="multi_search[t_xref_fg_id]",
      *          in="query",
      *          description="search group id",
      *          required=false,
+     *
      *          @OA\Items(type="array"),
+     *
      *          @OA\Schema(example="123"),
      *
      *      ),
+     *
      *      @OA\Parameter(
      *          name="multi_search[t_client]",
      *          in="query",
      *          description="search client",
      *          required=false,
+     *
      *          @OA\Items(type="array"),
+     *
      *          @OA\Schema(example="de"),
      *
      *      ),
+     *
      *      @OA\Parameter(
      *          name="multi_search[ti_quantity]",
      *          in="query",
      *          description="search quantity",
      *          required=false,
+     *
      *          @OA\Items(type="array"),
+     *
      *          @OA\Schema(example="B123"),
      *
      *      ),
+     *
      *      @OA\Parameter(
      *          name="order_field",
      *          in="query",
      *          description="sort order field",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="t_xref_fg_id"),
      *      ),
+     *
      *      @OA\Parameter(
      *          name="order",
      *          in="query",
      *          description="sort order",
      *          required=false,
+     *
      *          @OA\Schema(type="string", example="desc"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="get the transaction",
+     *
      *          @OA\JsonContent(),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -618,10 +714,11 @@ class TransactionController extends BaseController
             if (!$csvRequired) {
                 return $this->sendResponse($this->transactionService->listTransactions($validator->validated()));
             }
+
             return response()
                 ->download(
                     $this->transactionService->createTransactionCsv($validator->validated()),
-                    'accounting_journal_'.date('Y-m-d').'_'.date('His').'.csv'
+                    'accounting_journal_' . date('Y-m-d') . '_' . date('His') . '.csv'
                 )
                 ->deleteFileAfterSend(true);
         } catch (\Exception $e) {

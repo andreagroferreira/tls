@@ -30,7 +30,6 @@ class InsertNewReceiptFeatureVersions extends Migration
      */
     public function down()
     {
-        //
     }
 
     /**

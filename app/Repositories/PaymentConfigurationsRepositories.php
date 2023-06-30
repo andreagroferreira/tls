@@ -1,20 +1,16 @@
 <?php
 
-
 namespace App\Repositories;
 
 use App\Models\PaymentConfigurations;
-use Illuminate\Support\Facades\DB;
 
 class PaymentConfigurationsRepositories
 {
-
     protected $paymentConfigurations;
 
     public function __construct(PaymentConfigurations $paymentConfigurations)
     {
         $this->paymentConfigurations = $paymentConfigurations;
-
     }
 
     public function setConnection($connection)
@@ -57,12 +53,14 @@ class PaymentConfigurationsRepositories
             $PaymentConfigurationsInfo = $this->paymentConfigurations->where($where)->first();
             if (!$PaymentConfigurationsInfo) {
                 $where['pc_xref_pa_id'] = $pc_xref_pa_id;
+
                 return $this->create($attributes);
             }
         }
         foreach ($attributes as $key => $value) {
-            $PaymentConfigurationsInfo->$key = $value;
+            $PaymentConfigurationsInfo->{$key} = $value;
         }
+
         return $PaymentConfigurationsInfo->save();
     }
 
@@ -72,6 +70,7 @@ class PaymentConfigurationsRepositories
         foreach ($attributes as $key => $value) {
             $result = $result->where($key, '=', $value);
         }
+
         return $result->get();
     }
 
@@ -86,7 +85,7 @@ class PaymentConfigurationsRepositories
         $where = [
             'pc_country' => $paymentConfiguration->pc_country,
             'pc_city' => $paymentConfiguration->pc_city,
-            'pc_service' => $paymentConfiguration->pc_service
+            'pc_service' => $paymentConfiguration->pc_service,
         ];
 
         return $this->paymentConfigurations->select()->where($where)->delete();

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\V1;
 
 use App\Services\InvoiceService;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InvoiceController extends BaseController
 {
@@ -19,20 +18,25 @@ class InvoiceController extends BaseController
      *     path="/api/v1/invoice/{transaction_id}",
      *     tags={"Payment API"},
      *     description="download the invoice file according to transaction_id",
+     *
      *      @OA\Parameter(
      *          name="transaction_id",
      *          in="path",
      *          description="the transaction_id",
      *          required=true,
+     *
      *          @OA\Schema(type="string", example="DEVELOPMENT20210414-dzALG2be-0000000055"),
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="return invoice pdf",
+     *
      *          @OA\MediaType(
-    mediaType="application/pdf"
+     * mediaType="application/pdf"
      *          ),
      *      ),
+     *
      *      @OA\Response(
      *          response="400",
      *          description="Error: bad request"
@@ -42,11 +46,13 @@ class InvoiceController extends BaseController
      *          description="not found"
      *      ),
      * )
+     *
+     * @param mixed $transaction_id
      */
     public function fetch($transaction_id)
     {
         $validator = validator(['transaction_id' => $transaction_id], [
-            'transaction_id' => 'required|string'
+            'transaction_id' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -57,9 +63,10 @@ class InvoiceController extends BaseController
             $res = $this->invoiceService->getInvoiceFileContent($transaction_id);
 
             if ($res) {
-                return $this->streamDownload(function () use ($res) {
-                    echo $res;
-                },
+                return $this->streamDownload(
+                    function () use ($res) {
+                        echo $res;
+                    },
                     $transaction_id . '.pdf',
                     ['Content-type' => 'application/pdf']
                 );
@@ -69,6 +76,5 @@ class InvoiceController extends BaseController
         } catch (\Exception $e) {
             return $this->sendError('unknown_error', $e->getMessage());
         }
-
     }
 }
